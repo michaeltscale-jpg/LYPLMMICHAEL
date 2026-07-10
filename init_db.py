@@ -211,6 +211,18 @@ def init_database():
     )
     """)
 
+    # 10. 创建用户权限管理表
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        display_name VARCHAR(50) NOT NULL,
+        role VARCHAR(50) NOT NULL,
+        status VARCHAR(20) DEFAULT '启用',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
     conn.commit()
     print("Tables created successfully.")
 
@@ -219,6 +231,18 @@ def init_database():
     INSERT INTO dingtalk_settings (app_key, app_secret, agent_id, process_code_project, process_code_ecn, is_mock_mode)
     VALUES ('ding_appkey_example_12345', 'ding_secret_example_67890abcdef', '100230495', 'PROC-PROJECT-CODE', 'PROC-ECN-CODE', 1)
     """)
+
+    # 插入初始用户数据
+    cursor.executemany("""
+    INSERT INTO users (username, display_name, role, status)
+    VALUES (?, ?, ?, ?)
+    """, [
+        ("admin", "超级管理员", "Admin", "启用"),
+        ("pm_zhang", "张经理", "Product Manager", "启用"),
+        ("pe_li", "李工", "Process Engineer", "启用"),
+        ("qe_chen", "陈工", "Quality Engineer", "启用"),
+        ("guest", "访客", "Viewer", "启用")
+    ])
 
     # 导入仿真模拟数据
     now = datetime.now()

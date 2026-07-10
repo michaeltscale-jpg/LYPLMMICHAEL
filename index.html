@@ -34,6 +34,9 @@
                 <div class="menu-item" data-target="dingtalk-panel">
                     <i data-lucide="settings-2"></i> 钉钉协同配置
                 </div>
+                <div class="menu-item" data-target="users-panel" id="sidebar-users-menu">
+                    <i data-lucide="users"></i> 用户权限管理
+                </div>
                 
                 <div class="menu-section">研发新品列表</div>
                 <!-- Filter category -->
@@ -65,11 +68,7 @@
                         <i data-lucide="user" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
                         <span style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap;">登录身份:</span>
                         <select id="user-role-select" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.75rem; outline: none; cursor: pointer; padding-right: 4px;" onchange="onUserRoleChange(this)">
-                            <option value="Admin" style="background: #1e293b;">管理员 (超级管理员)</option>
-                            <option value="Product Manager" style="background: #1e293b;">张经理 (产品经理)</option>
-                            <option value="Process Engineer" style="background: #1e293b;" selected>李工 (工艺工程师)</option>
-                            <option value="Quality Engineer" style="background: #1e293b;">陈工 (质量工程师)</option>
-                            <option value="Viewer" style="background: #1e293b;">访客 (只读人员)</option>
+                            <!-- 动态加载数据库用户 -->
                         </select>
                     </div>
                     <button class="btn-secondary" id="btn-sync-ding"><i data-lucide="refresh-cw"></i> 同步状态</button>
@@ -84,23 +83,23 @@
                     <!-- ================= PANEL 1: DASHBOARD ================= -->
                     <div class="tab-panel active" id="dashboard-panel">
                         <!-- Dashboard Cards -->
-                        <div class="metrics-grid">
+                        <div class="metrics-grid-five">
                             <div class="metric-card">
                                 <div class="metric-icon" style="background: rgba(59, 130, 246, 0.2); color: var(--color-primary);">
                                     <i data-lucide="file-text"></i>
                                 </div>
                                 <div class="metric-info">
-                                    <h4>立项与开发中</h4>
+                                    <h4>在研新品项目数</h4>
                                     <div class="metric-value" id="metric-developing">--</div>
                                 </div>
                             </div>
                             <div class="metric-card">
                                 <div class="metric-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--color-success);">
-                                    <i data-lucide="check-circle-2"></i>
+                                    <i data-lucide="arrow-up-right"></i>
                                 </div>
                                 <div class="metric-info">
-                                    <h4>已导入量产</h4>
-                                    <div class="metric-value" id="metric-production">--</div>
+                                    <h4>新品量产导入率</h4>
+                                    <div class="metric-value" id="metric-prod-rate">--</div>
                                 </div>
                             </div>
                             <div class="metric-card">
@@ -117,14 +116,23 @@
                                     <i data-lucide="award"></i>
                                 </div>
                                 <div class="metric-info">
-                                    <h4>性能合格率 (批次)</h4>
-                                    <div class="metric-value" id="metric-passrate">--</div>
+                                    <h4>中试物性合格率</h4>
+                                    <div class="metric-value" id="metric-passrate">96.8%</div>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon" style="background: rgba(6, 182, 212, 0.2); color: var(--color-info);">
+                                    <i data-lucide="gauge"></i>
+                                </div>
+                                <div class="metric-info">
+                                    <h4>剥离强度 CPK 均值</h4>
+                                    <div class="metric-value" id="metric-cpk">1.62</div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Charts grid -->
-                        <div class="charts-grid">
+                        <!-- Charts grid (Three Columns Layout) -->
+                        <div class="charts-grid-three">
                             <div class="glass-panel highlight-blue">
                                 <h3><i data-lucide="trending-up"></i> 关键产品性能雷达图 (实测 vs 目标)</h3>
                                 <div class="chart-wrapper">
@@ -132,32 +140,47 @@
                                 </div>
                             </div>
                             <div class="glass-panel highlight-purple">
-                                <h3><i data-lucide="pie-chart"></i> 生命周期产品分布</h3>
+                                <h3><i data-lucide="pie-chart"></i> 生命周期产品状态分布</h3>
                                 <div class="chart-wrapper">
                                     <canvas id="chart-doughnut-lifecycle"></canvas>
                                 </div>
                             </div>
+                            <div class="glass-panel highlight-blue">
+                                <h3><i data-lucide="activity"></i> 关键物性批次稳定性走势 (Rz & Peel)</h3>
+                                <div class="chart-wrapper">
+                                    <canvas id="chart-line-quality"></canvas>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Real-time overview of ECN changes -->
-                        <div class="glass-panel">
-                            <h3><i data-lucide="activity"></i> 最新设变与工艺演进动态</h3>
-                            <div class="table-wrap">
-                                <table class="custom-table" id="dashboard-ecn-table">
-                                    <thead>
-                                        <tr>
-                                            <th>设变编号</th>
-                                            <th>产品代码</th>
-                                            <th>变更类型</th>
-                                            <th>变更原因</th>
-                                            <th>状态</th>
-                                            <th>发起时间</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Injected via JavaScript -->
-                                    </tbody>
-                                </table>
+                        <!-- Bottom Grid: Left ECN Table, Right Alerts Timeline -->
+                        <div class="dashboard-bottom-grid">
+                            <div class="glass-panel" style="margin-bottom: 0;">
+                                <h3><i data-lucide="activity"></i> 最新设变与工艺演进动态 (ECN)</h3>
+                                <div class="table-wrap">
+                                    <table class="custom-table" id="dashboard-ecn-table">
+                                        <thead>
+                                            <tr>
+                                                <th>设变编号</th>
+                                                <th>产品代码</th>
+                                                <th>变更类型</th>
+                                                <th style="max-width: 150px;">变更原因</th>
+                                                <th>状态</th>
+                                                <th>发起时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Injected via JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="glass-panel" style="margin-bottom: 0;">
+                                <h3><i data-lucide="bell-ring"></i> 协同待办与研发门禁智能预警</h3>
+                                <div class="alerts-timeline-wrapper" id="dashboard-alerts-timeline" style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
+                                    <!-- Injected via JavaScript (DingTalk logs + Milestone/Quality warnings) -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -251,11 +274,11 @@
                                         <table class="custom-table" id="bom-items-table">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 130px;">物料编码</th>
-                                                    <th>物料名称</th>
-                                                    <th style="width: 160px;">物料规格</th>
-                                                    <th style="width: 110px;">配比/添加量</th>
-                                                    <th style="width: 70px;">单位</th>
+                                                    <th style="width: 110px;">物料编码</th>
+                                                    <th style="width: 150px;">物料名称</th>
+                                                    <th>物料规格</th>
+                                                    <th style="width: 100px;">配比/添加量</th>
+                                                    <th style="width: 60px;">单位</th>
                                                     <th style="width: 100px; text-align: right;">操作</th>
                                                 </tr>
                                             </thead>
@@ -443,6 +466,36 @@ requests.post(url, json=payload)</code></pre>
                                     </li>
                                     <li><strong>2. 接收审批回调：</strong> 钉钉审批通过后，会主动推送消息到本服务的 HTTP Callback 回调路由（如：<code>/api/dingtalk/callback</code>），解析推送的 <code>processInstanceId</code> 和 <code>result</code>，将产品自动推入下一工艺工段。</li>
                                 </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= PANEL 5: USERS & ROLES ================= -->
+                    <div class="tab-panel" id="users-panel">
+                        <div class="glass-panel highlight-purple">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="margin-bottom: 0;"><i data-lucide="users"></i> 用户与系统角色权限控制台</h3>
+                                <button class="btn-primary" id="btn-add-user" onclick="openUserCreateModal()"><i data-lucide="plus-circle"></i> 新增系统用户</button>
+                            </div>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 16px;">
+                                管理系统中的登录用户身份。您可以创建新用户并为其分配权限角色，更改用户的启用/禁用状态，或从系统中移除自定义用户。
+                            </p>
+                            <div class="table-wrap">
+                                <table class="custom-table" id="plm-users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>登录用户名</th>
+                                            <th>显示名称</th>
+                                            <th>系统角色</th>
+                                            <th>状态</th>
+                                            <th>创建时间</th>
+                                            <th style="width: 150px; text-align: right;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Injected via JS -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -1169,6 +1222,48 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-bom-row-edit')">取消</button>
                 <button class="btn-primary" onclick="saveBomRowEdit()"><i data-lucide="save" style="width:14px; height:14px;"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Create/Edit Modal -->
+    <div class="modal-overlay" id="modal-user">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="user-modal-title"><i data-lucide="user-plus"></i> 新增系统用户</h3>
+                <button class="modal-close" onclick="closeModal('modal-user')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="user-edit-id">
+                <div class="form-group" id="user-username-group">
+                    <label>登录用户名 (不可修改，限英文/拼音/数字) <span style="color:var(--color-danger);">*</span></label>
+                    <input type="text" id="user-username" class="form-control" placeholder="例：pe_wang" required>
+                </div>
+                <div class="form-group">
+                    <label>显示名称 (中文全名，用于系统记录签署人) <span style="color:var(--color-danger);">*</span></label>
+                    <input type="text" id="user-display-name" class="form-control" placeholder="例：王工" required>
+                </div>
+                <div class="form-group">
+                    <label>系统角色权限 <span style="color:var(--color-danger);">*</span></label>
+                    <select id="user-role" class="form-control" required>
+                        <option value="Admin">管理员 (超级管理员)</option>
+                        <option value="Product Manager">产品经理 (张经理等)</option>
+                        <option value="Process Engineer">工艺工程师 (李工等)</option>
+                        <option value="Quality Engineer">质量工程师 (陈工等)</option>
+                        <option value="Viewer">访客 (只读只看人员)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="user-status-group" style="display: none;">
+                    <label>账号状态</label>
+                    <select id="user-status" class="form-control">
+                        <option value="启用">启用</option>
+                        <option value="禁用">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('modal-user')">取消</button>
+                <button class="btn-primary" onclick="submitUserForm()"><i data-lucide="check-circle" style="width:14px; height:14px;"></i> 提交保存</button>
             </div>
         </div>
     </div>

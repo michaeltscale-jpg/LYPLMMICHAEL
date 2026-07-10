@@ -383,6 +383,12 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         pass
                     logs.append(item)
                 self.send_json(logs)
+
+            # 6. 获取系统所有用户列表 (用户与角色管理)
+            elif path == "/api/users":
+                cursor.execute("SELECT * FROM users ORDER BY id ASC")
+                users = [dict(row) for row in cursor.fetchall()]
+                self.send_json(users)
             
             else:
                 self.send_json({"error": "Endpoint not found"}, 404)
@@ -396,6 +402,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
     def handle_api_post(self, path, data):
         # 角色与权限控制逻辑
         user_role = self.headers.get('X-User-Role', 'Admin')
+        user_name_raw = self.headers.get('X-User-Name', '')
+        user_display_name = urllib.parse.unquote(user_name_raw) if user_name_raw else '系统'
         
         # 默认只读访客拒绝所有写操作
         if user_role == 'Viewer':
@@ -429,6 +437,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             required_roles = {"Admin", "Process Engineer"}
         elif "/dingtalk/" in path:
             required_roles = {"Admin"}
+        elif path == "/api/users" or ("/users/" in path):
+            required_roles = {"Admin"}
 
         if required_roles and user_role not in required_roles:
             role_names_map = {
@@ -456,7 +466,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 target_df = float(data.get('target_df', 0))
                 target_tensile = float(data.get('target_tensile', 310.0))
                 target_elongation = float(data.get('target_elongation', 2.5))
-                creator = data.get('creator', '研发部')
+                creator = user_display_name
 
                 if not code or not name or not category:
                     self.send_json({"error": "产品代号、名称及类别不能为空"}, 400)
@@ -668,7 +678,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 s_val = next((float(x['ratio_value']) for x in items if '硫' in x['material_name'] and '酸' not in x['material_name']), 7.5)
                 silane_type = next((x['material_spec'] for x in items if '硅烷' in x['material_name']), '环保硅烷SL-203')
                 silane_conc = next((float(x['ratio_value']) for x in items if '硅烷' in x['material_name']), 0.8)
-                updater = data.get('updater', '工艺部')
+                updater = user_display_name
                 bom_items_str = json.dumps(items, ensure_ascii=False)
 
                 cursor.execute("SELECT * FROM product_bom WHERE product_id = ? AND status = '活动' ORDER BY id DESC LIMIT 1", (product_id,))
@@ -717,7 +727,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 start_date = data.get("start_date")
                 plan_end_date = data.get("plan_end_date")
                 owner = data.get("owner")
-                updater = data.get("updater", "项目管理部")
+                updater = user_display_name
 
                 if not gate_key:
                     self.send_json({"error": "Missing gate_key"}, 400)
@@ -893,7 +903,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 tds_items = data.get('tds_items', [])
                 notes = data.get('notes', '')
-                updater = data.get('updater', '工艺工程师')
+                updater = user_display_name
 
                 cursor.execute("SELECT tds_version FROM product_tds WHERE product_id = ? AND status = '活动' ORDER BY id DESC LIMIT 1", (product_id,))
                 active_row = cursor.fetchone()
@@ -939,7 +949,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 df_10ghz = float(data.get('df_10ghz', 0))
                 tensile_strength = float(data.get('tensile_strength', 320.0))
                 elongation = float(data.get('elongation', 3.0))
-                tester = data.get('tester', '测试组')
+                tester = user_display_name
 
                 is_ok = True
                 reasons = []
@@ -1196,6 +1206,88 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 """)
                 conn.commit()
                 self.send_json({"message": "配置更新成功"})
+
+            # 10. 新增用户 (用户与角色管理)
+            elif path == "/api/users":
+                username = data.get('username')
+                display_name = data.get('display_name')
+                role = data.get('role', 'Viewer')
+                status = data.get('status', '启用')
+
+                if not username or not display_name or not role:
+                    self.send_json({"error": "用户名、显示名、系统角色不能为空"}, 400)
+                    return
+
+                try:
+                    cursor.execute("""
+                    INSERT INTO users (username, display_name, role, status)
+                    VALUES (?, ?, ?, ?)
+                    """, (username, display_name, role, status))
+                    conn.commit()
+                    self.send_json({"message": "新增用户成功！"})
+                except sqlite3.IntegrityError:
+                    self.send_json({"error": f"用户名 '{username}' 已存在，请重新输入。"}, 400)
+
+            # 11. 编辑用户 (用户与角色管理)
+            elif path.startswith("/api/users/") and path.endswith("/edit"):
+                try:
+                    user_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid user ID"}, 400)
+                    return
+
+                display_name = data.get('display_name')
+                role = data.get('role')
+                status = data.get('status')
+
+                if not display_name or not role:
+                    self.send_json({"error": "显示名和系统角色不能为空"}, 400)
+                    return
+
+                cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+                row = cursor.fetchone()
+                if not row:
+                    self.send_json({"error": "用户不存在"}, 404)
+                    return
+
+                username = row['username']
+                # 保护内置超级管理员，防止编辑其角色
+                if username == "admin" and role != "Admin":
+                    self.send_json({"error": "内置超级管理员的安全角色无法被更改。"}, 400)
+                    return
+
+                cursor.execute("""
+                UPDATE users 
+                SET display_name = ?, role = ?, status = ? 
+                WHERE id = ?
+                """, (display_name, role, status, user_id))
+                conn.commit()
+                self.send_json({"message": "用户信息更新成功！"})
+
+            # 12. 删除用户 (用户与角色管理)
+            elif path.startswith("/api/users/") and path.endswith("/delete"):
+                try:
+                    user_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid user ID"}, 400)
+                    return
+
+                cursor.execute("SELECT username FROM users WHERE id = ?", (user_id,))
+                row = cursor.fetchone()
+                if not row:
+                    self.send_json({"error": "用户不存在"}, 404)
+                    return
+
+                username = row['username']
+                # 保护演示基础种子账号，禁止删除
+                demo_usernames = {"admin", "pm_zhang", "pe_li", "qe_chen", "guest"}
+                if username in demo_usernames:
+                    self.send_json({"error": f"安全限制：系统内置的演示基石账号 '{username}' 无法被删除，以保证全套演示场景完整。"}, 400)
+                    return
+
+                cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+                conn.commit()
+                self.send_json({"message": "用户已成功从系统中删除！"})
 
             else:
                 self.send_json({"error": "Endpoint not found"}, 404)

@@ -670,6 +670,19 @@ body {
     background-color: rgba(255, 255, 255, 0.02);
 }
 
+/* 质量测试验证记录表格字体与间距深度紧缩 */
+#plm-test-records-table th, 
+#plm-test-records-table td {
+    padding: 4px 8px !important;
+    white-space: nowrap;
+}
+
+/* BOM 物料清单表格优化：强制物料名称与编码不换行 */
+#bom-items-table td:nth-child(1),
+#bom-items-table td:nth-child(2) {
+    white-space: nowrap;
+}
+
 /* Tab badge status */
 .badge {
     padding: 2px 8px;
@@ -710,6 +723,9 @@ body {
     border-radius: 12px;
     width: 500px;
     max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     animation: modalShow 0.3s cubic-bezier(0.1, 0.8, 0.25, 1);
@@ -742,7 +758,9 @@ body {
 }
 
 .modal-body {
-    padding: 24px;
+    padding: 20px 24px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .form-group {
@@ -785,6 +803,13 @@ body {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
+}
+
+/* 复杂大弹窗的专属加宽样式 */
+#modal-ecn .modal-box,
+#modal-bom-design-new .modal-box,
+#modal-routing-design .modal-box {
+    width: 650px;
 }
 
 /* ECN matrix grid */
@@ -1169,4 +1194,161 @@ body {
     color: var(--text-secondary);
 }
 
+/* 新增：驾驶舱（Dashboard）重构扩展样式 */
+.metrics-grid-five {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
 
+@media (max-width: 1200px) {
+    .metrics-grid-five {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 768px) {
+    .metrics-grid-five {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.charts-grid-three {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.2fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1200px) {
+    .charts-grid-three {
+        grid-template-columns: 1fr;
+    }
+}
+
+.dashboard-bottom-grid {
+    display: grid;
+    grid-template-columns: 3.5fr 2.5fr;
+    gap: 24px;
+    align-items: start;
+    margin-top: 8px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 协同待办与研发智能预警时间轴 */
+.alerts-timeline-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.warning-alert-card {
+    background: rgba(245, 158, 11, 0.03);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-left: 4px solid var(--color-warning);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: var(--transition-smooth);
+}
+
+.warning-alert-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05);
+}
+
+.warning-alert-card.danger {
+    background: rgba(239, 68, 68, 0.03);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-left: 4px solid var(--color-danger);
+}
+
+.warning-alert-card.danger:hover {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
+}
+
+.warning-alert-card.info {
+    background: rgba(59, 130, 246, 0.03);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    border-left: 4px solid var(--color-primary);
+}
+
+.warning-alert-card.info:hover {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.05);
+}
+
+.warning-alert-card.success {
+    background: rgba(16, 185, 129, 0.03);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-left: 4px solid var(--color-success);
+}
+
+.warning-alert-card.success:hover {
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
+}
+
+.warning-alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.warning-alert-icon.warning-color {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+}
+
+.warning-alert-icon.danger-color {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.warning-alert-icon.info-color {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--color-primary);
+}
+
+.warning-alert-icon.success-color {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+}
+
+.warning-alert-content {
+    flex-grow: 1;
+}
+
+.warning-alert-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.warning-alert-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.warning-alert-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

@@ -216,6 +216,114 @@ def test_three_modules_and_npi_workflow():
         print(f"【失败】NPI里程碑计划排期更新流程异常: {e}")
         return
 
+    # 8. 验证用户与角色权限管理模块的 API 接口 (CRUD 及演示数据保护)
+    try:
+        print("开始验证用户权限管理模块的 API 流程...")
+        
+        # 8.1 获取用户列表
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users",
+            headers={'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        users = json.loads(response.read().decode('utf-8'))
+        assert len(users) >= 5, "内置种子用户数量不正确"
+        admin_user = next((u for u in users if u['username'] == 'admin'), None)
+        assert admin_user is not None, "未找到内置 admin 用户"
+        print(f"【成功】读取用户列表通过，当前系统共有 {len(users)} 个用户")
+
+        # 8.2 新增临时测试用户
+        add_user_data = json.dumps({
+            "username": "pe_test",
+            "display_name": "测试工艺员",
+            "role": "Process Engineer"
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users",
+            data=add_user_data,
+            headers={'Content-Type': 'application/json', 'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        res_data = json.loads(response.read().decode('utf-8'))
+        print(f"【成功】创建测试用户通过: {res_data['message']}")
+
+        # 获取新增的测试用户 ID
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users",
+            headers={'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        users = json.loads(response.read().decode('utf-8'))
+        test_user = next((u for u in users if u['username'] == 'pe_test'), None)
+        assert test_user is not None, "临时测试用户 pe_test 未成功入库"
+        test_user_id = test_user['id']
+
+        # 8.3 编辑测试用户
+        edit_user_data = json.dumps({
+            "display_name": "测试工程师(改)",
+            "role": "Process Engineer",
+            "status": "启用"
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users/{test_user_id}/edit",
+            data=edit_user_data,
+            headers={'Content-Type': 'application/json', 'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        res_data = json.loads(response.read().decode('utf-8'))
+        print(f"【成功】编辑测试用户通过: {res_data['message']}")
+
+        # 验证修改是否生效
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users",
+            headers={'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        users = json.loads(response.read().decode('utf-8'))
+        test_user = next((u for u in users if u['id'] == test_user_id), None)
+        assert test_user['display_name'] == "测试工程师(改)", "用户显示名修改未生效"
+
+        # 8.4 验证内置演示账号安全保护 (试图删除 pm_zhang 应被拒绝)
+        pm_zhang_user = next((u for u in users if u['username'] == 'pm_zhang'), None)
+        assert pm_zhang_user is not None, "未找到内置 pm_zhang 用户"
+        try:
+            req = urllib.request.Request(
+                f"{BASE_URL}/api/users/{pm_zhang_user['id']}/delete",
+                data=b"",
+                headers={'X-User-Role': 'Admin'}
+            )
+            urllib.request.urlopen(req)
+            assert False, "系统不应该允许删除内置演示种子账号"
+        except urllib.error.HTTPError as e:
+            assert e.code == 400, f"非预期的 HTTP 错误状态码: {e.code}"
+            err_msg = json.loads(e.read().decode('utf-8'))
+            print(f"【成功】内置演示账号删除保护验证通过，拦截提示: {err_msg['error']}")
+
+        # 8.5 正常删除临时测试用户
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users/{test_user_id}/delete",
+            data=b"",
+            headers={'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        res_data = json.loads(response.read().decode('utf-8'))
+        print(f"【成功】删除临时测试用户通过: {res_data['message']}")
+
+        # 再次获取用户列表，验证已不存在该临时用户
+        req = urllib.request.Request(
+            f"{BASE_URL}/api/users",
+            headers={'X-User-Role': 'Admin'}
+        )
+        response = urllib.request.urlopen(req)
+        users = json.loads(response.read().decode('utf-8'))
+        test_user_deleted = next((u for u in users if u['username'] == 'pe_test'), None)
+        assert test_user_deleted is None, "临时测试用户 pe_test 删除后依旧残留"
+        print("【成功】用户与角色权限管理模块 CRUD 接口及安全保护全流程验证通过！")
+
+    except Exception as e:
+        print(f"【失败】用户与角色权限管理 API 验证发生异常: {e}")
+        return
+
     print("==========================================================")
     print(" 恭喜！高频铜箔 NPI 流程与三管控模块级联自动化测试全部合格 (PASS)！")
     print("==========================================================")

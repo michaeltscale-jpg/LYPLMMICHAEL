@@ -13,6 +13,45 @@ let state = {
     charts: {} // Chart.js
 };
 
+// 本地状态保存
+function saveStateToLocalStorage() {
+    try {
+        const savedData = {
+            activeTab: state.activeTab,
+            activeProductId: state.activeProductId,
+            activePlmSubTab: state.activePlmSubTab,
+            currentUsername: state.currentUsername,
+            currentUserRole: state.currentUserRole,
+            currentUserDisplayName: state.currentUserDisplayName,
+            categoryFilter: document.getElementById("sidebar-category-filter")?.value || ""
+        };
+        localStorage.setItem("ghz_plm_state", JSON.stringify(savedData));
+    } catch (e) {
+        console.error("保存本地状态失败", e);
+    }
+}
+
+// 本地状态加载
+function loadStateFromLocalStorage() {
+    try {
+        const saved = localStorage.getItem("ghz_plm_state");
+        if (saved) {
+            const savedState = JSON.parse(saved);
+            if (savedState.activeTab) state.activeTab = savedState.activeTab;
+            if (savedState.activeProductId) state.activeProductId = savedState.activeProductId;
+            if (savedState.activePlmSubTab) state.activePlmSubTab = savedState.activePlmSubTab;
+            if (savedState.currentUsername) state.currentUsername = savedState.currentUsername;
+            if (savedState.currentUserRole) state.currentUserRole = savedState.currentUserRole;
+            if (savedState.currentUserDisplayName) state.currentUserDisplayName = savedState.currentUserDisplayName;
+            if (savedState.categoryFilter !== undefined) {
+                state.categoryFilter = savedState.categoryFilter;
+            }
+        }
+    } catch (e) {
+        console.error("加载本地状态失败", e);
+    }
+}
+
 // 前端鉴权核心辅助函数
 window.checkPermission = function(allowedRoles, actionName) {
     const role = state.currentUserRole || 'Viewer';
@@ -33,22 +72,39 @@ window.checkPermission = function(allowedRoles, actionName) {
 
 // 角色身份切换事件
 window.onUserRoleChange = function(selectEl) {
-    state.currentUserRole = selectEl.value;
-    showToast(`登录身份已成功切换为：${selectEl.options[selectEl.selectedIndex].text}`, "success");
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
+    if (!selectedOption) return;
     
-    // 重新加载产品详情及控制区，以让按钮可用性即时更新
-    if (state.activeProductId) {
+    state.currentUsername = selectEl.value;
+    state.currentUserRole = selectedOption.getAttribute('data-role');
+    state.currentUserDisplayName = selectedOption.getAttribute('data-display-name');
+    
+    showToast(`登录身份已成功切换为：${selectedOption.text}`, "success");
+    saveStateToLocalStorage();
+    
+    // 根据当前所处 Tab 面板立即重刷局部渲染以更新操作按钮及表格的可用状态
+    if (state.activeTab === 'plm-panel' && state.activeProductId) {
         loadProductDetails(state.activeProductId);
+    } else if (state.activeTab === 'users-panel') {
+        fetchUsersListAndRender();
+    } else if (state.activeTab === 'ecn-panel') {
+        fetchEcns();
     }
 };
 
-// 全局拦截并自动注入 X-User-Role 请求头
+// 全局拦截并自动注入用户身份及角色请求头
 const originalFetch = window.fetch;
 window.fetch = function(url, options) {
     options = options || {};
     options.headers = options.headers || {};
     if (state.currentUserRole) {
         options.headers['X-User-Role'] = state.currentUserRole;
+    }
+    if (state.currentUserDisplayName) {
+        options.headers['X-User-Name'] = encodeURIComponent(state.currentUserDisplayName);
+    }
+    if (state.currentUsername) {
+        options.headers['X-User-Username'] = state.currentUsername;
     }
     return originalFetch(url, options);
 };
@@ -118,10 +174,50 @@ function getStatusActiveIndex(status, category) {
 // App Initialization
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
+    
+    // 1. 加载本地状态
+    loadStateFromLocalStorage();
+    
+    // 2. 初始化监听器
     initEventListeners();
-    fetchDashboardData();
-    fetchDingTalkSettings();
-    setInterval(fetchDingTalkApprovals, 5000);
+    
+    // 3. 拉取用户角色并还原
+    fetchUsers().then(() => {
+        const categoryFilter = state.categoryFilter || "";
+        const filterEl = document.getElementById("sidebar-category-filter");
+        if (filterEl) {
+            filterEl.value = categoryFilter;
+        }
+
+        // 先拉取侧边栏产品
+        let fetchProductsPromise = new Promise((resolve) => {
+            let url = "/api/products";
+            if (categoryFilter) {
+                url += `?category=${encodeURIComponent(categoryFilter)}`;
+            }
+            fetch(url)
+                .then(res => res.json())
+                .then(products => {
+                    state.products = products;
+                    renderSidebarProducts();
+                    resolve();
+                });
+        });
+
+        // 4. 拉取驾驶舱仪表盘
+        fetchDashboardData();
+
+        // 待侧边栏拉取完后再还原主 Tab 及产品详情
+        fetchProductsPromise.then(() => {
+            switchTab(state.activeTab);
+            if (state.activeProductId) {
+                loadProductDetails(state.activeProductId);
+            }
+        });
+
+        fetchDingTalkSettings();
+        setInterval(fetchDingTalkApprovals, 5000);
+    });
 });
 
 // Event Listeners Binding
@@ -135,6 +231,8 @@ function initEventListeners() {
     });
 
     document.getElementById("sidebar-category-filter").addEventListener("change", (e) => {
+        state.categoryFilter = e.target.value;
+        saveStateToLocalStorage();
         fetchProducts(e.target.value);
     });
 
@@ -215,11 +313,10 @@ function initEventListeners() {
         if (checkPermission(["Admin", "Product Manager", "Process Engineer", "Quality Engineer"], "同步数据状态")) {
             showToast("同步中...", "info");
             fetchDashboardData();
-        }
-    });
-        fetchDingTalkApprovals();
-        if (state.activeProductId) {
-            loadProductDetails(state.activeProductId);
+            fetchDingTalkApprovals();
+            if (state.activeProductId) {
+                loadProductDetails(state.activeProductId);
+            }
         }
     });
 
@@ -252,12 +349,14 @@ function switchTab(tabId) {
     document.getElementById(tabId).classList.add("active");
     
     state.activeTab = tabId;
+    saveStateToLocalStorage();
     
     const headerTitleMap = {
         'dashboard-panel': '研发驾驶舱 (高频铜箔生命周期总览)',
         'plm-panel': '产品全生命周期研发控制台 (PLM)',
         'ecn-panel': '工程变更管控中心 (ECN)',
-        'dingtalk-panel': '钉钉协同配置与回调调试中心'
+        'dingtalk-panel': '钉钉协同配置与回调调试中心',
+        'users-panel': '用户与系统角色权限控制台'
     };
     document.getElementById("header-panel-title").innerText = headerTitleMap[tabId] || 'PLM平台';
 
@@ -269,6 +368,8 @@ function switchTab(tabId) {
         fetchEcns();
     } else if (tabId === 'dingtalk-panel') {
         fetchDingTalkApprovals();
+    } else if (tabId === 'users-panel') {
+        fetchUsersListAndRender();
     }
 }
 
@@ -286,6 +387,7 @@ window.switchPlmSubTab = function(subTabId) {
 
     state.activePlmSubTab = subTabId;
     state.selectedBomVersion = null; // 切换Tab重置BOM版本查看
+    saveStateToLocalStorage();
 
     if (state.activeProduct) {
         if (subTabId === 'npi') renderNpiSubpanel();
@@ -763,14 +865,6 @@ function fetchDashboardData() {
     fetch("/api/products")
         .then(res => res.json())
         .then(products => {
-            state.products = products;
-            renderSidebarProducts();
-
-            // 如果刚打开没有激活产品，默认激活第一个
-            if (!state.activeProductId && products.length > 0) {
-                state.activeProductId = products[0].id;
-            }
-
             let developingCount = 0;
             let productionCount = 0;
             products.forEach(p => {
@@ -780,11 +874,33 @@ function fetchDashboardData() {
                     developingCount++;
                 }
             });
+            
+            const totalCount = products.length;
+            const prodRate = totalCount > 0 ? ((productionCount / totalCount) * 100).toFixed(1) + "%" : "0.0%";
+
             document.getElementById("metric-developing").innerText = developingCount;
-            document.getElementById("metric-production").innerText = productionCount;
+            document.getElementById("metric-prod-rate").innerText = prodRate;
+            document.getElementById("metric-passrate").innerText = "96.8%";
+            document.getElementById("metric-cpk").innerText = "1.62";
+
+            // 防止类别过滤状态下，定时刷新全局产品而把侧边栏过滤冲掉
+            const categoryFilter = document.getElementById("sidebar-category-filter")?.value || "";
+            if (!categoryFilter) {
+                state.products = products;
+                renderSidebarProducts();
+                if (!state.activeProductId && products.length > 0) {
+                    state.activeProductId = products[0].id;
+                }
+            } else {
+                if (!state.activeProductId && products.length > 0) {
+                    const match = products.find(p => p.category === categoryFilter);
+                    state.activeProductId = match ? match.id : products[0].id;
+                }
+            }
 
             if (state.activeTab === 'dashboard-panel') {
                 renderDashboardCharts(products);
+                renderAlertsTimeline(products, state.dingtalkLogs);
             }
         });
 
@@ -803,15 +919,17 @@ function fetchDashboardData() {
                     <td style="font-weight: 600;">${e.ecn_no}</td>
                     <td>${e.product_code}</td>
                     <td><span class="badge badge-purple">${e.change_type}</span></td>
-                    <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.change_reason}</td>
+                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${e.change_reason}">${e.change_reason}</td>
                     <td><span class="badge ${getEcnStatusBadgeClass(e.status)}">${e.status}</span></td>
                     <td>${formatDate(e.created_at)}</td>
                 `;
                 tbody.appendChild(tr);
             });
-        });
 
-    document.getElementById("metric-passrate").innerText = "94.2%";
+            if (state.activeTab === 'dashboard-panel') {
+                renderAlertsTimeline(state.products, state.dingtalkLogs);
+            }
+        });
 }
 
 function getEcnStatusBadgeClass(status) {
@@ -869,6 +987,8 @@ function loadProductDetails(id) {
         .then(res => res.json())
         .then(product => {
             state.activeProduct = product;
+            state.activeProductId = id;
+            saveStateToLocalStorage();
             
             const catEl = document.getElementById("plm-prod-category");
             if (catEl) catEl.innerText = product.category;
@@ -1321,7 +1441,10 @@ function renderBomSubpanel() {
                 <span>版本: ${b.version}</span>
                 <span class="badge ${b.status==='活动'?'badge-green':'badge-gray'}">${b.status}</span>
             </div>
-            <div class="bom-timeline-meta">
+            <div class="bom-timeline-meta" style="margin-top:4px;">
+                说明: 包含 ${(b.bom_items || []).length} 项配方物料
+            </div>
+            <div class="bom-timeline-meta" style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
                 更新人: ${b.updater} | ${formatDate(b.created_at)}
             </div>
         `;
@@ -1438,7 +1561,7 @@ function _saveBomItemsToServer(product, bomItems, successMsg) {
 
     const payload = {
         bom_version: bom.version,
-        bom_items: bomItems,
+        items: bomItems,
         copper_wire_ratio: bom.copper_wire_ratio,
         sulfuric_acid_ratio: bom.sulfuric_acid_ratio,
         additive_gel: bom.additive_gel,
@@ -1448,7 +1571,7 @@ function _saveBomItemsToServer(product, bomItems, successMsg) {
         silane_type: bom.silane_type
     };
 
-    fetch(`/api/products/${product.id}/save_npi_bom`, {
+    fetch(`/api/products/${product.id}/save_bom`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -2405,6 +2528,7 @@ function submitNewEcn() {
 
 function renderTestRecords(records) {
     const tbody = document.querySelector("#plm-test-records-table tbody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     if (records.length === 0) {
@@ -2414,16 +2538,19 @@ function renderTestRecords(records) {
 
     records.forEach(r => {
         const tr = document.createElement("tr");
+        const dateStr = formatDate(r.created_at);
+        const shortDate = dateStr && dateStr.length >= 10 ? dateStr.substring(0, 10) : dateStr;
+
         tr.innerHTML = `
-            <td style="font-weight: 600;">${r.batch_no}</td>
+            <td style="font-weight: 500;">${r.batch_no}</td>
             <td>${r.actual_thickness} μm</td>
-            <td>毛面: ${r.roughness_rz_m} μm / 光面: ${r.roughness_rz_s} μm</td>
+            <td>${r.roughness_rz_m} / ${r.roughness_rz_s} μm</td>
             <td>${r.peel_strength} N/mm</td>
             <td>${r.df_10ghz}</td>
-            <td>${r.tensile_strength} MPa / ${r.elongation}%</td>
+            <td>${r.tensile_strength} / ${r.elongation}%</td>
             <td><span class="badge ${r.test_result==='合格'?'badge-green':'badge-danger'}">${r.test_result}</span></td>
             <td>${r.tester}</td>
-            <td>${formatDate(r.created_at)}</td>
+            <td>${shortDate}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -2509,7 +2636,7 @@ function renderDashboardCharts(products) {
                     position: 'right',
                     labels: {
                         color: '#94a3b8',
-                        font: { size: 10 }
+                        font: { size: 9 }
                     }
                 }
             }
@@ -2550,7 +2677,7 @@ function renderDashboardCharts(products) {
             labels: ['高频损耗指数(1/Df)', '剥离结合强度(N/mm)', '超低粗糙度指数(1/Rz)', '抗拉拉伸极限指数', '塑性延伸率指数'],
             datasets: [
                 {
-                    label: pts12 ? pts12.code + " (PTS AI 研发目标)" : "PTS AI铜箔",
+                    label: pts12 ? pts12.code + " (PTS AI 目标)" : "PTS AI铜箔",
                     data: getRadarMetrics(pts12, true),
                     backgroundColor: 'rgba(59, 130, 246, 0.15)',
                     borderColor: '#3b82f6',
@@ -2584,7 +2711,7 @@ function renderDashboardCharts(products) {
                     angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
                     pointLabels: {
                         color: '#94a3b8',
-                        font: { size: 10 }
+                        font: { size: 9 }
                     },
                     ticks: {
                         backdropColor: 'transparent',
@@ -2600,8 +2727,73 @@ function renderDashboardCharts(products) {
                     position: 'top',
                     labels: {
                         color: '#94a3b8',
-                        font: { size: 10 }
+                        font: { size: 9 }
                     }
+                }
+            }
+        }
+    });
+
+    // 新增：高频铜箔物性批次稳定性走势图 (双轴)
+    if (state.charts.quality) {
+        state.charts.quality.destroy();
+    }
+
+    const ctxLine = document.getElementById("chart-line-quality").getContext("2d");
+    state.charts.quality = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: ['批次-06', '批次-05', '批次-04', '批次-03', '批次-02', '最新批次'],
+            datasets: [
+                {
+                    label: '剥离强度 (N/mm)',
+                    data: [0.72, 0.76, 0.71, 0.78, 0.75, 0.82],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    yAxisID: 'y-peel',
+                    tension: 0.3,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#3b82f6'
+                },
+                {
+                    label: '粗糙度 Rz (μm)',
+                    data: [0.95, 0.88, 0.92, 0.82, 0.85, 0.78],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    yAxisID: 'y-rz',
+                    tension: 0.3,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#10b981'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', font: { size: 9 } }
+                },
+                'y-peel': {
+                    type: 'linear',
+                    position: 'left',
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', font: { size: 9 } },
+                    title: { display: true, text: '剥离强度 (N/mm)', color: '#3b82f6', font: { size: 9 } }
+                },
+                'y-rz': {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#94a3b8', font: { size: 9 } },
+                    title: { display: true, text: '粗糙度 Rz (μm)', color: '#10b981', font: { size: 9 } }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { color: '#94a3b8', font: { size: 9 } }
                 }
             }
         }
@@ -2778,3 +2970,406 @@ window.saveNpiPlan = function(gateKey, start, end, owner) {
         })
     });
 };
+
+// ========================================================
+// 动态用户库拉取与页首身份渲染
+// ========================================================
+window.fetchUsers = async function() {
+    try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        state.users = data;
+        
+        // 渲染页首身份切换下拉菜单
+        const selectEl = document.getElementById("user-role-select");
+        if (selectEl) {
+            selectEl.innerHTML = "";
+            let hasSelectedSaved = false;
+            data.forEach(u => {
+                if (u.status === '启用') {
+                    const opt = document.createElement("option");
+                    opt.value = u.username;
+                    opt.text = `${u.display_name} (${translateRoleName(u.role)})`;
+                    opt.setAttribute("data-role", u.role);
+                    opt.setAttribute("data-display-name", u.display_name);
+                    opt.style.background = "#1e293b";
+                    
+                    if (state.currentUsername && u.username === state.currentUsername) {
+                        opt.selected = true;
+                        state.currentUserRole = u.role;
+                        state.currentUserDisplayName = u.display_name;
+                        hasSelectedSaved = true;
+                    }
+                    selectEl.appendChild(opt);
+                }
+            });
+            
+            if (!hasSelectedSaved) {
+                let foundPeLi = false;
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].value === 'pe_li') {
+                        selectEl.selectedIndex = i;
+                        const opt = selectEl.options[i];
+                        state.currentUsername = opt.value;
+                        state.currentUserRole = opt.getAttribute("data-role");
+                        state.currentUserDisplayName = opt.getAttribute("data-display-name");
+                        foundPeLi = true;
+                        break;
+                    }
+                }
+                if (!foundPeLi && selectEl.options.length > 0) {
+                    selectEl.selectedIndex = 0;
+                    const opt = selectEl.options[0];
+                    state.currentUsername = opt.value;
+                    state.currentUserRole = opt.getAttribute("data-role");
+                    state.currentUserDisplayName = opt.getAttribute("data-display-name");
+                }
+            }
+        }
+    } catch (e) {
+        console.error("加载用户列表失败:", e);
+    }
+};
+
+function translateRoleName(role) {
+    const names = {
+        'Admin': '超级管理员',
+        'Product Manager': '产品经理',
+        'Process Engineer': '工艺工程师',
+        'Quality Engineer': '质量工程师',
+        'Viewer': '只读人员'
+    };
+    return names[role] || role;
+}
+
+// ========================================================
+// 用户与权限管理控制台业务逻辑
+// ========================================================
+window.fetchUsersListAndRender = async function() {
+    try {
+        const res = await fetch('/api/users');
+        const data = await res.json();
+        state.users = data;
+        renderUsersTable(data);
+    } catch (e) {
+        showToast("拉取用户列表失败，请重试。", "error");
+    }
+};
+
+function renderUsersTable(users) {
+    const tbody = document.querySelector("#plm-users-table tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    if (users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">系统无任何注册用户</td></tr>`;
+        return;
+    }
+
+    users.forEach(u => {
+        const tr = document.createElement("tr");
+        const isBuiltIn = ["admin", "pm_zhang", "pe_li", "qe_chen", "guest"].includes(u.username);
+        
+        let editBtn = "";
+        let deleteBtn = "";
+
+        if (state.currentUserRole === 'Admin') {
+            editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
+                            <i data-lucide="edit-3" style="width:11px; height:11px;"></i> 编辑
+                       </button>`;
+            if (!isBuiltIn) {
+                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
+                                <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                             </button>`;
+            } else {
+                deleteBtn = `<span style="color:var(--text-muted); font-size:0.72rem; margin-left:4px;">演示基石</span>`;
+            }
+        } else {
+            editBtn = `<span style="color:var(--text-muted); font-size:0.72rem;">只读</span>`;
+            deleteBtn = `-`;
+        }
+
+        const roleNames = {
+            'Admin': '管理员',
+            'Product Manager': '产品经理',
+            'Process Engineer': '工艺工程师',
+            'Quality Engineer': '质量工程师',
+            'Viewer': '只读访客'
+        };
+        const statusBadge = u.status === '启用' ? 'badge-green' : 'badge-danger';
+        
+        tr.innerHTML = `
+            <td style="font-family: monospace; font-size: 0.75rem;">${u.username}</td>
+            <td style="font-weight: 600;">${u.display_name}</td>
+            <td>${roleNames[u.role] || u.role}</td>
+            <td><span class="badge ${statusBadge}">${u.status}</span></td>
+            <td style="color: var(--text-muted); font-size: 0.75rem;">${formatDate(u.created_at)}</td>
+            <td style="text-align:right; white-space:nowrap;">
+                ${editBtn}
+                ${deleteBtn}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    lucide.createIcons();
+}
+
+window.openUserCreateModal = function() {
+    if (!checkPermission(["Admin"], "新增系统用户")) return;
+    
+    document.getElementById("user-modal-title").innerHTML = `<i data-lucide="user-plus"></i> 新增系统用户`;
+    document.getElementById("user-edit-id").value = "";
+    document.getElementById("user-username").value = "";
+    document.getElementById("user-display-name").value = "";
+    document.getElementById("user-role").value = "Process Engineer";
+    
+    document.getElementById("user-username-group").style.display = "block";
+    document.getElementById("user-status-group").style.display = "none";
+    
+    openModal("modal-user");
+    lucide.createIcons();
+};
+
+window.openUserEditModal = function(id) {
+    if (!checkPermission(["Admin"], "编辑用户信息")) return;
+    
+    const user = state.users.find(u => u.id === id);
+    if (!user) return;
+    
+    document.getElementById("user-modal-title").innerHTML = `<i data-lucide="edit-3"></i> 编辑系统用户`;
+    document.getElementById("user-edit-id").value = user.id;
+    document.getElementById("user-username").value = user.username;
+    document.getElementById("user-display-name").value = user.display_name;
+    document.getElementById("user-role").value = user.role;
+    document.getElementById("user-status").value = user.status;
+    
+    document.getElementById("user-username-group").style.display = "none";
+    document.getElementById("user-status-group").style.display = "block";
+    
+    openModal("modal-user");
+    lucide.createIcons();
+};
+
+window.submitUserForm = async function() {
+    const editId = document.getElementById("user-edit-id").value;
+    const username = document.getElementById("user-username").value.trim();
+    const displayName = document.getElementById("user-display-name").value.trim();
+    const role = document.getElementById("user-role").value;
+    const status = document.getElementById("user-status").value;
+
+    if (!displayName) {
+        showToast("请输入显示名称", "warning");
+        return;
+    }
+
+    if (!editId) {
+        if (!username) {
+            showToast("请输入用户名", "warning");
+            return;
+        }
+        
+        try {
+            const res = await fetch("/api/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: username,
+                    display_name: displayName,
+                    role: role,
+                    status: "启用"
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                showToast(data.message, "success");
+                closeModal("modal-user");
+                
+                await fetchUsers();
+                if (state.activeTab === 'users-panel') {
+                    fetchUsersListAndRender();
+                }
+            } else {
+                showToast(data.error || "新增用户失败", "error");
+            }
+        } catch (e) {
+            showToast("与服务器通信失败", "error");
+        }
+    } else {
+        try {
+            const res = await fetch(`/api/users/${editId}/edit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    display_name: displayName,
+                    role: role,
+                    status: status
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok) {
+                showToast(data.message, "success");
+                closeModal("modal-user");
+                
+                await fetchUsers();
+                if (state.activeTab === 'users-panel') {
+                    fetchUsersListAndRender();
+                }
+            } else {
+                showToast(data.error || "修改用户信息失败", "error");
+            }
+        } catch (e) {
+            showToast("与服务器通信失败", "error");
+        }
+    }
+};
+
+window.deleteUser = async function(id) {
+    if (!checkPermission(["Admin"], "删除用户")) return;
+    
+    const user = state.users.find(u => u.id === id);
+    if (!user) return;
+    
+    if (!confirm(`确认要删除用户「${user.display_name}」吗？`)) {
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/api/users/${id}/delete`, {
+            method: "POST"
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            showToast(data.message, "success");
+            await fetchUsers();
+            if (state.activeTab === 'users-panel') {
+                fetchUsersListAndRender();
+            }
+        } else {
+            showToast(data.error || "删除用户失败", "error");
+        }
+    } catch (e) {
+        showToast("与服务器通信失败", "error");
+    }
+};
+
+// 渲染智能预警与协同待办时间轴
+function renderAlertsTimeline(products, logs) {
+    const timelineEl = document.getElementById("dashboard-alerts-timeline");
+    if (!timelineEl) return;
+    timelineEl.innerHTML = "";
+
+    const alerts = [];
+
+    // 1. 提取进行中的钉钉审批流 (协同待办)
+    if (logs && logs.length > 0) {
+        logs.slice(0, 5).forEach(log => {
+            if (log.status === "RUNNING") {
+                let desc = "";
+                if (log.related_type === "PRODUCT") {
+                    desc = `产品立项审批：${log.content.name} (${log.content.code})`;
+                } else {
+                    desc = `工艺变更审批：${log.content.ecn_no} - ${log.content.change_reason}`;
+                }
+                alerts.push({
+                    type: "info",
+                    title: "【钉钉协同】待您审批",
+                    desc: desc,
+                    time: log.created_at,
+                    icon: "clock"
+                });
+            }
+        });
+    }
+
+    // 2. 扫描在研产品的门禁节点排期超期 (门禁预警)
+    if (products && products.length > 0) {
+        const now = new Date();
+        products.forEach(p => {
+            let plan = p.npi_project_plan;
+            if (typeof plan === "string" && plan) {
+                try { plan = JSON.parse(plan); } catch(e) { plan = null; }
+            }
+            if (p.status !== "量产中" && p.status !== "废弃" && plan) {
+                // 获取当前状态对应的门禁阶段
+                let curGateKey = null;
+                if (p.status === "立项中" || p.status === "钉钉立项审批中") curGateKey = "gate1";
+                else if (p.status === "溶铜造液中" || p.status === "溅镀开发中") curGateKey = "gate2";
+                else if (p.status === "生箔电镀中" || p.status === "表面处理中" || p.status === "分切包装中") curGateKey = "gate3";
+                else if (p.status === "测试验证中") curGateKey = "gate4";
+                
+                if (curGateKey && plan[curGateKey]) {
+                    const planEndStr = plan[curGateKey].plan_end_date;
+                    if (planEndStr) {
+                        const planEndDate = new Date(planEndStr);
+                        // 如果当前时间已经超过计划完成时间
+                        if (now > planEndDate) {
+                            const diffDays = Math.ceil((now - planEndDate) / (1000 * 60 * 60 * 24));
+                            const owner = plan[curGateKey].owner || "项目负责人";
+                            alerts.push({
+                                type: "warning",
+                                title: `【门禁延期】G${curGateKey.slice(-1)} 阶段超期预警`,
+                                desc: `新品 ${p.name} (${p.code}) 当前处于 [${p.status}] 阶段，已超期 ${diffDays} 天。责任人：${owner}`,
+                                time: p.updated_at || p.created_at,
+                                icon: "alert-triangle"
+                            });
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. 添加一个默认的品质偏离预警
+    alerts.push({
+        type: "danger",
+        title: "【品质异常】粗糙度测定偏离预警",
+        desc: "极薄载体箔试验批次 P-HIS-02052 溶铜槽液温度异常偏高（3.2℃），引发生箔粗糙度 Rz 测定值偏离目标值（实测 0.98μm / 目标 <=0.80μm），已触发工艺门禁自动熔断。",
+        time: new Date(Date.now() - 3600000 * 2).toISOString(),
+        icon: "zap"
+    });
+
+    // 按时间降序排序
+    alerts.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+    if (alerts.length === 0) {
+        timelineEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.75rem; padding: 20px 0;">当前暂无待办及智能预警</div>`;
+        return;
+    }
+
+    alerts.forEach(alt => {
+        const card = document.createElement("div");
+        card.className = `warning-alert-card ${alt.type}`;
+        
+        let iconName = alt.icon;
+        let iconColorClass = `${alt.type}-color`;
+        
+        card.innerHTML = `
+            <div class="warning-alert-icon ${iconColorClass}">
+                <i data-lucide="${iconName}" style="width: 14px; height: 14px;"></i>
+            </div>
+            <div class="warning-alert-content">
+                <div class="warning-alert-title">
+                    <span>${alt.title}</span>
+                </div>
+                <div class="warning-alert-desc">${alt.desc}</div>
+                <div class="warning-alert-time">
+                    <i data-lucide="clock" style="width: 11px; height: 11px;"></i>
+                    <span>${formatDate(alt.time)}</span>
+                </div>
+            </div>
+        `;
+        timelineEl.appendChild(card);
+    });
+    
+    lucide.createIcons({
+        attrs: {
+            "stroke-width": 2
+        },
+        nameAttr: "data-lucide",
+        node: timelineEl
+    });
+}
