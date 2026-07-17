@@ -1549,7 +1549,7 @@ body {
 }
 
 /* ========================================================
-   聚赫新材 EMS 设备管理重构新增样式
+   聚赫新材 EMS 设备开发重构新增样式
    ======================================================== */
 
 /* 设备表格中的里程碑整体进度条 */
@@ -1622,16 +1622,16 @@ body {
     100% { transform: scale(1.15); box-shadow: 0 0 10px rgba(239, 68, 68, 0.95), 0 0 16px rgba(239, 68, 68, 0.6); }
 }
 
-/* 8 大导入里程碑网格管道布局 */
+/* 6 大导入里程碑网格管道布局 */
 .ems-milestone-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     margin-bottom: 16px;
 }
 .ems-milestone-node {
-    background: rgba(15, 23, 42, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 10px 12px;
     cursor: pointer;
@@ -1641,60 +1641,61 @@ body {
     flex-direction: column;
     justify-content: space-between;
     min-height: 64px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 .ems-milestone-node:hover {
     transform: translateY(-2px);
-    background: rgba(30, 41, 59, 0.6);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--bg-panel-hover);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 .ems-milestone-node.active-node {
-    border-color: #3b82f6 !important;
-    background: rgba(59, 130, 246, 0.08) !important;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2) !important;
+    border-color: var(--color-primary) !important;
+    background: rgba(37, 99, 235, 0.04) !important;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.1) !important;
 }
 
 /* 里程碑节点状态色系 */
 .ems-node-completed {
-    border-left: 3px solid #10b981 !important;
+    border-left: 3px solid var(--color-success) !important;
 }
 .ems-node-completed .ems-node-badge {
-    background: rgba(16, 185, 129, 0.15) !important;
-    color: #10b981 !important;
+    background: rgba(5, 150, 105, 0.1) !important;
+    color: var(--color-success) !important;
 }
 .ems-node-inprogress {
-    border-left: 3px solid #3b82f6 !important;
+    border-left: 3px solid var(--color-primary) !important;
     animation: ems-node-pulsing-glow 2s infinite ease-in-out;
 }
 .ems-node-inprogress .ems-node-badge {
-    background: rgba(59, 130, 246, 0.18) !important;
-    color: #3b82f6 !important;
+    background: rgba(37, 99, 235, 0.12) !important;
+    color: var(--color-primary) !important;
 }
 .ems-node-notstarted {
-    border-left: 3px solid #64748b !important;
-    opacity: 0.7;
+    border-left: 3px solid var(--text-muted) !important;
+    opacity: 0.85;
 }
 .ems-node-notstarted .ems-node-badge {
-    background: rgba(100, 116, 139, 0.12) !important;
-    color: #64748b !important;
+    background: rgba(71, 85, 105, 0.1) !important;
+    color: var(--text-muted) !important;
 }
 .ems-node-delayed {
-    border-left: 3px solid #f59e0b !important;
+    border-left: 3px solid var(--color-warning) !important;
 }
 .ems-node-delayed .ems-node-badge {
-    background: rgba(245, 158, 11, 0.15) !important;
-    color: #f59e0b !important;
+    background: rgba(217, 119, 6, 0.1) !important;
+    color: var(--color-warning) !important;
 }
 
 @keyframes ems-node-pulsing-glow {
-    0% { border-color: rgba(59, 130, 246, 0.5); }
-    50% { border-color: rgba(59, 130, 246, 1); box-shadow: 0 0 8px rgba(59, 130, 246, 0.15); }
-    100% { border-color: rgba(59, 130, 246, 0.5); }
+    0% { border-color: rgba(37, 99, 235, 0.5); }
+    50% { border-color: rgba(37, 99, 235, 1); box-shadow: 0 0 8px rgba(37, 99, 235, 0.12); }
+    100% { border-color: rgba(37, 99, 235, 0.5); }
 }
 
 .ems-node-title {
     font-size: 0.7rem;
     font-weight: 700;
-    color: #f1f5f9;
+    color: var(--text-primary);
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -1710,7 +1711,7 @@ body {
     font-family: monospace;
     font-size: 0.65rem;
     font-weight: 800;
-    color: #64748b;
+    color: var(--text-muted);
 }
 .ems-node-badge {
     font-size: 0.58rem;
@@ -1722,8 +1723,8 @@ body {
 
 /* 参数监控卡片容器 */
 .ems-param-card {
-    background: rgba(15, 23, 42, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-panel-hover);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px 14px;
     display: flex;
@@ -1732,8 +1733,8 @@ body {
     transition: all 0.2s;
 }
 .ems-param-card:hover {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(37, 99, 235, 0.3);
+    background: var(--bg-panel);
 }
 .ems-param-info {
     display: flex;
@@ -1741,7 +1742,7 @@ body {
 }
 .ems-param-label {
     font-size: 0.72rem;
-    color: #94a3b8;
+    color: var(--text-secondary);
     font-weight: 600;
 }
 .ems-param-value-container {
@@ -1754,15 +1755,15 @@ body {
     font-size: 1.1rem;
     font-family: monospace;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--text-primary);
 }
 .ems-param-unit {
     font-size: 0.68rem;
-    color: #64748b;
+    color: var(--text-muted);
 }
 .ems-param-range {
     font-size: 0.62rem;
-    color: #64748b;
+    color: var(--text-muted);
     margin-top: 2px;
 }
 
@@ -1779,7 +1780,7 @@ body {
     top: 5px;
     bottom: 5px;
     width: 2px;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--border-color);
 }
 .ems-timeline-item {
     position: relative;
@@ -1795,44 +1796,252 @@ body {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #475569;
-    border: 2px solid #0f172a;
+    background: var(--text-muted);
+    border: 2px solid var(--bg-panel);
 }
 .ems-timeline-dot.status-running {
-    background: #10b981;
-    box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+    background: var(--color-success);
+    box-shadow: 0 0 6px rgba(5, 150, 105, 0.2);
 }
 .ems-timeline-dot.status-maint {
-    background: #f59e0b;
-    box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+    background: var(--color-warning);
+    box-shadow: 0 0 6px rgba(217, 119, 6, 0.2);
 }
 .ems-timeline-dot.status-fault {
-    background: #ef4444;
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+    background: var(--color-danger);
+    box-shadow: 0 0 6px rgba(220, 38, 38, 0.2);
 }
 .ems-timeline-content {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: var(--bg-panel-hover);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 8px 10px;
 }
 .ems-timeline-time {
     font-size: 0.62rem;
     font-family: monospace;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 700;
 }
 .ems-timeline-text {
     font-size: 0.68rem;
-    color: #cbd5e1;
+    color: var(--text-primary);
     margin-top: 2px;
     font-weight: 500;
 }
 .ems-timeline-operator {
     font-size: 0.62rem;
-    color: #475569;
+    color: var(--text-muted);
     text-align: right;
     margin-top: 2px;
+}
+
+/* ========================================================
+   聚赫新材 EMS 设备开发 6大开发里程碑卡片样式
+   ======================================================== */
+.ems-stage-cards-container {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.ems-stage-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.ems-stage-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background: rgba(30, 41, 59, 0.65);
+}
+
+.ems-stage-card.active-card {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+}
+
+.ems-stage-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ems-stage-card-g {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #64748b;
+    font-family: monospace;
+}
+
+.ems-stage-card.active-card .ems-stage-card-g {
+    color: #3b82f6;
+}
+
+.ems-stage-card-status-badge {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.ems-stage-card-status-completed {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ems-stage-card-status-inprogress {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.ems-stage-card-status-notstarted {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.ems-filter-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 280px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border-top: 4px solid var(--text-muted);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ems-filter-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(37, 99, 235, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    background: var(--bg-panel-hover);
+}
+
+.ems-filter-card.active-card {
+    border: 2px solid var(--color-primary) !important;
+    border-top: 4px solid var(--color-primary) !important;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.15);
+    background: rgba(37, 99, 235, 0.01);
+}
+
+.ems-filter-card.completed {
+    border-top-color: var(--color-success);
+}
+
+.ems-filter-card.running {
+    border-top-color: var(--color-primary);
+}
+
+.ems-filter-card.notstarted {
+    border-top-color: var(--text-muted);
+}
+
+.ems-filter-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.ems-filter-card-g {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    font-family: monospace;
+}
+
+.ems-filter-card-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 4px 0 10px 0;
+}
+
+.ems-filter-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: flex-start;
+    min-width: 0;
+}
+
+.ems-filter-data-box {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.ems-filter-data-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.ems-filter-data-item:last-child {
+    margin-bottom: 0;
+}
+
+.ems-filter-data-label {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.ems-filter-data-value {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.ems-filter-docs-box {
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    margin-top: auto;
+}
+
+.ems-filter-docs-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 8px;
+}
+
+.ems-filter-doc-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 

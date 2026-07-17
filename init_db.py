@@ -42,16 +42,14 @@ def make_default_project_plan(created_time, creator):
     }
     return json.dumps(plan, ensure_ascii=False)
 
-def make_default_equipment_project_plan(active_stage_idx=8):
+def make_default_equipment_project_plan(active_stage_idx=6):
     stages = [
-        ("stage1_design", "设备设计开发", "赵工", -50, -45, "设备设计任务书与大纲.pdf", "/docs/eq_design_draft.pdf"),
-        ("stage2_scheme", "技术方案确定", "工艺组", -44, -38, "设备技术方案评审意见.pdf", "/docs/eq_technical_scheme.pdf"),
-        ("stage3_selection", "设备选型", "采购委", -37, -30, "选型论证报告与对比表.xlsx", "/docs/eq_selection_report.xlsx"),
-        ("stage4_supplier", "供应商开发", "供应商开发部", -29, -22, "供应商资质及现场审查表.pdf", "/docs/eq_supplier_audit.pdf"),
-        ("stage5_bidding", "发包采购", "商务部", -21, -10, "发包技术协议与中标通知.pdf", "/docs/eq_bidding_contract.pdf"),
-        ("stage6_install", "安装调试", "现场工程组", -9, 5, "安装调试规范与自检报告.pdf", "/docs/eq_install_log.pdf"),
-        ("stage7_test", "性能测试", "质检组", 6, 15, "设备性能测试与OEE统计表.xlsx", "/docs/eq_performance_test.xlsx"),
-        ("stage8_accept", "竣工验收", "项目部", 16, 22, "竣工验收签收单与合格证.pdf", "/docs/eq_acceptance_sheet.pdf")
+        ("stage1_plan", "立项", "赵工", -50, -45, "设备设计任务书与大纲.pdf", "/docs/eq_design_draft.pdf"),
+        ("stage2_scheme", "拟定技术方案", "工艺组", -44, -38, "设备技术方案评审意见.pdf", "/docs/eq_technical_scheme.pdf"),
+        ("stage3_bidding", "请购发包", "采购委", -37, -30, "发包技术协议与中标通知.pdf", "/docs/eq_bidding_contract.pdf"),
+        ("stage4_make", "制作中", "制造部", -29, -15, "设备制作进度与出厂检核表.pdf", "/docs/eq_make_log.pdf"),
+        ("stage5_install", "安装调试中", "现场工程组", -14, 5, "安装调试规范与自检报告.pdf", "/docs/eq_install_log.pdf"),
+        ("stage6_accept", "验收交付使用", "项目部", 6, 12, "竣工验收签收单与合格证.pdf", "/docs/eq_acceptance_sheet.pdf")
     ]
     
     plan = {}
@@ -267,7 +265,7 @@ def init_database(force_reset=False):
     )
     """)
 
-    # 11. 创建设备管理表 (equipments)
+    # 11. 创建设备开发表 (equipments)
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS equipments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -307,8 +305,8 @@ def init_database(force_reset=False):
     ])
 
     # 生成各设备的默认一条龙导入项目进度 JSON
-    p_comp = make_default_equipment_project_plan(8)  # 全部 8 个阶段已完成
-    p_active_install = make_default_equipment_project_plan(5)  # 正在安装调试阶段 (5)
+    p_comp = make_default_equipment_project_plan(6)  # 全部 6 个阶段已完成
+    p_active_install = make_default_equipment_project_plan(4)  # 正在安装调试阶段 (5)
     
     # 插入初始设备数据
     cursor.executemany("""

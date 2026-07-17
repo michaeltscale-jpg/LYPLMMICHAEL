@@ -4928,7 +4928,7 @@ window.saveNpiPlan = function(gateKey, start, end, owner) {
 };
 
 // ========================================================
-// 聚赫新材 EMS 设备管理模块业务逻辑
+// 聚赫新材 EMS 设备开发模块业务逻辑
 // ========================================================
 state.equipments = [];
 state.activeEquipmentId = null;
@@ -4973,6 +4973,98 @@ function formatEmsTime(date) {
     const mm = String(date.getMinutes()).padStart(2, '0');
     return `${y}-${m}-${d} ${hh}:${mm}`;
 }
+state.emsActiveFilterStage = state.emsActiveFilterStage || "stage1_plan";
+
+window.getEquipmentActiveStage = function(eq) {
+    let parsedPlan = {};
+    try {
+        parsedPlan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : eq.project_plan_json || {};
+    } catch (e) {
+        parsedPlan = {};
+    }
+    
+    const stageKeys = [
+        "stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make",
+        "stage5_install", "stage6_accept"
+    ];
+    
+    // 寻找第一个 status 为 "进行中" 的阶段
+    for (let k of stageKeys) {
+        if (parsedPlan[k] && parsedPlan[k].status === "进行中") {
+            return k;
+        }
+    }
+    
+    // 如果无进行中且验收已完成，则归属于验收阶段
+    if (parsedPlan["stage6_accept"] && parsedPlan["stage6_accept"].status === "已完成") {
+        return "stage6_accept";
+    }
+    
+    // 否则寻第一个 "未开始" 的阶段
+    for (let k of stageKeys) {
+        if (!parsedPlan[k] || parsedPlan[k].status === "未开始") {
+            return k;
+        }
+    }
+    
+    return "stage1_plan";
+};
+
+window.selectEmsStageFilter = function(stageKey) {
+    state.emsActiveFilterStage = stageKey;
+    
+    const stageKeys = [
+        "stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make",
+        "stage5_install", "stage6_accept"
+    ];
+    stageKeys.forEach(k => {
+        const cardEl = document.getElementById(`ems-card-${k}`);
+        if (cardEl) {
+            if (k === stageKey) {
+                cardEl.classList.add("active-card");
+            } else {
+                cardEl.classList.remove("active-card");
+            }
+        }
+    });
+    
+    const stageTitles = {
+        "stage1_plan": "立项",
+        "stage2_scheme": "拟定技术方案",
+        "stage3_bidding": "请购发包",
+        "stage4_make": "制作中",
+        "stage5_install": "安装调试中",
+        "stage6_accept": "验收交付使用"
+    };
+    const titleEl = document.getElementById("ems-active-filter-stage-title");
+    if (titleEl) {
+        titleEl.innerText = stageTitles[stageKey] || "";
+    }
+    
+    window.fetchEquipmentsAndRender();
+
+    // 如果有当前选中设备，联动选中该设备的对应里程碑阶段并展示对应的专业管控内容
+    if (state.activeEquipmentId) {
+        // 自动切换工作台到项目导入一条龙子面板
+        window.switchEmsSubTab('project');
+        
+        // 选中对应的里程碑节点并渲染
+        const eq = state.equipments.find(e => e.id === state.activeEquipmentId);
+        if (eq) {
+            window.selectEmsStage(stageKey);
+            // 并且高亮 milestone 网格中对应的节点
+            setTimeout(() => {
+                document.querySelectorAll(".ems-milestone-node").forEach(n => {
+                    if (n.getAttribute("data-stage-key") === stageKey) {
+                        n.classList.add("active-node");
+                    } else {
+                        n.classList.remove("active-node");
+                    }
+                });
+            }, 50);
+        }
+    }
+};
 
 window.fetchEquipmentsAndRender = async function() {
     try {
@@ -4980,25 +5072,122 @@ window.fetchEquipmentsAndRender = async function() {
         const data = await res.json();
         state.equipments = Array.isArray(data) ? data : [];
         
-        // 1. 计算各项指标
-        const total = state.equipments.length;
-        const running = state.equipments.filter(e => e.status === "运行中").length;
-        const maintenance = state.equipments.filter(e => e.status === "保养中").length;
-        const fault = state.equipments.filter(e => e.status === "故障停机").length;
+        // 1. 计算各阶段设备数量，并更新 6 大里程碑阶段过滤看板
+        const stageKeys = [
+            "stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make",
+            "stage5_install", "stage6_accept"
+        ];
         
-        document.getElementById("ems-stat-total").innerText = total;
-        document.getElementById("ems-stat-running").innerText = running;
-        document.getElementById("ems-stat-maintenance").innerText = maintenance;
-        document.getElementById("ems-stat-fault").innerText = fault;
+        const counts = {
+            "stage1_plan": 0,
+            "stage2_scheme": 0,
+            "stage3_bidding": 0,
+            "stage4_make": 0,
+            "stage5_install": 0,
+            "stage6_accept": 0
+        };
         
-        // 2. 渲染设备表格
+        state.equipments.forEach(eq => {
+            const activeStage = window.getEquipmentActiveStage(eq);
+            if (counts[activeStage] !== undefined) {
+                counts[activeStage]++;
+            }
+        });
+        
+        // 更新卡片数字与进行中设备列表
+        const stageDevices = {
+            "stage1_plan": [],
+            "stage2_scheme": [],
+            "stage3_bidding": [],
+            "stage4_make": [],
+            "stage5_install": [],
+            "stage6_accept": []
+        };
+        state.equipments.forEach(eq => {
+            const activeStage = window.getEquipmentActiveStage(eq);
+            if (stageDevices[activeStage] !== undefined) {
+                stageDevices[activeStage].push(eq);
+            }
+        });
+
+        stageKeys.forEach(k => {
+            // 更新数字
+            const countEl = document.getElementById(`ems-card-count-${k}`);
+            if (countEl) {
+                countEl.innerText = `${stageDevices[k].length} 台`;
+            }
+
+            // 更新设备明细列表
+            const devicesBox = document.getElementById(`ems-card-devices-${k}`);
+            if (devicesBox) {
+                devicesBox.innerHTML = "";
+                if (stageDevices[k].length === 0) {
+                    devicesBox.innerHTML = `<span style="color: #64748b; font-style: italic;">暂无</span>`;
+                } else {
+                    stageDevices[k].forEach(eq => {
+                        const link = document.createElement("span");
+                        link.style.display = "block";
+                        link.style.cursor = "pointer";
+                        link.style.color = "var(--color-primary)";
+                        link.style.fontWeight = "600";
+                        link.style.textDecoration = "underline";
+                        link.style.overflow = "hidden";
+                        link.style.textOverflow = "ellipsis";
+                        link.style.whiteSpace = "nowrap";
+                        link.style.marginBottom = "2px";
+                        link.innerText = `• ${eq.device_name}`;
+                        link.title = `点击直接选中: ${eq.device_name}`;
+                        link.onclick = (e) => {
+                            e.stopPropagation(); // 阻止卡片切换过滤
+                            window.selectEquipment(eq.id);
+                        };
+                        devicesBox.appendChild(link);
+                    });
+                }
+            }
+        });
+        
+        // 更新卡片状态徽章 (已通过 / 进行中 / 未开启)
+        stageKeys.forEach((k, idx) => {
+            const statusEl = document.getElementById(`ems-card-status-${k}`);
+            if (!statusEl) return;
+            
+            let status = "未开启";
+            if (counts[k] > 0) {
+                status = "进行中";
+            } else {
+                const hasDeviceAfter = state.equipments.some(eq => {
+                    const activeStage = window.getEquipmentActiveStage(eq);
+                    const activeIdx = stageKeys.indexOf(activeStage);
+                    return activeIdx > idx;
+                });
+                if (hasDeviceAfter) {
+                    status = "已通过";
+                }
+            }
+            
+            statusEl.innerText = status;
+            statusEl.className = "ems-stage-card-status-badge";
+            if (status === "已通过") {
+                statusEl.classList.add("ems-stage-card-status-completed");
+            } else if (status === "进行中") {
+                statusEl.classList.add("ems-stage-card-status-inprogress");
+            } else {
+                statusEl.classList.add("ems-stage-card-status-notstarted");
+            }
+        });
+        
+        // 2. 渲染设备明细表格（展示所有设备项目明细）
         const tbody = document.querySelector("#ems-device-table tbody");
         if (tbody) {
             tbody.innerHTML = "";
-            if (state.equipments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">暂无设备数据</td></tr>`;
+            
+            const filteredEquipments = state.equipments;
+            
+            if (filteredEquipments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">当前阶段暂无进行中的设备明细</td></tr>`;
             } else {
-                state.equipments.forEach(eq => {
+                filteredEquipments.forEach(eq => {
                     const tr = document.createElement("tr");
                     tr.style.cursor = "pointer";
                     if (state.activeEquipmentId === eq.id) {
@@ -5018,30 +5207,37 @@ window.fetchEquipmentsAndRender = async function() {
                     };
                     const sc = statusColors[eq.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
                     
-                    // 计算里程碑进度百分比
+                    // 计算里程碑进度百分比 (共6大阶段)
                     let parsedPlan = {};
                     try {
                         parsedPlan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : eq.project_plan_json || {};
                     } catch (e) {
                         parsedPlan = {};
                     }
-                    const stageKeys = [
-                        "stage1_design", "stage2_scheme", "stage3_selection", "stage4_supplier",
-                        "stage5_bidding", "stage6_install", "stage7_test", "stage8_accept"
-                    ];
+                    
                     let completedStages = 0;
                     stageKeys.forEach(k => {
                         if (parsedPlan[k] && parsedPlan[k].status === "已完成") {
                             completedStages++;
                         }
                     });
-                    const progressPct = Math.round((completedStages / 8) * 100);
-
-                    // 运行状态指示灯
+                    const progressPct = Math.round((completedStages / 6) * 100);
+                    
+                    const activeStageKey = window.getEquipmentActiveStage(eq);
+                    const stageDisplayNames = {
+                        "stage1_plan": "G1. 立项",
+                        "stage2_scheme": "G2. 拟定技术方案",
+                        "stage3_bidding": "G3. 请购发包",
+                        "stage4_make": "G4. 制作中",
+                        "stage5_install": "G5. 安装调试中",
+                        "stage6_accept": "G6. 验收交付使用"
+                    };
+                    const activeStageName = stageDisplayNames[activeStageKey] || "未开启";
+                    
                     const statusIndicator = eq.status === "运行中" 
                         ? `<span class="ems-radar-ping" style="margin-right: 6px; vertical-align: middle;"></span>` 
                         : (eq.status === "故障停机" ? `<span class="ems-alarm-beacon" style="margin-right: 6px; vertical-align: middle; width: 8px; height: 8px;"></span>` : "");
-
+                        
                     tr.innerHTML = `
                         <td style="font-weight: 700; font-family: monospace; color: var(--color-primary);">${eq.device_code}</td>
                         <td style="font-weight: 600; color: var(--text-primary);">${eq.device_name}</td>
@@ -5055,11 +5251,16 @@ window.fetchEquipmentsAndRender = async function() {
                             </div>
                         </td>
                         <td>
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <div class="ems-table-progress-container">
-                                    <div class="ems-table-progress-bar" style="width: ${progressPct}%"></div>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <div class="ems-table-progress-container">
+                                        <div class="ems-table-progress-bar" style="width: ${progressPct}%"></div>
+                                    </div>
+                                    <span class="ems-table-progress-text">${completedStages}/6 (${progressPct}%)</span>
                                 </div>
-                                <span class="ems-table-progress-text">${completedStages}/8 (${progressPct}%)</span>
+                                <div style="font-size: 0.68rem; color: var(--color-primary); font-weight: 600;">
+                                    当前阶段: ${activeStageName}
+                                </div>
                             </div>
                         </td>
                         <td style="font-family: monospace; font-weight: 600;">${eq.oee ? eq.oee.toFixed(1) : "0.0"}%</td>
@@ -5275,7 +5476,7 @@ window.switchEmsSubTab = function(subTabId) {
     }
 };
 
-// 渲染 G1 到 G8 时间轴网格
+// 渲染 G1 到 G6 时间轴网格
 window.renderEquipmentProjectPlan = function(eq) {
     const gridContainer = document.getElementById("ems-milestone-grid-container");
     if (!gridContainer) return;
@@ -5283,8 +5484,8 @@ window.renderEquipmentProjectPlan = function(eq) {
 
     const plan = eq.project_plan || {};
     const stageKeys = [
-        "stage1_design", "stage2_scheme", "stage3_selection", "stage4_supplier",
-        "stage5_bidding", "stage6_install", "stage7_test", "stage8_accept"
+        "stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make",
+        "stage5_install", "stage6_accept"
     ];
 
     let firstActiveKey = null;
@@ -5358,14 +5559,12 @@ window.renderEquipmentProjectPlan = function(eq) {
 
 window.getEmsStageDefaultTitle = function(key) {
     const titles = {
-        "stage1_design": "设备设计开发",
-        "stage2_scheme": "技术方案确定",
-        "stage3_selection": "设备选型",
-        "stage4_supplier": "供应商开发",
-        "stage5_bidding": "发包采购",
-        "stage6_install": "安装调试",
-        "stage7_test": "性能测试",
-        "stage8_accept": "竣工验收"
+        "stage1_plan": "立项",
+        "stage2_scheme": "拟定技术方案",
+        "stage3_bidding": "请购发包",
+        "stage4_make": "制作中",
+        "stage5_install": "安装调试中",
+        "stage6_accept": "验收交付使用"
     };
     return titles[key] || "项目阶段";
 };
@@ -5453,6 +5652,58 @@ window.selectEmsStage = function(stageKey) {
         dingtalkBlock.style.display = "none";
     }
 
+    // ----------------------------------------------------
+    // 渲染专业作业管控标准
+    // ----------------------------------------------------
+    const standardsList = document.getElementById("ems-workbench-control-standards-list");
+    if (standardsList) {
+        standardsList.innerHTML = "";
+        const standards = {
+            "stage1_plan": [
+                "立项与技术大纲拟定（立项申请、预算初估与建议交付）",
+                "设备开发预算与可行性评估报告会审",
+                "编制并提交《设备设计大纲与技术要求》（正式版）"
+            ],
+            "stage2_scheme": [
+                "机械结构 3D 造型及 2D 精密装配图纸会审与方案签收",
+                "电气原理图、IO 分配表与 PLC/HMI 软件控制逻辑确认",
+                "组织召开由工艺、设备、品质等多部门联合的技术评审会"
+            ],
+            "stage3_bidding": [
+                "编写详尽的设备比选采购《发包技术协议书》",
+                "开展供应商技术比选定标及厂内制造资源现场审计评估",
+                "完成商务合同与保密协议签署，开展详细方案交底会议"
+            ],
+            "stage4_make": [
+                "供应商厂内加工制造关键期排程监控与零部件入厂检核",
+                "开展出厂前联合出厂功能性与系统性测试验证 (FAT)",
+                "签署《设备厂内制作完成及出厂检核报告》并安排物流"
+            ],
+            "stage5_install": [
+                "制定安全吊装定位就位、二次配管配线等现场施工方案",
+                "设备冷态、热态通电调试，进行机械动作单机与联动点动测试",
+                "完成现场 SAT 性能与几何精度测试，并签署《安装调试自检报告》"
+            ],
+            "stage6_accept": [
+                "试运行投产，开展 72 小时连续稳定性及 OEE 工艺性能达标测试",
+                "编制并签署各部门会签的《竣工综合验收单》",
+                "固化工艺与运行控制参数并办理正式向生产运营团队的移交手续"
+            ]
+        };
+        const currentRules = standards[stageKey] || ["暂无标准管控内容"];
+        currentRules.forEach(rule => {
+            const li = document.createElement("li");
+            li.style.display = "flex";
+            li.style.alignItems = "flex-start";
+            li.style.gap = "6px";
+            li.innerHTML = `
+                <i data-lucide="check-circle-2" style="width: 12px; height: 12px; color: #10b981; margin-top: 2px; flex-shrink: 0;"></i>
+                <span>${rule}</span>
+            `;
+            standardsList.appendChild(li);
+        });
+    }
+
     if (window.lucide) {
         lucide.createIcons();
     }
@@ -5466,14 +5717,12 @@ window.bindEmsStageAttachment = function() {
 
     // 根据不同阶段给出建议的归档模板文件名
     const defaultFiles = {
-        "stage1_design": "设备设计技术大纲与要求.pdf",
+        "stage1_plan": "设备设计技术大纲与要求.pdf",
         "stage2_scheme": "设备技术方案评审纪要.pdf",
-        "stage3_selection": "设备比选与定型报告.xlsx",
-        "stage4_supplier": "关键机台供应商现场评估表.pdf",
-        "stage5_bidding": "发包采购合同及技术备忘录.pdf",
-        "stage6_install": "设备安装调试规范及签收单.pdf",
-        "stage7_test": "设备性能与OEE测试分析报告.xlsx",
-        "stage8_accept": "竣工综合验收单及合格证.pdf"
+        "stage3_bidding": "发包采购合同及技术备忘录.pdf",
+        "stage4_make": "设备厂内制作与监造出厂报告.pdf",
+        "stage5_install": "设备安装调试规范及自检自测报告.pdf",
+        "stage6_accept": "竣工综合验收单及合格证.pdf"
     };
 
     const suggestedName = defaultFiles[stageKey] || "技术成果交付件.pdf";
@@ -5582,7 +5831,7 @@ window.previewEmsStageAttachment = function() {
                 <path id="circlePathBottom" d="M 102,60 A 42,42 0 0,1 18,60" fill="none" />
                 <text fill="#ef4444" font-family="SimSun, monospace" font-size="10.5" font-weight="bold">
                     <textPath href="#circlePathTop" startOffset="50%" text-anchor="middle">
-                        聚赫新材设备管理部
+                        聚赫新材设备开发部
                     </textPath>
                 </text>
                 <text fill="#ef4444" font-family="SimSun, monospace" font-size="20" font-weight="bold" x="60" y="66" text-anchor="middle">★</text>
@@ -5652,7 +5901,7 @@ window.previewEmsStageAttachment = function() {
         <div style="margin-bottom: 20px;">
             <h3 style="font-size: 0.85rem; font-weight: bold; color: #0f172a; border-left: 3px solid #3b82f6; padding-left: 6px; margin: 0 0 10px 0;">二、 设备验收技术要求与审核声明</h3>
             <div style="font-size: 0.72rem; color: #334155; line-height: 1.6; text-align: justify;">
-                <p style="margin: 0 0 8px 0;">1. 本成果件所包含之技术规格、图纸设计、现场调试自检报告，均已通过聚赫新材设备管理部及生产工段联合审查。相关物理指标（OEE、机械精度、真空度及工作压强）均达到厂内标准要求，满足连续负荷生产条件。</p>
+                <p style="margin: 0 0 8px 0;">1. 本成果件所包含之技术规格、图纸设计、现场调试自检报告，均已通过聚赫新材设备开发部及生产工段联合审查。相关物理指标（OEE、机械精度、真空度及工作压强）均达到厂内标准要求，满足连续负荷生产条件。</p>
                 <p style="margin: 0 0 8px 0;">2. 设备的电气布线、安全防护连锁装置、环保废气/废水接口均经现场环保安全委员会点检验收通过，符合国家相关特种设备安全标准。</p>
                 <p style="margin: 0;">3. 该技术档案属聚赫新材机密文件。所有查阅、下载、打印记录均留存于 PLM 审计日志中。未经授权，任何人员不得以任何形式外传或用于商业非合作目的。</p>
             </div>
@@ -6001,14 +6250,12 @@ window.saveNewEquipment = async function() {
         if (!id) {
             // 新增设备时，默认全部里程碑状态设为未开始或进行中
             const p_active_install = {
-                "stage1_design": { "title": "设备设计开发", "status": "已完成", "start_date": "", "end_date": "", "owner": "赵工", "remark": "设备设计完成" },
-                "stage2_scheme": { "title": "技术方案确定", "status": "已完成", "start_date": "", "end_date": "", "owner": "工艺组", "remark": "方案会审通过" },
-                "stage3_selection": { "title": "设备选型", "status": "已完成", "start_date": "", "end_date": "", "owner": "采购委", "remark": "选型通过" },
-                "stage4_supplier": { "title": "供应商开发", "status": "已完成", "start_date": "", "end_date": "", "owner": "开发部", "remark": "通过现场审计" },
-                "stage5_bidding": { "title": "发包采购", "status": "已完成", "start_date": "", "end_date": "", "owner": "商务部", "remark": "合同签署完成" },
-                "stage6_install": { "title": "安装调试", "status": "进行中", "start_date": "", "end_date": "", "owner": "现场工程组", "remark": "正在安装调试机台" },
-                "stage7_test": { "title": "性能测试", "status": "未开始", "start_date": "", "end_date": "", "owner": "质检组", "remark": "" },
-                "stage8_accept": { "title": "竣工验收", "status": "未开始", "start_date": "", "end_date": "", "owner": "项目部", "remark": "" }
+                "stage1_plan": { "title": "立项", "status": "已完成", "start_date": "", "end_date": "", "owner": "赵工", "remark": "立项计划完成" },
+                "stage2_scheme": { "title": "拟定技术方案", "status": "已完成", "start_date": "", "end_date": "", "owner": "工艺组", "remark": "方案会审通过" },
+                "stage3_bidding": { "title": "请购发包", "status": "已完成", "start_date": "", "end_date": "", "owner": "采购委", "remark": "合同签署完成" },
+                "stage4_make": { "title": "制作中", "status": "已完成", "start_date": "", "end_date": "", "owner": "制造部", "remark": "设备出厂调试" },
+                "stage5_install": { "title": "安装调试中", "status": "进行中", "start_date": "", "end_date": "", "owner": "现场工程组", "remark": "正在现场安装调试机台" },
+                "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": "", "end_date": "", "owner": "项目部", "remark": "" }
             };
             payload.project_plan_json = JSON.stringify(p_active_install);
             payload.parameters_json = JSON.stringify(defaultParams);

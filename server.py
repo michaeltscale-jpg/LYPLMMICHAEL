@@ -593,7 +593,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 cursor.execute("SELECT * FROM users ORDER BY id ASC")
                 users = [dict(row) for row in cursor.fetchall()]
                 self.send_json(users)
-            # ---- EMS 设备管理 GET ----
+            # ---- EMS 设备开发 GET ----
             elif path == "/api/equipments":
                 cursor.execute("SELECT * FROM equipments ORDER BY id ASC")
                 equipments = []
@@ -2146,7 +2146,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 self.send_json({'ok': True})
 
-            # ---- EMS 设备管理 POST ----
+            # ---- EMS 设备开发 POST ----
             elif path == "/api/equipments/save":
                 rid = data.get('id')
                 device_code = data.get('device_code', '').strip()
@@ -2344,8 +2344,146 @@ def run_server():
             print("\nShutting down server.")
             httpd.shutdown()
 
+def migrate_ems_database():
+    """将设备表 equipments 的 project_plan_json 从旧版 8 阶段无缝迁移到新版 6 阶段，保护用户数据不丢失"""
+    import sqlite3
+    import json
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # 检查 equipments 表是否存在
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='equipments'")
+    if not cursor.fetchone():
+        conn.close()
+        return
+        
+    cursor.execute("SELECT id, device_code, project_plan_json FROM equipments")
+    rows = cursor.fetchall()
+    
+    updated_count = 0
+    for rid, device_code, plan_json in rows:
+        try:
+            plan = json.loads(plan_json)
+        except Exception:
+            continue
+            
+        # 如果包含 stage1_design 且不包含 stage1_plan，说明需要迁移
+        if "stage1_design" in plan and "stage1_plan" not in plan:
+            new_plan = {}
+            
+            # 1. 立项
+            s1 = plan.get("stage1_design", {})
+            new_plan["stage1_plan"] = {
+                "title": "立项",
+                "status": s1.get("status", "已完成"),
+                "start_date": s1.get("start_date", ""),
+                "end_date": s1.get("end_date", ""),
+                "owner": s1.get("owner", "赵工"),
+                "remark": s1.get("remark", "设备设计开发及立项计划"),
+                "attachment_name": s1.get("attachment_name", "设备设计任务书与大纲.pdf"),
+                "attachment_url": s1.get("attachment_url", "/docs/eq_design_draft.pdf")
+            }
+            
+            # 2. 拟定技术方案
+            s2 = plan.get("stage2_scheme", {})
+            new_plan["stage2_scheme"] = {
+                "title": "拟定技术方案",
+                "status": s2.get("status", "已完成"),
+                "start_date": s2.get("start_date", ""),
+                "end_date": s2.get("end_date", ""),
+                "owner": s2.get("owner", "工艺组"),
+                "remark": s2.get("remark", "技术方案评审确定"),
+                "attachment_name": s2.get("attachment_name", "设备技术方案评审意见.pdf"),
+                "attachment_url": s2.get("attachment_url", "/docs/eq_technical_scheme.pdf")
+            }
+            
+            # 3. 请购发包
+            s3_sel = plan.get("stage3_selection", {})
+            s4_spl = plan.get("stage4_supplier", {})
+            s5_bid = plan.get("stage5_bidding", {})
+            
+            bid_status = "未开始"
+            if s5_bid.get("status") == "已完成":
+                bid_status = "已完成"
+            elif s3_sel.get("status") == "进行中" or s4_spl.get("status") == "进行中" or s5_bid.get("status") == "进行中":
+                bid_status = "进行中"
+            elif s3_sel.get("status") == "已完成" or s4_spl.get("status") == "已完成":
+                bid_status = "进行中"
+                
+            new_plan["stage3_bidding"] = {
+                "title": "请购发包",
+                "status": bid_status,
+                "start_date": s3_sel.get("start_date", s5_bid.get("start_date", "")),
+                "end_date": s5_bid.get("end_date", ""),
+                "owner": s5_bid.get("owner", "采购委"),
+                "remark": s5_bid.get("remark", "发包采购合同签署"),
+                "attachment_name": s5_bid.get("attachment_name", "发包技术协议与中标通知.pdf"),
+                "attachment_url": s5_bid.get("attachment_url", "/docs/eq_bidding_contract.pdf")
+            }
+            
+            # 4. 制作中
+            s6_ins = plan.get("stage6_install", {})
+            make_status = "未开始"
+            if s6_ins.get("status") == "已完成" or s6_ins.get("status") == "进行中":
+                make_status = "已完成"
+            elif s5_bid.get("status") == "已完成":
+                make_status = "进行中"
+                
+            new_plan["stage4_make"] = {
+                "title": "制作中",
+                "status": make_status,
+                "start_date": s5_bid.get("end_date", ""),
+                "end_date": s6_ins.get("start_date", ""),
+                "owner": "制造部",
+                "remark": "设备厂内制作与监造",
+                "attachment_name": "设备制作进度与出厂检核表.pdf" if make_status != "未开始" else "",
+                "attachment_url": "/docs/eq_make_log.pdf" if make_status != "未开始" else ""
+            }
+            
+            # 5. 安装调试中
+            s7_tst = plan.get("stage7_test", {})
+            ins_status = "未开始"
+            if s7_tst.get("status") == "已完成":
+                ins_status = "已完成"
+            elif s6_ins.get("status") == "进行中" or s6_ins.get("status") == "已完成" or s7_tst.get("status") == "进行中":
+                ins_status = "进行中"
+                
+            new_plan["stage5_install"] = {
+                "title": "安装调试中",
+                "status": ins_status,
+                "start_date": s6_ins.get("start_date", ""),
+                "end_date": s7_tst.get("end_date", ""),
+                "owner": s6_ins.get("owner", "现场工程组"),
+                "remark": s6_ins.get("remark", "设备现场安装调试"),
+                "attachment_name": s6_ins.get("attachment_name", "现场安装调试自检报告.pdf") if ins_status != "未开始" else "",
+                "attachment_url": s6_ins.get("attachment_url", "/docs/eq_install_log.pdf") if ins_status != "未开始" else ""
+            }
+            
+            # 6. 验收交付使用
+            s8_acp = plan.get("stage8_accept", {})
+            new_plan["stage6_accept"] = {
+                "title": "验收交付使用",
+                "status": s8_acp.get("status", "未开始"),
+                "start_date": s8_acp.get("start_date", ""),
+                "end_date": s8_acp.get("end_date", ""),
+                "owner": s8_acp.get("owner", "项目部"),
+                "remark": s8_acp.get("remark", "设备验收交付投产"),
+                "attachment_name": s8_acp.get("attachment_name", "竣工验收签收单与合格证.pdf") if s8_acp.get("status") != "未开始" else "",
+                "attachment_url": s8_acp.get("attachment_url", "/docs/eq_acceptance_sheet.pdf") if s8_acp.get("status") != "未开始" else ""
+            }
+            
+            cursor.execute("UPDATE equipments SET project_plan_json = ? WHERE id = ?", [json.dumps(new_plan, ensure_ascii=False), rid])
+            updated_count += 1
+            
+    conn.commit()
+    conn.close()
+    if updated_count > 0:
+        print(f"[EMS] 成功将 {updated_count} 台设备的 8 阶段项目计划无缝迁移至 6 阶段")
+
 if __name__ == "__main__":
     init_mqc_tables()
     init_task_tables()
+    migrate_ems_database()
     threading.Thread(target=open_browser, daemon=True).start()
     run_server()
