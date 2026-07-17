@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>JS 错误检测</title></head>
+<body>
+<h2 id="status" style="font-family:sans-serif; padding:20px;">⏳ 正在加载 app.js 并检测错误...</h2>
+<pre id="errors" style="background:#1a1a1a; color:#ff6b6b; padding:20px; font-size:13px; white-space:pre-wrap; max-height:80vh; overflow:auto;"></pre>
+
+<script>
+// 捕获所有 JS 错误
+window.onerror = function(msg, src, line, col, err) {
+    document.getElementById('status').textContent = '❌ 发现 JS 错误！';
+    document.getElementById('status').style.color = 'red';
+    document.getElementById('errors').textContent += 
+        `错误: ${msg}\n文件: ${src}\n行号: ${line}, 列号: ${col}\n堆栈: ${err ? err.stack : '无'}\n\n`;
+    return false;
+};
+
+window.addEventListener('unhandledrejection', function(e) {
+    document.getElementById('errors').textContent += 
+        `未处理的 Promise 错误: ${e.reason}\n\n`;
+});
+</script>
+
+<!-- 模拟 lucide 以避免"lucide is not defined"错误 -->
+<script>
+window.lucide = { createIcons: function() {} };
+</script>
+
+<!-- 模拟 Chart.js -->
+<script>
+window.Chart = function() { return { destroy: function(){}, update: function(){} }; };
+Chart.register = function() {};
+</script>
+
+<!-- 加载实际的 app.js -->
+<script src="/app.js?v=20260715s" onerror="document.getElementById('status').textContent='❌ app.js 加载失败！'; document.getElementById('errors').textContent='app.js 文件无法加载';"></script>
+
+<script>
+// 如果加载成功，更新状态
+setTimeout(function() {
+    var el = document.getElementById('status');
+    if (el.textContent.includes('⏳')) {
+        el.textContent = '✅ app.js 加载成功，无语法/解析错误！';
+        el.style.color = 'green';
+    }
+}, 500);
+</script>
+</body>
+</html>

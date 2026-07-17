@@ -275,7 +275,7 @@ window.fetch = function(url, options) {
 
 // 预定义各工段参数名称和单位，用于偏差对比和弹窗渲染
 const STAGE_FIELDS = {
-    "溶铜工段": [
+    "溅镀工段": [
         { key: "Cu_conc", name: "铜离子浓度", unit: "g/L", threshold: 2.0 },
         { key: "H2SO4_conc", name: "硫酸浓度", unit: "g/L", threshold: 5.0 },
         { key: "temp", name: "电解液温度", unit: "℃", threshold: 3.0 },
@@ -295,7 +295,7 @@ const STAGE_FIELDS = {
         { key: "uniformity", name: "膜厚均匀性极差", unit: "%", threshold: 1.0 },
         { key: "target_life", name: "靶材累积消耗", unit: "kWh", threshold: 50.0 }
     ],
-    "生箔工段": [
+    "电镀工段": [
         { key: "voltage", name: "电解电压", unit: "V", threshold: 0.2 },
         { key: "current_density", name: "电流密度", unit: "A/dm²", threshold: 2.0 },
         { key: "drum_speed", name: "阴极辊转速", unit: "m/min", threshold: 0.3 }
@@ -315,16 +315,16 @@ const STAGE_FIELDS = {
 };
 
 const CATEGORY_THICKNESS = {
-    "PTS AI 铜箔": [12, 18, 35],
+    "PTS2 AI 铜箔": [12, 18, 35],
     "HIS 载体铜箔": [3, 2, 1.5],
     "背板双晶铜箔": [9, 12, 18]
 };
 
 function getStagesForProduct(category) {
     if (category === "HIS 载体铜箔") {
-        return ["立项", "溶铜工段", "溅镀工段", "生箔工段", "表面处理工段", "分切工段", "测试验证", "量产送样"];
+        return ["立项", "溅镀工段", "电镀工段", "表面处理工段", "分切工段", "测试验证", "量产送样"];
     } else {
-        return ["立项", "溶铜工段", "生箔工段", "表面处理工段", "分切工段", "测试验证", "量产送样"];
+        return ["立项", "溅镀工段", "电镀工段", "表面处理工段", "分切工段", "测试验证", "量产送样"];
     }
 }
 
@@ -332,9 +332,9 @@ function getStatusActiveIndex(status, category) {
     const stages = getStagesForProduct(category);
     if (status === "立项中") return 0;
     if (status === "钉钉立项审批中") return 0;
-    if (status === "溶铜造液中") return stages.indexOf("溶铜工段");
+    if (status === "溶铜造液中") return stages.indexOf("溅镀工段");
     if (status === "溅镀开发中") return stages.indexOf("溅镀工段");
-    if (status === "生箔电镀中") return stages.indexOf("生箔工段");
+    if (status === "生箔电镀中") return stages.indexOf("电镀工段");
     if (status === "表面处理中") return stages.indexOf("表面处理工段");
     if (status === "分切包装中") return stages.indexOf("分切工段");
     if (status === "测试验证中") return stages.indexOf("测试验证");
@@ -1018,7 +1018,7 @@ function updateThicknessOptions(category) {
     const nameInput = document.getElementById("proj-name");
     const codeInput = document.getElementById("proj-code");
 
-    if (category === "PTS AI 铜箔") {
+    if (category === "PTS2 AI 铜箔") {
         roughness.value = "1.20";
         df.value = "0.0012";
         peel.value = "0.75";
@@ -1965,7 +1965,7 @@ window.openRoutingDesigner = function() {
 
 window.addBlankDesignStep = function() {
     const defaultParams = { "Cu_conc": 85.0, "H2SO4_conc": 110.0, "temp": 80.0, "flow_rate": 450.0, "Cl_conc": 35.0 };
-    addDesignStep("溶铜工段", "新制液溶铜设备", "EQ-溶铜-NEW", defaultParams);
+    addDesignStep("溅镀工段", "新制液溶铜设备", "EQ-溶铜-NEW", defaultParams);
 };
 
 window.addDesignStep = function(stageName, deviceName, deviceCode, standardParams, customParams) {
@@ -1980,7 +1980,7 @@ window.addDesignStep = function(stageName, deviceName, deviceCode, standardParam
     const product = state.activeProduct;
     const isHis = product.category === 'HIS 载体铜箔';
 
-    const PRESET_STAGES = ["溶铜工段", ...(isHis ? ["溅镀工段"] : []), "生箔工段", "表面处理工段", "分切工段"];
+    const PRESET_STAGES = ["溅镀工段", "电镀工段", "表面处理工段", "分切工段"];
     const isCustomStage = !PRESET_STAGES.includes(stageName);
 
     let optHtml = PRESET_STAGES.map(s => `<option value="${s}" ${s === stageName && !isCustomStage ? 'selected' : ''}>${s}</option>`).join("");
@@ -2164,7 +2164,7 @@ window.openStepEditModal = function(stepId) {
     document.getElementById("step-edit-device-name").value = targetStep.device_name || '';
     document.getElementById("step-edit-device-code").value = targetStep.device_code || '';
 
-    const PRESET_STAGES = ["溶铜工段", "溅镀工段", "生箔工段", "表面处理工段", "分切工段"];
+    const PRESET_STAGES = ["溅镀工段", "电镀工段", "表面处理工段", "分切工段"];
     const stageSelect = document.getElementById("step-edit-stage-select");
     const customInput = document.getElementById("step-edit-stage-custom");
     const isCustom = !PRESET_STAGES.includes(targetStep.stage_name);
@@ -2549,8 +2549,8 @@ window.autoCalculateProjectPlanDates = function() {
 
 function openProjectModal() {
     openModal("modal-project");
-    document.getElementById("proj-category").value = "PTS AI 铜箔";
-    updateThicknessOptions("PTS AI 铜箔");
+    document.getElementById("proj-category").value = "PTS2 AI 铜箔";
+    updateThicknessOptions("PTS2 AI 铜箔");
 
     // 默认今日为启动日期并自动推算 5 大阶段
     const todayStr = new Date().toISOString().split('T')[0];
@@ -2564,7 +2564,7 @@ function autoDeriveProjectNameAndCode() {
 
     // 1. 匹配缩写
     let catAbbr = "PTS-AI";
-    if (cat === "PTS AI 铜箔") catAbbr = "PTS-AI";
+    if (cat === "PTS2 AI 铜箔") catAbbr = "PTS-AI";
     else if (cat === "HIS 载体铜箔") catAbbr = "HIS-Carrier";
 
     // 2. 动态分析当前 state.products 提取最大流水号
@@ -3673,7 +3673,7 @@ const DMS_TEMPLATES_SPEC = {
     },
     "Electrolyte_Chemistry_Spec.pdf": {
         name: "电解液组分化学检测规范",
-        description: "为溶铜工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
+        description: "为溅镀工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
         fields: [
             { key: "Cu离子浓度控制", val: "标准范围：80 ~ 85 g/L" },
             { key: "H2SO4硫酸浓度控制", val: "标准范围：110 ~ 120 g/L" },
@@ -4525,7 +4525,7 @@ const DMS_TEMPLATES_SPEC = {
     },
     "Electrolyte_Chemistry_Spec.pdf": {
         name: "电解液组分化学检测规范",
-        description: "为溶铜工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
+        description: "为溅镀工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
         fields: [
             { key: "Cu离子浓度控制", val: "标准范围：80 ~ 85 g/L" },
             { key: "H2SO4硫酸浓度控制", val: "标准范围：110 ~ 120 g/L" },
@@ -4680,12 +4680,12 @@ function renderDmsDeliverablesTable(product) {
         { phase: "G1 立项阶段", stage: "设计标准", code: "Technical_Agreement_TDS.pdf", spec: DMS_TEMPLATES_SPEC["Technical_Agreement_TDS.pdf"] },
         { phase: "G1 立项阶段", stage: "立项规划", code: "Feasibility_Benchmark.pdf", spec: DMS_TEMPLATES_SPEC["Feasibility_Benchmark.pdf"] },
         
-        { phase: "G2 配方阶段", stage: "溶铜工段", code: "Formulation_BOM_V1.0.xlsx", spec: DMS_TEMPLATES_SPEC["Formulation_BOM_V1.0.xlsx"] },
-        { phase: "G2 配方阶段", stage: "溶铜工段", code: "Electrolyte_Chemistry_Spec.pdf", spec: DMS_TEMPLATES_SPEC["Electrolyte_Chemistry_Spec.pdf"] },
-        { phase: "G2 配方阶段", stage: "生箔工段", code: "Grain_SEM_Analysis.pdf", spec: DMS_TEMPLATES_SPEC["Grain_SEM_Analysis.pdf"] },
+        { phase: "G2 配方阶段", stage: "溅镀工段", code: "Formulation_BOM_V1.0.xlsx", spec: DMS_TEMPLATES_SPEC["Formulation_BOM_V1.0.xlsx"] },
+        { phase: "G2 配方阶段", stage: "溅镀工段", code: "Electrolyte_Chemistry_Spec.pdf", spec: DMS_TEMPLATES_SPEC["Electrolyte_Chemistry_Spec.pdf"] },
+        { phase: "G2 配方阶段", stage: "电镀工段", code: "Grain_SEM_Analysis.pdf", spec: DMS_TEMPLATES_SPEC["Grain_SEM_Analysis.pdf"] },
         
         { phase: "G3 中试阶段", stage: "溅镀工段", code: "DVT_Routing_Card.xlsx", spec: DMS_TEMPLATES_SPEC["DVT_Routing_Card.xlsx"] },
-        { phase: "G3 中试阶段", stage: "生箔工段", code: "Drum_Deviation_Study.pdf", spec: DMS_TEMPLATES_SPEC["Drum_Deviation_Study.pdf"] },
+        { phase: "G3 中试阶段", stage: "电镀工段", code: "Drum_Deviation_Study.pdf", spec: DMS_TEMPLATES_SPEC["Drum_Deviation_Study.pdf"] },
         { phase: "G3 中试阶段", stage: "生箔/表处", code: "DVT_Pilot_Lot_Report.pdf", spec: DMS_TEMPLATES_SPEC["DVT_Pilot_Lot_Report.pdf"] },
         
         { phase: "G4 验证阶段", stage: "表面处理", code: "PVT_Industrial_Spec.pdf", spec: DMS_TEMPLATES_SPEC["PVT_Industrial_Spec.pdf"] },
@@ -4716,12 +4716,12 @@ function renderDmsDeliverablesTable(product) {
         }
 
         let stageBadge = "";
-        if (d.stage === "溶铜工段") {
-            stageBadge = `<span class="badge" style="background:rgba(59,130,246,0.08); color:#3b82f6; border:1px solid rgba(59,130,246,0.2);">溶铜工段</span>`;
+        if (d.stage === "溅镀工段") {
+            stageBadge = `<span class="badge" style="background:rgba(59,130,246,0.08); color:#3b82f6; border:1px solid rgba(59,130,246,0.2);">溅镀工段</span>`;
         } else if (d.stage === "溅镀工段") {
             stageBadge = `<span class="badge" style="background:rgba(6,182,212,0.08); color:#06b6d4; border:1px solid rgba(6,182,212,0.2);">溅镀工段</span>`;
-        } else if (d.stage === "生箔工段") {
-            stageBadge = `<span class="badge" style="background:rgba(139,92,246,0.08); color:#8b5cf6; border:1px solid rgba(139,92,246,0.2);">生箔工段</span>`;
+        } else if (d.stage === "电镀工段") {
+            stageBadge = `<span class="badge" style="background:rgba(139,92,246,0.08); color:#8b5cf6; border:1px solid rgba(139,92,246,0.2);">电镀工段</span>`;
         } else if (d.stage === "表面处理") {
             stageBadge = `<span class="badge" style="background:rgba(249,115,22,0.08); color:#f97316; border:1px solid rgba(249,115,22,0.2);">表面处理</span>`;
         } else if (d.stage === "分切工段") {
@@ -5157,7 +5157,7 @@ const DMS_TEMPLATES_SPEC = {
     },
     "Electrolyte_Chemistry_Spec.pdf": {
         name: "电解液组分化学检测规范",
-        description: "为溶铜工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
+        description: "为溅镀工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
         fields: [
             { key: "Cu离子浓度控制", val: "标准范围：80 ~ 85 g/L" },
             { key: "H2SO4硫酸浓度控制", val: "标准范围：110 ~ 120 g/L" },
