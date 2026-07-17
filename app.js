@@ -5010,6 +5010,115 @@ window.getEquipmentActiveStage = function(eq) {
     return "stage1_plan";
 };
 
+// ─── EMS 阶段任务输入文件逻辑 ──────────────────────────────────
+const DEFAULT_EMS_STAGE_INPUT_FILES = {
+    "stage1_plan": [
+        "项目启动意向书.docx",
+        "前期可行性研究报告.pdf"
+    ],
+    "stage2_scheme": [
+        "设备设计任务书.pdf",
+        "工艺性能指标书.xlsx"
+    ],
+    "stage3_bidding": [
+        "技术方案评审意见书.docx",
+        "采购请购申请表.xlsx"
+    ],
+    "stage4_make": [
+        "中标通知书.pdf",
+        "采购合同与技术协议.pdf"
+    ],
+    "stage5_install": [
+        "出厂合格证.pdf",
+        "设备动能供给规范.docx"
+    ],
+    "stage6_accept": [
+        "安装自检自测报告.pdf",
+        "设备单机试运转记录.xlsx"
+    ]
+};
+
+// 从 localStorage 读取或初始化输入文件
+state.emsStageInputFiles = JSON.parse(localStorage.getItem("ems_stage_input_files")) || DEFAULT_EMS_STAGE_INPUT_FILES;
+
+// 动态渲染所有卡片的输入文件列表
+window.renderEmsStageInputFiles = function() {
+    const stageKeys = ["stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make", "stage5_install", "stage6_accept"];
+    stageKeys.forEach(k => {
+        const container = document.getElementById(`ems-card-inputs-${k}`);
+        if (container) {
+            container.innerHTML = "";
+            const files = state.emsStageInputFiles[k] || [];
+            if (files.length === 0) {
+                container.innerHTML = `<span style="color: var(--text-muted); font-style: italic;">暂无输入文件</span>`;
+            } else {
+                files.forEach(file => {
+                    const item = document.createElement("div");
+                    item.className = "ems-filter-doc-item";
+                    item.style.cursor = "pointer";
+                    item.onclick = (e) => {
+                        e.stopPropagation();
+                        showToast(`正在预览输入文件: ${file}`);
+                    };
+                    item.innerHTML = `
+                        <i data-lucide="file" style="width: 11px; height: 11px; color: var(--text-secondary);"></i>
+                        <span style="color: var(--text-secondary); font-weight: 500; font-size: 0.65rem;">${file}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+        }
+    });
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+};
+
+// 打开编辑输入文件的 Modal
+let currentEmsEditStageKey = "";
+window.openEmsInputFilesModal = function(stageKey) {
+    currentEmsEditStageKey = stageKey;
+    const stageTitles = {
+        "stage1_plan": "G1. 立项",
+        "stage2_scheme": "G2. 拟定技术方案",
+        "stage3_bidding": "G3. 请购发包",
+        "stage4_make": "G4. 制作中",
+        "stage5_install": "G5. 安装调试中",
+        "stage6_accept": "G6. 验收交付使用"
+    };
+    const titleEl = document.getElementById("ems-input-files-modal-title");
+    if (titleEl) {
+        titleEl.innerText = `编辑 [${stageTitles[stageKey]}] 阶段任务输入文件`;
+    }
+    
+    const textarea = document.getElementById("ems-input-files-textarea");
+    if (textarea) {
+        const files = state.emsStageInputFiles[stageKey] || [];
+        textarea.value = files.join("\n");
+    }
+    
+    const modal = document.getElementById("modal-ems-stage-input-files");
+    if (modal) {
+        modal.classList.add("active");
+    }
+};
+
+// 保存输入文件
+window.saveEmsStageInputFiles = function() {
+    if (!currentEmsEditStageKey) return;
+    const textarea = document.getElementById("ems-input-files-textarea");
+    if (textarea) {
+        const text = textarea.value.trim();
+        const files = text ? text.split("\n").map(f => f.trim()).filter(f => f.length > 0) : [];
+        state.emsStageInputFiles[currentEmsEditStageKey] = files;
+        localStorage.setItem("ems_stage_input_files", JSON.stringify(state.emsStageInputFiles));
+        
+        window.renderEmsStageInputFiles();
+        showToast("输入文件保存成功！", "success");
+    }
+    closeModal("modal-ems-stage-input-files");
+};
+
 window.selectEmsStageFilter = function(stageKey) {
     state.emsActiveFilterStage = stageKey;
     
@@ -5071,6 +5180,11 @@ window.fetchEquipmentsAndRender = async function() {
         const res = await fetch("/api/equipments");
         const data = await res.json();
         state.equipments = Array.isArray(data) ? data : [];
+        
+        // 渲染输入文件
+        if (window.renderEmsStageInputFiles) {
+            window.renderEmsStageInputFiles();
+        }
         
         // 1. 计算各阶段设备数量，并更新 6 大里程碑阶段过滤看板
         const stageKeys = [

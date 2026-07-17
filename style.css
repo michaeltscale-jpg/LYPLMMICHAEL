@@ -1923,7 +1923,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 280px;
+    height: 360px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border-top: 4px solid var(--text-muted);
