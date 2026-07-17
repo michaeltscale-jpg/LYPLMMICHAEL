@@ -58,6 +58,7 @@ def init_database():
         name VARCHAR(100) NOT NULL,
         category VARCHAR(50) NOT NULL,
         spec_thickness REAL NOT NULL,
+        surface_treatment VARCHAR(50) DEFAULT 'STD常规', -- PA后处理配方
         target_roughness REAL NOT NULL,
         target_peel REAL NOT NULL,
         target_df REAL NOT NULL,
@@ -83,8 +84,8 @@ def init_database():
         additive_gel REAL, -- 生箔添加剂：明胶 ppm
         additive_hec REAL, -- 生箔添加剂：HEC ppm
         additive_s REAL, -- 生箔添加剂：活性硫 ppm
-        silane_type VARCHAR(50), -- 表面处理：硅烷偶联剂型号
-        silane_conc REAL, -- 表面处理：硅烷涂覆浓度 %
+        silane_type VARCHAR(50), -- PA后处理：硅烷偶联剂型号
+        silane_conc REAL, -- PA后处理：硅烷涂覆浓度 %
         bom_items TEXT, -- JSON 格式存储的柔性物料配方清单
         updater VARCHAR(50) NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -142,6 +143,7 @@ def init_database():
         elongation REAL NOT NULL,
         test_result VARCHAR(20) NOT NULL,
         tester VARCHAR(50) NOT NULL,
+        remarks TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     )
@@ -251,54 +253,54 @@ def init_database():
     p1_time = now - timedelta(days=15)
     p1_plan = make_default_project_plan(p1_time, "李建国")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-PTS-12", "高频高速PTS AI铜箔(12μm)", "PTS AI 铜箔", 12.0, 1.20, 0.75, 0.0013, 310.0, 2.5, "生箔电镀中", "李建国", p1_plan, p1_time, p1_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("PTS-AI-01", "PTS AI 铜箔", "PTS AI 铜箔", 12.0, "SL203硅烷", 1.20, 0.75, 0.0013, 310.0, 2.5, "生箔电镀中", "李建国", p1_plan, p1_time, p1_time))
     p1_id = cursor.lastrowid
 
     # 模拟数据 2: HIS 载体铜箔 2um (量产送样阶段 - 完美通关案例)
     p2_time = now - timedelta(days=30)
     p2_plan = make_default_project_plan(p2_time, "张小贤")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-HIS-02", "高深超薄HIS载体铜箔(2μm)", "HIS 载体铜箔", 2.0, 0.80, 0.50, 0.0010, 290.0, 2.0, "测试验证中", "张小贤", p2_plan, p2_time, p2_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("HIS-Carrier-01", "HIS 载体铜箔", "HIS 载体铜箔", 2.0, "STD常规", 0.80, 0.50, 0.0010, 290.0, 2.0, "测试验证中", "张小贤", p2_plan, p2_time, p2_time))
     p2_id = cursor.lastrowid
 
     # 模拟数据 3: 背板双晶铜箔 18um (已发布量产阶段)
     p3_time = now - timedelta(days=60)
     p3_plan = make_default_project_plan(p3_time, "李建国")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-DBJ-18", "高性能背板双晶铜箔(18μm)", "背板双晶铜箔", 18.0, 1.50, 0.85, 0.0015, 340.0, 3.2, "量产中", "李建国", p3_plan, p3_time, p3_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("DBJ-STD-01", "背板双晶铜箔", "背板双晶铜箔", 18.0, "STD常规", 1.50, 0.85, 0.0015, 340.0, 3.2, "量产中", "李建国", p3_plan, p3_time, p3_time))
     p3_id = cursor.lastrowid
 
     # 模拟数据 4: PTS AI 铜箔 35um (草稿立项中)
     p4_time = now - timedelta(days=2)
     p4_plan = make_default_project_plan(p4_time, "王强")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-PTS-35", "大功率高稳定PTS AI铜箔(35μm)", "PTS AI 铜箔", 35.0, 1.60, 0.90, 0.0016, 350.0, 3.5, "立项中", "王强", p4_plan, p4_time, p4_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("PTS-AI-02", "PTS AI 铜箔", "PTS AI 铜箔", 35.0, "SL203硅烷", 1.60, 0.90, 0.0016, 350.0, 3.5, "立项中", "王强", p4_plan, p4_time, p4_time))
     p4_id = cursor.lastrowid
 
     # 新增模拟数据 5: PTS AI 铜箔 18um (品质化验验证阶段 - Df超标品质拦截不合格案例)
     p5_time = now - timedelta(days=25)
     p5_plan = make_default_project_plan(p5_time, "赵立功")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-PTS-18", "超低损耗PTS AI铜箔(18μm)", "PTS AI 铜箔", 18.0, 1.20, 0.80, 0.0013, 310.0, 2.5, "测试验证中", "赵立功", p5_plan, p5_time, p5_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("PTS-AI-03", "PTS2-18 高频铜箔", "PTS AI 铜箔", 18.0, "SL101硅烷", 1.20, 0.80, 0.0013, 310.0, 2.5, "测试验证中", "赵立功", p5_plan, p5_time, p5_time))
     p5_id = cursor.lastrowid
 
     # 新增模拟数据 6: HIS 载体铜箔 1.5um (钉钉立项审批等待案例)
     p6_time = now - timedelta(hours=6)
     p6_plan = make_default_project_plan(p6_time, "王小虎")
     cursor.execute("""
-    INSERT INTO products (code, name, category, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, ("HF-HIS-03", "极薄HIS载体铜箔(1.5μm)", "HIS 载体铜箔", 1.5, 0.80, 0.50, 0.0010, 290.0, 2.0, "钉钉立项审批中", "王小虎", p6_plan, p6_time, p6_time))
+    INSERT INTO products (code, name, category, spec_thickness, surface_treatment, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, creator, npi_project_plan, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, ("HIS-Carrier-02", "HIS 载体铜箔", "HIS 载体铜箔", 1.5, "SL203硅烷", 0.80, 0.50, 0.0010, 290.0, 2.0, "钉钉立项审批中", "王小虎", p6_plan, p6_time, p6_time))
     p6_id = cursor.lastrowid
 
 
@@ -350,36 +352,20 @@ def init_database():
     
     # p1, p3, p4, p5 (普通铜箔 4 个工段)
     std_routings_4 = [
-        (1, "溶铜工段", "1#溶铜罐组", "EQ-溶铜-01", {"Cu_conc": 85.0, "H2SO4_conc": 110.0, "temp": 80.0, "flow_rate": 450.0, "Cl_conc": 35.0}),
-        (2, "生箔工段", "2#生箔机阴极辊", "EQ-生箔-02", {"voltage": 6.8, "current_density": 65.0, "drum_speed": 5.0}),
-        (3, "表面处理工段", "2#表面处理机", "EQ-表处-02", {"line_speed": 12.0, "treat_current": 1800, "silane_conc": 0.8, "dry_temp": 130.0, "passivation_ph": 4.5}),
-        (4, "分切工段", "1#高精度分切机", "EQ-分切-01", {"tension": 220.0, "slit_speed": 150.0})
+        (1, "溅镀工段", "1#磁控溅镀线", "EQ-溅镀-01", {"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "voltage": 380, "current": 30.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0, "uniformity": 1.2, "target_life": 50}),
+        (2, "生箔工段", "2#生箔机阴极辊", "EQ-生箔-02", {"current_density": 65.0, "drum_speed": 5.0, "electrolyte_temp": 60.0, "flow_rate": 120.0, "cl_conc": 35.0, "cu_conc": 85.0, "acid_conc": 110.0, "polar_gap": 10.0, "gel_flow": 120.0, "s_flow": 80.0}),
+        (3, "PA后处理", "2#磁控溅镀处理线", "EQ-PA溅镀-02", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
+        (4, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0})
     ]
     
-    for pid in [p1_id, p3_id, p4_id, p5_id]:
+    for pid in [p1_id, p2_id, p3_id, p4_id, p5_id, p6_id]:
         for r in std_routings_4:
             cursor.execute("""
             INSERT INTO product_routing (product_id, routing_version, status, step_no, stage_name, device_name, device_code, standard_params)
             VALUES (?, 'R1.0', '活动', ?, ?, ?, ?, ?)
             """, (pid, r[0], r[1], r[2], r[3], json.dumps(r[4])))
 
-    # p2, p6 (HIS载体铜箔 5 道工段，含溅镀打底)
-    std_routings_5 = [
-        (1, "溶铜工段", "2#溶铜罐组", "EQ-溶铜-02", {"Cu_conc": 80.0, "H2SO4_conc": 120.0, "temp": 75.0, "flow_rate": 420.0, "Cl_conc": 30.0}),
-        (2, "溅镀工段", "磁控溅射镀膜机", "EQ-溅镀-01", {"vacuum": 0.0003, "power": 15.0, "speed": 8.0, "thickness": 50.0, "target_type": "高纯铜靶-镍铬阻挡层"}),
-        (3, "生箔工段", "4#超薄生箔机", "EQ-生箔-04", {"voltage": 7.0, "current_density": 60.0, "drum_speed": 8.0}),
-        (4, "表面处理工段", "3#表面处理机", "EQ-表处-03", {"line_speed": 8.0, "treat_current": 1200, "silane_conc": 0.6, "dry_temp": 120.0, "passivation_ph": 4.5}),
-        (5, "分切工段", "2#高精度分切机", "EQ-分切-02", {"tension": 150.0, "slit_speed": 100.0})
-    ]
     
-    for pid in [p2_id, p6_id]:
-        for r in std_routings_5:
-            cursor.execute("""
-            INSERT INTO product_routing (product_id, routing_version, status, step_no, stage_name, device_name, device_code, standard_params)
-            VALUES (?, 'R1.0', '活动', ?, ?, ?, ?, ?)
-            """, (pid, r[0], r[1], r[2], r[3], json.dumps(r[4])))
-
-
     # ================= 导入实际工艺开发中试日志 (development_logs) =================
     
     # p1 (HF-PTS-12) 生箔段电流设定为 72.0A/dm2 (基准为 65.0) -> 触发偏差警告
@@ -387,8 +373,8 @@ def init_database():
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        p1_id, "溶铜工段", "1#溶铜罐组", "EQ-溶铜-01",
-        json.dumps({"Cu_conc": 84.5, "H2SO4_conc": 112.0, "temp": 79.2, "flow_rate": 460.0, "Cl_conc": 32.5}),
+        p1_id, "溅镀工段", "1#磁控溅镀线", "EQ-溅镀-01",
+        json.dumps({"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "voltage": 380, "current": 30.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0, "uniformity": 1.2, "target_life": 50}),
         "赵工", "溶铜液配比基本稳定。", p1_time + timedelta(days=2)
     ))
     cursor.execute("""
@@ -396,7 +382,7 @@ def init_database():
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         p1_id, "生箔工段", "2#生箔机阴极辊", "EQ-生箔-02",
-        json.dumps({"voltage": 6.75, "current_density": 72.0, "drum_speed": 4.9}),
+        json.dumps({"current_density": 72.0, "drum_speed": 4.9, "electrolyte_temp": 60.5, "flow_rate": 125.0, "cl_conc": 34.2, "cu_conc": 84.8, "acid_conc": 111.5, "polar_gap": 10.0, "gel_flow": 122.0, "s_flow": 81.5}),
         "孙工", "尝试加大电流密度至 72 A/dm² 提高产出效率，注意观测毛面晶粒是否粗化。", p1_time + timedelta(days=5)
     ))
 
@@ -404,41 +390,41 @@ def init_database():
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p2_id, "溶铜工段", "2#溶铜罐组", "EQ-溶铜-02", json.dumps({"Cu_conc": 80.2, "H2SO4_conc": 120.0, "temp": 75.0, "flow_rate": 420.0, "Cl_conc": 30.0}), "赵工", "溶铜稳定", p2_time + timedelta(days=2)))
+    """, (p2_id, "溅镀工段", "2#磁控溅镀线", "EQ-溅镀-02", json.dumps({"vacuum": 0.0003, "work_pressure": 0.35, "power": 15.0, "voltage": 380, "current": 39.5, "ar_flow": 80, "temp": 120, "speed": 8.0, "thickness": 50.0, "uniformity": 3.5, "target_life": 245}), "钱工", "溅镀金属化稳定", p2_time + timedelta(days=2)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p2_id, "溅镀工段", "磁控溅射镀膜机", "EQ-溅镀-01", json.dumps({"vacuum": 0.0003, "power": 15.0, "speed": 8.0, "thickness": 50.0, "target_type": "高纯铜靶-镍铬阻挡层"}), "钱工", "溅镀正常", p2_time + timedelta(days=5)))
+    """, (p2_id, "溅镀工段", "磁控溅射镀膜机", "EQ-溅镀-01", json.dumps({"vacuum": 0.0003, "work_pressure": 0.35, "power": 15.0, "voltage": 380, "current": 39.5, "ar_flow": 80, "temp": 120, "speed": 8.0, "thickness": 50.0, "uniformity": 3.5, "target_life": 245}), "钱工", "溅镀正常", p2_time + timedelta(days=5)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p2_id, "生箔工段", "4#超薄生箔机", "EQ-生箔-04", json.dumps({"voltage": 7.0, "current_density": 60.0, "drum_speed": 8.0}), "孙工", "生箔中试合格", p2_time + timedelta(days=8)))
+    """, (p2_id, "生箔工段", "4#超薄生箔机", "EQ-生箔-04", json.dumps({"current_density": 60.0, "drum_speed": 8.0, "electrolyte_temp": 59.8, "flow_rate": 118.0, "cl_conc": 35.1, "cu_conc": 85.2, "acid_conc": 109.8, "polar_gap": 10.0, "gel_flow": 119.0, "s_flow": 79.8}), "孙工", "生箔中试合格", p2_time + timedelta(days=8)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p2_id, "表面处理工段", "3#表面处理机", "EQ-表处-03", json.dumps({"line_speed": 8.0, "treat_current": 1200.0, "silane_conc": 0.6, "dry_temp": 120.0, "passivation_ph": 4.5}), "李工", "防氧化合格", p2_time + timedelta(days=12)))
+    """, (p2_id, "PA后处理", "3#PA后处理线", "EQ-PA-03", json.dumps({"vacuum": 0.0003, "work_pressure": 0.31, "power": 14.8, "ar_flow": 102.0, "speed": 9.8, "thickness": 29.5, "uniformity": 2.6, "target_life": 155}), "李工", "PA后处理中试正常", p2_time + timedelta(days=12)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p2_id, "分切工段", "2#高精度分切机", "EQ-分切-02", json.dumps({"tension": 150.0, "slit_speed": 100.0, "aoi_defects": 0}), "吴工", "分切完成", p2_time + timedelta(days=15)))
+    """, (p2_id, "PB涂布", "2#高精密PB涂布机", "EQ-PB-02", json.dumps({"tension": 150.0, "slit_speed": 100.0, "aoi_defects": 0}), "吴工", "PB涂布完成", p2_time + timedelta(days=15)))
 
     # p3 (HF-DBJ-18) 已进入量产
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p3_id, "溶铜工段", "1#溶铜罐组", "EQ-溶铜-01", json.dumps({"Cu_conc": 85.0, "H2SO4_conc": 110.0, "temp": 80.0, "flow_rate": 450.0, "Cl_conc": 35.0}), "赵工", "制液稳定", p3_time + timedelta(days=2)))
+    """, (p3_id, "溅镀工段", "1#磁控溅镀线", "EQ-溅镀-01", json.dumps({"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "voltage": 380, "current": 30.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0, "uniformity": 1.2, "target_life": 50}), "钱工", "溅镀正常", p3_time + timedelta(days=2)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p3_id, "生箔工段", "1#生箔机阴极辊", "EQ-生箔-01", json.dumps({"voltage": 6.8, "current_density": 68.0, "drum_speed": 3.8}), "孙工", "生箔中试", p3_time + timedelta(days=5)))
+    """, (p3_id, "生箔工段", "1#生箔机阴极辊", "EQ-生箔-01", json.dumps({"current_density": 68.0, "drum_speed": 3.8, "electrolyte_temp": 60.1, "flow_rate": 121.0, "cl_conc": 34.8, "cu_conc": 84.9, "acid_conc": 110.2, "polar_gap": 10.0, "gel_flow": 120.5, "s_flow": 80.2}), "孙工", "生箔中试", p3_time + timedelta(days=5)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p3_id, "表面处理工段", "1#表面处理机", "EQ-表处-01", json.dumps({"line_speed": 15.0, "treat_current": 2200.0, "silane_conc": 0.8, "dry_temp": 140.0, "passivation_ph": 4.5}), "李工", "防氧化合格", p3_time + timedelta(days=8)))
+    """, (p3_id, "PA后处理", "1#PA后处理线", "EQ-PA-01", json.dumps({"vacuum": 0.0003, "work_pressure": 0.29, "power": 15.2, "ar_flow": 98.0, "speed": 10.2, "thickness": 30.5, "uniformity": 2.4, "target_life": 145}), "李工", "PA后处理中试合格", p3_time + timedelta(days=8)))
     cursor.execute("""
     INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (p3_id, "分切工段", "1#高精度分切机", "EQ-分切-01", json.dumps({"tension": 240.0, "slit_speed": 180.0, "aoi_defects": 0}), "吴工", "分切就绪", p3_time + timedelta(days=10)))
+    """, (p3_id, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", json.dumps({"tension": 240.0, "slit_speed": 180.0, "aoi_defects": 0}), "吴工", "PB涂布就绪", p3_time + timedelta(days=10)))
 
     # p5 (HF-PTS-18) 进到了测试段，且中试日志全部填写
     for step in std_routings_4:
@@ -480,7 +466,7 @@ def init_database():
     """, (
         "ECN-20260626-001", p3_id, "原料变更", 
         "原硅烷偶联剂含有非环保挥发物且高频Df略有浮动，需要变更为新型无挥发环保型硅烷处理剂(型号SL-203)。",
-        "使用A品牌常规硅烷，表面处理配方中浓度1.0%。",
+        "使用A品牌常规硅烷，PA后处理配方中浓度1.0%。",
         "使用SL-203新型环保硅烷，配方浓度微调为0.8%，干燥烘烤温度调高5℃。",
         json.dumps({"peel_effect": "提高 5-8%", "df_effect": "降低 0.00005 (改善)"}),
         "已批准", "MOCK-INSTANCE-ECN-001", "李建国", ecn1_time, ecn1_time + timedelta(days=1)
@@ -589,4 +575,11 @@ def init_database():
     print("Database initial simulated data imported successfully.")
 
 if __name__ == "__main__":
+    import sys
+    force_reset = "--force" in sys.argv or "-f" in sys.argv
+    if os.path.exists(DB_PATH) and not force_reset:
+        print(f"【提示】检测到 SQLite 数据库文件已存在。")
+        print("已自动跳过初始化灌库操作，以保护您在运行中新增/编辑的全部数据。")
+        print("（若您想彻底重置系统，请手动在命令行执行: python3 init_db.py --force）")
+        sys.exit(0)
     init_database()

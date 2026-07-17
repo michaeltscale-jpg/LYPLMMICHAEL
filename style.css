@@ -170,7 +170,7 @@ body {
     padding: 10px;
 }
 
-.sidebar-prod-item {
+.sidebar-prod-item, .dms-prod-item {
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 6px;
@@ -179,11 +179,11 @@ body {
     transition: var(--transition-smooth);
 }
 
-.sidebar-prod-item:hover {
+.sidebar-prod-item:hover, .dms-prod-item:hover {
     background-color: rgba(255, 255, 255, 0.03);
 }
 
-.sidebar-prod-item.active {
+.sidebar-prod-item.active, .dms-prod-item.active {
     background-color: rgba(59, 130, 246, 0.08);
     border-color: var(--border-highlight);
 }
@@ -1351,4 +1351,80 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+/* 顶部主产品页签标签栏 */
+.product-tabs-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.prod-tab-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+.prod-tab-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.prod-tab-item.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--color-primary);
+    border-color: var(--border-highlight);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+.prod-tab-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+.prod-tab-status-dot.green { background-color: var(--color-success); }
+.prod-tab-status-dot.blue { background-color: var(--color-primary); }
+.prod-tab-status-dot.yellow { background-color: var(--color-warning); }
+.prod-tab-status-dot.gray { background-color: var(--text-muted); }
+
+/* 页首身份切换下拉框及 option 样式的健壮性优化 */
+#user-role-select {
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 4px;
+    padding: 2px 24px 2px 8px !important;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'><polyline points='3 4.5 6 7.5 9 4.5'></polyline></svg>") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 8px center !important;
+}
+
+#user-role-select option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    padding: 6px 10px;
 }

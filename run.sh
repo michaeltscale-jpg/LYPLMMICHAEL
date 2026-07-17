@@ -15,7 +15,7 @@ then
     exit 1
 fi
 
-echo "第一步：正在重新初始化 SQLite 数据库并导入模拟测试数据..."
+echo "第一步：正在检查并加载 SQLite 数据库..."
 python3 init_db.py
 
 if [ $? -ne 0 ]; then

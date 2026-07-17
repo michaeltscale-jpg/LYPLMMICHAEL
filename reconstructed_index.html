@@ -103,10 +103,7 @@
                     <i data-lucide="layout-dashboard"></i> 研发驾驶舱
                 </div>
                 <div class="menu-item" data-target="plm-panel" id="sidebar-plm-menu">
-                    <i data-lucide="layers"></i> 产品开发管控
-                </div>
-                <div class="menu-item" data-target="dms-panel" id="sidebar-dms-menu">
-                    <i data-lucide="folder-open"></i> 文管中心 (DMS)
+                    <i data-lucide="layers"></i> 产品生命周期 (PLM)
                 </div>
                 <div class="menu-item" data-target="ecn-panel">
                     <i data-lucide="git-pull-request"></i> 工程设变 (ECN)
@@ -118,22 +115,20 @@
                     <i data-lucide="users"></i> 用户权限管理
                 </div>
                 
-                <!-- 用专门的面板包裹以方便 JS 统一控制隐藏 -->
-                <div id="sidebar-products-quick-panel">
-                    <div class="menu-section">研发新品列表</div>
-                    <!-- Filter category -->
-                    <div class="filter-wrap">
-                        <div class="filter-title">类型筛选</div>
-                        <select class="filter-select" id="sidebar-category-filter">
-                            <option value="">全部类型</option>
-                            <option value="PTS AI 铜箔">PTS AI 铜箔</option>
-                            <option value="HIS 载体铜箔">HIS 载体铜箔</option>
-                        </select>
-                    </div>
-                    <!-- Dynamic project list -->
-                    <div class="sidebar-product-list" id="sidebar-products-list">
-                        <!-- Injected via JavaScript -->
-                    </div>
+                <div class="menu-section">研发新品列表</div>
+                <!-- Filter category -->
+                <div class="filter-wrap">
+                    <div class="filter-title">类型筛选</div>
+                    <select class="filter-select" id="sidebar-category-filter">
+                        <option value="">全部类型</option>
+                        <option value="PTS AI 铜箔">PTS AI 铜箔</option>
+                        <option value="HIS 载体铜箔">HIS 载体铜箔</option>
+                        <option value="背板双晶铜箔">背板双晶铜箔</option>
+                    </select>
+                </div>
+                <!-- Dynamic project list -->
+                <div class="sidebar-product-list" id="sidebar-products-list">
+                    <!-- Injected via JavaScript -->
                 </div>
             </div>
         </aside>
@@ -149,7 +144,7 @@
                     <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
                         <i data-lucide="user" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
                         <span style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap;">登录身份:</span>
-                        <select id="user-role-select" onchange="onUserRoleChange(this)">
+                        <select id="user-role-select" style="background: transparent; border: none; color: var(--text-primary); font-size: 0.75rem; outline: none; cursor: pointer; padding-right: 4px;" onchange="onUserRoleChange(this)">
                             <!-- 动态加载数据库用户 -->
                         </select>
                     </div>
@@ -157,11 +152,6 @@
                     <button class="btn-primary" id="btn-new-project"><i data-lucide="plus-circle"></i> 新品开发立项</button>
                 </div>
             </header>
-
-            <!-- 顶部主产品页签切换栏 -->
-            <div class="product-tabs-bar" id="product-tabs-bar">
-                <!-- 由 JS 动态渲染主产品 Tab 标签项 -->
-            </div>
 
             <!-- Content Body Area -->
             <div class="content-body">
@@ -250,56 +240,7 @@
 
                     <!-- ================= PANEL 2: PRODUCT PLM ================= -->
     <div class="tab-panel" id="plm-panel">
-        <!-- 顶部产品元数据与设计规格微看板 -->
-        <div class="glass-panel" style="margin-bottom: 0px; padding: 10px 20px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1px solid rgba(99, 102, 241, 0.25); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <!-- 左侧：产品基础元数据 -->
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); display: flex; align-items: center; justify-content: center; color: var(--color-primary); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);">
-                    <i data-lucide="cpu" style="width: 24px; height: 24px;"></i>
-                </div>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <h2 id="plm-prod-name" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px;">--</h2>
-                        <span class="badge badge-purple" id="plm-prod-category" style="font-size: 0.65rem; padding: 2px 8px;">--</span>
-                    </div>
-                    <div style="display: flex; gap: 14px; margin-top: 4px; font-size: 0.72rem; color: #94a3b8;">
-                        <span><i data-lucide="user" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>创建人: <strong id="plm-prod-creator" style="color:#cbd5e1;">--</strong></span>
-                        <span><i data-lucide="calendar" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>立项时间: <strong id="plm-prod-time" style="color:#cbd5e1;">--</strong></span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 右侧：厚度独立标签卡片 -->
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <!-- 12μm 独立卡片 -->
-                <div id="thickness-tab-12"
-                     onclick="handleThicknessTabClick(12)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">12 μm</div>
-                </div>
-                <!-- 18μm 独立卡片 -->
-                <div id="thickness-tab-18"
-                     onclick="handleThicknessTabClick(18)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">18 μm</div>
-                </div>
-                <!-- 35μm 独立卡片 -->
-                <div id="thickness-tab-35"
-                     onclick="handleThicknessTabClick(35)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">35 μm</div>
-                </div>
-                <!-- 兼容旧逻辑隐藏元素 -->
-                <span id="plm-spec-thickness" style="display:none;"></span>
-                <select id="plm-product-select-dropdown" style="display:none;" onchange="handleProductDropdownChange(this.value)"></select>
-                <span id="plm-target-roughness" style="display:none;"></span>
-                <span id="plm-target-df" style="display:none;"></span>
-                <span id="plm-target-peel" style="display:none;"></span>
-            </div>
-        </div>
+        <!-- 移除了原 Active Product Intro Card 大卡片以优化首屏垂直高度利用率 -->
 
                         <!-- Secondary Modules Tabs Selection -->
                         <div class="sub-tabs-nav" style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
@@ -311,7 +252,16 @@
 
                         <!-- SUBPANEL 2.0: NPI PROCESS CONTROL PANEL -->
                         <div class="plm-subpanel active" id="plm-subpanel-npi">
-                            <!-- 5 Gates Linkage Cards Grid -->
+                            <!-- NPI Milestone Visual Progress Row -->
+                            <div class="glass-panel highlight-purple" style="margin-bottom: 0px;">
+                                <h3><i data-lucide="milestone"></i> <span id="npi-panel-title">NPI新品开发门禁系统 (Milestones & Gates)</span></h3>
+                                <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 4px; margin-bottom: 0px;" id="npi-panel-meta">
+                                    加载中...
+                                </p>
+                                <div class="npi-milestones-row" id="npi-milestones-row" style="display: flex; justify-content: space-between; position: relative; padding: 20px 0; margin: 10px 0;">
+                                    <!-- Injected via JS -->
+                                </div>
+                            </div>
 
                             <!-- 5 Gates Linkage Cards Grid -->
                             <div class="npi-gates-grid" id="npi-gates-container" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 8px;">
@@ -337,7 +287,7 @@
                                             <thead>
                                                 <tr>
                                                     <th style="width: 45px; text-align: center;">项次</th>
-                                                    <th style="min-width: 230px;">检验项目 / Test Item</th>
+                                                    <th style="min-width: 250px;">检验项目 / Test Item</th>
                                                     <th style="width: 50px; text-align: center;">单位</th>
                                                     <th style="width: 110px;">规格值 (Spec.)</th>
                                                     <th style="width: 220px;">检测标准</th>
@@ -366,23 +316,21 @@
                                 <!-- Left BOM items -->
                                 <div class="glass-panel highlight-blue">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                        <h3 style="margin-bottom: 0;"><i data-lucide="layers"></i> 物料清单 (BOM)</h3>
+                                        <h3 style="margin-bottom: 0;"><i data-lucide="flask"></i> 配方物料清单 (Active BOM Formula)</h3>
                                         <div style="display: flex; gap: 8px; align-items: center;">
                                             <span class="badge badge-green" id="bom-active-version-badge" style="font-size: 0.8rem; padding: 4px 10px; height: 32px; display: inline-flex; align-items: center;">BOM 版本: V1.0 (当前生效)</span>
-                                            <button class="btn-secondary" id="btn-bom-add-row" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;" onclick="addBomNewRow()"><i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> 新增物料行</button>
-                                            <button class="btn-primary" id="btn-edit-bom-sub" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;"><i data-lucide="git-merge" style="width: 14px; height: 14px;"></i> 升级配方版本</button>
+                                            <button class="btn-primary" id="btn-edit-bom-sub" style="padding: 6px 12px; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;"><i data-lucide="edit-3" style="width: 14px; height: 14px;"></i> 编辑并升级配方</button>
                                         </div>
                                     </div>
                                     <div class="table-wrap">
                                         <table class="custom-table" id="bom-items-table">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 130px;">物料编码</th>
-                                                    <th>物料名称</th>
-                                                    <th style="width: 160px;">物料规格</th>
-                                                    <th style="width: 110px;">配比/添加量</th>
-                                                    <th style="width: 70px;">单位</th>
-                                                    <th style="width: 100px; text-align: right;">操作</th>
+                                                    <th>物料编码</th>
+                                                    <th>原辅料/化学助剂名称</th>
+                                                    <th>物料规格</th>
+                                                    <th>配方占比/添加量</th>
+                                                    <th>单位</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -422,7 +370,7 @@
                         <!-- Quality Verification Test Logs (Always shown at bottom) -->
                         <div class="glass-panel">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                <h3 style="margin-bottom: 0;" id="plm-test-records-title"><i data-lucide="shield-check"></i> 试制验证记录</h3>
+                                <h3 style="margin-bottom: 0;"><i data-lucide="shield-check"></i> 质量测试验证记录</h3>
                                 <button class="btn-secondary" id="btn-add-test-record"><i data-lucide="beaker"></i> 录入质量检测指标</button>
                             </div>
                             <div class="table-wrap">
@@ -430,11 +378,11 @@
                                     <thead>
                                         <tr>
                                             <th>测试批次号</th>
-                                            <th>实测厚度 (μm)</th>
-                                            <th>粗糙度 Rz (毛面/光面) (μm)</th>
-                                            <th>剥离强度 (N/mm)</th>
-                                            <th>高频损耗 (10GHz Df)</th>
-                                            <th>抗拉强度(MPa) / 延伸率</th>
+                                            <th>实测厚度</th>
+                                            <th>毛面粗糙度 Rz</th>
+                                            <th>剥离强度</th>
+                                            <th>10GHz Df</th>
+                                            <th>抗拉强度/延伸率</th>
                                             <th>测试结论</th>
                                             <th>检测人</th>
                                             <th>检测时间</th>
@@ -444,47 +392,6 @@
                                         <!-- Injected via JavaScript -->
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ================= PANEL 2.5: DMS 文管中心 ================= -->
-                    <div class="tab-panel" id="dms-panel">
-                        <!-- DMS 主布局：单列整版铺满，直接联动全局左侧研发新品列表 -->
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div class="glass-panel highlight-blue">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <h2 style="font-size: 1.2rem; display: flex; align-items: center; gap: 6px;" id="dms-selected-product-title">
-                                            <i data-lucide="folder-git"></i> 请在左侧列表中选择产品型号
-                                        </h2>
-                                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 4px;" id="dms-selected-product-meta">
-                                            系统将为您呈现该产品在 G1 (立项与目标) 到 G5 (PPAP与量产) 阶段全部必须归档的研发交付物文件及其标准规范模版。
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 15项交付物文档表格看板 -->
-                            <div class="glass-panel">
-                                <div class="table-wrap">
-                                    <table class="custom-table" id="dms-deliverables-table">
-                                        <thead>
-                                            <tr>
-                                                <th>研发管理阶段</th>
-                                                <th>输出工序/关联工段</th>
-                                                <th>规范文件名称</th>
-                                                <th>系统电子代号</th>
-                                                <th>当前归档版本</th>
-                                                <th>受控状态</th>
-                                                <th>受控操作</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- JS 动态注入 -->
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -661,36 +568,29 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-body">
                 <form id="form-project">
-                    <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                    <div class="form-row">
                         <div class="form-group">
-                            <label>铜箔类型</label>
+                            <label>铜箔类别</label>
                             <select class="form-control" id="proj-category" required>
                                 <option value="PTS AI 铜箔">PTS AI 铜箔</option>
                                 <option value="HIS 载体铜箔">HIS 载体铜箔</option>
+                                <option value="背板双晶铜箔">背板双晶铜箔</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>规格厚度 (μm)</label>
+                            <label>标称厚度 (μm)</label>
                             <select class="form-control" id="proj-thickness" required>
                                 <!-- Injected dynamically based on category selection in JS -->
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>PA后处理配方</label>
-                            <select class="form-control" id="proj-surface-treatment" required>
-                                <option value="SL203硅烷">SL203硅烷</option>
-                                <option value="SL101硅烷">SL101硅烷</option>
-                                <option value="STD常规">STD常规</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="form-group">
-                        <label>产品代号 <span style="font-size:0.7rem; color:var(--text-muted);">(规格自动生成，可微调)</span></label>
-                        <input type="text" class="form-control" id="proj-code" placeholder="如: PTS-12-SL203" required>
+                        <label>产品代号 (例如: HF-PTS-12)</label>
+                        <input type="text" class="form-control" id="proj-code" placeholder="输入规范的铜箔代号" required>
                     </div>
                     <div class="form-group">
-                        <label>产品名称 <span style="font-size:0.7rem; color:var(--text-muted);">(规格自动生成，可微调)</span></label>
-                        <input type="text" class="form-control" id="proj-name" placeholder="如: PTS AI 铜箔-12μm-SL203硅烷" required>
+                        <label>产品名称</label>
+                        <input type="text" class="form-control" id="proj-name" placeholder="例如: 高频高速PTS AI铜箔(12μm)" required>
                     </div>
                     
                     <div style="border-top: 1px solid var(--border-color); margin: 16px 0; padding-top: 12px;">
@@ -723,67 +623,6 @@ requests.post(url, json=payload)</code></pre>
                             <div class="form-group">
                                 <label>立项申请人</label>
                                 <input type="text" class="form-control" id="proj-creator" value="李建国" required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="border-top: 1px solid var(--border-color); margin: 12px 0 0 0; padding-top: 12px;">
-                        <h4 style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
-                            <span>NPI 各开发阶段计划排期定义</span>
-                            <span id="proj-plan-toggle-btn" style="font-size: 0.75rem; color: var(--color-primary); cursor: pointer; font-weight: normal;" onclick="toggleProjectPlanSetup()">展开详细设置 &darr;</span>
-                        </h4>
-                        
-                        <!-- 默认总体启动日期 -->
-                        <div class="form-row" id="proj-plan-start-row">
-                            <div class="form-group">
-                                <label>项目启动日期 (各阶段排期将以此顺序延推算)</label>
-                                <input type="date" class="form-control" id="proj-plan-base-date" style="height:32px; font-size:0.8rem;" onchange="autoCalculateProjectPlanDates()">
-                            </div>
-                        </div>
-
-                        <!-- 各阶段自定义列表 -->
-                        <div id="proj-plan-detail-box" style="display: none; flex-direction: column; gap: 8px; margin-top: 10px; background: rgba(30, 41, 59, 0.2); border: 1px solid var(--border-color); padding: 10px; border-radius: 6px;">
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; font-size: 0.75rem; color: var(--text-secondary); font-weight: bold; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
-                                <span>阶段里程碑</span>
-                                <span>开始日期</span>
-                                <span>计划完成</span>
-                                <span>负责人</span>
-                            </div>
-                            
-                            <!-- G1 -->
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; align-items: center;">
-                                <span style="font-size: 0.75rem; color: var(--text-primary);">G1. 立项与目标</span>
-                                <input type="date" class="form-control gate-plan-start" id="plan-g1-start" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="date" class="form-control gate-plan-end" id="plan-g1-end" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="text" class="form-control gate-plan-owner" id="plan-g1-owner" style="height:28px; padding: 2px 6px; font-size:0.75rem;" placeholder="负责人" required>
-                            </div>
-                            <!-- G2 -->
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; align-items: center;">
-                                <span style="font-size: 0.75rem; color: var(--text-primary);">G2. 配方定型（EVT）</span>
-                                <input type="date" class="form-control gate-plan-start" id="plan-g2-start" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="date" class="form-control gate-plan-end" id="plan-g2-end" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="text" class="form-control gate-plan-owner" id="plan-g2-owner" style="height:28px; padding: 2px 6px; font-size:0.75rem;" placeholder="负责人" required>
-                            </div>
-                            <!-- G3 -->
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; align-items: center;">
-                                <span style="font-size: 0.75rem; color: var(--text-primary);">G3. 工艺与中试（DVT）</span>
-                                <input type="date" class="form-control gate-plan-start" id="plan-g3-start" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="date" class="form-control gate-plan-end" id="plan-g3-end" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="text" class="form-control gate-plan-owner" id="plan-g3-owner" style="height:28px; padding: 2px 6px; font-size:0.75rem;" placeholder="负责人" required>
-                            </div>
-                            <!-- G4 -->
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; align-items: center;">
-                                <span style="font-size: 0.75rem; color: var(--text-primary);">G4. 生产验证（PVT）</span>
-                                <input type="date" class="form-control gate-plan-start" id="plan-g4-start" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="date" class="form-control gate-plan-end" id="plan-g4-end" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="text" class="form-control gate-plan-owner" id="plan-g4-owner" style="height:28px; padding: 2px 6px; font-size:0.75rem;" placeholder="负责人" required>
-                            </div>
-                            <!-- G5 -->
-                            <div style="display: grid; grid-template-columns: 1.5fr 1.5fr 1.5fr 1.2fr; gap: 8px; align-items: center;">
-                                <span style="font-size: 0.75rem; color: var(--text-primary);">G5. PPAP 与量产（MP）</span>
-                                <input type="date" class="form-control gate-plan-start" id="plan-g5-start" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="date" class="form-control gate-plan-end" id="plan-g5-end" style="height:28px; padding: 2px 6px; font-size:0.75rem;" required>
-                                <input type="text" class="form-control gate-plan-owner" id="plan-g5-owner" style="height:28px; padding: 2px 6px; font-size:0.75rem;" placeholder="负责人" required>
                             </div>
                         </div>
                     </div>
@@ -989,106 +828,44 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-body">
                 <form id="form-test-record">
-                    <!-- 铜箔产品测试表单字段 -->
-                    <div id="test-form-product-fields">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>实测厚度 (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-thickness" required>
-                            </div>
-                            <div class="form-group">
-                                <label>毛面粗糙度 Rz (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-roughness-m" required>
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>实测厚度 (μm)</label>
+                            <input type="number" step="0.01" class="form-control" id="test-thickness" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>光面粗糙度 Rz (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-roughness-s" required>
-                            </div>
-                            <div class="form-group">
-                                <label>剥离强度 (N/mm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-peel" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>10GHz Df 介质损耗</label>
-                                <input type="number" step="0.0001" class="form-control" id="test-df" required>
-                            </div>
-                            <div class="form-group">
-                                <label>抗拉强度 (MPa)</label>
-                                <input type="number" step="1" class="form-control" id="test-tensile" value="320" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>延伸率 (%)</label>
-                                <input type="number" step="0.1" class="form-control" id="test-elongation" value="3.0" required>
-                            </div>
-                            <div class="form-group">
-                                <label>测试人员</label>
-                                <input type="text" class="form-control" id="test-tester" value="张测试" required>
-                            </div>
+                        <div class="form-group">
+                            <label>毛面粗糙度 Rz (μm)</label>
+                            <input type="number" step="0.01" class="form-control" id="test-roughness-m" required>
                         </div>
                     </div>
-
-                    <!-- 新物料承认测试表单字段 -->
-                    <div id="test-form-material-fields" style="display: none;">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>物料规格纯度 / 核心成分比 (%)</label>
-                                <input type="text" class="form-control" id="bom-test-purity" placeholder="例：99.998%" value="99.998%">
-                            </div>
-                            <div class="form-group">
-                                <label>供应商品牌与批号</label>
-                                <input type="text" class="form-control" id="bom-test-supplier" placeholder="例：江西铜业" value="江西铜业江铜批次">
-                            </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>光面粗糙度 Rz (μm)</label>
+                            <input type="number" step="0.01" class="form-control" id="test-roughness-s" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>RoHS / REACH 环保合规认证</label>
-                                <select class="form-control" id="bom-test-rohs">
-                                    <option value="已通过">已通过 (PASS)</option>
-                                    <option value="未通过">未通过 (FAIL)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>MSDS 化学品安全技术书</label>
-                                <select class="form-control" id="bom-test-msds">
-                                    <option value="已备齐">已备齐 (COMPLETE)</option>
-                                    <option value="缺失">缺失 (MISSING)</option>
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label>剥离强度 (N/mm)</label>
+                            <input type="number" step="0.01" class="form-control" id="test-peel" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>上线试制与融合反应结果</label>
-                                <select class="form-control" id="bom-test-pilot">
-                                    <option value="反应优异">反应优异 - 生箔指标良率极高</option>
-                                    <option value="指标稳定">指标稳定 - 符合中试预期</option>
-                                    <option value="存在微小杂质波动">存在微小杂质波动 - 建议特采</option>
-                                    <option value="严重影响生箔抗拉">严重影响生箔抗拉 - 禁用</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>最终物料承认结论</label>
-                                <select class="form-control" id="bom-test-result">
-                                    <option value="合格">合格 (批准放行量产)</option>
-                                    <option value="特采">特采 (授权限额使用)</option>
-                                    <option value="不合格">不合格 (退货并锁定供应商)</option>
-                                </select>
-                            </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>10GHz Df 介质损耗</label>
+                            <input type="number" step="0.0001" class="form-control" id="test-df" required>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>承认检验员</label>
-                                <input type="text" class="form-control" id="bom-test-tester" value="李工" required>
-                            </div>
-                            <div class="form-group">
-                                <label>备考 / 备注说明</label>
-                                <input type="text" class="form-control" id="bom-test-remarks" placeholder="如有异常请录入原因定位..." value="中试上线指标优异，高频铜箔各项力学表现稳定，符合承认限值。">
-                            </div>
+                        <div class="form-group">
+                            <label>抗拉强度 (MPa)</label>
+                            <input type="number" step="1" class="form-control" id="test-tensile" value="320" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>延伸率 (%)</label>
+                            <input type="number" step="0.1" class="form-control" id="test-elongation" value="3.0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>测试人员</label>
+                            <input type="text" class="form-control" id="test-tester" value="张测试" required>
                         </div>
                     </div>
                 </form>
@@ -1097,94 +874,6 @@ requests.post(url, json=payload)</code></pre>
                 <button class="btn-secondary" onclick="closeModal('modal-test-record')">取消</button>
                 <button class="btn-primary" id="btn-submit-test-record">提交检测数据</button>
             </div>
-        </div>
-    </div>
-
-    <!-- 4.5. Modal: Quality Test Report Detail (CoA) -->
-    <div class="modal-overlay" id="modal-test-report-detail">
-        <div class="modal-box" style="width: 780px; max-height: 90vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-highlight); padding: 24px; position: relative;">
-            <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
-                <h3 style="margin: 0; color: var(--text-primary); font-size: 1.1rem; display: flex; align-items: center; gap: 6px;"><i data-lucide="file-text"></i> 出厂质检合格证书 (CoA)</h3>
-                <button class="modal-close" onclick="closeModal('modal-test-report-detail')">&times;</button>
-            </div>
-            
-            <!-- 打印专属区域（支持水印和公章的 A4 CoA 纸张排版） -->
-            <div id="coa-print-area" style="padding: 20px; border: 2px double var(--border-color); background: rgba(15, 23, 42, 0.4); position: relative; overflow: hidden; border-radius: 8px; margin-top: 10px;">
-                
-                <!-- 水印背景 -->
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 4.5rem; font-weight: 900; color: rgba(255,255,255,0.015); white-space: nowrap; user-select: none; pointer-events: none; z-index: 0;">
-                    GHZ QUALITY CONTROL
-                </div>
-
-                <!-- 报告头部 -->
-                <div style="text-align: center; border-bottom: 2px solid var(--color-primary); padding-bottom: 12px; margin-bottom: 16px;">
-                    <h2 style="font-size: 1.35rem; color: var(--text-primary); letter-spacing: 2px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i data-lucide="award" style="color: var(--color-warning); width: 22px; height: 22px;"></i> 铜箔物理与高频性能综合检测报告 (CoA)
-                    </h2>
-                    <p style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0;">
-                        Certificate of Analysis - GHZ Copper Foil Test Center
-                    </p>
-                </div>
-
-                <!-- 报告元数据信息 -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 6px;">
-                    <div>产品名称: <strong style="color: var(--text-primary);" id="coa-product-name">--</strong></div>
-                    <div>产品代号: <strong style="color: var(--text-primary);" id="coa-product-code">--</strong></div>
-                    <div>检测批次: <strong style="color: var(--color-primary);" id="coa-batch-no">--</strong></div>
-                    <div>产品分类: <strong style="color: var(--text-primary);" id="coa-product-category">--</strong></div>
-                    <div>检测人员: <strong style="color: var(--text-primary);" id="coa-tester">--</strong></div>
-                    <div>检测时间: <strong style="color: var(--text-primary);" id="coa-test-time">--</strong></div>
-                </div>
-
-                <!-- 比对数据表格 -->
-                <table class="custom-table" style="font-size: 0.78rem; width: 100%; margin-bottom: 20px;">
-                    <thead>
-                        <tr style="background: rgba(255,255,255,0.04);">
-                            <th>测试指标项 (Unit)</th>
-                            <th style="text-align: center;">TDS 标准规格限值</th>
-                            <th style="text-align: center;">实验室实测数据</th>
-                            <th style="text-align: center;">单项判定</th>
-                        </tr>
-                    </thead>
-                    <tbody id="coa-table-body">
-                        <!-- JS 动态注入 -->
-                    </tbody>
-                </table>
-
-                <!-- 报告结论栏 -->
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
-                    <div style="max-width: 480px; z-index: 2;">
-                        <div style="font-size: 0.8rem; font-weight: bold; color: var(--text-primary); margin-bottom: 6px;">综合评定结论：</div>
-                        <div id="coa-final-conclusion" style="font-size: 0.78rem; line-height: 1.5;">--</div>
-                    </div>
-                    
-                    <!-- 检验公章 -->
-                    <div style="position: relative; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; margin-right: 10px; z-index: 1;">
-                        <!-- 印章边框 -->
-                        <div style="position: absolute; width: 95px; height: 95px; border: 2.5px solid rgba(239, 68, 68, 0.75); border-radius: 50%; transform: rotate(-8deg); display: flex; align-items: center; justify-content: center; pointer-events: none;">
-                            <!-- 印章五角星 -->
-                            <div style="font-size: 1.4rem; color: rgba(239, 68, 68, 0.75); margin-top: -4px;">★</div>
-                        </div>
-                        <div style="position: absolute; width: 95px; height: 95px; display: flex; align-items: center; justify-content: center; pointer-events: none; transform: rotate(-8deg);">
-                            <svg viewBox="0 0 100 100" style="width: 80px; height: 80px; fill: rgba(239, 68, 68, 0.75);">
-                                <path id="stamp-text-path-modal" d="M 12,50 A 38,38 0 1,1 88,50" fill="none" />
-                                <text style="font-size: 8px; font-weight: bold; letter-spacing: 0.4px;">
-                                    <textPath href="#stamp-text-path-modal" startOffset="50%" text-anchor="middle">光华科技铜箔测试中心</textPath>
-                                </text>
-                                <text x="50" y="76" style="font-size: 8px; font-weight: 900; letter-spacing: 0.8px;" text-anchor="middle">检验专用章</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 控制按钮 -->
-            <div class="modal-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; gap: 8px;">
-                <button class="btn-primary" onclick="printCoaReport()"><i data-lucide="printer"></i> 打印报告 (CoA)</button>
-                <button class="btn-secondary" onclick="closeModal('modal-test-report-detail')">关闭报告</button>
-            </div>
-
         </div>
     </div>
 
@@ -1290,7 +979,7 @@ requests.post(url, json=payload)</code></pre>
                             <input type="number" step="0.1" class="form-control" id="npi-bom-hec" required>
                         </div>
                         <div class="form-group">
-                            <label>PA后处理靶材型号</label>
+                            <label>表面处理硅烷型号</label>
                             <input type="text" class="form-control" id="npi-bom-silane-type" required>
                         </div>
                     </div>
@@ -1352,31 +1041,6 @@ requests.post(url, json=payload)</code></pre>
                 <button class="modal-close" onclick="closeModal('modal-npi-quality-detail')">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- PVT 验证环节与输出文件说明区 -->
-                <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div>
-                        <h4 style="font-size: 0.8rem; color: var(--color-warning); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;"><i data-lucide="check-square" style="width: 14px; height: 14px;"></i> PVT 生产验证环节</h4>
-                        <ul style="font-size: 0.75rem; color: var(--text-secondary); padding-left: 16px; line-height: 1.6; margin: 0;">
-                            <li>量产机台连续性负荷工况与工艺窗口稳定性检验</li>
-                            <li>大宽幅生箔电镀电流/张力拉偏极限工艺验证</li>
-                            <li>PB涂布卷姿及表面氧化均匀性高频在线缺陷扫描</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 style="font-size: 0.8rem; color: var(--color-success); margin-bottom: 8px; display: flex; align-items: center; gap: 4px;"><i data-lucide="folder-open" style="width: 14px; height: 14px;"></i> 交付输出文件 (Deliverables)</h4>
-                        <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem;">
-                            <a href="#" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 6px;" onclick="showToast('正在下载：PVT阶段试产总结报告.pdf', 'success')">
-                                <i data-lucide="file-text" style="width: 14px; height: 14px; color: var(--color-success);"></i> <span>PVT阶段试产总结报告.pdf</span>
-                            </a>
-                            <a href="#" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 6px;" onclick="showToast('正在下载：量产线工艺Cpk稳定性数据看板.xlsx', 'success')">
-                                <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px; color: var(--color-success);"></i> <span>量产线工艺Cpk稳定性数据看板.xlsx</span>
-                            </a>
-                            <a href="#" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 6px;" onclick="showToast('正在下载：PVT阶段理化指标化验大纲结论书.pdf', 'success')">
-                                <i data-lucide="file-text" style="width: 14px; height: 14px; color: var(--color-success);"></i> <span>PVT阶段理化指标化验大纲结论书.pdf</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span style="color: var(--text-secondary); font-size: 0.8rem;">查看当前新品导入过程中的所有理化测试记录批次：</span>
                     <button class="btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="closeModal('modal-npi-quality-detail'); openQualityTestModal();"><i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i> 新增检测批次</button>
@@ -1473,11 +1137,11 @@ requests.post(url, json=payload)</code></pre>
                         <label style="font-size: 0.8rem;">工序阶段名称</label>
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <select id="step-edit-stage-select" class="form-control" style="height: 34px; font-size: 0.82rem; flex: 1;" onchange="onStepEditStageSelectChange(this)">
-                                <option value="溅镀工段">溅镀工段</option>
+                                <option value="溶铜工段">溶铜工段</option>
                                 <option value="溅镀工段">溅镀工段</option>
                                 <option value="生箔工段">生箔工段</option>
-                                <option value="PA后处理">PA后处理</option>
-                                <option value="PB涂布">PB涂布</option>
+                                <option value="表面处理工段">表面处理工段</option>
+                                <option value="分切工段">分切工段</option>
                                 <option value="__custom__">自定义工段名称…</option>
                             </select>
                             <input type="text" id="step-edit-stage-custom" class="form-control" style="height: 34px; font-size: 0.82rem; display: none; flex: 1;" placeholder="输入自定义工段名称">
@@ -1590,41 +1254,6 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-user')">取消</button>
                 <button class="btn-primary" onclick="submitUserForm()"><i data-lucide="check-circle" style="width:14px; height:14px;"></i> 提交保存</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 10. Modal: DMS Template Online Preview (高逼真 PDF 阅读器) -->
-    <div class="modal-overlay" id="modal-dms-template-preview">
-        <div class="modal-box" style="width: 880px; max-width: 95vw; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 0; background: #1e293b; border: 1px solid rgba(255,255,255,0.15);">
-            <!-- PDF Viewer 顶部工具栏 -->
-            <div style="background: #0f172a; height: 48px; min-height: 48px; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 16px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="file-text" style="color: var(--color-danger); width: 18px; height: 18px;"></i>
-                    <span id="dms-pdf-title" style="font-size: 0.85rem; font-weight: 600; color: #f8fafc; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px;">受控文件预览.pdf</span>
-                    <span style="font-size: 0.7rem; background: rgba(220,38,38,0.2); border: 1px solid rgba(220,38,38,0.4); color: #ef4444; padding: 1px 6px; border-radius: 4px; font-weight: bold; margin-left: 6px;">受控 NPI 电子版</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 14px; background: #1e293b; padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">
-                    <button style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px;" onclick="showToast('模拟缩放已设为最适高度', 'info')"><i data-lucide="zoom-out" style="width:14px; height:14px;"></i></button>
-                    <span style="font-size: 0.72rem; color: #e2e8f0; font-family: monospace;">100%</span>
-                    <button style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px;" onclick="showToast('模拟缩放已设为最适宽度', 'info')"><i data-lucide="zoom-in" style="width:14px; height:14px;"></i></button>
-                    <div style="width: 1px; height: 12px; background: rgba(255,255,255,0.1);"></div>
-                    <span style="font-size: 0.72rem; color: #e2e8f0; font-family: monospace;">第 1 / 1 页</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <button class="btn-primary" id="btn-dms-pdf-download" style="padding: 5px 12px; font-size: 0.75rem; background: var(--color-primary); color: white; display: flex; align-items: center; gap: 4px;">
-                        <i data-lucide="download" style="width: 14px; height: 14px;"></i> 下载受控 PDF
-                    </button>
-                    <button class="btn-secondary" style="padding: 5px 12px; font-size: 0.75rem; border-color: rgba(255,255,255,0.1); color: #e2e8f0; display: flex; align-items: center; gap: 4px;" onclick="showToast('正在向生产线文管终端提交远程打印排队，请稍候...', 'info')">
-                        <i data-lucide="printer" style="width: 14px; height: 14px;"></i> 打印
-                    </button>
-                    <button onclick="closeModal('modal-dms-template-preview')" style="font-size: 1.5rem; line-height: 1; color: #94a3b8; background: none; border: none; cursor: pointer; padding: 0 4px; margin-left: 6px;">&times;</button>
-                </div>
-            </div>
-
-            <!-- PDF Viewer 主体画布区 (暗灰色背景) -->
-            <div id="dms-pdf-canvas" style="background: #334155; flex-grow: 1; overflow-y: auto; padding: 24px; position: relative;">
-                <!-- 由 JS 动态在中央渲染带有红色红章及受控斜水印的白底 A4 纸张页面 -->
             </div>
         </div>
     </div>

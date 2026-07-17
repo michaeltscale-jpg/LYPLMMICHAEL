@@ -261,24 +261,24 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 npi = {}
                 prod_status = product['status']
                 category = product['category']
-                stages = ["立项", "溶铜工段", "生箔工段", "表面处理工段", "分切工段", "测试验证", "量产送样"]
+                stages = ["立项", "溅镀工段", "生箔工段", "PA后处理", "PB涂布", "测试验证", "量产送样"]
                 if category == "HIS 载体铜箔":
-                    stages = ["立项", "溶铜工段", "溅镀工段", "生箔工段", "表面处理工段", "分切工段", "测试验证", "量产送样"]
+                    stages = ["立项", "溅镀工段", "生箔工段", "PA后处理", "PB涂布", "测试验证", "量产送样"]
                 
                 # 当前状态所在的工序索引
                 active_idx = 0
                 if prod_status == "立项中" or prod_status == "钉钉立项审批中":
                     active_idx = 0
-                elif prod_status == "溶铜造液中":
-                    active_idx = stages.index("溶铜工段")
+                elif prod_status == "溅镀金属化中":
+                    active_idx = stages.index("溅镀工段")
                 elif prod_status == "溅镀开发中" and "溅镀工段" in stages:
                     active_idx = stages.index("溅镀工段")
                 elif prod_status == "生箔电镀中":
                     active_idx = stages.index("生箔工段")
-                elif prod_status == "表面处理中":
-                    active_idx = stages.index("表面处理工段")
-                elif prod_status == "分切包装中":
-                    active_idx = stages.index("分切工段")
+                elif prod_status == "PA后处理中":
+                    active_idx = stages.index("PA后处理")
+                elif prod_status == "PB涂布中":
+                    active_idx = stages.index("PB涂布")
                 elif prod_status == "测试验证中":
                     active_idx = stages.index("测试验证")
                 elif prod_status == "量产中":
@@ -500,15 +500,15 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                             (1, "溶铜工段", "2#溶铜罐组", "EQ-溶铜-02", {"Cu_conc": 80.0, "H2SO4_conc": 120.0, "temp": 75.0, "flow_rate": 420.0, "Cl_conc": 30.0}),
                             (2, "溅镀工段", "磁控溅射镀膜机", "EQ-溅镀-01", {"vacuum": 0.0003, "power": 15.0, "speed": 8.0, "thickness": 50.0, "target_type": "高纯铜靶-镍铬阻挡层"}),
                             (3, "生箔工段", "4#超薄生箔机", "EQ-生箔-04", {"voltage": 7.0, "current_density": 60.0, "drum_speed": 8.0}),
-                            (4, "表面处理工段", "3#表面处理机", "EQ-表处-03", {"line_speed": 8.0, "treat_current": 1200, "silane_conc": 0.6, "dry_temp": 120.0, "passivation_ph": 4.5}),
-                            (5, "分切工段", "2#高精度分切机", "EQ-分切-02", {"tension": 150.0, "slit_speed": 100.0})
+                            (4, "PA后处理", "3#PA后处理线", "EQ-PA-03", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
+                            (5, "PB涂布", "2#高精密PB涂布机", "EQ-PB-02", {"tension": 150.0, "slit_speed": 100.0})
                         ]
                     else:
                         routings = [
                             (1, "溶铜工段", "1#溶铜罐组", "EQ-溶铜-01", {"Cu_conc": 85.0, "H2SO4_conc": 110.0, "temp": 80.0, "flow_rate": 450.0, "Cl_conc": 35.0}),
-                            (2, "生箔工段", "2#生箔机阴极辊", "EQ-生箔-02", {"voltage": 6.8, "current_density": 65.0, "drum_speed": 5.0}),
-                            (3, "表面处理工段", "2#表面处理机", "EQ-表处-02", {"line_speed": 12.0, "treat_current": 1800, "silane_conc": 0.8, "dry_temp": 130.0, "passivation_ph": 4.5}),
-                            (4, "分切工段", "1#高精度分切机", "EQ-分切-01", {"tension": 220.0, "slit_speed": 150.0})
+                            (2, "生箔工段", "2#生箔机阴极辊", "EQ-生箔-02", {"current_density": 65.0, "drum_speed": 5.0, "electrolyte_temp": 60.0, "flow_rate": 120.0, "cl_conc": 35.0, "cu_conc": 85.0, "acid_conc": 110.0, "polar_gap": 10.0, "gel_flow": 120.0, "s_flow": 80.0}),
+                            (3, "PA后处理", "2#PA后处理线", "EQ-PA-02", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
+                            (4, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0})
                         ]
 
                     for r in routings:
@@ -607,11 +607,11 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 """, (product_id, stage, device_name, device_code, json.dumps(parameters), operator, remarks, datetime.now()))
                 
                 status_map = {
-                    "溶铜工段": "溶铜造液中",
+                    "溅镀工段": "溅镀金属化中",
                     "溅镀工段": "溅镀开发中",
                     "生箔工段": "生箔电镀中",
-                    "表面处理工段": "表面处理中",
-                    "分切工段": "分切包装中"
+                    "PA后处理": "PA后处理中",
+                    "PB涂布": "PB涂布中"
                 }
                 
                 new_status = status_map.get(stage)
@@ -802,7 +802,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 for index, step in enumerate(steps):
                     step_no = index + 1
-                    stage_name = step.get('stage_name', '溶铜工段')
+                    stage_name = step.get('stage_name', '溅镀工段')
                     device_name = step.get('device_name', '')
                     device_code = step.get('device_code', '')
                     standard_params = step.get('standard_params', {})
@@ -970,18 +970,55 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     is_ok = False
                     reasons.append(f"延伸率 {elongation}% 低于指标 {prod['target_elongation']}%")
 
-                test_result = "合格" if is_ok else "不合格"
-                batch_no = f"TEST-{prod['code']}-{int(time.time())}"
+                remarks = data.get('remarks', '') or ("; ".join(reasons) if reasons else "指标均符合TDS规范要求")
+                is_bom = data.get('is_bom_material_test', False) or "【新物料承认】" in remarks
+                
+                if is_bom:
+                    # 如果是新物料承认，则状态先挂起为“钉钉审批中”
+                    test_result = "钉钉审批中"
+                    # 修改 remarks 内的结论指示为“钉钉审批中”以供页面一致性渲染
+                    if "结论：" in remarks:
+                        parts = remarks.split("结论：")
+                        remarks = parts[0] + "结论：钉钉审批中;" + ";".join(parts[1].split(";")[1:])
+                    
+                    batch_no = f"MAT-{prod['code']}-{int(time.time())}"
+                    instance_id = f"DING-MAT-{int(time.time())}-{product_id}"
+                    title = f"新物料承认审批：{prod['name']} 原材料中试及合规承认"
+                    
+                    supplier_val = "未知供应商"
+                    purity_val = "未知纯度"
+                    if "供应商：" in remarks:
+                        supplier_val = remarks.split("供应商：")[1].split(";")[0]
+                    if "规格纯度：" in remarks:
+                        purity_val = remarks.split("规格纯度：")[1].split(";")[0]
+                        
+                    content_dict = {
+                        "product_code": prod['code'],
+                        "product_name": prod['name'],
+                        "supplier": supplier_val,
+                        "purity": purity_val,
+                        "tester": tester,
+                        "submit_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    cursor.execute("""
+                    INSERT INTO dingtalk_logs (instance_id, related_type, related_id, title, content, status, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (instance_id, "MATERIAL", product_id, title, json.dumps(content_dict), "RUNNING", datetime.now()))
+                else:
+                    test_result = "合格" if is_ok else "不合格"
+                    batch_no = f"TEST-{prod['code']}-{int(time.time())}"
 
                 cursor.execute("""
-                INSERT INTO test_records (product_id, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, created_at)
+                INSERT INTO test_records (product_id, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, remarks, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (product_id, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, datetime.now()))
+                """, (product_id, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, remarks, datetime.now().isoformat()))
 
-                cursor.execute("UPDATE products SET status = '测试验证中', updated_at = ? WHERE id = ?", (datetime.now(), product_id))
+                if not is_bom:
+                    cursor.execute("UPDATE products SET status = '测试验证中', updated_at = ? WHERE id = ?", (datetime.now(), product_id))
+                
                 conn.commit()
                 self.send_json({
-                    "message": "质量测试指标已提报归档",
+                    "message": "物料承认已送审，已生成钉钉待办审批" if is_bom else "质量测试指标已提报归档",
                     "batch_no": batch_no,
                     "test_result": test_result,
                     "reasons": reasons
@@ -1085,13 +1122,42 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if related_type == "PRODUCT":
                     if action == "AGREE":
                         # 立项成功，前推到第一道生产工序 “溶铜造液中”
-                        cursor.execute("UPDATE products SET status = '溶铜造液中', updated_at = ? WHERE id = ?", (datetime.now(), related_id))
+                        cursor.execute("UPDATE products SET status = '溅镀金属化中', updated_at = ? WHERE id = ?", (datetime.now(), related_id))
                         cursor.execute("""
                         INSERT INTO development_logs (product_id, stage, device_name, device_code, parameters, operator, remarks, created_at)
-                        VALUES (?, '溶铜工段', '溶铜车间系统', 'SYS-溶铜-00', '{"info":"立项通过，系统开启配方研制"}', '系统', '钉钉立项审批通过，研发阶段开启。', ?)
+                        VALUES (?, '溅镀工段', '磁控溅镀系统', 'SYS-溅镀-00', '{"info":"立项通过，系统开启溅镀金属化"}', '系统', '钉钉立项审批通过，研发阶段开启。', ?)
                         """, (related_id, datetime.now()))
                     else:
                         cursor.execute("UPDATE products SET status = '立项中', updated_at = ? WHERE id = ?", (datetime.now(), related_id))
+
+                # 8.3 审批类型为：物料承认 MATERIAL
+                elif related_type == "MATERIAL":
+                    cursor.execute("""
+                    SELECT * FROM test_records 
+                    WHERE product_id = ? AND test_result = '钉钉审批中' AND remarks LIKE '%【新物料承认】%'
+                    ORDER BY id DESC LIMIT 1
+                    """, (related_id,))
+                    record = cursor.fetchone()
+                    if record:
+                        raw_remarks = record['remarks']
+                        if action == "AGREE":
+                            new_res = "合格"
+                            if "结论：钉钉审批中" in raw_remarks:
+                                raw_remarks = raw_remarks.replace("结论：钉钉审批中", "结论：合格 (已由钉钉批准放行)")
+                            else:
+                                raw_remarks = raw_remarks.replace("结论：特采", "结论：特采 (已由钉钉特采批准)")
+                        else:
+                            new_res = "不合格"
+                            if "结论：" in raw_remarks:
+                                raw_remarks = raw_remarks.replace("结论：钉钉审批中", "结论：不合格 (已由钉钉拒绝)")
+                                raw_remarks = raw_remarks.replace("结论：合格", "结论：不合格 (已由钉钉拒绝)")
+                                raw_remarks = raw_remarks.replace("结论：特采", "结论：不合格 (已由钉钉拒绝)")
+                        
+                        cursor.execute("""
+                        UPDATE test_records 
+                        SET test_result = ?, remarks = ? 
+                        WHERE id = ?
+                        """, (new_res, raw_remarks, record['id']))
 
                 # 8.2 审批类型为：工程设变 ECN
                 elif related_type == "ECN":
@@ -1164,7 +1230,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 try:
                                     s_params = json.loads(r['standard_params'])
                                     modified = False
-                                    if r['stage_name'] == "表面处理工段":
+                                    if r['stage_name'] == "PA后处理":
                                         if conc_match:
                                             s_params['silane_conc'] = silane_conc
                                             modified = True

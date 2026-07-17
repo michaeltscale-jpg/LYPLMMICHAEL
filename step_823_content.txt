@@ -1,0 +1,648 @@
+    lucide.createIcons({
+        attrs: {
+            "stroke-width": 2
+        },
+        nameAttr: "data-lucide",
+        node: timelineEl
+    });
+}
+
+// ======================== 管控模块四：DMS 文管中心 (Document Management System) ========================
+const DMS_TEMPLATES_SPEC = {
+    // G1
+    "NPI_Project_Proposal.pdf": {
+        name: "高频铜箔开发立项申请书",
+        description: "界定铜箔研发范围、市场应用前景、预计投资收益及项目核心班子。",
+        fields: [
+            { key: "项目代号", val: "例：PTS-AI-01 (高频高速专用)" },
+            { key: "市场背景", val: "随着5G高频与AI算力大爆发，服务器PCB板对极低损耗铜箔提出迫切需求" },
+            { key: "开发周期", val: "预计45天（G1-G5）" },
+            { key: "投资估算", val: "研发试产预算: 150万元" },
+            { key: "项目组", val: "项目经理：张经理；工艺主管：李工；品质主管：陈工" }
+        ],
+        checklist: ["立项论证意见书", "前沿竞品指标对标单", "中试资源申请表"]
+    },
+    "Technical_Agreement_TDS.pdf": {
+        name: "技术协议规格定义书(TDS)",
+        description: "固化目标规格限值，作为研发阶段及终点检验的基准协议标尺。",
+        fields: [
+            { key: "毛面粗糙度 Rz 限值", val: "目标值 <= 1.20 μm (或依产品类别而定)" },
+            { key: "剥离强度下限", val: "目标值 >= 0.75 N/mm" },
+            { key: "10GHz Df 传输损耗", val: "目标值 <= 0.0013" },
+            { key: "抗拉强度极值", val: "目标值 >= 310 MPa" },
+            { key: "延伸率极限", val: "目标值 >= 2.5 %" }
+        ],
+        checklist: ["技术协议会签单", "产品标称厚度偏差标准", "客户特殊物性规格输入表"]
+    },
+    "Feasibility_Benchmark.pdf": {
+        name: "研发可行性分析及竞品对标报告",
+        description: "对标日本三井、圣戈班等国际先进铜箔技术指标，论证量产线改造可行性。",
+        fields: [
+            { key: "技术可行性", val: "现有4#生箔机及添加剂系统可支撑超薄与超低粗糙度均匀化电解" },
+            { key: "对标对象", val: "日本三井 RTF-Type / VLP-Type 高频铜箔" },
+            { key: "工艺瓶颈", val: "溶铜电解液中Cl离子及微量添加剂高精度闭环在线滴定" },
+            { key: "专利合规", val: "配方不涉及侵权风险，为自主知识产权明胶/骨胶添加物方案" }
+        ],
+        checklist: ["专利查新检索报告", "关键设备负荷测算表", "物料供应本地化评估单"]
+    },
+    // G2
+    "Formulation_BOM_V1.0.xlsx": {
+        name: "首发配方清单(BOM V1.0)",
+        description: "确定初始阴极生箔液添加剂与表处化学配比标准表。",
+        fields: [
+            { key: "高纯铜线配比", val: "占比 99.85%" },
+            { key: "电子级硫酸浓度", val: "占比 0.15%" },
+            { key: "生箔添加剂 Gel", val: "基准 5.2 ppm (生箔结晶晶向控制)" },
+            { key: "生箔添加剂 Hec", val: "基准 3.5 ppm" },
+            { key: "生箔添加剂 S", val: "基准 8.0 ppm" },
+            { key: "硅烷偶联剂类型", val: "常规硅烷-201 / 浓度基准 0.8%" }
+        ],
+        checklist: ["配方安全性评估单", "供应商化学品安全规范MSDS", "新物料准入品质控制卡"]
+    },
+    "Electrolyte_Chemistry_Spec.pdf": {
+        name: "电解液组分化学检测规范",
+        description: "为溶铜工段及循环槽液的铜酸浓度、杂质微量分析确立滴定标准。",
+        fields: [
+            { key: "Cu离子浓度控制", val: "标准范围：80 ~ 85 g/L" },
+            { key: "H2SO4硫酸浓度控制", val: "标准范围：110 ~ 120 g/L" },
+            { key: "Cl氯离子电解液限值", val: "标准范围：30 ~ 35 ppm" },
+            { key: "Fe/Pb微量金属杂质", val: "最大允许限值：Fe <= 50 ppm, Pb <= 5 ppm" }
+        ],
+        checklist: ["电解液分析仪器校准记录", "槽液定时滴定取样路线图", "异常槽液调整备忘录"]
+    },
+    "Grain_SEM_Analysis.pdf": {
+        name: "铜箔金相微观晶粒分析报告",
+        description: "通过扫描电镜 (SEM) 观测生箔结晶微观结构，确保晶粒均匀微细且无粗大结晶。",
+        fields: [
+            { key: "观测倍率", val: "SEM 2000x / 5000x 金相显微" },
+            { key: "毛面微观形貌", val: "呈均匀圆锥状微米颗粒，无长条柱状晶或撕裂坑" },
+            { key: "截面晶粒度", val: "平均晶粒直径 <= 1.5 μm" },
+            { key: "结晶取向指数", val: "XRD (220)/(111) 面衍射晶向特定强度比" }
+        ],
+        checklist: ["扫描电镜SEM观测原片", "晶粒度标定数据表", "粗晶预防控制卡"]
+    },
+    // G3
+    "DVT_Routing_Card.xlsx": {
+        name: "中试工艺路线图与参数卡",
+        description: "固化中试试产的工段设备编号及标准运行参数阈值范围。",
+        fields: [
+            { key: "溶铜运行参数", val: "槽液温度 80±2 ℃，流量 450±10 L/min" },
+            { key: "生箔运行参数", val: "电流密度 65±2 A/dm²，机台电压 6.8±0.1 V" },
+            { key: "表处运行参数", val: "极板电流 1800±50 A，干燥温度 130±5 ℃" },
+            { key: "分切运行参数", val: "收卷张力 220±10 N，分切速度 150±5 m/min" }
+        ],
+        checklist: ["工艺规程签审单", "设备点检指导卡", "中试防错(Poka-yoke)核对清单"]
+    },
+    "Drum_Deviation_Study.pdf": {
+        name: "生箔阴极辊工艺偏离分析报告",
+        description: "测试阴极辊运行温差波动及电流密度分布对铜箔厚度及粗糙度极差的影响。",
+        fields: [
+            { key: "测试设备", val: "2#生箔机阴极钛辊" },
+            { key: "温度极差测试", val: "阴极辊左-中-right三点表面温差 <= 0.8 ℃" },
+            { key: "偏离拉偏极值", val: "在电流密度拉偏5%时，分析结晶均匀度和粗糙度Rz极差波动" },
+            { key: "结论预防", val: "当辊面局部温差达1.5℃时，Rz极差将增加0.15μm，需开启辊温水冷闭环" }
+        ],
+        checklist: ["阴极辊表面温度极差数据表", "厚度横向分布雷达图", "极差异常纠正单"]
+    },
+    "DVT_Pilot_Lot_Report.pdf": {
+        name: "中试首批试产测试报告",
+        description: "中试千米卷材全检物性数据分析，判定物理和电气性能达标状态。",
+        fields: [
+            { key: "试产长度", val: "双轴收卷 1200 m" },
+            { key: "拉伸性能", val: "抗拉强度均值 322 MPa (目标 >=310)，延伸率 2.8% (目标 >=2.5)" },
+            { key: "高频损耗 Df", val: "10GHz 实测 0.00122 (目标 <=0.00130)" },
+            { key: "剥离强度", val: "常态剥离 0.78 N/mm，热应力后剥离 0.72 N/mm" }
+        ],
+        checklist: ["中试性能全检记录表", "工艺偏离控制会商单", "客户样品送检合格证"]
+    },
+    // G4
+    "PVT_Industrial_Spec.pdf": {
+        name: "生箔及表处量产标准作业指导书(SOP)",
+        description: "PVT阶段固化的量产线标准操作法与异常应急熔断机制。",
+        fields: [
+            { key: "生箔操作规程", val: "极板极距校准 8±0.2 mm，阴极辊面硬度定期打磨标准" },
+            { key: "表处操作规程", val: "化学防氧化槽 pH 值 4.2~4.8，烘干段热风风速 18 m/s" },
+            { key: "溶铜操作规程", val: "铜颗粒酸洗标准，酸雾回收排风频次" },
+            { key: "突发异常熔断", val: "当在线电导率偏差 > 10% 时，需即时切断电镀主电源并排空溢流槽" }
+        ],
+        checklist: ["作业指导书会签审批单", "安全应急响应预案书", "关键岗位资质矩阵表"]
+    },
+    "PVT_Yield_Analysis.pdf": {
+        name: "PVT生产验证良率及波动性分析报告",
+        description: "分析连续三批次大货生产的厚度极差、Rz波动和力学缺陷，计算CPK值。",
+        fields: [
+            { key: "评估批次", val: "批次 P-PTS-0701 / 0702 / 0703 连续大卷试产" },
+            { key: "厚度极差波动", val: "均值 12.03 μm，极差波动 0.22 μm" },
+            { key: "物性过程能力", val: "抗拉强度 Cpk = 1.68，延伸率 Cpk = 1.55" },
+            { key: "缺陷分布", val: "针孔率 0.02 个/㎡，无针孔及撕边撕口严重缺陷" }
+        ],
+        checklist: ["物性过程能力CPK分析表", "过程控制图(SPC)趋势图", "良率异常分析改善报告"]
+    },
+    "Customer_DVT_Feedback.pdf": {
+        name: "客户二方及终端现场审核反馈报告",
+        description: "台达、华通等大客户针对样品试装及现场工艺稽核提出的整改闭环单。",
+        fields: [
+            { key: "审核客户", val: "台达电子品质稽核组 / 华通研发中心" },
+            { key: "现场发现项", val: "3#表处烘干段辊面防粘特氟龙层存在微量划痕" },
+            { key: "试装结论", val: "高频板压合良率 99.2%，剥离强度热冲击测试无分层起泡" },
+            { key: "整改纠正", val: "已更换烘干段特氟龙保护辊，并升级清洗气刀防堵孔网" }
+        ],
+        checklist: ["客户现场发现项整改回执", "大客户试装认可签证书", "纠正预防措施(CAPA)跟踪卡"]
+    },
+    // G5
+    "Mass_Production_Release.pdf": {
+        name: "量产批准及研发结项归档报告",
+        description: "五阶段门禁完整闭环，NPI结项，产品正式切入量产主数据通道。",
+        fields: [
+            { key: "结项状态", val: "NPI G1-G5 五大门禁闭环，全票签署通过" },
+            { key: "量产交接", val: "交接至生箔车间及品质部，技术资料受控分发完毕" },
+            { key: "终产率目标", val: "综合一次合格良率定标为 95.5%" },
+            { key: "文件清单归档", val: "TDS、BOM、SOP、FMEA、QC工程表已全部归档入DMS系统" }
+        ],
+        checklist: ["新品量产移交单", "项目预算决算审计书", "团队结项嘉奖提名表"]
+    },
+    "FMEA_Risk_Registry.xlsx": {
+        name: "设计及制造潜在失效模式分析(FMEA)",
+        description: "识别铜箔制造全工序潜在风险因子，确立RPN严重度及纠正措施。",
+        fields: [
+            { key: "核心风险-生箔", val: "添加剂瞬时波动引发粗晶 (RPN: 120) -> 措施: 升级计量泵为双闭环称重给料" },
+            { key: "核心风险-表处", val: "硅烷皮膜不均引发剥离斑点 (RPN: 105) -> 措施: 引入激光在线测厚及浓度回馈" },
+            { key: "核心风险-溶铜", val: "铜线杂质偏高污染槽液 (RPN: 90) -> 措施: 强制每批高纯铜原材料谱图全元素检验" },
+            { key: "核心风险-分切", val: "张力不稳致端面错位起皱 (RPN: 80) -> 措施: SOP规定收卷恒张力锥度曲线校准" }
+        ],
+        checklist: ["设计FMEA分析记录", "制造FMEA控制计划(CP)", "高RPN风险降低追踪表"]
+    },
+    "QC_Engineering_Standard.xlsx": {
+        name: "量产质量控制工程表(QC卡)",
+        description: "确定量产各工段的首检、巡检、终检频次、控制工具及检验指标基准。",
+        fields: [
+            { key: "溶铜控制点", val: "铜酸比重每2小时在线滴定，Cl离子每班次光谱分析" },
+            { key: "生箔控制点", val: "厚度均一性在线扫描仪连续测量，表面粗糙度每卷首尾采样" },
+            { key: "表处控制点", val: "剥离强度每批次层压样板检验，耐热变色每班次烘箱拉偏" },
+            { key: "出货控制点", val: "外观缺陷 100% 自动光学检测 (AOI) 扫描，抗拉强度批批全检" }
+        ],
+        checklist: ["QC工程表签审单", "过程计量器具台账", "出货检验规范(AQL)标准书"]
+    }
+};
+
+window.renderDmsPanel = function() {
+    const filterCategory = document.getElementById("dms-category-filter").value;
+    const listContainer = document.getElementById("dms-products-list");
+    if (!listContainer) return;
+    listContainer.innerHTML = "";
+
+    const filtered = state.products.filter(p => !filterCategory || p.category === filterCategory);
+
+    if (filtered.length === 0) {
+        listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:20px;">无匹配产品</div>`;
+        return;
+    }
+
+    filtered.forEach(p => {
+        const item = document.createElement("div");
+        item.className = `sidebar-prod-item ${state.dmsActiveProductId === p.id ? 'active' : ''}`;
+        item.onclick = () => {
+            state.dmsActiveProductId = p.id;
+            saveStateToLocalStorage();
+            renderDmsPanel();
+        };
+
+        let badgeClass = "badge-info";
+        if (p.status === "量产中") badgeClass = "badge-success";
+        else if (p.status.includes("审批")) badgeClass = "badge-warning";
+        
+        item.innerHTML = `
+            <div style="font-weight: 700; font-size: 0.82rem; margin-bottom: 2px;">${p.name}</div>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
+                <span>代号: ${p.code}</span>
+                <span class="badge ${badgeClass}" style="transform:scale(0.9); transform-origin:right;">${p.status}</span>
+            </div>
+        `;
+        listContainer.appendChild(item);
+    });
+
+    const activeProd = state.products.find(p => p.id === state.dmsActiveProductId) || filtered[0];
+    if (activeProd) {
+        state.dmsActiveProductId = activeProd.id;
+        document.getElementById("dms-active-product-name").innerText = `${activeProd.name} (${activeProd.code})`;
+        renderDmsDeliverablesTable(activeProd);
+    }
+};
+
+function renderDmsDeliverablesTable(product) {
+    const tbody = document.querySelector("#dms-deliverables-table tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+
+    // 15个标准交付文档
+    const docs = [
+        { phase: "G1 立项阶段", code: "NPI_Project_Proposal.pdf", spec: DMS_TEMPLATES_SPEC["NPI_Project_Proposal.pdf"] },
+        { phase: "G1 立项阶段", code: "Technical_Agreement_TDS.pdf", spec: DMS_TEMPLATES_SPEC["Technical_Agreement_TDS.pdf"] },
+        { phase: "G1 立项阶段", code: "Feasibility_Benchmark.pdf", spec: DMS_TEMPLATES_SPEC["Feasibility_Benchmark.pdf"] },
+        
+        { phase: "G2 配方阶段", code: "Formulation_BOM_V1.0.xlsx", spec: DMS_TEMPLATES_SPEC["Formulation_BOM_V1.0.xlsx"] },
+        { phase: "G2 配方阶段", code: "Electrolyte_Chemistry_Spec.pdf", spec: DMS_TEMPLATES_SPEC["Electrolyte_Chemistry_Spec.pdf"] },
+        { phase: "G2 配方阶段", code: "Grain_SEM_Analysis.pdf", spec: DMS_TEMPLATES_SPEC["Grain_SEM_Analysis.pdf"] },
+        
+        { phase: "G3 中试阶段", code: "DVT_Routing_Card.xlsx", spec: DMS_TEMPLATES_SPEC["DVT_Routing_Card.xlsx"] },
+        { phase: "G3 中试阶段", code: "Drum_Deviation_Study.pdf", spec: DMS_TEMPLATES_SPEC["Drum_Deviation_Study.pdf"] },
+        { phase: "G3 中试阶段", code: "DVT_Pilot_Lot_Report.pdf", spec: DMS_TEMPLATES_SPEC["DVT_Pilot_Lot_Report.pdf"] },
+        
+        { phase: "G4 验证阶段", code: "PVT_Industrial_Spec.pdf", spec: DMS_TEMPLATES_SPEC["PVT_Industrial_Spec.pdf"] },
+        { phase: "G4 验证阶段", code: "PVT_Yield_Analysis.pdf", spec: DMS_TEMPLATES_SPEC["PVT_Yield_Analysis.pdf"] },
+        { phase: "G4 验证阶段", code: "Customer_DVT_Feedback.pdf", spec: DMS_TEMPLATES_SPEC["Customer_DVT_Feedback.pdf"] },
+        
+        { phase: "G5 量产阶段", code: "Mass_Production_Release.pdf", spec: DMS_TEMPLATES_SPEC["Mass_Production_Release.pdf"] },
+        { phase: "G5 量产阶段", code: "FMEA_Risk_Registry.xlsx", spec: DMS_TEMPLATES_SPEC["FMEA_Risk_Registry.xlsx"] },
+        { phase: "G5 量产阶段", code: "QC_Engineering_Standard.xlsx", spec: DMS_TEMPLATES_SPEC["QC_Engineering_Standard.xlsx"] }
+    ];
+
+    docs.forEach(d => {
+        const tr = document.createElement("tr");
+        
+        // 智能关联版本
+        let versionText = "V1.0 (模版期)";
+        let statusBadge = `<span class="badge badge-secondary">模版预置</span>`;
+        
+        if (d.code === "Technical_Agreement_TDS.pdf" && product.tds) {
+            versionText = product.tds.tds_version || "V1.0";
+            statusBadge = `<span class="badge badge-success">受控发布</span>`;
+        } else if (d.code === "Formulation_BOM_V1.0.xlsx" && product.bom) {
+            versionText = product.bom.version || "V1.0";
+            statusBadge = `<span class="badge badge-success">受控归档</span>`;
+        } else if (d.code === "DVT_Routing_Card.xlsx" && product.routing_list && product.routing_list.length > 0) {
+            // 获取活动版本
+            const activeRouting = product.routing_list.find(r => r.status === '活动') || product.routing_list[0];
+            versionText = activeRouting.version || "R1.0";
+            statusBadge = `<span class="badge badge-success">工艺定稿</span>`;
+        }
+
+        tr.innerHTML = `
+            <td style="font-size:0.72rem; color:var(--text-secondary);">${d.phase}</td>
+            <td style="font-weight:600; font-size:0.75rem;">${d.spec.name}</td>
+            <td style="font-size:0.72rem; color:var(--text-muted); font-family:monospace;">${d.code}</td>
+            <td style="font-size:0.72rem; font-family:monospace;">${versionText}</td>
+            <td>${statusBadge}</td>
+            <td>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-xs btn-outline" onclick="previewDmsTemplate('${d.code}', '${d.spec.name}')">
+                        <i data-lucide="eye" style="width:11px; height:11px; display:inline-block; vertical-align:middle; margin-top:-2px;"></i> 预览
+                    </button>
+                    <button class="btn-xs btn-secondary" onclick="downloadDmsTemplate('${d.code}', '${d.spec.name}')">
+                        <i data-lucide="download" style="width:11px; height:11px; display:inline-block; vertical-align:middle; margin-top:-2px;"></i> 下载
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    lucide.createIcons({
+        attrs: { "stroke-width": 1.8 },
+        nameAttr: "data-lucide",
+        node: tbody
+    });
+}
+
+window.previewDmsTemplate = function(fileCode, fileName) {
+    const spec = DMS_TEMPLATES_SPEC[fileCode];
+    if (!spec) {
+        showToast("该文件规格尚未配置模版预览数据", "warning");
+        return;
+    }
+
+    const selectedProd = state.products.find(p => p.id === state.dmsActiveProductId) || {};
+
+    // 判定是否有正式发布的活动 TDS 规格
+    const hasActiveTds = fileCode === "Technical_Agreement_TDS.pdf" && selectedProd.tds && selectedProd.tds.tds_items && selectedProd.tds.tds_items.length > 0;
+    const activeTdsVersion = hasActiveTds ? selectedProd.tds.tds_version : null;
+
+    // 判定是否有正式定型的活动 BOM 配方
+    const hasActiveBom = fileCode === "Formulation_BOM_V1.0.xlsx" && selectedProd.bom && selectedProd.bom.bom_items && selectedProd.bom.bom_items.length > 0;
+    const activeBomVersion = hasActiveBom ? selectedProd.bom.version : null;
+
+    // 动态计算文件名
+    let finalFileName = fileName;
+    if (activeTdsVersion) {
+        finalFileName = `Technical_Agreement_TDS_${activeTdsVersion}.pdf`;
+    } else if (activeBomVersion) {
+        finalFileName = `Formulation_BOM_${activeBomVersion}.pdf`;
+    }
+
+    // 设置 PDF 标题
+    document.getElementById("dms-pdf-title").innerText = `${finalFileName} - NPI研发受控归档文档`;
+
+    // 动态生成正文表格 Header 与 Rows
+    let tableHeaderHtml = "";
+    let fieldsHtml = "";
+    
+    if (hasActiveTds) {
+        tableHeaderHtml = `
+            <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0; text-align:center; width:45px;">序号</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0;">检验项目 (ZH / EN)</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0; text-align:center; width:120px;">技术规格限值</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569;">检测标准方法</th>
+            </tr>
+        `;
+        selectedProd.tds.tds_items.forEach((item, idx) => {
+            const num = item.item_no !== undefined ? item.item_no : (idx + 1);
+            const fullName = `${item.name_zh || ''}${item.name_en ? ' (' + item.name_en + ')' : ''}`;
+            const limit = `${item.spec || ''} ${item.unit || ''}`;
+            const method = item.test_standard || '内控企业标准';
+            
+            fieldsHtml += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px 10px; font-size: 0.72rem; border-right: 1px solid #e2e8f0; text-align:center; color:#64748b;">${num}</td>
+                    <td style="padding: 8px 10px; font-weight: 600; color: #334155; font-size: 0.72rem; border-right: 1px solid #e2e8f0;">${fullName}</td>
+                    <td style="padding: 8px 10px; color: #b91c1c; font-weight: 700; font-size: 0.72rem; border-right: 1px solid #e2e8f0; text-align:center; background:#fff5f5;">${limit}</td>
+                    <td style="padding: 8px 10px; color: #475569; font-size: 0.72rem;">${method}</td>
+                </tr>
+            `;
+        });
+    } else if (hasActiveBom) {
+        tableHeaderHtml = `
+            <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0; text-align:center; width:45px;">序号</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0;">原料配方代码</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0;">物料中文名称及规格</th>
+                <th style="padding: 8px 10px; font-size: 0.72rem; font-weight: bold; color: #475569; text-align:center; width:120px;">投料配比值</th>
+            </tr>
+        `;
+        selectedProd.bom.bom_items.forEach((item, idx) => {
+            const num = idx + 1;
+            const matCode = item.material_code || `MAT-ADD-${num}`;
+            const matName = `${item.material_name || ''}${item.material_spec ? ' (' + item.material_spec + ')' : ''}`;
+            const ratio = `${item.ratio_value || '0'} ${item.unit || '%'}`;
+            
+            fieldsHtml += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 8px 10px; font-size: 0.72rem; border-right: 1px solid #e2e8f0; text-align:center; color:#64748b;">${num}</td>
+                    <td style="padding: 8px 10px; font-size: 0.72rem; border-right: 1px solid #e2e8f0; font-family:monospace;">${matCode}</td>
+                    <td style="padding: 8px 10px; font-weight: 600; color: #334155; font-size: 0.72rem; border-right: 1px solid #e2e8f0;">${matName}</td>
+                    <td style="padding: 8px 10px; color: #15803d; font-weight: 700; font-size: 0.72rem; text-align:center; background:#f0fdf4;">${ratio}</td>
+                </tr>
+            `;
+        });
+    } else {
+        tableHeaderHtml = `
+            <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                <th style="padding: 8px 12px; font-size: 0.74rem; font-weight: bold; color: #475569; border-right: 1px solid #e2e8f0;">规范模板字段</th>
+                <th style="padding: 8px 12px; font-size: 0.74rem; font-weight: bold; color: #475569;">标准取值与填报要求</th>
+            </tr>
+        `;
+        spec.fields.forEach(f => {
+            fieldsHtml += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 10px 12px; font-weight: 600; color: #334155; font-size: 0.76rem; width: 160px; background: #f8fafc; border-right: 1px solid #e2e8f0;">${f.key}</td>
+                    <td style="padding: 10px 12px; color: #1e293b; font-size: 0.76rem;">${f.val}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // 动态生成合规核对单
+    let checklistHtml = "";
+    spec.checklist.forEach(c => {
+        checklistHtml += `
+            <li style="display: flex; align-items: center; gap: 8px; font-size: 0.74rem; color: #475569; padding: 2px 0;">
+                <i data-lucide="check-square" style="width: 13px; height: 13px; color: #10b981; flex-shrink:0;"></i>
+                <span>${c}</span>
+            </li>
+        `;
+    });
+
+    // 水印与红色印章样式
+    const stampSvg = `
+        <div style="position: absolute; top: 40px; right: 40px; z-index: 15; transform: rotate(-8deg); pointer-events: none; opacity: 0.85;">
+            <svg width="105" height="105" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#ef4444" stroke-width="2.2" />
+                <circle cx="60" cy="60" r="49" fill="none" stroke="#ef4444" stroke-width="0.8" />
+                <polygon points="60,37 63,47 73,47 65,53 68,63 60,57 52,63 55,53 47,47 57,47" fill="#ef4444" />
+                <path id="circlePath" d="M 18,60 A 42,42 0 0,1 102,60" fill="none" stroke="none" />
+                <text fill="#ef4444" font-size="8.2" font-weight="bold" letter-spacing="1">
+                    <textPath href="#circlePath" startOffset="50%" text-anchor="middle">
+                        GHZ 高频铜箔研发中心
+                    </textPath>
+                </text>
+                <path id="circlePathBottom" d="M 102,60 A 42,42 0 0,1 18,60" fill="none" stroke="none" />
+                <text fill="#ef4444" font-size="8.8" font-weight="bold" letter-spacing="1.2">
+                    <textPath href="#circlePathBottom" startOffset="50%" text-anchor="middle">
+                        NPI 受控文件专用章
+                    </textPath>
+                </text>
+            </svg>
+        </div>
+    `;
+
+    const canvas = document.getElementById("dms-pdf-canvas");
+    if (!canvas) return;
+    canvas.innerHTML = "";
+
+    // 创建 A4 容器
+    const a4Page = document.createElement("div");
+    a4Page.style.width = "100%";
+    a4Page.style.maxWidth = "660px";
+    a4Page.style.minHeight = "800px";
+    a4Page.style.background = "#ffffff";
+    a4Page.style.color = "#0f172a";
+    a4Page.style.padding = "40px";
+    a4Page.style.boxShadow = "0 8px 30px rgba(0, 0, 0, 0.4)";
+    a4Page.style.margin = "0 auto";
+    a4Page.style.position = "relative";
+    a4Page.style.overflow = "hidden";
+    a4Page.style.borderRadius = "4px";
+
+    // 创建斜平铺受控水印
+    const watermark = document.createElement("div");
+    watermark.style.position = "absolute";
+    watermark.style.top = "0";
+    watermark.style.left = "0";
+    watermark.style.width = "100%";
+    watermark.style.height = "100%";
+    watermark.style.pointerEvents = "none";
+    watermark.style.zIndex = "10";
+    watermark.style.opacity = "0.04";
+    watermark.style.backgroundImage = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><text x='30' y='100' font-size='12' font-weight='bold' fill='%23000000' transform='rotate(-30 100 100)'>NPI CONTROLLED</text><text x='45' y='120' font-size='10' fill='%23000000' transform='rotate(-30 100 100)'>受控文件 严禁复制</text></svg>")`;
+
+    a4Page.appendChild(watermark);
+
+    // 将印章及受控正文渲染进 A4 纸张
+    const containerDiv = document.createElement("div");
+    containerDiv.style.position = "relative";
+    containerDiv.style.zIndex = "12";
+    
+    // 动态拼接版本
+    let versionLabel = "V1.0.0 受控版";
+    if (activeTdsVersion) {
+        versionLabel = `${activeTdsVersion} 正式发布版`;
+    } else if (activeBomVersion) {
+        versionLabel = `${activeBomVersion} 受控定型版`;
+    }
+    const parameterTitle = (activeTdsVersion || activeBomVersion) ? "二、 核心规范指标与参数数据" : "二、 核心规范指标与参数样表";
+
+    containerDiv.innerHTML = `
+        ${stampSvg}
+        
+        <!-- 文件头部 -->
+        <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px;">
+            <div style="font-size: 0.65rem; color: #475569; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px;">GHZ COPPER FOIL CO., LTD. &middot; NPI SYSTEM</div>
+            <h1 style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0;">研发交付物规范与受控技术文档</h1>
+            <div style="font-size: 0.72rem; color: #64748b; margin-top: 4px; font-family: monospace;">文档物理编码：${fileCode}</div>
+        </div>
+
+        <!-- 元信息受控表 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-bottom: 20px; font-size: 0.74rem;">
+            <div>
+                <div style="margin-bottom: 4px;"><strong style="color: #475569;">对应产品：</strong><span style="color: #0f172a; font-weight:600;">${selectedProd.name} (${selectedProd.code})</span></div>
+                <div style="margin-bottom: 4px;"><strong style="color: #475569;">处理配方：</strong><span style="color: #1e3a8a; font-weight:600;">${selectedProd.surface_treatment || 'STD常规'}</span></div>
+                <div><strong style="color: #475569;">管理密级：</strong><span style="color: #ef4444; font-weight:600;">机密 (NPI CONTROLLED)</span></div>
+            </div>
+            <div>
+                <div style="margin-bottom: 4px;"><strong style="color: #475569;">编制部门：</strong><span style="color: #0f172a;">高频铜箔研发中心</span></div>
+                <div style="margin-bottom: 4px;"><strong style="color: #475569;">版本信息：</strong><span style="color: #0f172a; font-family: monospace;">${versionLabel}</span></div>
+                <div><strong style="color: #475569;">当前日期：</strong><span style="color: #0f172a; font-family: monospace;">2026年7月8日</span></div>
+            </div>
+        </div>
+
+        <!-- 说明区 -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 0.82rem; font-weight: bold; color: #0f172a; margin: 0 0 6px 0;">一、 文档目的与大纲说明</h3>
+            <p style="font-size: 0.74rem; line-height: 1.5; color: #334155; margin: 0; text-indent: 20px;">${spec.description}</p>
+        </div>
+
+        <!-- 技术参数与表格正文 -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 0.82rem; font-weight: bold; color: #0f172a; margin: 0 0 8px 0;">${parameterTitle}</h3>
+            <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
+                <table style="width: 100%; border-collapse: collapse; border: none; text-align: left;">
+                    <thead>
+                        ${tableHeaderHtml}
+                    </thead>
+                    <tbody>
+                        ${fieldsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 签署审计Checklist -->
+        <div style="background: #ecfdf5; border: 1px dashed #a7f3d0; border-radius: 6px; padding: 14px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.76rem; font-weight: bold; color: #065f46; margin: 0 0 8px 0; display: flex; align-items: center; gap: 4px;">
+                <i data-lucide="shield-check" style="width:14px; height:14px;"></i> 合规性审计核对单 (Checklist)
+            </h4>
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px;">
+                ${checklistHtml}
+            </ul>
+        </div>
+
+        <!-- 签署栏 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; font-size: 0.7rem; border-top: 1px dashed #cbd5e1; padding-top: 16px; color: #475569;">
+            <div>
+                <strong>起草人签署：</strong>
+                <div style="font-style: italic; font-weight: bold; font-family: Georgia, serif; font-size: 1.1rem; color: #1e3a8a; height: 28px; line-height: 28px; padding-left: 10px;">
+                    ${selectedProd.creator || "张经理"}
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.6rem;">研发项目经理</div>
+            </div>
+            <div>
+                <strong>校对人签署：</strong>
+                <div style="font-style: italic; font-weight: bold; font-family: Georgia, serif; font-size: 1.1rem; color: #1e3a8a; height: 28px; line-height: 28px; padding-left: 10px;">
+                    李建国
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.6rem;">工艺高级专家</div>
+            </div>
+            <div>
+                <strong>批准人签署：</strong>
+                <div style="font-style: italic; font-weight: bold; font-family: Georgia, serif; font-size: 1.1rem; color: #1e3a8a; height: 28px; line-height: 28px; padding-left: 10px;">
+                    傅青炫
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.6rem;">研发总监</div>
+            </div>
+        </div>
+    `;
+    a4Page.appendChild(containerDiv);
+    canvas.appendChild(a4Page);
+
+    // 绑定顶部下载按钮
+    document.getElementById("btn-dms-pdf-download").onclick = () => {
+        closeModal("modal-dms-template-preview");
+        downloadDmsTemplate(fileCode, finalFileName);
+    };
+
+    openModal("modal-dms-template-preview");
+
+    lucide.createIcons({
+        attrs: {
+            "stroke-width": 2
+        },
+        nameAttr: "data-lucide",
+        node: canvas
+    });
+};
+
+window.downloadDmsTemplate = function(fileCode, fileName) {
+    const selectedProd = state.products.find(p => p.id === state.dmsActiveProductId) || {};
+    
+    // 判定是否有 TDS 和 BOM
+    const hasActiveTds = fileCode === "Technical_Agreement_TDS.pdf" && selectedProd.tds && selectedProd.tds.tds_items && selectedProd.tds.tds_items.length > 0;
+    const hasActiveBom = fileCode === "Formulation_BOM_V1.0.xlsx" && selectedProd.bom && selectedProd.bom.bom_items && selectedProd.bom.bom_items.length > 0;
+    
+    let displayFileName = fileName;
+    if (hasActiveTds) {
+        displayFileName = `Technical_Agreement_TDS_${selectedProd.tds.tds_version}.csv`;
+    } else if (hasActiveBom) {
+        displayFileName = `Formulation_BOM_${selectedProd.bom.version}.csv`;
+    } else {
+        displayFileName = `${fileCode.split('.')[0]}_模版_CP.csv`;
+    }
+    
+    showToast(`已成功启动受控归档文档下载：${displayFileName}`, "success");
+    
+    const spec = DMS_TEMPLATES_SPEC[fileCode];
+    if (!spec) return;
+
+    let csvContent = "\uFEFF"; // BOM
+    csvContent += `文档受控名称,${hasActiveTds ? ('技术协议规格书_' + selectedProd.tds.tds_version) : (hasActiveBom ? ('配方单BOM_' + selectedProd.bom.version) : spec.name)}\n`;
+    csvContent += `物理文档编码,${fileCode}\n`;
+    csvContent += `管理密级,机密 (NPI受控)\n`;
+    csvContent += `归档说明,${spec.description}\n\n`;
+    
+    if (hasActiveTds) {
+        csvContent += "序号,检验项目,技术规格限值,检测标准方法\n";
+        selectedProd.tds.tds_items.forEach((item, idx) => {
+            const num = item.item_no !== undefined ? item.item_no : (idx + 1);
+            const fullName = `${item.name_zh || ''}${item.name_en ? ' / ' + item.name_en : ''}`;
+            const limit = `${item.spec || ''} ${item.unit || ''}`;
+            const method = item.test_standard || '内控标准';
+            csvContent += `"${num}","${fullName}","${limit}","${method}"\n`;
+        });
+    } else if (hasActiveBom) {
+        csvContent += "序号,原料配方代码,物料中文名称及规格说明,投料配比值\n";
+        selectedProd.bom.bom_items.forEach((item, idx) => {
+            const num = idx + 1;
+            const matCode = item.material_code || `MAT-ADD-${num}`;
+            const matName = `${item.material_name || ''}${item.material_spec ? ' / ' + item.material_spec : ''}`;
+            const ratio = `${item.ratio_value || '0'} ${item.unit || '%'}`;
+            csvContent += `"${num}","${matCode}","${matName}","${ratio}"\n`;
+        });
+    } else {
+        csvContent += "项目节点,参数标准/技术规格\n";
+        spec.fields.forEach(f => {
+            csvContent += `"${f.key}","${f.val}"\n`;
+        });
+    }
+    
+    csvContent += "\n审计确认项\n";
+    spec.checklist.forEach(c => {
+        csvContent += `"${c}","[x] 已由审计委员会签署通过"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute("download", displayFileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
