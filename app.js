@@ -5424,25 +5424,32 @@ window.selectEquipment = function(id) {
     }
     
     // 显示右侧参数面板与子选项卡
-    document.getElementById("ems-mon-placeholder").style.display = "none";
-    document.getElementById("ems-mon-content").style.display = "block";
-    document.getElementById("ems-subtab-container").style.display = "flex";
+    const placeholder = document.getElementById("ems-mon-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+    
+    const content = document.getElementById("ems-mon-content");
+    if (content) content.style.display = "block";
+    
+    const subtabContainer = document.getElementById("ems-subtab-container");
+    if (subtabContainer) subtabContainer.style.display = "flex";
     
     document.getElementById("ems-mon-name").innerText = eq.device_name;
     document.getElementById("ems-mon-code").innerText = eq.device_code;
     
     const badge = document.getElementById("ems-mon-status-badge");
-    badge.innerText = eq.status;
-    const statusColors = {
-        "运行中": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
-        "保养中": { color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
-        "故障停机": { color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
-        "导入中": { color: "#60a5fa", bg: "rgba(96,165,250,0.15)" }
-    };
-    const sc = statusColors[eq.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
-    badge.style.background = sc.bg;
-    badge.style.color = sc.color;
-    badge.style.border = `1px solid ${sc.color}30`;
+    if (badge) {
+        badge.innerText = eq.status;
+        const statusColors = {
+            "运行中": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
+            "保养中": { color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
+            "故障停机": { color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
+            "导入中": { color: "#60a5fa", bg: "rgba(96,165,250,0.15)" }
+        };
+        const sc = statusColors[eq.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
+        badge.style.background = sc.bg;
+        badge.style.color = sc.color;
+        badge.style.border = `1px solid ${sc.color}30`;
+    }
     
     // 下次维保日期
     document.getElementById("ems-mon-next-maint").value = eq.next_maintenance || "";
@@ -6650,8 +6657,10 @@ window.deleteEquipment = async function(id) {
             showToast("设备已成功删除", "success");
             if (state.activeEquipmentId === id) {
                 state.activeEquipmentId = null;
-                document.getElementById("ems-mon-placeholder").style.display = "block";
-                document.getElementById("ems-mon-content").style.display = "none";
+                const placeholder = document.getElementById("ems-mon-placeholder");
+                if (placeholder) placeholder.style.display = "block";
+                const content = document.getElementById("ems-mon-content");
+                if (content) content.style.display = "none";
             }
             await window.fetchEquipmentsAndRender();
         }

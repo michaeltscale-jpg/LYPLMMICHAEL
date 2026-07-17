@@ -708,7 +708,9 @@
                                         <div>
                                             <h4 style="margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--text-primary);" id="ems-mon-name">未选择设备</h4>
                                             <span style="font-family: monospace; font-size: 0.68rem; color: var(--color-primary);" id="ems-mon-code">--</span>
-                                                                 <div id="ems-mon-content" style="display: none;">
+                                        </div>
+                                    </div>
+                                    <div id="ems-mon-content" style="display: none;">
                                         <!-- 子面板 1: 监控与状态调控 -->
                                         <div id="ems-subpanel-monitor" style="display: block;">
                                             <!-- 工艺参数可视化报警区 -->
@@ -756,35 +758,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
-                                        <!-- 子面板 2: 导入项目一条龙管理 -->
-                                        <div id="ems-subpanel-project" style="display: none;">
-                                            <h5 style="margin: 0 0 10px; font-size: 0.74rem; font-weight: 700; color: var(--text-primary); text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
-                                            
-                                            <!-- 里程碑网格卡片图 -->
-                                            <div class="ems-milestone-grid" id="ems-milestone-grid-container">
-                                                <!-- JS 动态渲染 6 大网格节点 -->
-                                            </div>: 0.68rem; flex: 1; padding: 6px;">调至故障</button>
-                                                </div>
-                                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 14px;">
-                                                    <div class="form-group" style="margin: 0; flex: 1;">
-                                                        <input type="date" id="ems-mon-next-maint" class="form-control" style="font-size: 0.7rem; padding: 4px 8px; height: 28px;">
-                                                    </div>
-                                                    <button class="btn-secondary" onclick="updateEquipmentMaintenance()" style="font-size: 0.68rem; padding: 5px 10px; height: 28px; white-space: nowrap;">
-                                                        设定维保期
-                                                    </button>
-                                                </div>
-                                            </div>
 
-                                            <!-- 新增：设备维保与状态履历时间线 -->
-                                            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px;">
-                                                <h5 style="margin: 0 0 8px; font-size: 0.74rem; font-weight: 600; color: #94a3b8; text-transform: uppercase;">📜 设备运行与维保履历</h5>
-                                                <div id="ems-maintenance-logs-timeline" class="ems-timeline" style="max-height: 160px; overflow-y: auto; padding-right: 4px;">
-                                                    <!-- JS 动态渲染履历 -->
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
                                         <!-- 子面板 2: 导入项目一条龙管理 -->
                                         <div id="ems-subpanel-project" style="display: none;">
                                             <h5 style="margin: 0 0 10px; font-size: 0.74rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
