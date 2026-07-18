@@ -5424,6 +5424,9 @@ window.selectEquipment = function(id) {
     }
     
     // 显示右侧参数面板与子选项卡
+    const monitorPanel = document.getElementById("ems-monitor-panel");
+    if (monitorPanel) monitorPanel.style.display = "block";
+    
     const placeholder = document.getElementById("ems-mon-placeholder");
     if (placeholder) placeholder.style.display = "none";
     
@@ -6657,6 +6660,8 @@ window.deleteEquipment = async function(id) {
             showToast("设备已成功删除", "success");
             if (state.activeEquipmentId === id) {
                 state.activeEquipmentId = null;
+                const monitorPanel = document.getElementById("ems-monitor-panel");
+                if (monitorPanel) monitorPanel.style.display = "none";
                 const placeholder = document.getElementById("ems-mon-placeholder");
                 if (placeholder) placeholder.style.display = "block";
                 const content = document.getElementById("ems-mon-content");
