@@ -311,20 +311,28 @@ const STAGE_FIELDS = {
         { key: "cu_conc", name: "铜离子浓度", unit: "g/L", threshold: 1.5 },
         { key: "acid_conc", name: "游离硫酸浓度", unit: "g/L", threshold: 3.0 },
         { key: "polar_gap", name: "阳极阴极极间距", unit: "mm", threshold: 0.5 },
-        { key: "gel_flow", name: "明胶添加剂补充量", unit: "ml/min", threshold: 5.0 },
-        { key: "s_flow", name: "活性硫SPS补充量", unit: "ml/min", threshold: 3.0 }
+        { key: "gel_flow", name: "明胶浓度", unit: "ppm", threshold: 0.5 },
+        { key: "s_flow", name: "SPS浓度", unit: "ppm", threshold: 0.5 },
+        { key: "hec_flow", name: "HEC浓度", unit: "ppm", threshold: 0.5 }
     ],
     "电镀工段": [
-        { key: "current_density", name: "阴极电流密度", unit: "A/dm²", threshold: 2.0 },
-        { key: "drum_speed", name: "阴极辊转速", unit: "m/min", threshold: 0.2 },
-        { key: "electrolyte_temp", name: "电解液槽温度", unit: "℃", threshold: 1.0 },
-        { key: "flow_rate", name: "电解液循环流量", unit: "m³/h", threshold: 10.0 },
-        { key: "cl_conc", name: "电解液氯离子浓度", unit: "ppm", threshold: 2.0 },
-        { key: "cu_conc", name: "铜离子浓度", unit: "g/L", threshold: 1.5 },
-        { key: "acid_conc", name: "游离硫酸浓度", unit: "g/L", threshold: 3.0 },
-        { key: "polar_gap", name: "阳极阴极极间距", unit: "mm", threshold: 0.5 },
-        { key: "gel_flow", name: "明胶添加剂补充量", unit: "ml/min", threshold: 5.0 },
-        { key: "s_flow", name: "活性硫SPS补充量", unit: "ml/min", threshold: 3.0 }
+        { key: "speed", name: "生产速度", unit: "m/min", threshold: 0.05 },
+        { key: "ph", name: "纯水PH值", unit: "", threshold: 0.5 },
+        { key: "conductivity", name: "纯水电导率", unit: "μs/cm", threshold: 0.2 },
+        { key: "cu_conc", name: "硫酸铜浓度", unit: "g/L", threshold: 5.0 },
+        { key: "acid_conc", name: "H2SO4浓度", unit: "g/L", threshold: 5.0 },
+        { key: "cl_conc", name: "氯离子浓度", unit: "ppm", threshold: 5.0 },
+        { key: "rf_b", name: "RF-23 B浓度", unit: "ml/L", threshold: 0.5 },
+        { key: "rf_c", name: "RF-23 C浓度", unit: "ml/L", threshold: 2.0 },
+        { key: "rf_l", name: "RF-23 L浓度", unit: "ml/L", threshold: 1.0 },
+        { key: "temp", name: "铜镀液温度", unit: "℃", threshold: 1.0 },
+        { key: "xl_conc", name: "XL分子浓度", unit: "ml/L", threshold: 20.0 },
+        { key: "anti_ph", name: "抗氧化液PH值", unit: "", threshold: 0.5 },
+        { key: "anti_temp", name: "抗氧化液温度", unit: "℃", threshold: 1.0 },
+        { key: "anti_time", name: "过抗氧化液时间", unit: "s", threshold: 2.0 },
+        { key: "filter_pressure", name: "过滤泵压力", unit: "Kgf/cm²", threshold: 0.1 },
+        { key: "wash_temp", name: "水洗槽温度", unit: "℃", threshold: 2.0 },
+        { key: "oven_temp", name: "烘箱温度", unit: "℃", threshold: 2.0 }
     ],
     "PA后处理": [
         { key: "vacuum", name: "极限真空度", unit: "Pa", threshold: 0.0001 },
@@ -340,6 +348,14 @@ const STAGE_FIELDS = {
         { key: "tension", name: "收卷张力", unit: "N", threshold: 20.0 },
         { key: "slit_speed", name: "PB涂布速度", unit: "m/min", threshold: 10.0 },
         { key: "aoi_defects", name: "PB涂布缺陷数", unit: "个/卷", threshold: 1 }
+    ],
+    "脱膜工段": [
+        { key: "speed", name: "速度", unit: "m/min", threshold: 0.2 },
+        { key: "unwind_tension", name: "放卷张力", unit: "Kg", threshold: 0.5 },
+        { key: "rewind_left_tension", name: "收卷左张力", unit: "Kg", threshold: 0.5 },
+        { key: "rewind_right_tension", name: "收卷右张力", unit: "Kg", threshold: 0.5 },
+        { key: "trim_left_tension", name: "切边左张力", unit: "Kg", threshold: 0.02 },
+        { key: "trim_right_tension", name: "切边右张力", unit: "Kg", threshold: 0.02 }
     ]
 };
 
@@ -352,11 +368,7 @@ const CATEGORY_THICKNESS = {
 };
 
 function getStagesForProduct(category) {
-    if (category === "HIS 载体铜箔") {
-        return ["立项", "溅镀工段", "生箔工段", "PA后处理", "PB涂布", "测试验证", "量产送样"];
-    } else {
-        return ["立项", "溅镀工段", "生箔工段", "PA后处理", "PB涂布", "测试验证", "量产送样"];
-    }
+    return ["立项", "溅镀工段", "生箔工段", "PA后处理", "PB涂布", "脱膜工段", "测试验证", "量产送样"];
 }
 
 function getStatusActiveIndex(status, category) {
@@ -368,6 +380,7 @@ function getStatusActiveIndex(status, category) {
     if (status === "生箔电镀中") return stages.indexOf("生箔工段");
     if (status === "PA后处理中") return stages.indexOf("PA后处理");
     if (status === "PB涂布中") return stages.indexOf("PB涂布");
+    if (status === "脱膜中") return stages.indexOf("脱膜工段");
     if (status === "测试验证中") return stages.indexOf("测试验证");
     if (status === "量产中") return stages.indexOf("量产送样");
     return 0;
@@ -619,6 +632,10 @@ function bindRiskOptions(groupId) {
 
 // Router Switch Tab
 function switchTab(tabId) {
+    if (window.hasModulePermission && !window.hasModulePermission(tabId)) {
+        showToast("【访问受限】您没有该功能主模块的访问权限，请联系管理员分配权限。", "error");
+        return;
+    }
     const prodTabsSection = document.getElementById("sidebar-product-tabs-section");
     const thickTabs = document.getElementById("thickness-tabs-bar");
     if (prodTabsSection && thickTabs) {
@@ -1771,7 +1788,7 @@ function renderProductTabs() {
             dotClass = "green";
         } else if (thicknessDetails.some(t => t.status.includes("审批"))) {
             dotClass = "yellow";
-        } else if (thicknessDetails.some(t => ["溅镀金属化中", "溅镀开发中", "生箔电镀中", "PA后处理中", "PB涂布中", "测试验证中"].includes(t.status))) {
+        } else if (thicknessDetails.some(t => ["溅镀金属化中", "溅镀开发中", "生箔电镀中", "PA后处理中", "PB涂布中", "脱膜中", "测试验证中"].includes(t.status))) {
             dotClass = "blue";
         }
 
@@ -1847,7 +1864,7 @@ function renderThicknessTabs() {
         let dotColor = "#94a3b8"; // gray
         if (status === "量产中") dotColor = "#10b981"; // green
         else if (status.includes("审批")) dotColor = "#f59e0b"; // yellow
-        else if (["溅镀金属化中", "溅镀开发中", "生箔电镀中", "PA后处理中", "PB涂布中", "测试验证中"].includes(status)) dotColor = "#3b82f6"; // blue
+        else if (["溅镀金属化中", "溅镀开发中", "生箔电镀中", "PA后处理中", "PB涂布中", "脱膜中", "测试验证中"].includes(status)) dotColor = "#3b82f6"; // blue
 
         item.innerHTML = `
             <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background-color:${dotColor}; margin-right:4px;"></span>
@@ -2021,54 +2038,74 @@ function updateThicknessTabs(specThickness) {
     const container = document.getElementById("plm-thickness-tabs-container");
     if (container) {
         container.innerHTML = "";
-        if (list.length <= 1) {
-            const singleT = Number(list[0] || specThickness || 12.0);
-            const tStr = (singleT % 1 === 0) ? singleT.toFixed(0) : singleT.toFixed(1);
-            container.innerHTML = `
-                <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 600; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.4); padding: 4px 12px; border-radius: 6px;">
-                    主规格厚度: ${tStr} μm
-                </div>
+        list.forEach(t => {
+            const isActive = Math.abs(Number(specThickness) - Number(t)) < 0.001;
+            
+            const card = document.createElement("div");
+            card.id = `thickness-tab-${t}`;
+            card.onclick = function() {
+                handleThicknessTabClick(Number(t));
+            };
+            
+            card.style.borderRadius = "8px";
+            card.style.padding = "6px 16px";
+            card.style.textAlign = "center";
+            card.style.cursor = "pointer";
+            card.style.transition = "all 0.2s";
+            card.style.minWidth = "64px";
+            
+            if (isActive) {
+                card.style.background = "rgba(56,189,248,0.12)";
+                card.style.border = "1px solid rgba(56,189,248,0.6)";
+                card.style.boxShadow = "0 0 10px rgba(56,189,248,0.2)";
+            } else {
+                card.style.background = "rgba(30,41,59,0.5)";
+                card.style.border = "1px solid rgba(255,255,255,0.07)";
+                card.style.boxShadow = "none";
+            }
+            
+            const tNum = Number(t);
+            const tStr = (tNum % 1 === 0) ? tNum.toFixed(0) : tNum.toFixed(1);
+            const labelColor = isActive ? "#7dd3fc" : "#64748b";
+            const valColor = isActive ? "#38bdf8" : "#64748b";
+            const valWeight = isActive ? "900" : "800";
+            
+            card.innerHTML = `
+                <div style="font-size: 0.6rem; color: ${labelColor}; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
+                <div style="font-size: 0.92rem; font-weight: ${valWeight}; color: ${valColor};">${tStr} μm</div>
             `;
-        } else {
-            list.forEach(t => {
-                const isActive = Math.abs(Number(specThickness) - Number(t)) < 0.001;
-                
-                const card = document.createElement("div");
-                card.id = `thickness-tab-${t}`;
-                card.onclick = function() {
-                    handleThicknessTabClick(Number(t));
-                };
-                
-                card.style.borderRadius = "8px";
-                card.style.padding = "6px 16px";
-                card.style.textAlign = "center";
-                card.style.cursor = "pointer";
-                card.style.transition = "all 0.2s";
-                card.style.minWidth = "64px";
-                
-                if (isActive) {
-                    card.style.background = "rgba(56,189,248,0.12)";
-                    card.style.border = "1px solid rgba(56,189,248,0.6)";
-                    card.style.boxShadow = "0 0 10px rgba(56,189,248,0.2)";
-                } else {
-                    card.style.background = "rgba(30,41,59,0.5)";
-                    card.style.border = "1px solid rgba(255,255,255,0.07)";
-                    card.style.boxShadow = "none";
-                }
-                
-                const tNum = Number(t);
-                const tStr = (tNum % 1 === 0) ? tNum.toFixed(0) : tNum.toFixed(1);
-                const labelColor = isActive ? "#7dd3fc" : "#64748b";
-                const valColor = isActive ? "#38bdf8" : "#64748b";
-                const valWeight = isActive ? "900" : "800";
-                
-                card.innerHTML = `
-                    <div style="font-size: 0.6rem; color: ${labelColor}; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: ${valWeight}; color: ${valColor};">${tStr} μm</div>
-                `;
-                
-                container.appendChild(card);
-            });
+            
+            container.appendChild(card);
+        });
+
+        // Add Clone/Derive button next to thickness tabs
+        const hasPerm = (state.currentUserRole === "Admin" || state.currentUserRole === "Product Manager" || state.currentUserRole === "管理员" || state.currentUserRole === "超级管理员" || state.currentUserRole === "产品经理");
+        if (hasPerm && list.length > 0) {
+            const addCard = document.createElement("div");
+            addCard.style.borderRadius = "8px";
+            addCard.style.padding = "6px 12px";
+            addCard.style.textAlign = "center";
+            addCard.style.cursor = "pointer";
+            addCard.style.transition = "all 0.2s";
+            addCard.style.minWidth = "64px";
+            addCard.style.background = "rgba(16,185,129,0.1)";
+            addCard.style.border = "1px dashed rgba(16,185,129,0.5)";
+            addCard.style.display = "flex";
+            addCard.style.flexDirection = "column";
+            addCard.style.justifyContent = "center";
+            addCard.style.alignItems = "center";
+            
+            addCard.innerHTML = `
+                <div style="font-size: 0.55rem; color: #34d399; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; display:flex; align-items:center; gap:2px;"><i data-lucide="plus" style="width:10px;height:10px;"></i>规格</div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #10b981;">引申克隆</div>
+            `;
+            addCard.onclick = function() {
+                openCloneThicknessModal();
+            };
+            container.appendChild(addCard);
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
         }
     }
 }
@@ -2713,6 +2750,9 @@ function renderRoutingSubpanel() {
     if (!select) return;
     select.innerHTML = "";
 
+    // Reset selected stage index when loading a new product
+    state.activeRoutingStageIdx = undefined;
+
     const history = product.routing_history || {};
     const versions = Object.keys(history).sort().reverse();
 
@@ -2733,6 +2773,7 @@ function renderRoutingSubpanel() {
     }
 
     select.onchange = (e) => {
+        state.activeRoutingStageIdx = undefined;
         renderRoutingStepsForVersion(e.target.value);
     };
 
@@ -2752,13 +2793,23 @@ window.renderRoutingStepsForVersion = function(version) {
     const stages = getStagesForProduct(product.category);
     const activeStageName = stages[activeIndex];
 
+    // Determine the default active step matching current product NPI status
+    let defaultIdx = steps.findIndex(r => r.stage_name === activeStageName && r.status === '活动');
+    if (defaultIdx === -1) {
+        defaultIdx = 0;
+    }
+
+    if (state.activeRoutingStageIdx === undefined || state.activeRoutingStageIdx >= steps.length) {
+        state.activeRoutingStageIdx = defaultIdx;
+    }
+
     // 填充工段快捷导航标签
     const quicknav = document.getElementById("routing-quicknav");
     if (quicknav) {
         quicknav.innerHTML = steps.map((r, idx) => {
-            const isActive = r.stage_name === activeStageName && r.status === '活动';
+            const isActive = idx === state.activeRoutingStageIdx;
             return `<button
-                onclick="document.getElementById('routing-card-${idx}')?.scrollIntoView({behavior:'smooth',block:'start'})"
+                onclick="state.activeRoutingStageIdx = ${idx}; renderRoutingStepsForVersion('${version}');"
                 style="
                     padding: 4px 12px;
                     border-radius: 20px;
@@ -2779,6 +2830,9 @@ window.renderRoutingStepsForVersion = function(version) {
     }
 
     steps.forEach((r, idx) => {
+        if (idx !== state.activeRoutingStageIdx) {
+            return;
+        }
         const card = document.createElement("div");
         card.className = "routing-step-card";
         card.id = `routing-card-${idx}`;
@@ -2935,7 +2989,7 @@ window.addDesignStep = function(stageName, deviceName, deviceCode, standardParam
     const product = state.activeProduct;
     const isHis = product.category === 'HIS 载体铜箔';
 
-    const PRESET_STAGES = ["溅镀工段", "生箔工段", "PA后处理", "PB涂布"];
+    const PRESET_STAGES = ["溅镀工段", "生箔工段", "PA后处理", "PB涂布", "脱膜工段"];
     const isCustomStage = !PRESET_STAGES.includes(stageName);
 
     let optHtml = PRESET_STAGES.map(s => `<option value="${s}" ${s === stageName && !isCustomStage ? 'selected' : ''}>${s}</option>`).join("");
@@ -3252,6 +3306,7 @@ window.addDesignCustomParam = function(btn) {
 };
 
 // 打开单工步就地编辑弹窗
+// 打开单工步就地编辑弹窗
 window.openStepEditModal = function(stepId) {
     if (!checkPermission(["Admin", "Process Engineer"], "编辑工艺工步")) return;
 
@@ -3265,6 +3320,11 @@ window.openStepEditModal = function(stepId) {
     }
     if (!targetStep) targetStep = (product.routing || []).find(s => s.id === stepId);
     if (!targetStep) { showToast("找不到该工步记录", "error"); return; }
+
+    if (window.hasStagePermission && !window.hasStagePermission(targetStep.stage_name)) {
+        showToast(`【权限不足】当前用户无权编辑「${targetStep.stage_name}」的工艺参数及规程。`, "error");
+        return;
+    }
 
     document.getElementById("step-edit-id").value = stepId;
     document.getElementById("step-edit-device-code").value = targetStep.device_code || '';
@@ -3311,7 +3371,7 @@ window.openStepEditModal = function(stepId) {
 
 
 
-    const PRESET_STAGES = ["溅镀工段", "生箔工段", "PA后处理", "PB涂布"];
+    const PRESET_STAGES = ["溅镀工段", "生箔工段", "PA后处理", "PB涂布", "脱膜工段"];
     const stageSelect = document.getElementById("step-edit-stage-select");
     const customInput = document.getElementById("step-edit-stage-custom");
     const isCustom = !PRESET_STAGES.includes(targetStep.stage_name);
@@ -3759,6 +3819,91 @@ function openProjectModal() {
         populateUserSelect(id, '');
     });
 }
+
+window.openCloneThicknessModal = function() {
+    const activeProdRow = (state.products || []).find(p => p.id === state.activeProductId);
+    if (!activeProdRow) {
+        showToast("请先选择一个产品大类！", "error");
+        return;
+    }
+    
+    const select = document.getElementById("clone-source-thickness");
+    if (select) {
+        select.innerHTML = "";
+        const thicknesses = activeProdRow.thicknesses || [];
+        thicknesses.forEach(t => {
+            const opt = document.createElement("option");
+            opt.value = t;
+            opt.innerText = `${t} μm`;
+            if (Number(t) === Number(state.activeThickness)) {
+                opt.selected = true;
+            }
+            select.appendChild(opt);
+        });
+    }
+
+    document.getElementById("clone-new-thickness").value = "";
+    openModal("modal-clone-thickness");
+};
+
+window.submitCloneThickness = function() {
+    const sourceThickness = parseFloat(document.getElementById("clone-source-thickness").value);
+    const newThickness = parseFloat(document.getElementById("clone-new-thickness").value.trim());
+
+    if (isNaN(sourceThickness) || isNaN(newThickness) || newThickness <= 0) {
+        showToast("请输入有效的新规格厚度值！", "error");
+        return;
+    }
+
+    if (sourceThickness === newThickness) {
+        showToast("新规格厚度不能与源规格厚度相同！", "error");
+        return;
+    }
+
+    const activeProdRow = (state.products || []).find(p => p.id === state.activeProductId);
+    if (!activeProdRow) return;
+
+    if (activeProdRow.thicknesses && activeProdRow.thicknesses.includes(newThickness)) {
+        showToast(`该产品下已存在 ${newThickness}μm 规格！`, "error");
+        return;
+    }
+
+    const payload = {
+        product_id: state.activeProductId,
+        source_thickness: sourceThickness,
+        new_thickness: newThickness
+    };
+
+    const headers = {
+        "Content-Type": "application/json",
+        "X-User-Role": state.currentUserRole || "Admin",
+        "X-User-Name": encodeURIComponent(state.currentUserDisplayName || "系统")
+    };
+
+    fetch("/api/products/clone_thickness", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            showToast(data.message || "规格克隆成功！", "success");
+            closeModal("modal-clone-thickness");
+            
+            // 重新获取产品列表并自动切换到新厚度
+            state.activeThickness = newThickness;
+            saveStateToLocalStorage();
+            
+            fetchProducts(state.categoryFilter);
+        }
+    })
+    .catch(err => {
+        showToast("网络错误，请稍后重试: " + err.message, "error");
+    });
+};
 
 function submitNewProject() {
     const code = document.getElementById("proj-code").value.trim(); // 产品型号，如 PTS2
@@ -4944,10 +5089,23 @@ window.getEmsParamSpecs = function(stageName) {
         ];
     } else if (stageName === "电镀工段") {
         return [
-            { key: "电流密度(A/dm²)", normalText: "40.0 ~ 75.0", min: 40.0, max: 75.0, unit: "A/dm²" },
-            { key: "阴极辊速(m/min)", normalText: "3.0 ~ 7.0", min: 3.0, max: 7.0, unit: "m/min" },
-            { key: "电解液温度(℃)", normalText: "50.0 ~ 65.0", min: 50.0, max: 65.0, unit: "℃" },
-            { key: "加胶流量(L/h)", normalText: "80 ~ 150", min: 80, max: 150, unit: "L/h" }
+            { key: "生产速度(m/min)", normalText: "0.20 ~ 0.30", min: 0.20, max: 0.30, unit: "m/min" },
+            { key: "纯水PH值", normalText: "6.5 ~ 7.5", min: 6.5, max: 7.5, unit: "" },
+            { key: "纯水电导率(μs/cm)", normalText: "≤ 2.0", min: 0, max: 2.0, unit: "μs/cm" },
+            { key: "硫酸铜浓度(g/L)", normalText: "120.0 ~ 140.0", min: 120.0, max: 140.0, unit: "g/L" },
+            { key: "H2SO4浓度(g/L)", normalText: "120.0 ~ 140.0", min: 120.0, max: 140.0, unit: "g/L" },
+            { key: "氯离子浓度(ppm)", normalText: "60.0 ~ 80.0", min: 60.0, max: 80.0, unit: "ppm" },
+            { key: "RF-23 B浓度(ml/L)", normalText: "1.0 ~ 3.0", min: 1.0, max: 3.0, unit: "ml/L" },
+            { key: "RF-23 C浓度(ml/L)", normalText: "10.0 ~ 30.0", min: 10.0, max: 30.0, unit: "ml/L" },
+            { key: "RF-23 L浓度(ml/L)", normalText: "5.0 ~ 15.0", min: 5.0, max: 15.0, unit: "ml/L" },
+            { key: "铜镀液温度(℃)", normalText: "21.0 ~ 25.0", min: 21.0, max: 25.0, unit: "℃" },
+            { key: "XL分子浓度(ml/L)", normalText: "650.0 ~ 750.0", min: 650.0, max: 750.0, unit: "ml/L" },
+            { key: "抗氧化液PH值", normalText: "4.5 ~ 7.5", min: 4.5, max: 7.5, unit: "" },
+            { key: "抗氧化液温度(℃)", normalText: "19.0 ~ 21.0", min: 19.0, max: 21.0, unit: "℃" },
+            { key: "过抗氧化液时间(s)", normalText: "10.0 ~ 20.0", min: 10.0, max: 20.0, unit: "s" },
+            { key: "过滤泵压力(Kgf/cm²)", normalText: "≥ 0.5", min: 0.5, max: 5.0, unit: "Kgf/cm²" },
+            { key: "水洗槽温度(℃)", normalText: "20.0 ~ 40.0", min: 20.0, max: 40.0, unit: "℃" },
+            { key: "烘箱温度(℃)", normalText: "45.0 ~ 75.0", min: 45.0, max: 75.0, unit: "℃" }
         ];
     } else if (stageName === "PA后处理") {
         return [
@@ -4959,6 +5117,15 @@ window.getEmsParamSpecs = function(stageName) {
         return [
             { key: "收卷张力(N)", normalText: "150 ~ 300", min: 150, max: 300, unit: "N" },
             { key: "分切速度(m/min)", normalText: "50 ~ 200", min: 50, max: 200, unit: "m/min" }
+        ];
+    } else if (stageName === "脱膜工段") {
+        return [
+            { key: "速度(m/min)", normalText: "3.0 ~ 7.0", min: 3.0, max: 7.0, unit: "m/min" },
+            { key: "放卷张力(Kg)", normalText: "6.0 ~ 8.0", min: 6.0, max: 8.0, unit: "Kg" },
+            { key: "收卷左张力(Kg)", normalText: "0.0 ~ 3.0", min: 0.0, max: 3.0, unit: "Kg" },
+            { key: "收卷右张力(Kg)", normalText: "3.0 ~ 7.0", min: 3.0, max: 7.0, unit: "Kg" },
+            { key: "切边左张力(Kg)", normalText: "0.1 ~ 0.1", min: 0.1, max: 0.1, unit: "Kg" },
+            { key: "切边右张力(Kg)", normalText: "0.1 ~ 0.1", min: 0.1, max: 0.1, unit: "Kg" }
         ];
     }
     return [];
@@ -6345,11 +6512,38 @@ window.saveNewEquipment = async function() {
     if (stage === "溅镀工段") {
         defaultParams = {"真空度(Pa)": 0.0002, "工作气压(Pa)": 0.35, "溅镀功率(kW)": 12.0, "溅镀电压(V)": 380};
     } else if (stage === "电镀工段") {
-        defaultParams = {"电流密度(A/dm²)": 65.0, "阴极辊速(m/min)": 5.0, "电解液温度(℃)": 60.0, "加胶流量(L/h)": 120};
+        defaultParams = {
+            "生产速度(m/min)": 0.24,
+            "纯水PH值": 7.0,
+            "纯水电导率(μs/cm)": 1.5,
+            "硫酸铜浓度(g/L)": 130.0,
+            "H2SO4浓度(g/L)": 130.0,
+            "氯离子浓度(ppm)": 70.0,
+            "RF-23 B浓度(ml/L)": 2.0,
+            "RF-23 C浓度(ml/L)": 20.0,
+            "RF-23 L浓度(ml/L)": 10.0,
+            "铜镀液温度(℃)": 23.0,
+            "XL分子浓度(ml/L)": 700.0,
+            "抗氧化液PH值": 6.0,
+            "抗氧化液温度(℃)": 20.0,
+            "过抗氧化液时间(s)": 15.0,
+            "过滤泵压力(Kgf/cm²)": 0.8,
+            "水洗槽温度(℃)": 30.0,
+            "烘箱温度(℃)": 70.0
+        };
     } else if (stage === "PA后处理") {
         defaultParams = {"真空度(Pa)": 0.0003, "工作气压(Pa)": 0.30, "处理功率(kW)": 15.0};
     } else if (stage === "PB涂布") {
         defaultParams = {"收卷张力(N)": 220, "分切速度(m/min)": 150};
+    } else if (stage === "脱膜工段") {
+        defaultParams = {
+            "速度(m/min)": 5.0,
+            "放卷张力(Kg)": 7.0,
+            "收卷左张力(Kg)": 0.0,
+            "收卷右张力(Kg)": 6.0,
+            "切边左张力(Kg)": 0.1,
+            "切边右张力(Kg)": 0.1
+        };
     }
     
     // 初始化日志
@@ -6806,6 +7000,9 @@ function renderUsersTable(users) {
         if (state.currentUserRole === 'Admin') {
             editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
                             <i data-lucide="edit-3" style="width:11px; height:11px;"></i> 编辑
+                       </button>
+                       <button class="btn-primary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserPermissionsModal(${u.id})">
+                            <i data-lucide="shield" style="width:11px; height:11px;"></i> 权限
                        </button>`;
             if (!isBuiltIn) {
                 deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
@@ -6846,6 +7043,174 @@ function renderUsersTable(users) {
 
     lucide.createIcons();
 }
+
+// 核心助手：校验模块权限
+window.hasModulePermission = function(tabId) {
+    const user = (state.users || []).find(u => u.username === state.currentUsername);
+    if (!user) return true;
+    if (user.role === 'Admin') return true;
+    
+    let perms = {};
+    if (user.permissions_json) {
+        try {
+            perms = typeof user.permissions_json === 'string' ? JSON.parse(user.permissions_json) : user.permissions_json;
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    
+    const mapping = {
+        'dashboard-panel': 'module_dashboard',
+        'plm-panel': 'module_product',
+        'mqc-panel': 'module_mqc',
+        'ems-panel': 'module_ems',
+        'dms-panel': 'module_dms',
+        'ecn-panel': 'module_ecn',
+        'users-panel': 'module_users',
+        'dingtalk-panel': 'module_dingtalk',
+        'task-panel': 'module_task'
+    };
+    
+    const key = mapping[tabId];
+    if (!key) return true;
+    
+    if (Object.keys(perms).length === 0) {
+        if (key === 'module_users' || key === 'module_dingtalk') {
+            return user.role === 'Admin';
+        }
+        return true;
+    }
+    
+    return perms[key] !== false;
+};
+
+// 核心助手：校验工段工艺操作权限
+window.hasStagePermission = function(stageName) {
+    const user = (state.users || []).find(u => u.username === state.currentUsername);
+    if (!user) return true;
+    if (user.role === 'Admin') return true;
+    
+    let perms = {};
+    if (user.permissions_json) {
+        try {
+            perms = typeof user.permissions_json === 'string' ? JSON.parse(user.permissions_json) : user.permissions_json;
+        } catch(e) {
+            console.error(e);
+        }
+    }
+    
+    const mapping = {
+        '立项': 'stage_init',
+        '溅镀工段': 'stage_sputter',
+        '电镀工段': 'stage_electro',
+        'PA后处理': 'stage_pa',
+        'PB涂布': 'stage_pb',
+        '脱膜工段': 'stage_peel',
+        '测试验证': 'stage_test',
+        '量产送样': 'stage_mass'
+    };
+    
+    const key = mapping[stageName];
+    if (!key) return true;
+    
+    if (Object.keys(perms).length === 0) {
+        return true;
+    }
+    
+    return perms[key] !== false;
+};
+
+window.openUserPermissionsModal = function(userId) {
+    const user = (state.users || []).find(u => u.id === userId);
+    if (!user) {
+        showToast("用户不存在", "error");
+        return;
+    }
+
+    document.getElementById("perms-user-id").value = userId;
+    document.getElementById("perms-user-display").innerText = `${user.display_name} (@${user.username})`;
+
+    let perms = {};
+    if (user.permissions_json) {
+        try {
+            perms = typeof user.permissions_json === 'string' ? JSON.parse(user.permissions_json) : user.permissions_json;
+        } catch(e) {
+            console.error("解析用户权限 JSON 失败:", e);
+        }
+    }
+
+    // List of checkbox elements
+    const keys = [
+        'module_dashboard', 'module_product', 'module_mqc', 'module_ems', 
+        'module_dms', 'module_ecn', 'module_task', 'module_users', 'module_dingtalk',
+        'stage_init', 'stage_sputter', 'stage_electro', 'stage_pa', 'stage_pb', 'stage_peel', 'stage_test', 'stage_mass'
+    ];
+
+    keys.forEach(k => {
+        const checkbox = document.getElementById(`perm-${k}`);
+        if (checkbox) {
+            if (Object.keys(perms).length === 0) {
+                // Default settings if not configured
+                if (k === 'module_users' || k === 'module_dingtalk') {
+                    checkbox.checked = user.role === 'Admin';
+                } else {
+                    checkbox.checked = true;
+                }
+            } else {
+                checkbox.checked = perms[k] !== false;
+            }
+        }
+    });
+
+    openModal("modal-user-permissions");
+};
+
+window.submitUserPermissions = function() {
+    const userId = parseInt(document.getElementById("perms-user-id").value);
+    if (isNaN(userId)) return;
+
+    const keys = [
+        'module_dashboard', 'module_product', 'module_mqc', 'module_ems', 
+        'module_dms', 'module_ecn', 'module_task', 'module_users', 'module_dingtalk',
+        'stage_init', 'stage_sputter', 'stage_electro', 'stage_pa', 'stage_pb', 'stage_peel', 'stage_test', 'stage_mass'
+    ];
+
+    const perms = {};
+    keys.forEach(k => {
+        const checkbox = document.getElementById(`perm-${k}`);
+        if (checkbox) {
+            perms[k] = checkbox.checked;
+        }
+    });
+
+    const headers = {
+        "Content-Type": "application/json",
+        "X-User-Role": state.currentUserRole || "Admin",
+        "X-User-Name": encodeURIComponent(state.currentUserDisplayName || "系统")
+    };
+
+    fetch("/api/users/update_permissions", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            user_id: userId,
+            permissions: perms
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            showToast(data.message || "权限配置更新成功！", "success");
+            closeModal("modal-user-permissions");
+            fetchUsersListAndRender();
+        }
+    })
+    .catch(err => {
+        showToast("保存失败，请稍后重试: " + err.message, "error");
+    });
+};
 
 window.openUserCreateModal = function() {
     if (!checkPermission(["Admin"], "新增系统用户")) return;
@@ -7676,7 +8041,9 @@ function renderDmsDeliverablesTable(product) {
         } else if (d.stage === "PA后处理") {
             stageBadge = `<span class="badge" style="background:rgba(249,115,22,0.08); color:#f97316; border:1px solid rgba(249,115,22,0.2);">PA 表面处理</span>`;
         } else if (d.stage === "PB涂布") {
-            stageBadge = `<span class="badge" style="background:rgba(132,204,22,0.08); color:#84cc16; border:1px solid rgba(132,204,22,0.2);">分切工段</span>`;
+            stageBadge = `<span class="badge" style="background:rgba(132,204,22,0.08); color:#84cc16; border:1px solid rgba(132,204,22,0.2);">PB 涂布</span>`;
+        } else if (d.stage === "脱膜工段") {
+            stageBadge = `<span class="badge" style="background:rgba(16,185,129,0.08); color:#10b981; border:1px solid rgba(16,185,129,0.2);">脱膜工段</span>`;
         } else if (d.stage === "品质质检") {
             stageBadge = `<span class="badge" style="background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.2);">品质质检</span>`;
         } else {
@@ -8409,6 +8776,31 @@ window.renderMqcMaterials = function() {
             </span>`;
         }
 
+        // 动态计算风险提示
+        let riskHtml = "";
+        if (sups.length === 0) {
+            riskHtml = `<span style="color:#f59e0b; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                            ⚠️ 无引进供应商
+                        </span>`;
+        } else {
+            const highRiskSups = sups.filter(s => s.risk_level === '高' || s.status === '暂停');
+            const midRiskSups = sups.filter(s => s.risk_level === '中');
+            if (highRiskSups.length > 0) {
+                const names = highRiskSups.map(s => s.supplier_name.substring(0, 4) + '...').join('、');
+                riskHtml = `<span style="color:#ef4444; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:4px;" title="${highRiskSups.map(s => s.supplier_name + ': ' + (s.risk_note || '供应异常')).join('\n')}">
+                                🛑 高风险: ${names}
+                            </span>`;
+            } else if (!has2nd) {
+                riskHtml = `<span style="color:#f59e0b; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:4px;" title="无备选二通道供应商，单点故障风险高">
+                                ⚠️ 单一源供应风险
+                            </span>`;
+            } else {
+                riskHtml = `<span style="color:#10b981; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                                🟢 双通道正常交付
+                            </span>`;
+            }
+        }
+
         const tr = document.createElement("tr");
         tr.style.cursor = "pointer";
         tr.onclick = () => openMqcMaterialModal(m.id);
@@ -8422,6 +8814,7 @@ window.renderMqcMaterials = function() {
             <td>${statusHtml}</td>
             <td style="font-family:monospace;">${m.apply_date || '-'}</td>
             <td>${certBadge}</td>
+            <td>${riskHtml}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
                 <div style="display:flex; gap:6px; justify-content:center;">
                     <button class="btn-xs btn-outline" onclick="openMqcMaterialModal(${m.id})">编辑</button>

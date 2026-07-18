@@ -465,9 +465,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 npi = {}
                 prod_status = product['status']
                 category = product['category']
-                stages = ["立项", "溅镀工段", "电镀工段", "PA后处理", "PB涂布", "测试验证", "量产送样"]
+                stages = ["立项", "溅镀工段", "电镀工段", "PA后处理", "PB涂布", "脱膜工段", "测试验证", "量产送样"]
                 if category == "HIS 载体铜箔":
-                    stages = ["立项", "溅镀工段", "电镀工段", "PA后处理", "PB涂布", "测试验证", "量产送样"]
+                    stages = ["立项", "溅镀工段", "电镀工段", "PA后处理", "PB涂布", "脱膜工段", "测试验证", "量产送样"]
                 
                 # 当前状态所在的工序索引
                 active_idx = 0
@@ -483,6 +483,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     active_idx = stages.index("PA后处理")
                 elif prod_status == "PB涂布中":
                     active_idx = stages.index("PB涂布")
+                elif prod_status == "脱膜中":
+                    active_idx = stages.index("脱膜工段")
                 elif prod_status == "测试验证中":
                     active_idx = stages.index("测试验证")
                 elif prod_status == "量产中":
@@ -723,6 +725,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == "/api/products":
             required_roles = {"Admin", "Product Manager"}
+        elif path == "/api/products/clone_thickness":
+            required_roles = {"Admin", "Product Manager"}
         elif path.endswith("/save_plan") and "/products/" in path:
             required_roles = {"Admin", "Product Manager"}
         elif (path.endswith("/save_tds_rows") or path.endswith("/publish_tds") or path.endswith("/save_tds")) and "/products/" in path:
@@ -762,7 +766,189 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
         cursor = conn.cursor()
 
         try:
-            # 1. 新品研发立项申请
+            # 1.1 一键引申克隆规格
+            if path == "/api/products/clone_thickness":
+                product_id = int(data.get('product_id'))
+                source_thickness = float(data.get('source_thickness'))
+                new_thickness = float(data.get('new_thickness'))
+                creator = user_display_name
+
+                if not product_id or not source_thickness or not new_thickness:
+                    self.send_json({"error": "产品ID、源规格厚度与新规格厚度不能为空"}, 400)
+                    return
+
+                if source_thickness == new_thickness:
+                    self.send_json({"error": "新规格厚度不能与源规格厚度相同"}, 400)
+                    return
+
+                try:
+                    # 查询大类信息
+                    cursor.execute("SELECT code, category FROM products WHERE id = ?", (product_id,))
+                    prod_row = cursor.fetchone()
+                    if not prod_row:
+                        self.send_json({"error": "找不到指定的产品大类"}, 404)
+                        return
+                    code, category = prod_row[0], prod_row[1]
+
+                    # 获取源规格厚度详情
+                    t_info = self.get_thickness_info(cursor, product_id, source_thickness)
+                    if not t_info:
+                        self.send_json({"error": f"找不到源规格 {source_thickness}μm 的详细信息"}, 404)
+                        return
+
+                    # 校验新规格是否已存在
+                    existing_t = self.get_thickness_info(cursor, product_id, new_thickness)
+                    if existing_t:
+                        self.send_json({"error": f"新规格 {new_thickness}μm 已存在，无法重复创建"}, 400)
+                        return
+
+                    base_time = datetime.now()
+                    
+                    # 重新生成默认排期（NPI 计划）
+                    npi_project_plan = {
+                        "gate1": {"owner": t_info.get('g1_owner') or creator, "plan_date": (base_time + timedelta(days=5)).strftime('%Y-%m-%d'), "actual_date": "", "status": "进行中"},
+                        "gate2": {"owner": "李建国", "plan_date": (base_time + timedelta(days=15)).strftime('%Y-%m-%d'), "actual_date": "", "status": "未开始"},
+                        "gate3": {"owner": "赵立功", "plan_date": (base_time + timedelta(days=30)).strftime('%Y-%m-%d'), "actual_date": "", "status": "未开始"},
+                        "gate4": {"owner": "钱品质", "plan_date": (base_time + timedelta(days=45)).strftime('%Y-%m-%d'), "actual_date": "", "status": "未开始"},
+                        "gate5": {"owner": "孙生产", "plan_date": (base_time + timedelta(days=60)).strftime('%Y-%m-%d'), "actual_date": "", "status": "未开始"}
+                    }
+
+                    new_t_dict = {
+                        "spec_thickness": new_thickness,
+                        "target_roughness": t_info.get('target_roughness', 1.20),
+                        "target_peel": t_info.get('target_peel', 0.75),
+                        "target_df": t_info.get('target_df', 0.0013),
+                        "target_tensile": t_info.get('target_tensile', 310.0),
+                        "target_elongation": t_info.get('target_elongation', 2.5),
+                        "status": "立项中",
+                        "npi_project_plan": npi_project_plan,
+                        "g1_documents": ""
+                    }
+                    self.update_thickness_info(cursor, product_id, new_thickness, new_t_dict)
+
+                    # 复制 BOM
+                    cursor.execute("""
+                        SELECT copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items
+                        FROM product_bom
+                        WHERE product_id = ? AND spec_thickness = ? AND status = '活动'
+                        ORDER BY id DESC LIMIT 1
+                    """, (product_id, source_thickness))
+                    bom_row = cursor.fetchone()
+                    if bom_row:
+                        cursor.execute("""
+                            INSERT INTO product_bom (product_id, spec_thickness, version, status, copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items, updater, created_at)
+                            VALUES (?, ?, 'V1.0', '活动', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (product_id, new_thickness, bom_row[0], bom_row[1], bom_row[2], bom_row[3], bom_row[4], bom_row[5], bom_row[6], bom_row[7], creator, base_time.isoformat()))
+                    else:
+                        # 默认 BOM
+                        gel_init = 5.2 if category == "PTS2 AI 铜箔" else (3.0 if category == "HIS 载体铜箔" else 5.5)
+                        hec_init = 3.5 if category == "PTS2 AI 铜箔" else (4.0 if category == "HIS 载体铜箔" else 3.8)
+                        s_init = 8.0 if category == "PTS2 AI 铜箔" else (6.5 if category == "HIS 载体铜箔" else 9.0)
+                        silane_type = "环保硅烷SL-203" if category == "HIS 载体铜箔" else "常规硅烷-201"
+                        silane_conc = 0.6 if category == "HIS 载体铜箔" else 0.8
+                        bom_items = [
+                            { "material_code": "MAT-CU-001", "material_name": "高纯铜线", "material_spec": "99.99%级", "ratio_value": 99.85, "unit": "%" },
+                            { "material_code": "MAT-ACID-001", "material_name": "电子级硫酸", "material_spec": "98%浓度", "ratio_value": 0.15, "unit": "%" },
+                            { "material_code": "AD-GEL-01", "material_name": "特种明胶骨胶", "material_spec": "生箔添加剂", "ratio_value": gel_init, "unit": "ppm" },
+                            { "material_code": "AD-HEC-01", "material_name": "羟乙基纤维素", "material_spec": "生箔添加剂", "ratio_value": hec_init, "unit": "ppm" },
+                            { "material_code": "AD-SPS-01", "material_name": "活性硫整平剂", "material_spec": "生箔添加剂", "ratio_value": s_init, "unit": "ppm" },
+                            { "material_code": "MAT-SILANE-203", "material_name": "常规硅烷偶联剂", "material_spec": silane_type, "ratio_value": silane_conc, "unit": "%" }
+                        ]
+                        cursor.execute("""
+                            INSERT INTO product_bom (product_id, spec_thickness, version, status, copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items, updater, created_at)
+                            VALUES (?, ?, 'V1.0', '活动', 99.85, 0.15, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (product_id, new_thickness, gel_init, hec_init, s_init, silane_type, silane_conc, json.dumps(bom_items), creator, base_time.isoformat()))
+
+                    # 复制 Routing
+                    cursor.execute("""
+                        SELECT step_no, stage_name, device_name, device_code, standard_params, remark, sop, sip, sop_image, sip_image, notes
+                        FROM product_routing
+                        WHERE product_id = ? AND spec_thickness = ? AND status = '活动'
+                    """, (product_id, source_thickness))
+                    routing_rows = cursor.fetchall()
+                    if not routing_rows:
+                        cursor.execute("""
+                            SELECT step_no, stage_name, device_name, device_code, standard_params, remark, sop, sip, sop_image, sip_image, notes
+                            FROM product_routing
+                            WHERE product_id = ? AND spec_thickness = ?
+                        """, (product_id, source_thickness))
+                        routing_rows = cursor.fetchall()
+
+                    if routing_rows:
+                        for r in routing_rows:
+                            cursor.execute("""
+                                INSERT INTO product_routing (product_id, spec_thickness, step_no, stage_name, device_name, device_code, standard_params, remark, sop, sip, sop_image, sip_image, notes, status, updater, created_at)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '活动', ?, ?)
+                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], creator, base_time.isoformat()))
+                    else:
+                        routings = [
+                            (1, "溅镀工段", "1#磁控溅镀线",   "EQ-溅镀-01", {"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0}),
+                            (2, "电镀工段", "2#生箔机阴极辊",  "EQ-生箔-02", {"speed": 0.24, "ph": 7.0, "conductivity": 1.5, "cu_conc": 130.0, "acid_conc": 130.0, "cl_conc": 70.0, "rf_b": 2.0, "rf_c": 20.0, "rf_l": 10.0, "temp": 23.0, "xl_conc": 700.0, "anti_ph": 6.0, "anti_temp": 20.0, "anti_time": 15.0, "filter_pressure": 0.8, "wash_temp": 30.0, "oven_temp": 70.0}),
+                            (3, "PA后处理", "2#PA后处理线",   "EQ-PA-02", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
+                            (4, "PB涂布",  "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0}),
+                            (5, "脱膜工段", "1#高速脱膜机",    "EQ-脱膜-05", {"speed": 5.0, "unwind_tension": 7.0, "rewind_left_tension": 0.0, "rewind_right_tension": 6.0, "trim_left_tension": 0.1, "trim_right_tension": 0.1})
+                        ]
+                        for r in routings:
+                            cursor.execute("""
+                                INSERT INTO product_routing (product_id, spec_thickness, step_no, stage_name, device_name, device_code, standard_params)
+                                VALUES (?, ?, ?, ?, ?, ?, ?)
+                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], json.dumps(r[4])))
+
+                    # 复制 TDS
+                    cursor.execute("""
+                        SELECT tds_items, notes
+                        FROM product_tds
+                        WHERE product_id = ? AND spec_thickness = ? AND status = '活动'
+                        ORDER BY id DESC LIMIT 1
+                    """, (product_id, source_thickness))
+                    tds_row = cursor.fetchone()
+                    if tds_row:
+                        try:
+                            tds_items_list = json.loads(tds_row[0])
+                            for item in tds_items_list:
+                                if "厚度" in item.get('name_zh', ''):
+                                    item['spec'] = f"{new_thickness}±2"
+                            tds_items_json = json.dumps(tds_items_list)
+                        except:
+                            tds_items_json = tds_row[0]
+
+                        cursor.execute("""
+                            INSERT INTO product_tds (product_id, spec_thickness, tds_version, status, tds_items, notes, updater, created_at)
+                            VALUES (?, ?, 'V1.0', '活动', ?, ?, ?, ?)
+                        """, (product_id, new_thickness, tds_items_json, tds_row[1], creator, base_time.isoformat()))
+                    else:
+                        default_tds_items_pts = [
+                            {"item_no": 1, "name_zh": "铜箔厚度(Avg.)", "name_en": "Thickness", "unit": "um", "spec": f"{new_thickness}±2", "test_standard": "Micro Meter", "group": ""},
+                            {"item_no": 2, "name_zh": "厚度(oz)", "name_en": "Thickness", "unit": "oz", "spec": "1/3", "test_standard": "IPC-TM-650 2.2.12", "group": ""},
+                            {"item_no": 3, "name_zh": "宽幅", "name_en": "Width", "unit": "mm", "spec": "+3,-0", "test_standard": "直辊尺", "group": ""},
+                            {"item_no": 4, "name_zh": "长度", "name_en": "Length", "unit": "M", "spec": "+1/-0", "test_standard": "计米器", "group": ""},
+                            {"item_no": 5, "name_zh": "接箔数", "name_en": "Splice Count", "unit": "个", "spec": "不可有", "test_standard": "***", "group": ""},
+                            {"item_no": 6, "name_zh": "铜纯度", "name_en": "Copper Purity", "unit": "%", "spec": "≥99.5", "test_standard": "IPC-TM-650 2.3.15", "group": ""},
+                            {"item_no": 7, "name_zh": "粗糙度 Rz", "name_en": "Roughness (Rz)", "unit": "um", "spec": "<0.2", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Matte side"},
+                            {"item_no": 8, "name_zh": "粗糙度 Sa", "name_en": "Roughness (Sa)", "unit": "um", "spec": "<0.05", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Matte side"},
+                            {"item_no": 9, "name_zh": "粗糙度 Sdr", "name_en": "Roughness (Sdr)", "unit": "-", "spec": "<0.03", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Matte side"},
+                            {"item_no": 10, "name_zh": "粗糙度 Rz", "name_en": "Roughness (Rz)", "unit": "um", "spec": "<0.4", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Shiny side"},
+                            {"item_no": 11, "name_zh": "粗糙度 Sa", "name_en": "Roughness (Sa)", "unit": "um", "spec": "<0.05", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Shiny side"},
+                            {"item_no": 12, "name_zh": "粗糙度 Sdr", "name_en": "Roughness (Sdr)", "unit": "-", "spec": "<0.03", "test_standard": "Keyence VK3000 雷射共拟顕微鏡(50x)", "group": "Shiny side"},
+                            {"item_no": 13, "name_zh": "抗张强度", "name_en": "Tensile Strength (180℃/60min)", "unit": "MPa", "spec": ">270", "test_standard": "IPC-TM-650 2.4.18", "group": ""},
+                            {"item_no": 14, "name_zh": "延伸率", "name_en": "Elongation (180℃/60min)", "unit": "%", "spec": ">4", "test_standard": "IPC-TM-650 2.4.18", "group": ""},
+                            {"item_no": 15, "name_zh": "抗撕强度", "name_en": "Tear Strength (Panasonic M8 or EM892)", "unit": "kgf/cm", "spec": "≥0.35", "test_standard": "IPC-TM-650 2.4.8", "group": ""},
+                            {"item_no": 16, "name_zh": "外观检验", "name_en": "Visual Inspection", "unit": "-", "spec": "参照外观检验标准", "test_standard": "IPC-TM-650 2.1.5", "group": ""}
+                        ]
+                        cursor.execute("""
+                            INSERT INTO product_tds (product_id, spec_thickness, tds_version, status, tds_items, notes, updater, created_at)
+                            VALUES (?, ?, 'V1.0', '活动', ?, '', ?, ?)
+                        """, (product_id, new_thickness, json.dumps(default_tds_items_pts), creator, base_time.isoformat()))
+
+                    conn.commit()
+                    self.send_json({"success": True, "message": f"成功基于 {source_thickness}μm 规格引申创建了新规格 {new_thickness}μm，BOM、工艺路线与TDS已一键同步继承。"})
+                    return
+                except Exception as e:
+                    conn.rollback()
+                    self.send_json({"error": f"克隆创建规格失败: {str(e)}"}, 500)
+                    return
+
+            # 1.2 普通新品研发立项申请
             if path == "/api/products":
                 code = data.get('code')
                 name = data.get('name')
@@ -877,14 +1063,16 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                             (2, "溅镀工段", "磁控溅射镀膜机",  "EQ-溅镀-01", {"vacuum": 0.0003, "power": 15.0, "speed": 8.0, "thickness": 50.0, "target_type": "高纯铜靶-镍铬阻挡层"}),
                             (3, "电镀工段", "4#超薄生箔机",   "EQ-生箔-04", {"voltage": 7.0, "current_density": 60.0, "drum_speed": 8.0}),
                             (4, "PA后处理", "3#PA后处理线",   "EQ-PA-03", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
-                            (5, "PB涂布",  "2#高精密PB涂布机", "EQ-PB-02", {"tension": 150.0, "slit_speed": 100.0})
+                            (5, "PB涂布",  "2#高精密PB涂布机", "EQ-PB-02", {"tension": 150.0, "slit_speed": 100.0}),
+                            (6, "脱膜工段", "1#高速脱膜机",    "EQ-脱膜-05", {"speed": 5.0, "unwind_tension": 7.0, "rewind_left_tension": 0.0, "rewind_right_tension": 6.0, "trim_left_tension": 0.1, "trim_right_tension": 0.1})
                         ]
                     else:
                         routings = [
                             (1, "溅镀工段", "1#磁控溅镀线",   "EQ-溅镀-01", {"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0}),
-                            (2, "电镀工段", "2#生箔机阴极辊",  "EQ-生箔-02", {"current_density": 65.0, "drum_speed": 5.0, "electrolyte_temp": 60.0, "flow_rate": 120.0, "cl_conc": 35.0, "cu_conc": 85.0, "acid_conc": 110.0, "polar_gap": 10.0, "gel_flow": 120.0, "s_flow": 80.0}),
+                                                         (2, "电镀工段", "2#生箔机阴极辊",  "EQ-生箔-02", {"speed": 0.24, "ph": 7.0, "conductivity": 1.5, "cu_conc": 130.0, "acid_conc": 130.0, "cl_conc": 70.0, "rf_b": 2.0, "rf_c": 20.0, "rf_l": 10.0, "temp": 23.0, "xl_conc": 700.0, "anti_ph": 6.0, "anti_temp": 20.0, "anti_time": 15.0, "filter_pressure": 0.8, "wash_temp": 30.0, "oven_temp": 70.0}),
                             (3, "PA后处理", "2#PA后处理线",   "EQ-PA-02", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
-                            (4, "PB涂布",  "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0})
+                            (4, "PB涂布",  "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0}),
+                            (5, "脱膜工段", "1#高速脱膜机",    "EQ-脱膜-05", {"speed": 5.0, "unwind_tension": 7.0, "rewind_left_tension": 0.0, "rewind_right_tension": 6.0, "trim_left_tension": 0.1, "trim_right_tension": 0.1})
                         ]
 
                     for r in routings:
@@ -1052,7 +1240,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "溅镀工段": "溅镀金属化中",
                     "电镀工段": "生箔电镀中",
                     "PA后处理": "PA后处理中",
-                    "PB涂布": "PB涂布中"
+                    "PB涂布": "PB涂布中",
+                    "脱膜工段": "脱膜中"
                 }
                 
                 new_status = status_map.get(stage)
@@ -1343,7 +1532,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     INSERT INTO product_routing (product_id, spec_thickness, routing_version, status, step_no, stage_name, device_name, device_code, standard_params, custom_params, notes, remark, sop, sip, sop_image, sip_image, created_at)
                     VALUES (?, ?, ?, '活动', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (product_id, thickness, new_version, step_no, stage_name, device_name, device_code,
-                          json.dumps(standard_params), json.dumps(custom_params), version_notes, step_remark, sop, sip, sop_image, sip_image, datetime.now().isoformat()))
+                          json.dumps(standard_params), json.dumps(custom_params), version_notes, remark, sop, sip, sop_image, sip_image, datetime.now().isoformat()))
 
                 cursor.execute("""
                 INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)

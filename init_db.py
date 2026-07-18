@@ -261,6 +261,7 @@ def init_database(force_reset=False):
         display_name VARCHAR(50) NOT NULL,
         role VARCHAR(50) NOT NULL,
         status VARCHAR(20) DEFAULT '启用',
+        permissions_json TEXT DEFAULT '{}',
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
     """)
@@ -314,10 +315,11 @@ def init_database(force_reset=False):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, [
         ("EQ-溅镀-01", "1#磁控溅镀线", "溅镀工段", "运行中", 92.4, "2026-08-01", '{"真空度(Pa)": 0.0002, "工作气压(Pa)": 0.35, "溅镀功率(kW)": 12.0, "溅镀电压(V)": 380}', p_comp, "赵工"),
-        ("EQ-生箔-02", "2#生箔机阴极辊", "电镀工段", "运行中", 88.5, "2026-08-15", '{"电流密度(A/dm²)": 65.0, "阴极辊速(m/min)": 5.0, "电解液温度(℃)": 60.0, "加胶流量(L/h)": 120}', p_comp, "生箔工艺组"),
+        ("EQ-生箔-02", "2#生箔机阴极辊", "电镀工段", "运行中", 88.5, "2026-08-15", '{"生产速度(m/min)": 0.24, "纯水PH值": 7.0, "纯水电导率(μs/cm)": 1.5, "硫酸铜浓度(g/L)": 130.0, "H2SO4浓度(g/L)": 130.0, "氯离子浓度(ppm)": 70.0, "RF-23 B浓度(ml/L)": 2.0, "RF-23 C浓度(ml/L)": 20.0, "RF-23 L浓度(ml/L)": 10.0, "铜镀液温度(℃)": 23.0, "XL分子浓度(ml/L)": 700.0, "抗氧化液PH值": 6.0, "抗氧化液温度(℃)": 20.0, "过抗氧化液时间(s)": 15.0, "过滤泵压力(Kgf/cm²)": 0.8, "水洗槽温度(℃)": 30.0, "烘箱温度(℃)": 70.0}', p_comp, "生箔工艺组"),
         ("EQ-PA溅镀-02", "2#磁控溅镀处理线", "PA后处理", "运行中", 90.1, "2026-08-10", '{"真空度(Pa)": 0.0003, "工作气压(Pa)": 0.30, "处理功率(kW)": 15.0}', p_comp, "表处工艺组"),
         ("EQ-PB-01", "1#高精密PB涂布机", "PB涂布", "保养中", 79.5, "2026-07-20", '{"收卷张力(N)": 220, "分切速度(m/min)": 150}', p_comp, "维保班组"),
-        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "电镀工段", "导入中", 0.0, None, '{}', p_active_install, "生箔设备组")
+        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "电镀工段", "导入中", 0.0, None, '{}', p_active_install, "生箔设备组"),
+        ("EQ-脱膜-05", "1#高速脱膜机", "脱膜工段", "运行中", 94.2, "2026-08-20", '{"速度(m/min)": 5.0, "放卷张力(Kg)": 7.0, "收卷左张力(Kg)": 0.0, "收卷右张力(Kg)": 6.0, "切边左张力(Kg)": 0.1, "切边右张力(Kg)": 0.1}', p_comp, "脱膜班组")
     ])
 
     # 导入仿真模拟数据
@@ -369,8 +371,8 @@ def init_database(force_reset=False):
         (1, 12.0, 1.20, 0.75, 0.0013, 310.0, 2.5, "生箔电镀中", p1_plan),
         (1, 18.0, 1.20, 0.75, 0.0013, 310.0, 2.5, "已发布", p5_plan),
         (1, 35.0, 1.20, 0.75, 0.0013, 310.0, 2.5, "未开启", p6_plan),
-        (2, 1.5, 0.80, 0.50, 0.0010, 290.0, 2.0, "测试验证中", p2_plan),
-        (3, 18.0, 1.50, 0.85, 0.0015, 340.0, 3.2, "量产中", p3_plan)
+
+
     ]
     
     for pid in [1, 2, 3]:
@@ -413,29 +415,17 @@ def init_database(force_reset=False):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (1, 35.0, "V1.0", "活动", 99.85, 0.15, 5.2, 3.5, 8.0, "常规硅烷-201", 0.8, make_bom_items_json(99.85, 0.15, 5.2, 3.5, 8.0, "常规硅烷-201", 0.8), "李建国", p1_time.isoformat()))
 
-    # p2-1.5 (HIS-1.5)：V1.0
-    cursor.execute("""
-    INSERT INTO product_bom (product_id, spec_thickness, version, status, copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items, updater, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "V1.0", "活动", 99.88, 0.12, 3.0, 4.0, 6.5, "环保硅烷SL-203", 0.6, make_bom_items_json(99.88, 0.12, 3.0, 4.0, 6.5, "环保硅烷SL-203", 0.6), "张小贤", p2_time.isoformat()))
 
-    # p3 (DBJ-18)：拥有 V1.0 (历史) 和 V1.1 (活动)
-    cursor.execute("""
-    INSERT INTO product_bom (product_id, spec_thickness, version, status, copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items, updater, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "V1.0", "历史", 99.80, 0.20, 5.5, 3.8, 9.0, "常规硅烷-201", 1.0, make_bom_items_json(99.80, 0.20, 5.5, 3.8, 9.0, "常规硅烷-201", 1.0), "李建国", p3_time.isoformat()))
-    
-    cursor.execute("""
-    INSERT INTO product_bom (product_id, spec_thickness, version, status, copper_wire_ratio, sulfuric_acid_ratio, additive_gel, additive_hec, additive_s, silane_type, silane_conc, bom_items, updater, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "V1.1", "活动", 99.82, 0.18, 5.5, 3.8, 9.0, "环保硅烷SL-203", 0.8, make_bom_items_json(99.82, 0.18, 5.5, 3.8, 9.0, "环保硅烷SL-203", 0.8), "李建国", (p3_time + timedelta(days=20)).isoformat()))
+
+
 
     # ================= 导入基准工艺路线 (Routing) 模拟数据 =================
     std_routings_4 = [
         (1, "溅镀工段", "1#磁控溅镀线", "EQ-溅镀-01", {"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "voltage": 380, "current": 30.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0, "uniformity": 1.2, "target_life": 50}),
-        (2, "电镀工段", "2#生箔机阴极辊", "EQ-生箔-02", {"current_density": 65.0, "drum_speed": 5.0, "electrolyte_temp": 60.0, "flow_rate": 120.0, "cl_conc": 35.0, "cu_conc": 85.0, "acid_conc": 110.0, "polar_gap": 10.0, "gel_flow": 120.0, "s_flow": 80.0}),
+        (2, "电镀工段", "2#生箔机阴极辊", "EQ-生箔-02", {"speed": 0.24, "ph": 7.0, "conductivity": 1.5, "cu_conc": 130.0, "acid_conc": 130.0, "cl_conc": 70.0, "rf_b": 2.0, "rf_c": 20.0, "rf_l": 10.0, "temp": 23.0, "xl_conc": 700.0, "anti_ph": 6.0, "anti_temp": 20.0, "anti_time": 15.0, "filter_pressure": 0.8, "wash_temp": 30.0, "oven_temp": 70.0}),
         (3, "PA后处理", "2#磁控溅镀处理线", "EQ-PA溅镀-02", {"vacuum": 0.0003, "work_pressure": 0.30, "power": 15.0, "ar_flow": 100.0, "speed": 10.0, "thickness": 30.0, "uniformity": 2.5, "target_life": 150}),
-        (4, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0})
+        (4, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", {"tension": 220.0, "slit_speed": 150.0}),
+        (5, "脱膜工段", "1#高速脱膜机", "EQ-脱膜-05", {"speed": 5.0, "unwind_tension": 7.0, "rewind_left_tension": 0.0, "rewind_right_tension": 6.0, "trim_left_tension": 0.1, "trim_right_tension": 0.1})
     ]
     
 
@@ -456,6 +446,10 @@ def init_database(force_reset=False):
         "PB涂布": (
             "1. 【配料作业】按配方比例称量硅烷偶联剂及溶剂，搅拌熟化时间不得少于 2小时。\n2. 【涂布作业】高精密涂布机线速设定为 12m/min，网纹辊涂布压力控制在 0.3-0.4 MPa。\n3. 【卷取作业】控制恒定张力收卷，收卷张力设定在 80-100 N。",
             "1. 【涂覆量测定】称重法测量偶联剂干膜重，目标范围应在 15-25 mg/m²。\n2. 【介质损耗 Df】高频测试系统测得 10GHz 下 Df 必须 ≤ 0.0012。\n3. 【收卷整齐度】收卷边缘错位量应 ≤ 2.0 mm。"
+        ),
+        "脱膜工段": (
+            "1. 【放卷准备】检查来料卷材端面整齐度与外观，将电镀成品卷安装在放卷轴上，穿好基材，张力控制在 7±1 Kg (18/35um) 或 6±1 Kg (4.5um)。\n2. 【脱膜作业】设定速度 5±2 m/min (18/35um) 或 6±2 m/min (4.5um)，收卷左/右张力依据幅宽进行匹配，切边张力维持在 0.1 Kg。\n3. 【卷取作业】纠偏仪处于自动对齐状态，收卷端面对齐度控制在 ≤ 1.0 mm。",
+            "1. 【外观目检】脱膜边缘平整无飞边、无毛刺、无明显丝折与刮伤。\n2. 【收卷硬度】使用硬度计测试成品卷表面硬度，硬度均匀度偏差 ≤ 5度。\n3. 【端面整齐度】端面错位量测试，脱膜成品卷边缘侧位量应 ≤ 0.5 mm。"
         )
     }
 
@@ -485,62 +479,18 @@ def init_database(force_reset=False):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         1, 12.0, "电镀工段", "2#生箔机阴极辊", "EQ-生箔-02",
-        json.dumps({"current_density": 72.0, "drum_speed": 4.9, "electrolyte_temp": 60.5, "flow_rate": 125.0, "cl_conc": 34.2, "cu_conc": 84.8, "acid_conc": 111.5, "polar_gap": 10.0, "gel_flow": 122.0, "s_flow": 81.5}),
-        "孙工", "尝试加大电流密度至 72 A/dm² 提高产出效率，注意观测毛面晶粒是否粗化。", (p1_time + timedelta(days=5)).isoformat()
+        json.dumps({"speed": 0.32, "ph": 7.1, "conductivity": 1.6, "cu_conc": 132.0, "acid_conc": 128.0, "cl_conc": 68.0, "rf_b": 2.1, "rf_c": 19.0, "rf_l": 9.5, "temp": 23.5, "xl_conc": 710.0, "anti_ph": 6.1, "anti_temp": 20.5, "anti_time": 16.0, "filter_pressure": 0.82, "wash_temp": 31.0, "oven_temp": 72.0}),
+        "孙工", "尝试加大线速至 0.32 m/min 提高产出效率，注意观测毛面晶粒是否粗化。", (p1_time + timedelta(days=5)).isoformat()
     ))
 
-    # HIS-1.5 调试日志
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "溅镀工段", "2#磁控溅镀线", "EQ-溅镀-02", json.dumps({"vacuum": 0.0003, "work_pressure": 0.35, "power": 15.0, "voltage": 380, "current": 39.5, "ar_flow": 80, "temp": 120, "speed": 8.0, "thickness": 50.0, "uniformity": 3.5, "target_life": 245}), "钱工", "溅镀金属化稳定", (p2_time + timedelta(days=2)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "溅镀工段", "磁控溅射镀膜机", "EQ-溅镀-01", json.dumps({"vacuum": 0.0003, "work_pressure": 0.35, "power": 15.0, "voltage": 380, "current": 39.5, "ar_flow": 80, "temp": 120, "speed": 8.0, "thickness": 50.0, "uniformity": 3.5, "target_life": 245}), "钱工", "溅镀正常", (p2_time + timedelta(days=5)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "电镀工段", "4#超薄生箔机", "EQ-生箔-04", json.dumps({"current_density": 60.0, "drum_speed": 8.0, "electrolyte_temp": 59.8, "flow_rate": 118.0, "cl_conc": 35.1, "cu_conc": 85.2, "acid_conc": 109.8, "polar_gap": 10.0, "gel_flow": 119.0, "s_flow": 79.8}), "孙工", "生箔中试合格", (p2_time + timedelta(days=8)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "PA后处理", "3#PA后处理线", "EQ-PA-03", json.dumps({"vacuum": 0.0003, "work_pressure": 0.31, "power": 14.8, "ar_flow": 102.0, "speed": 9.8, "thickness": 29.5, "uniformity": 2.6, "target_life": 155}), "李工", "PA后处理中试正常", (p2_time + timedelta(days=12)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "PB涂布", "2#高精密PB涂布机", "EQ-PB-02", json.dumps({"tension": 150.0, "slit_speed": 100.0, "aoi_defects": 0}), "吴工", "PB涂布完成", (p2_time + timedelta(days=15)).isoformat()))
 
-    # DBJ-18 调试日志
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "溅镀工段", "1#磁控溅镀线", "EQ-溅镀-01", json.dumps({"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "voltage": 380, "current": 30.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0, "uniformity": 1.2, "target_life": 50}), "钱工", "溅镀正常", (p3_time + timedelta(days=2)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "电镀工段", "1#生箔机阴极辊", "EQ-生箔-01", json.dumps({"current_density": 68.0, "drum_speed": 3.8, "electrolyte_temp": 60.1, "flow_rate": 121.0, "cl_conc": 34.8, "cu_conc": 84.9, "acid_conc": 110.2, "polar_gap": 10.0, "gel_flow": 120.5, "s_flow": 80.2}), "孙工", "生箔中试", (p3_time + timedelta(days=5)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "PA后处理", "1#PA后处理线", "EQ-PA-01", json.dumps({"vacuum": 0.0003, "work_pressure": 0.29, "power": 15.2, "ar_flow": 98.0, "speed": 10.2, "thickness": 30.5, "uniformity": 2.4, "target_life": 145}), "李工", "PA后处理中试合格", (p3_time + timedelta(days=8)).isoformat()))
-    cursor.execute("""
-    INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "PB涂布", "1#高精密PB涂布机", "EQ-PB-01", json.dumps({"tension": 240.0, "slit_speed": 180.0, "aoi_defects": 0}), "吴工", "PB涂布就绪", (p3_time + timedelta(days=10)).isoformat()))
+
+
 
     # ================= 导入测试记录 (test_records) =================
-    # HIS-1.5 检测通过 (合格)
-    cursor.execute("""
-    INSERT INTO test_records (product_id, spec_thickness, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (2, 1.5, "TEST-HIS15-B01", 1.52, 0.76, 0.38, 0.52, 0.00095, 295.0, 2.1, "合格", "张测试", (p2_time + timedelta(days=22)).isoformat()))
 
-    # DBJ-18 测试合格
-    cursor.execute("""
-    INSERT INTO test_records (product_id, spec_thickness, batch_no, actual_thickness, roughness_rz_m, roughness_rz_s, peel_strength, df_10ghz, tensile_strength, elongation, test_result, tester, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (3, 18.0, "TEST-DBJ18-B01", 18.1, 1.42, 0.65, 0.88, 0.00142, 345.0, 3.4, "合格", "张测试", (p3_time + timedelta(days=12)).isoformat()))
+
+
 
     # ================= 导入 ECN 设变数据 (ecn_records) =================
     # ECN-001 (DBJ-18)
