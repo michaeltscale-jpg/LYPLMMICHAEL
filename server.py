@@ -18,6 +18,12 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+        super().end_headers()
+
     def get_db(self):
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
@@ -2342,7 +2348,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 device_name = data.get('device_name', '').strip()
                 stage_name = data.get('stage_name', '').strip()
                 status = data.get('status', '运行中')
-                oee = float(data.get('oee', 85.0))
+                category = data.get('category', '前处理机')
                 next_maintenance = data.get('next_maintenance')
                 parameters_json = data.get('parameters_json', '{}')
                 project_plan_json = data.get('project_plan_json')
@@ -2355,9 +2361,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if rid:
                     cursor.execute("""
                         UPDATE equipments 
-                        SET device_code = ?, device_name = ?, stage_name = ?, status = ?, oee = ?, next_maintenance = ?, operator = ?, updated_at = CURRENT_TIMESTAMP
+                        SET device_code = ?, device_name = ?, stage_name = ?, status = ?, category = ?, next_maintenance = ?, operator = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE id = ?
-                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, rid))
+                    """, (device_code, device_name, stage_name, status, category, next_maintenance, rid))
                 else:
                     # 自动生成默认的 8 阶段项目进度（对于新添加设备，第一阶段进行中，其余未开始）
                     if not project_plan_json:
@@ -2388,9 +2394,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         project_plan_json = json.dumps(plan, ensure_ascii=False)
                     
                     cursor.execute("""
-                        INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator)
+                        INSERT INTO equipments (device_code, device_name, stage_name, status, category, next_maintenance, parameters_json, project_plan_json, operator)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator))
+                    """, (device_code, device_name, stage_name, status, category, next_maintenance, parameters_json, project_plan_json, operator))
                 conn.commit()
                 self.send_json({'ok': True, 'id': rid or cursor.lastrowid})
 
@@ -2564,7 +2570,7 @@ def migrate_ems_database():
             # 1. 立项
             s1 = plan.get("stage1_design", {})
             new_plan["stage1_plan"] = {
-                "title": "立项",
+                "title": "立项请购",
                 "status": s1.get("status", "已完成"),
                 "start_date": s1.get("start_date", ""),
                 "end_date": s1.get("end_date", ""),
@@ -2601,7 +2607,7 @@ def migrate_ems_database():
                 bid_status = "进行中"
                 
             new_plan["stage3_bidding"] = {
-                "title": "请购发包",
+                "title": "发包作业中",
                 "status": bid_status,
                 "start_date": s3_sel.get("start_date", s5_bid.get("start_date", "")),
                 "end_date": s5_bid.get("end_date", ""),
@@ -2620,7 +2626,7 @@ def migrate_ems_database():
                 make_status = "进行中"
                 
             new_plan["stage4_make"] = {
-                "title": "制作中",
+                "title": "生产制作中",
                 "status": make_status,
                 "start_date": s5_bid.get("end_date", ""),
                 "end_date": s6_ins.get("start_date", ""),
@@ -2652,7 +2658,7 @@ def migrate_ems_database():
             # 6. 验收交付使用
             s8_acp = plan.get("stage8_accept", {})
             new_plan["stage6_accept"] = {
-                "title": "验收交付使用",
+                "title": "验收作业中",
                 "status": s8_acp.get("status", "未开始"),
                 "start_date": s8_acp.get("start_date", ""),
                 "end_date": s8_acp.get("end_date", ""),
