@@ -5576,7 +5576,7 @@ window.fetchEquipmentsAndRender = async function() {
                     
                     tr.innerHTML = `
                         <td style="font-weight: 700; font-family: monospace; color: var(--color-primary);">${eq.device_code}</td>
-                        <td style="font-weight: 600; color: var(--color-primary); text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); window.location.href='/device_detail.html?id=${eq.id}';">${eq.device_name}</td>
+                        <td style="font-weight: 600; color: var(--color-primary); text-decoration: underline; cursor: pointer; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="event.stopPropagation(); window.location.href='/device_detail.html?id=${eq.id}';" title="${eq.device_name}">${eq.device_name}</td>
                         <td>${eq.stage_name}</td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
