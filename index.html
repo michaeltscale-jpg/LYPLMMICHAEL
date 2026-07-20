@@ -266,57 +266,62 @@
                     <!-- ================= PANEL 2: PRODUCT PLM ================= -->
     <div class="tab-panel" id="plm-panel">
         <!-- 顶部产品元数据与设计规格微看板 -->
-        <div class="glass-panel" style="margin-bottom: 0px; padding: 10px 20px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1px solid rgba(99, 102, 241, 0.25); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div class="glass-panel" style="margin-bottom: 0px; padding: 6px 16px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%); border: 1px solid rgba(99, 102, 241, 0.25); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 16px;">
             <!-- 左侧：产品基础元数据 -->
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(99, 102, 241, 0.5); display: flex; align-items: center; justify-content: center; color: #60a5fa; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);">
-                    <i data-lucide="cpu" style="width: 24px; height: 24px;"></i>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 8px; background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(99, 102, 241, 0.5); display: flex; align-items: center; justify-content: center; color: #60a5fa; box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);">
+                    <i data-lucide="cpu" style="width: 20px; height: 20px;"></i>
                 </div>
                 <div>
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <h2 id="plm-prod-name" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px;">--</h2>
-                        <span class="badge badge-purple" id="plm-prod-category" style="font-size: 0.65rem; padding: 2px 8px;">--</span>
+                        <h2 id="plm-prod-name" style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px;">--</h2>
+                        <span class="badge badge-purple" id="plm-prod-category" style="font-size: 0.62rem; padding: 1px 6px;">--</span>
                     </div>
-                    <div style="display: flex; gap: 14px; margin-top: 4px; font-size: 0.72rem; color: #94a3b8;">
-                        <span><i data-lucide="tag" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>型号规格: <strong id="plm-prod-model-code" style="color:#60a5fa; font-weight:600;">--</strong></span>
-                        <span><i data-lucide="user" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>创建人: <strong id="plm-prod-creator" style="color:#cbd5e1;">--</strong></span>
-                        <span><i data-lucide="calendar" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>立项时间: <strong id="plm-prod-time" style="color:#cbd5e1;">--</strong></span>
+                    <div style="display: flex; gap: 12px; margin-top: 2px; font-size: 0.68rem; color: #94a3b8;">
+                        <span><i data-lucide="tag" style="width:10px; height:10px; vertical-align:middle; margin-right:3px;"></i>型号规格: <strong id="plm-prod-model-code" style="color:#60a5fa; font-weight:600;">--</strong></span>
+                        <span><i data-lucide="user" style="width:10px; height:10px; vertical-align:middle; margin-right:3px;"></i>创建人: <strong id="plm-prod-creator" style="color:#cbd5e1;">--</strong></span>
                     </div>
                 </div>
             </div>
             
-            <!-- 中间：产品大类控制按钮 -->
-            <div style="display: flex; gap: 8px; align-items: center; margin-left: auto; margin-right: 16px;">
-                <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;" onclick="openEditProductModal()">
-                    <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> 编辑大类
-                </button>
-                <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="deleteActiveProduct()">
-                    <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i> 删除大类
-                </button>
-            </div>
-            
-            <!-- 右侧：厚度独立标签卡片 -->
-            <div id="plm-thickness-tabs-container" style="display: flex; gap: 8px; align-items: center;">
-                <!-- 12μm 独立卡片 -->
-                <div id="thickness-tab-12"
-                     onclick="handleThicknessTabClick(12)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">12 μm</div>
+            <!-- 右侧：厚度独立标签与控制按钮合并行 -->
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <!-- 厚度独立标签卡片 -->
+                <div id="plm-thickness-tabs-container" style="display: flex; gap: 6px; align-items: center;">
+                    <!-- 12μm 独立卡片 -->
+                    <div id="thickness-tab-12"
+                         onclick="handleThicknessTabClick(12)"
+                         style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 4px 12px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 56px;">
+                        <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px;">厚度</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #64748b;">12 μm</div>
+                    </div>
+                    <!-- 18μm 独立卡片 -->
+                    <div id="thickness-tab-18"
+                         onclick="handleThicknessTabClick(18)"
+                         style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 4px 12px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 56px;">
+                        <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px;">厚度</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #64748b;">18 μm</div>
+                    </div>
+                    <!-- 35μm 独立卡片 -->
+                    <div id="thickness-tab-35"
+                         onclick="handleThicknessTabClick(35)"
+                         style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 4px 12px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 56px;">
+                        <div style="font-size: 0.55rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px;">厚度</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #64748b;">35 μm</div>
+                    </div>
                 </div>
-                <!-- 18μm 独立卡片 -->
-                <div id="thickness-tab-18"
-                     onclick="handleThicknessTabClick(18)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">18 μm</div>
-                </div>
-                <!-- 35μm 独立卡片 -->
-                <div id="thickness-tab-35"
-                     onclick="handleThicknessTabClick(35)"
-                     style="background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px 16px; text-align: center; cursor: pointer; transition: all 0.2s; min-width: 64px;">
-                    <div style="font-size: 0.6rem; color: #64748b; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                    <div style="font-size: 0.92rem; font-weight: 800; color: #64748b;">35 μm</div>
+                
+                <!-- 垂直分割线 -->
+                <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.12);"></div>
+
+                <!-- 大类控制按钮 -->
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <button class="btn-secondary" style="padding: 5px 10px; font-size: 0.7rem; display: flex; align-items: center; gap: 4px;" onclick="openEditProductModal()">
+                        <i data-lucide="edit-3" style="width: 12px; height: 12px;"></i> 编辑
+                    </button>
+                    <button class="btn-secondary" style="padding: 5px 10px; font-size: 0.7rem; display: flex; align-items: center; gap: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="deleteActiveProduct()">
+                        <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i> 删除
+                    </button>
                 </div>
             </div>
             <!-- 兼容旧逻辑隐藏元素 -->
