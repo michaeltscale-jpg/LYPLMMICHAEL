@@ -5466,7 +5466,7 @@ window.fetchEquipmentsAndRender = async function() {
             const filteredEquipments = state.equipments;
             
             if (filteredEquipments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">当前阶段暂无进行中的设备明细</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">当前阶段暂无进行中的设备明细</td></tr>`;
             } else {
                 filteredEquipments.forEach(eq => {
                     const tr = document.createElement("tr");
@@ -5515,22 +5515,10 @@ window.fetchEquipmentsAndRender = async function() {
                     };
                     const activeStageName = stageDisplayNames[activeStageKey] || "未开启";
                     
-                    const statusIndicator = eq.status === "运行中" 
-                        ? `<span class="ems-radar-ping" style="margin-right: 6px; vertical-align: middle;"></span>` 
-                        : (eq.status === "故障停机" ? `<span class="ems-alarm-beacon" style="margin-right: 6px; vertical-align: middle; width: 8px; height: 8px;"></span>` : "");
-                        
                     tr.innerHTML = `
                         <td style="font-weight: 700; font-family: monospace; color: var(--color-primary);">${eq.device_code}</td>
                         <td style="font-weight: 600; color: var(--text-primary);">${eq.device_name}</td>
                         <td>${eq.stage_name}</td>
-                        <td>
-                            <div style="display: flex; align-items: center;">
-                                ${statusIndicator}
-                                <span class="badge" style="background: ${sc.bg}; color: ${sc.color}; border: 1px solid ${sc.color}30; font-size: 0.68rem; padding: 2px 7px;">
-                                    ${eq.status}
-                                </span>
-                            </div>
-                        </td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <div style="display: flex; align-items: center; gap: 6px;">
@@ -5544,7 +5532,6 @@ window.fetchEquipmentsAndRender = async function() {
                                 </div>
                             </div>
                         </td>
-                        <td style="font-family: monospace; font-weight: 600;">${eq.oee ? eq.oee.toFixed(1) : "0.0"}%</td>
                         <td>
                             <div style="display: flex; gap: 8px;">
                                 <button class="dms-action-btn" onclick="window.editEquipment(${eq.id})" style="padding: 2px 6px; font-size: 0.68rem;">编辑</button>
@@ -5590,7 +5577,7 @@ window.selectEquipment = function(id) {
         });
     }
     
-    // 显示右侧参数面板与子选项卡
+    // 显示右侧参数面板与内容
     const monitorPanel = document.getElementById("ems-monitor-panel");
     if (monitorPanel) monitorPanel.style.display = "block";
     
@@ -5600,137 +5587,10 @@ window.selectEquipment = function(id) {
     const content = document.getElementById("ems-mon-content");
     if (content) content.style.display = "block";
     
-    const subtabContainer = document.getElementById("ems-subtab-container");
-    if (subtabContainer) subtabContainer.style.display = "flex";
-    
     document.getElementById("ems-mon-name").innerText = eq.device_name;
     document.getElementById("ems-mon-code").innerText = eq.device_code;
     
-    const badge = document.getElementById("ems-mon-status-badge");
-    if (badge) {
-        badge.innerText = eq.status;
-        const statusColors = {
-            "运行中": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
-            "保养中": { color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
-            "故障停机": { color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
-            "导入中": { color: "#60a5fa", bg: "rgba(96,165,250,0.15)" }
-        };
-        const sc = statusColors[eq.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
-        badge.style.background = sc.bg;
-        badge.style.color = sc.color;
-        badge.style.border = `1px solid ${sc.color}30`;
-    }
-    
-    // 下次维保日期
-    document.getElementById("ems-mon-next-maint").value = eq.next_maintenance || "";
-    
-    // ----------------------------------------------------
-    // 1. 工艺参数异常阈值检测与图形卡片渲染
-    // ----------------------------------------------------
-    let params = {};
-    try {
-        params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : eq.parameters_json || {};
-    } catch (e) {
-        params = {};
-    }
-    
-    const grid = document.getElementById("ems-mon-params-grid");
-    grid.innerHTML = "";
-    
-    const specs = window.getEmsParamSpecs(eq.stage_name);
-    let hasAlert = false;
-    let alertMsgs = [];
-    
-    specs.forEach(spec => {
-        const valStr = params[spec.key];
-        const val = parseFloat(valStr);
-        let isOutOfRange = false;
-        
-        if (!isNaN(val)) {
-            if (spec.key === "真空度(Pa)") {
-                if (val > spec.max) isOutOfRange = true;
-            } else {
-                if (val < spec.min || val > spec.max) isOutOfRange = true;
-            }
-        }
-        
-        if (isOutOfRange) {
-            hasAlert = true;
-            alertMsgs.push(`${spec.key} 当前值 [${valStr}] 超出安全指标范围 [${spec.normalText}]`);
-        }
-        
-        const card = document.createElement("div");
-        card.className = "ems-param-card";
-        if (isOutOfRange) {
-            card.style.borderColor = "rgba(239, 68, 68, 0.4)";
-            card.style.background = "rgba(239, 68, 68, 0.08)";
-        }
-        
-        card.innerHTML = `
-            <div class="ems-param-info">
-                <span class="ems-param-label">${spec.key}</span>
-                <span class="ems-param-range" style="color: ${isOutOfRange ? '#f87171' : '#64748b'};">
-                    标准值: ${spec.normalText}
-                </span>
-                <div class="ems-param-value-container">
-                    <span class="ems-param-val" style="color: ${isOutOfRange ? '#f87171' : '#f8fafc'};">${valStr !== undefined ? valStr : '--'}</span>
-                    <span class="ems-param-unit">${spec.unit}</span>
-                </div>
-            </div>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
-                ${isOutOfRange ? `<span class="ems-alarm-beacon" title="超限报警"></span>` : `<span style="width: 8px; height: 8px; border-radius:50%; background:#10b981; display:inline-block;" title="指标正常"></span>`}
-                <input type="text" class="form-control ems-param-input" data-key="${spec.spec_key || spec.key}" value="${valStr !== undefined ? valStr : ''}" 
-                       style="font-size:0.68rem; padding:2px 6px; height:22px; width:70px; text-align:right; font-family:monospace; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08);">
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-
-    // 报警横幅控制
-    const banner = document.getElementById("ems-param-warning-banner");
-    if (banner) {
-        if (hasAlert) {
-            banner.style.display = "flex";
-            document.getElementById("ems-param-warning-text").innerText = alertMsgs.join(" | ");
-        } else {
-            banner.style.display = "none";
-        }
-    }
-    
-    // ----------------------------------------------------
-    // 2. 状态与维保历史履历流时间线渲染
-    // ----------------------------------------------------
-    const timelineContainer = document.getElementById("ems-maintenance-logs-timeline");
-    if (timelineContainer) {
-        timelineContainer.innerHTML = "";
-        const logs = params._maintenance_logs || [];
-        if (logs.length === 0) {
-            timelineContainer.innerHTML = `<div style="text-align:center; padding:10px; color:#64748b; font-size:0.68rem;">暂无运行与维保履历记录。</div>`;
-        } else {
-            // 倒序展示最新履历
-            const sortedLogs = [...logs].reverse();
-            sortedLogs.forEach(log => {
-                const item = document.createElement("div");
-                item.className = "ems-timeline-item";
-                
-                let dotClass = "status-running";
-                if (log.text.includes("故障")) dotClass = "status-fault";
-                else if (log.text.includes("保养") || log.text.includes("维保")) dotClass = "status-maint";
-                
-                item.innerHTML = `
-                    <div class="ems-timeline-dot ${dotClass}"></div>
-                    <div class="ems-timeline-content">
-                        <div class="ems-timeline-time">${log.time}</div>
-                        <div class="ems-timeline-text">${log.text}</div>
-                        <div class="ems-timeline-operator">操作人: ${log.operator || '系统'}</div>
-                    </div>
-                `;
-                timelineContainer.appendChild(item);
-            });
-        }
-    }
-
-    // 3. 渲染导入项目一条龙阶段进度
+    // 渲染导入项目里程碑阶段进度
     let parsedPlan = {};
     try {
         parsedPlan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : eq.project_plan_json || {};

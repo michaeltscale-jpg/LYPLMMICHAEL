@@ -681,9 +681,7 @@
                                                 <th>设备代号</th>
                                                 <th>设备名称</th>
                                                 <th>所属工段</th>
-                                                <th>运行状态</th>
                                                 <th>项目进度</th>
-                                                <th>OEE</th>
                                                 <th>操作</th>
                                             </tr>
                                         </thead>
@@ -704,56 +702,8 @@
                                         </div>
                                     </div>
                                     <div id="ems-mon-content" style="display: none;">
-                                        <!-- 子面板 1: 监控与状态调控 -->
-                                        <div id="ems-subpanel-monitor" style="display: block;">
-                                            <!-- 工艺参数可视化报警区 -->
-                                            <div style="margin-bottom: 16px;">
-                                                <h5 style="margin: 0 0 8px; font-size: 0.74rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">
-                                                    🎛️ 运行工艺参数维护 & 阈值预警
-                                                </h5>
-                                                <!-- 报警横幅 -->
-                                                <div id="ems-param-warning-banner" style="display: none; padding: 6px 10px; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.2); border-radius: 6px; margin-bottom: 10px; font-size: 0.68rem; color: var(--color-danger); align-items: center; gap: 6px;">
-                                                    <span class="ems-alarm-beacon"></span>
-                                                    <span id="ems-param-warning-text">检测到当前设备工艺参数异常，超出标准规范值！</span>
-                                                </div>
-                                                
-                                                <div id="ems-mon-params-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                                    <!-- 由 JS 动态渲染带有发光效果的参数卡片 -->
-                                                </div>
-                                                <button class="btn-primary" onclick="saveEquipmentParameters()" style="width: 100%; font-size: 0.72rem; padding: 6px; margin-top: 10px; justify-content: center; display: flex; align-items: center; gap: 4px;">
-                                                    <i data-lucide="check-circle" style="width: 13px; height: 13px;"></i> 保存参数调整
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- 状态调控与维保登记 -->
-                                            <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
-                                                <h5 style="margin: 0 0 8px; font-size: 0.74rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">🛠️ 状态调控与维保登记</h5>
-                                                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                                                    <button class="dms-action-btn" onclick="setEquipmentStatus('运行中')" style="background: rgba(5, 150, 105, 0.1); color: var(--color-success); border: 1px solid rgba(5, 150, 105, 0.2); font-size: 0.68rem; flex: 1; padding: 6px;">调至运行</button>
-                                                    <button class="dms-action-btn" onclick="setEquipmentStatus('保养中')" style="background: rgba(217, 119, 6, 0.1); color: var(--color-warning); border: 1px solid rgba(217, 119, 6, 0.2); font-size: 0.68rem; flex: 1; padding: 6px;">调至保养</button>
-                                                    <button class="dms-action-btn" onclick="setEquipmentStatus('故障停机')" style="background: rgba(220, 38, 38, 0.1); color: var(--color-danger); border: 1px solid rgba(220, 38, 38, 0.2); font-size: 0.68rem; flex: 1; padding: 6px;">调至故障</button>
-                                                </div>
-                                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 14px;">
-                                                    <div class="form-group" style="margin: 0; flex: 1;">
-                                                        <input type="date" id="ems-mon-next-maint" class="form-control" style="font-size: 0.7rem; padding: 4px 8px; height: 28px;">
-                                                    </div>
-                                                    <button class="btn-secondary" onclick="updateEquipmentMaintenance()" style="font-size: 0.68rem; padding: 5px 10px; height: 28px; white-space: nowrap;">
-                                                        设定维保期
-                                                    </button>
-                                                </div>
-                                            </div>
- 
-                                            <!-- 新增：设备维保与状态履历时间线 -->
-                                            <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
-                                                <h5 style="margin: 0 0 8px; font-size: 0.74rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">📜 设备运行与维保履历</h5>
-                                                <div id="ems-maintenance-logs-timeline" class="ems-timeline" style="max-height: 160px; overflow-y: auto; padding-right: 4px;">
-                                                    <!-- JS 动态渲染履历 -->
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- 子面板 2: 导入项目一条龙管理 -->
-                                        <div id="ems-subpanel-project" style="display: none;">
+                                        <!-- 设备导入里程碑管理 -->
+                                        <div id="ems-subpanel-project" style="display: block;">
                                             <h5 style="margin: 0 0 10px; font-size: 0.74rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
                                             
                                             <!-- 里程碑网格卡片图 -->
@@ -3031,11 +2981,11 @@ requests.post(url, json=payload)</code></pre>
                             <option value="脱膜工段">脱膜工段</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label>综合效率 OEE (%)</label>
                         <input type="number" id="equipment-edit-oee" class="form-control" value="85.0" step="0.1" min="0" max="100">
                     </div>
-                    <div class="form-group" style="grid-column: 1/-1;">
+                    <div class="form-group" style="grid-column: 1/-1; display: none;">
                         <label>下次计划维保日期</label>
                         <input type="date" id="equipment-edit-maint" class="form-control">
                     </div>
