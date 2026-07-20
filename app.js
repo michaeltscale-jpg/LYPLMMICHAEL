@@ -9031,13 +9031,28 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-mat-category").value = "氧化铜粉";
         document.getElementById("mqc-mat-apply-date").value = new Date().toISOString().split('T')[0];
         document.getElementById("mqc-mat-apply-by").value = ""; // 承认书文件名置空
-        // 重置文件上传控件
         document.getElementById("mqc-cert-file-input").value = "";
         document.getElementById("mqc-cert-file-label").textContent = "未上传";
         document.getElementById("mqc-cert-file-label").style.color = "var(--text-secondary)";
         const prevLink = document.getElementById("mqc-cert-preview-link");
         prevLink.style.display = "none";
         prevLink.href = "#";
+
+        // 重置测试记录与测试报告
+        document.getElementById("mqc-mat-test-record").value = "";
+        document.getElementById("mqc-test-record-file-input").value = "";
+        document.getElementById("mqc-test-record-file-label").textContent = "未上传";
+        document.getElementById("mqc-test-record-file-label").style.color = "var(--text-secondary)";
+        document.getElementById("mqc-test-record-preview-link").style.display = "none";
+        document.getElementById("mqc-test-record-preview-link").href = "#";
+
+        document.getElementById("mqc-mat-test-report").value = "";
+        document.getElementById("mqc-test-report-file-input").value = "";
+        document.getElementById("mqc-test-report-file-label").textContent = "未上传";
+        document.getElementById("mqc-test-report-file-label").style.color = "var(--text-secondary)";
+        document.getElementById("mqc-test-report-preview-link").style.display = "none";
+        document.getElementById("mqc-test-report-preview-link").href = "#";
+
         document.getElementById("mqc-mat-status").value = "需求提出";
         document.getElementById("mqc-mat-test-start").value = "";
         document.getElementById("mqc-mat-test-end").value = "";
@@ -9085,6 +9100,41 @@ window.openMqcMaterialModal = function(id) {
             certPreviewLink.style.display = "none";
             certPreviewLink.href = "#";
         }
+
+        // 回显测试记录文件
+        document.getElementById("mqc-mat-test-record").value = m.test_record || "";
+        const testRecordLabel = document.getElementById("mqc-test-record-file-label");
+        const testRecordPreview = document.getElementById("mqc-test-record-preview-link");
+        document.getElementById("mqc-test-record-file-input").value = "";
+        if (m.test_record) {
+            testRecordLabel.textContent = "✅ " + m.test_record;
+            testRecordLabel.style.color = "var(--color-success)";
+            testRecordPreview.href = "/uploads/certificates/" + encodeURIComponent(m.test_record);
+            testRecordPreview.style.display = "inline";
+        } else {
+            testRecordLabel.textContent = "未上传";
+            testRecordLabel.style.color = "var(--text-secondary)";
+            testRecordPreview.style.display = "none";
+            testRecordPreview.href = "#";
+        }
+
+        // 回显测试报告文件
+        document.getElementById("mqc-mat-test-report").value = m.test_report || "";
+        const testReportLabel = document.getElementById("mqc-test-report-file-label");
+        const testReportPreview = document.getElementById("mqc-test-report-preview-link");
+        document.getElementById("mqc-test-report-file-input").value = "";
+        if (m.test_report) {
+            testReportLabel.textContent = "✅ " + m.test_report;
+            testReportLabel.style.color = "var(--color-success)";
+            testReportPreview.href = "/uploads/certificates/" + encodeURIComponent(m.test_report);
+            testReportPreview.style.display = "inline";
+        } else {
+            testReportLabel.textContent = "未上传";
+            testReportLabel.style.color = "var(--text-secondary)";
+            testReportPreview.style.display = "none";
+            testReportPreview.href = "#";
+        }
+
         document.getElementById("mqc-mat-status").value = m.status || "需求提出";
         document.getElementById("mqc-mat-test-start").value = m.test_start || "";
         document.getElementById("mqc-mat-test-end").value = m.test_end || "";
@@ -9184,6 +9234,8 @@ window.saveMqcMaterial = function() {
     const mat_code = document.getElementById("mqc-mat-code").value.trim();
     const mat_name = document.getElementById("mqc-mat-name").value.trim();
     const apply_by = document.getElementById("mqc-mat-apply-by").value.trim();
+    const test_record = document.getElementById("mqc-mat-test-record").value.trim();
+    const test_report = document.getElementById("mqc-mat-test-report").value.trim();
     
     // 校验必填项
     let hasErr = false;
@@ -9214,7 +9266,7 @@ window.saveMqcMaterial = function() {
         if (!hasPdf) {
             showToast("⚠️ 承认状态要变更为“承认通过”，必须先上传 PDF 格式的承认书。", "error");
             return;
-        }
+          }
         if (!isDingtalkApproved) {
             showToast("⚠️ 承认状态要变更为“承认通过”，必须经过钉钉承认流程审批通过。", "error");
             return;
@@ -9236,8 +9288,70 @@ window.saveMqcMaterial = function() {
         conclusion_by: "",
         conclusion_date: "",
         test_result: document.getElementById("mqc-mat-test-result").value.trim(),
-        remark: document.getElementById("mqc-mat-remark").value.trim()
+        remark: document.getElementById("mqc-mat-remark").value.trim(),
+        test_record: test_record,
+        test_report: test_report
     };
+
+// 通用的 MQC 文件/报告上传函数
+window.handleMqcFileSelect = function(input, targetHiddenId, labelId, previewLinkId) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const allowed = ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.png', '.jpg', '.jpeg', '.zip', '.rar'];
+    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    if (!allowed.includes(ext)) {
+        showToast('不支持的文件格式！支持格式：PDF, Word, Excel, 图片, 压缩包', 'error');
+        input.value = '';
+        return;
+    }
+    
+    if (file.size > 20 * 1024 * 1024) {
+        showToast('文件大小不得超过 20MB', 'error');
+        input.value = '';
+        return;
+    }
+    
+    const label = document.getElementById(labelId);
+    const previewLink = document.getElementById(previewLinkId);
+    
+    label.textContent = '⏳ 上传中…';
+    label.style.color = 'var(--color-warning)';
+    previewLink.style.display = 'none';
+    
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    
+    fetch('/api/mqc/upload_certificate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) {
+            showToast('上传失败：' + res.error, 'error');
+            label.textContent = '❌ 上传失败，请重试';
+            label.style.color = 'var(--color-danger)';
+            input.value = '';
+        } else {
+            document.getElementById(targetHiddenId).value = res.filename;
+            
+            label.textContent = '✅ ' + file.name;
+            label.style.color = 'var(--color-success)';
+            previewLink.href = res.url;
+            previewLink.style.display = 'inline';
+            
+            showToast('文件上传成功！', 'success');
+        }
+    })
+    .catch(err => {
+        console.error('上传文件失败:', err);
+        showToast('文件上传失败，请检查网络或重试', 'error');
+        label.textContent = '❌ 上传失败，请重试';
+        label.style.color = 'var(--color-danger)';
+        input.value = '';
+    });
+};
     
     fetch("/api/mqc/materials/save", {
         method: "POST",

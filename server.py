@@ -174,9 +174,10 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json({"error": "未找到上传的文件"}, 400)
                     return
                 
-                # 校验只允许 PDF
-                if not file_name.lower().endswith('.pdf'):
-                    self.send_json({"error": "仅支持上传 PDF 格式的承认书文件"}, 400)
+                # 校验格式，支持 PDF、Word、Excel、图片及压缩包
+                allowed_exts = ('.pdf', '.docx', '.doc', '.xlsx', '.xls', '.png', '.jpg', '.jpeg', '.zip', '.rar')
+                if not file_name.lower().endswith(allowed_exts):
+                    self.send_json({"error": "不支持的文件格式。支持格式：PDF, Word, Excel, 图片, 压缩包"}, 400)
                     return
                 
                 # 确保目录存在
@@ -2196,7 +2197,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'mat_code','mat_name','mat_spec','mat_category',
                     'apply_date','apply_by','status',
                     'test_start','test_end','test_result',
-                    'conclusion','conclusion_by','conclusion_date','remark'
+                    'conclusion','conclusion_by','conclusion_date','remark',
+                    'test_record','test_report'
                 ]
                 vals = [data.get(f,'') for f in fields]
                 if rid:
@@ -2459,6 +2461,8 @@ def init_mqc_tables():
             conclusion_by TEXT,
             conclusion_date TEXT,
             remark TEXT,
+            test_record TEXT,
+            test_report TEXT,
             created_at TEXT
         )
     ''')
@@ -2482,6 +2486,14 @@ def init_mqc_tables():
         )
     ''')
     
+    # 动态迁移 mqc_materials 专属文件列
+    c.execute("PRAGMA table_info(mqc_materials)")
+    m_cols = [col[1] for col in c.fetchall()]
+    if "test_record" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN test_record TEXT")
+    if "test_report" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN test_report TEXT")
+
     # 动态迁移 mqc_suppliers 专属承认与测试信息字段
     c.execute("PRAGMA table_info(mqc_suppliers)")
     cols = [col[1] for col in c.fetchall()]
