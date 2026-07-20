@@ -2607,7 +2607,7 @@ requests.post(url, json=payload)</code></pre>
                             <option value="其他">其他</option>
                         </select>
                     </div>
-                    <div class="form-group" style="grid-column:span 2;">
+                    <div class="form-group" style="grid-column:span 2; display: none;">
                         <label>承认书 (PDF)</label>
                         <!-- 隐藏：保存已上传文件名 -->
                         <input type="hidden" id="mqc-mat-apply-by">
@@ -2638,7 +2638,7 @@ requests.post(url, json=payload)</code></pre>
                         <label>需求提出日期</label>
                         <input type="date" class="form-control" id="mqc-mat-apply-date">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label>承认状态</label>
                         <select class="form-control" id="mqc-mat-status">
                             <option value="需求提出">📋 需求提出</option>
@@ -2649,16 +2649,16 @@ requests.post(url, json=payload)</code></pre>
                         </select>
                         <div id="mqc-dingtalk-status-helper" style="font-size: 0.72rem; margin-top: 4px; font-weight: 500; min-height: 16px;"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label>测试开始日期</label>
                         <input type="date" class="form-control" id="mqc-mat-test-start">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label>测试完成日期</label>
                         <input type="date" class="form-control" id="mqc-mat-test-end">
                     </div>
 
-                    <div class="form-group" style="grid-column:span 2;">
+                    <div class="form-group" style="grid-column:span 2; display: none;">
                         <label>测试结论 / 主要测试结果</label>
                         <textarea class="form-control" id="mqc-mat-test-result" rows="3" placeholder="填写主要测试项目数据及结论（如：纯度 99.995%、溶解速率符合标准）..."></textarea>
                     </div>
@@ -2769,6 +2769,51 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-group">
                             <label>风险说明</label>
                             <input type="text" class="form-control" id="mqc-sup-risk-note" placeholder="简述风险来源或注意事项">
+                        </div>
+                        <div class="form-group" style="grid-column:span 2; border-top:1px dashed var(--border-color); padding-top:12px; margin-top:6px;">
+                            <label style="color:var(--color-primary); font-weight:700;">📄 供应商专属承认书 (PDF)</label>
+                            <input type="hidden" id="mqc-sup-apply-by">
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px;">
+                                <label for="mqc-sup-cert-file-input" id="mqc-sup-cert-upload-btn"
+                                    style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px;
+                                           background:var(--color-primary); color:#fff; border-radius:6px;
+                                           cursor:pointer; font-size:0.82rem; font-weight:600; user-select:none;
+                                           transition:opacity .2s;">
+                                    📎 选择 PDF 档
+                                </label>
+                                <input type="file" id="mqc-sup-cert-file-input" accept=".pdf"
+                                       style="display:none;" onchange="handleSupCertFileSelect(this)">
+                                <span id="mqc-sup-cert-file-label"
+                                      style="font-size:0.8rem; color:var(--text-secondary); font-style:italic;">
+                                    未上传
+                                </span>
+                                <a id="mqc-sup-cert-preview-link" href="#" target="_blank"
+                                   style="display:none; font-size:0.8rem; color:var(--color-primary); font-weight:600;">
+                                    📄 预览 PDF
+                                </a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--color-primary); font-weight:700;">承认状态</label>
+                            <select class="form-control" id="mqc-sup-approval-status">
+                                <option value="需求提出">📋 需求提出</option>
+                                <option value="样品到达">📦 样品到达</option>
+                                <option value="测试中">🔬 测试中</option>
+                                <option value="承认通过">✅ 承认通过</option>
+                                <option value="承认拒绝">❌ 承认拒绝</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>测试开始日期</label>
+                            <input type="date" class="form-control" id="mqc-sup-test-start">
+                        </div>
+                        <div class="form-group">
+                            <label>测试完成日期</label>
+                            <input type="date" class="form-control" id="mqc-sup-test-end">
+                        </div>
+                        <div class="form-group" style="grid-column:span 2;">
+                            <label>测试结论 / 主要测试结果</label>
+                            <textarea class="form-control" id="mqc-sup-test-result" rows="2" placeholder="填写该供应商主要测试项目数据及结论..."></textarea>
                         </div>
                     </div>
                     <div style="display:flex; gap:10px; margin-top:14px;">

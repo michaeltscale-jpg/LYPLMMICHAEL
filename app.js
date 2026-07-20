@@ -8742,42 +8742,56 @@ window.renderMqcMaterials = function() {
             }
         }
 
-        // 承认状态徽章
+        // 承认状态徽章（每个供应商独立）
         let statusHtml = "";
-        if (m.status === "需求提出") {
-            statusHtml = `<span class="badge badge-gray">📋 需求提出</span>`;
-        } else if (m.status === "样品到达") {
-            statusHtml = `<span class="badge" style="background:rgba(14,165,233,0.1); color:#0ea5e9;">📦 样品到达</span>`;
-        } else if (m.status === "测试中") {
-            statusHtml = `<span class="badge badge-blue">🔬 测试中</span>`;
-        } else if (m.status === "承认通过") {
-            statusHtml = `<span class="badge badge-green">✅ 承认通过</span>`;
-        } else if (m.status === "承认拒绝") {
-            statusHtml = `<span class="badge badge-danger">❌ 承认拒绝</span>`;
+        if (sups.length === 0) {
+            statusHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">无供应商</span>`;
         } else {
-            statusHtml = `<span class="badge badge-gray">${m.status || '需求提出'}</span>`;
+            statusHtml = sups.map(s => {
+                let statusBadge = "";
+                const supShort = (s.supplier_name || "").substring(0, 4) + "...";
+                if (s.approval_status === "需求提出") {
+                    statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:2px 4px;">${supShort}: 📋 需求</span>`;
+                } else if (s.approval_status === "样品到达") {
+                    statusBadge = `<span class="badge" style="background:rgba(14,165,233,0.1); color:#0ea5e9; font-size:0.68rem; padding:2px 4px;">${supShort}: 📦 样品</span>`;
+                } else if (s.approval_status === "测试中") {
+                    statusBadge = `<span class="badge badge-blue" style="font-size:0.68rem; padding:2px 4px;">${supShort}: 🔬 测试</span>`;
+                } else if (s.approval_status === "承认通过") {
+                    statusBadge = `<span class="badge badge-green" style="font-size:0.68rem; padding:2px 4px;">${supShort}: ✅ 通过</span>`;
+                } else if (s.approval_status === "承认拒绝") {
+                    statusBadge = `<span class="badge badge-danger" style="font-size:0.68rem; padding:2px 4px;">${supShort}: ❌ 拒绝</span>`;
+                } else {
+                    statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:2px 4px;">${supShort}: ${s.approval_status || '📋 需求'}</span>`;
+                }
+                return `<div style="margin-bottom:3px;" title="${s.supplier_name}">${statusBadge}</div>`;
+            }).join("");
         }
 
-
-
-        // 承认书状态标志
+        // 承认书状态标志（每个供应商独立）
         let certBadge = "";
-        if (m.apply_by && m.apply_by.toLowerCase().endsWith(".pdf")) {
-            const pdfUrl = "/uploads/certificates/" + encodeURIComponent(m.apply_by);
-            certBadge = `<a href="${pdfUrl}" target="_blank" onclick="event.stopPropagation();"
-                style="display:inline-flex; align-items:center; gap:4px; padding:3px 8px;
-                       background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.4);
-                       border-radius:5px; color:var(--color-success); font-size:0.78rem;
-                       font-weight:600; text-decoration:none; cursor:pointer;"
-                title="点击在新标签页预览 PDF 承认书">
-                📄 承认书
-            </a>`;
+        if (sups.length === 0) {
+            certBadge = `<span style="color:var(--text-muted); font-size:0.75rem;">无承认书</span>`;
         } else {
-            certBadge = `<span class="badge badge-gray" style="color:var(--text-muted); cursor:pointer;"
-                onclick="event.stopPropagation(); openMqcMaterialModal(${m.id})"
-                title="点击进入记录上传承认书 PDF">
-                📎 未上传
-            </span>`;
+            certBadge = sups.map(s => {
+                const supShort = (s.supplier_name || "").substring(0, 4) + "...";
+                if (s.apply_by && s.apply_by.toLowerCase().endsWith(".pdf")) {
+                    const pdfUrl = "/uploads/certificates/" + encodeURIComponent(s.apply_by);
+                    return `<div style="margin-bottom:3px;"><a href="${pdfUrl}" target="_blank" onclick="event.stopPropagation();"
+                        style="display:inline-flex; align-items:center; gap:4px; padding:2px 5px;
+                               background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.4);
+                               border-radius:4px; color:var(--color-success); font-size:0.7rem;
+                               font-weight:600; text-decoration:none; cursor:pointer;"
+                        title="点击在新标签页预览 ${s.supplier_name} 承认书 PDF">
+                        📄 ${supShort}
+                    </a></div>`;
+                } else {
+                    return `<div style="margin-bottom:3px;"><span class="badge badge-gray" style="color:var(--text-muted); font-size:0.7rem; padding:2px 5px; cursor:pointer;"
+                        onclick="event.stopPropagation(); openMqcSupplierModal('${m.mat_code}')"
+                        title="点击前往供应商管理上传该供应商的承认书">
+                        📎 ${supShort} (无)
+                    </span></div>`;
+                }
+            }).join("");
         }
 
         // 动态计算风险提示
@@ -9456,6 +9470,18 @@ window.resetMqcSupForm = function() {
     document.getElementById("mqc-sup-status").value = "活跃";
     document.getElementById("mqc-sup-approved-date").value = new Date().toISOString().split('T')[0];
     document.getElementById("mqc-sup-risk-note").value = "";
+    
+    // 清空专属承认书与测试报告
+    document.getElementById("mqc-sup-apply-by").value = "";
+    document.getElementById("mqc-sup-cert-file-label").textContent = "未上传";
+    document.getElementById("mqc-sup-cert-file-label").style.color = "var(--text-secondary)";
+    document.getElementById("mqc-sup-cert-preview-link").style.display = "none";
+    document.getElementById("mqc-sup-cert-preview-link").href = "#";
+    document.getElementById("mqc-sup-cert-file-input").value = "";
+    document.getElementById("mqc-sup-approval-status").value = "需求提出";
+    document.getElementById("mqc-sup-test-start").value = "";
+    document.getElementById("mqc-sup-test-end").value = "";
+    document.getElementById("mqc-sup-test-result").value = "";
 };
 
 // 渲染特定物料的所有供应商
@@ -9542,6 +9568,22 @@ function renderMqcSupplierList(matCode) {
                              font-size:0.76rem; color:#f59e0b;">
                     💬 ${s.risk_note}
                 </div>` : ''}
+                <!-- 第四行：专属承认书与测试报告 -->
+                <div style="margin-top:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); font-size:0.78rem; display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span>承认状态：<strong style="color:${s.approval_status === '承认通过' ? '#10b981' : (s.approval_status === '承认拒绝' ? '#ef4444' : '#60a5fa')}">${s.approval_status || '需求提出'}</strong></span>
+                        ${s.apply_by ? `<span>📄 承认书：<a href="/uploads/certificates/${encodeURIComponent(s.apply_by)}" target="_blank" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">${s.apply_by}</a></span>` : '<span style="color:var(--text-muted);">📄 承认书：未上传</span>'}
+                    </div>
+                    ${(s.test_start || s.test_end) ? `
+                    <div style="color:var(--text-secondary); font-size:0.74rem; display:flex; gap:10px;">
+                        <span>🔬 测试开始：${s.test_start || '--'}</span>
+                        <span>📅 测试结束：${s.test_end || '--'}</span>
+                    </div>` : ''}
+                    ${s.test_result ? `
+                    <div style="color:var(--text-secondary); font-size:0.74rem; margin-top:2px; font-style:italic;">
+                        📝 测试结果：${s.test_result}
+                    </div>` : ''}
+                </div>
             </div>
             <!-- 操作按钮 -->
             <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
@@ -9569,6 +9611,27 @@ window.loadMqcSupplierToForm = function(id) {
     document.getElementById("mqc-sup-status").value = s.status || "活跃";
     document.getElementById("mqc-sup-approved-date").value = s.approved_date || "";
     document.getElementById("mqc-sup-risk-note").value = s.risk_note || "";
+    
+    // 回显专属承认书与测试信息
+    document.getElementById("mqc-sup-apply-by").value = s.apply_by || "";
+    const certFileLabel = document.getElementById("mqc-sup-cert-file-label");
+    const certPreviewLink = document.getElementById("mqc-sup-cert-preview-link");
+    document.getElementById("mqc-sup-cert-file-input").value = "";
+    if (s.apply_by) {
+        certFileLabel.textContent = "✅ " + s.apply_by;
+        certFileLabel.style.color = "var(--color-success)";
+        certPreviewLink.href = "/uploads/certificates/" + encodeURIComponent(s.apply_by);
+        certPreviewLink.style.display = "inline";
+    } else {
+        certFileLabel.textContent = "未上传";
+        certFileLabel.style.color = "var(--text-secondary)";
+        certPreviewLink.style.display = "none";
+        certPreviewLink.href = "#";
+    }
+    document.getElementById("mqc-sup-approval-status").value = s.approval_status || "需求提出";
+    document.getElementById("mqc-sup-test-start").value = s.test_start || "";
+    document.getElementById("mqc-sup-test-end").value = s.test_end || "";
+    document.getElementById("mqc-sup-test-result").value = s.test_result || "";
 };
 
 // 保存供应商
@@ -9593,7 +9656,13 @@ window.saveMqcSupplier = function() {
         risk_level: document.getElementById("mqc-sup-risk").value,
         risk_note: document.getElementById("mqc-sup-risk-note").value.trim(),
         approved_date: document.getElementById("mqc-sup-approved-date").value,
-        status: document.getElementById("mqc-sup-status").value
+        status: document.getElementById("mqc-sup-status").value,
+        // 新增独立承认书与测试信息字段
+        approval_status: document.getElementById("mqc-sup-approval-status").value,
+        apply_by: document.getElementById("mqc-sup-apply-by").value,
+        test_start: document.getElementById("mqc-sup-test-start").value,
+        test_end: document.getElementById("mqc-sup-test-end").value,
+        test_result: document.getElementById("mqc-sup-test-result").value.trim()
     };
     
     fetch("/api/mqc/suppliers/save", {
@@ -9623,6 +9692,64 @@ window.saveMqcSupplier = function() {
     .catch(err => {
         console.error("保存供应商失败:", err);
         showToast("保存供应商失败", "error");
+    });
+};
+
+// 触发上传供应商专属 PDF
+window.handleSupCertFileSelect = function(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+        showToast('仅支持上传 PDF 格式的承认书文件', 'error');
+        input.value = '';
+        return;
+    }
+    
+    if (file.size > 20 * 1024 * 1024) {
+        showToast('文件大小不得超过 20MB', 'error');
+        input.value = '';
+        return;
+    }
+    
+    const label = document.getElementById('mqc-sup-cert-file-label');
+    const previewLink = document.getElementById('mqc-sup-cert-preview-link');
+    
+    label.textContent = '⏳ 上传中…';
+    label.style.color = 'var(--color-warning)';
+    previewLink.style.display = 'none';
+    
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    
+    fetch('/api/mqc/upload_certificate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.error) {
+            showToast('上传失败：' + res.error, 'error');
+            label.textContent = '❌ 上传失败，请重试';
+            label.style.color = 'var(--color-danger)';
+            input.value = '';
+        } else {
+            document.getElementById('mqc-sup-apply-by').value = res.filename;
+            
+            label.textContent = '✅ ' + file.name;
+            label.style.color = 'var(--color-success)';
+            previewLink.href = res.url;
+            previewLink.style.display = 'inline';
+            
+            showToast('承认书 PDF 上传成功！', 'success');
+        }
+    })
+    .catch(err => {
+        console.error('承认书上传失败:', err);
+        showToast('承认书 PDF 上传失败，请检查网络或重试', 'error');
+        label.textContent = '❌ 上传失败，请重试';
+        label.style.color = 'var(--color-danger)';
+        input.value = '';
     });
 };
 

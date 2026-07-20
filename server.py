@@ -2261,7 +2261,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 rid = data.get('id')
                 fields = [
                     'mat_code','supplier_name','supplier_tier','contact',
-                    'phone','risk_level','risk_note','approved_date','status'
+                    'phone','risk_level','risk_note','approved_date','status',
+                    'approval_status','apply_by','test_start','test_end','test_result'
                 ]
                 vals = [data.get(f,'') for f in fields]
                 if rid:
@@ -2472,9 +2473,29 @@ def init_mqc_tables():
             risk_level TEXT DEFAULT '中',
             risk_note TEXT,
             approved_date TEXT,
-            status TEXT DEFAULT '活跃'
+            status TEXT DEFAULT '活跃',
+            approval_status TEXT DEFAULT '需求提出',
+            apply_by TEXT,
+            test_start TEXT,
+            test_end TEXT,
+            test_result TEXT
         )
     ''')
+    
+    # 动态迁移 mqc_suppliers 专属承认与测试信息字段
+    c.execute("PRAGMA table_info(mqc_suppliers)")
+    cols = [col[1] for col in c.fetchall()]
+    if "approval_status" not in cols:
+        c.execute("ALTER TABLE mqc_suppliers ADD COLUMN approval_status TEXT DEFAULT '需求提出'")
+    if "apply_by" not in cols:
+        c.execute("ALTER TABLE mqc_suppliers ADD COLUMN apply_by TEXT")
+    if "test_start" not in cols:
+        c.execute("ALTER TABLE mqc_suppliers ADD COLUMN test_start TEXT")
+    if "test_end" not in cols:
+        c.execute("ALTER TABLE mqc_suppliers ADD COLUMN test_end TEXT")
+    if "test_result" not in cols:
+        c.execute("ALTER TABLE mqc_suppliers ADD COLUMN test_result TEXT")
+        
     conn.commit()
     conn.close()
     print("[MQC] 物料承认数据库表已就绪")
