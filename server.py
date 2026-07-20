@@ -884,9 +884,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if routing_rows:
                         for r in routing_rows:
                             cursor.execute("""
-                                INSERT INTO product_routing (product_id, spec_thickness, step_no, stage_name, device_name, device_code, standard_params, remark, sop, sip, sop_image, sip_image, notes, status, updater, created_at)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '活动', ?, ?)
-                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], creator, base_time.isoformat()))
+                                INSERT INTO product_routing (product_id, spec_thickness, routing_version, step_no, stage_name, device_name, device_code, standard_params, remark, sop, sip, sop_image, sip_image, notes, status, created_at)
+                                VALUES (?, ?, 'R1.0', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '活动', ?)
+                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], base_time.isoformat()))
                     else:
                         routings = [
                             (1, "溅镀工段", "1#磁控溅镀线",   "EQ-溅镀-01", {"vacuum": 0.0002, "work_pressure": 0.35, "power": 12.0, "ar_flow": 80, "temp": 65, "speed": 15.0, "thickness": 20.0}),
@@ -897,9 +897,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         ]
                         for r in routings:
                             cursor.execute("""
-                                INSERT INTO product_routing (product_id, spec_thickness, step_no, stage_name, device_name, device_code, standard_params)
-                                VALUES (?, ?, ?, ?, ?, ?, ?)
-                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], json.dumps(r[4])))
+                                INSERT INTO product_routing (product_id, spec_thickness, routing_version, step_no, stage_name, device_name, device_code, standard_params, status, created_at)
+                                VALUES (?, ?, 'R1.0', ?, ?, ?, ?, ?, '活动', ?)
+                            """, (product_id, new_thickness, r[0], r[1], r[2], r[3], json.dumps(r[4]), base_time.isoformat()))
 
                     # 复制 TDS
                     cursor.execute("""
