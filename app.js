@@ -5232,42 +5232,17 @@ const DEFAULT_EMS_STAGE_INPUT_FILES = {
 // 从 localStorage 读取或初始化输入文件
 state.emsStageInputFiles = JSON.parse(localStorage.getItem("ems_stage_input_files")) || DEFAULT_EMS_STAGE_INPUT_FILES;
 
-// 动态渲染所有卡片的输入文件列表
-window.renderEmsStageInputFiles = function() {
-    const stageKeys = ["stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make", "stage5_install", "stage6_accept"];
-    stageKeys.forEach(k => {
-        const container = document.getElementById(`ems-card-inputs-${k}`);
-        if (container) {
-            container.innerHTML = "";
-            const files = state.emsStageInputFiles[k] || [];
-            if (files.length === 0) {
-                container.innerHTML = `<span style="color: var(--text-muted); font-style: italic;">暂无输入文件</span>`;
-            } else {
-                files.forEach(file => {
-                    const item = document.createElement("div");
-                    item.className = "ems-filter-doc-item";
-                    item.style.cursor = "pointer";
-                    item.onclick = (e) => {
-                        e.stopPropagation();
-                        showToast(`正在预览输入文件: ${file}`);
-                    };
-                    item.innerHTML = `
-                        <i data-lucide="file" style="width: 11px; height: 11px; color: var(--text-secondary);"></i>
-                        <span style="color: var(--text-secondary); font-weight: 500; font-size: 0.65rem;">${file}</span>
-                    `;
-                    container.appendChild(item);
-                });
-            }
-        }
-    });
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        window.lucide.createIcons();
-    }
-};
+window.renderEmsStageInputFiles = function() {};
 
 // 打开编辑输入文件的 Modal
 let currentEmsEditStageKey = "";
-window.openEmsInputFilesModal = function(stageKey) {
+window.openEmsInputFilesModal = function() {
+    const stageKey = document.getElementById("ems-edit-stage-key").value;
+    if (!stageKey || !state.activeEquipmentId) return;
+    
+    const eq = state.equipments.find(e => e.id === state.activeEquipmentId);
+    if (!eq) return;
+    
     currentEmsEditStageKey = stageKey;
     const stageTitles = {
         "stage1_plan": "G1. 立项",
@@ -5284,7 +5259,9 @@ window.openEmsInputFilesModal = function(stageKey) {
     
     const textarea = document.getElementById("ems-input-files-textarea");
     if (textarea) {
-        const files = state.emsStageInputFiles[stageKey] || [];
+        const plan = eq.project_plan || {};
+        const stagePlan = plan[stageKey] || {};
+        const files = stagePlan.input_files || [];
         textarea.value = files.join("\n");
     }
     
@@ -5295,18 +5272,65 @@ window.openEmsInputFilesModal = function(stageKey) {
 };
 
 // 保存输入文件
-window.saveEmsStageInputFiles = function() {
-    if (!currentEmsEditStageKey) return;
+window.saveEmsStageInputFiles = async function() {
+    const stageKey = currentEmsEditStageKey;
+    if (!stageKey || !state.activeEquipmentId) return;
+    
+    const eq = state.equipments.find(e => e.id === state.activeEquipmentId);
+    if (!eq) return;
+    
     const textarea = document.getElementById("ems-input-files-textarea");
-    if (textarea) {
-        const text = textarea.value.trim();
-        const files = text ? text.split("\n").map(f => f.trim()).filter(f => f.length > 0) : [];
-        state.emsStageInputFiles[currentEmsEditStageKey] = files;
-        localStorage.setItem("ems_stage_input_files", JSON.stringify(state.emsStageInputFiles));
-        
-        window.renderEmsStageInputFiles();
-        showToast("输入文件保存成功！", "success");
+    if (!textarea) return;
+    
+    const text = textarea.value.trim();
+    const files = text ? text.split("\n").map(f => f.trim()).filter(f => f.length > 0) : [];
+    
+    if (!eq.project_plan) eq.project_plan = {};
+    if (!eq.project_plan[stageKey]) {
+        eq.project_plan[stageKey] = {
+            title: window.getEmsStageDefaultTitle(stageKey),
+            status: "未开始",
+            start_date: "",
+            end_date: "",
+            owner: "",
+            remark: "",
+            attachment_name: "",
+            attachment_url: ""
+        };
     }
+    eq.project_plan[stageKey].input_files = files;
+    
+    // Save to database
+    try {
+        const role = state.currentUserRole || 'Viewer';
+        const dispName = state.currentUserDisplayName || '访客';
+        const payload = {
+            id: eq.id,
+            project_plan_json: JSON.stringify(eq.project_plan)
+        };
+        const res = await fetch("/api/equipments/save", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-User-Role": role,
+                "X-User-Name": encodeURIComponent(dispName)
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            // Update local state
+            eq.project_plan_json = JSON.stringify(eq.project_plan);
+            window.renderEquipmentProjectPlan(eq);
+            window.selectEmsStage(stageKey);
+            showToast("输入文件保存成功！", "success");
+        }
+    } catch (e) {
+        showToast("同步到服务器失败", "error");
+    }
+    
     closeModal("modal-ems-stage-input-files");
 };
 
@@ -5372,10 +5396,7 @@ window.fetchEquipmentsAndRender = async function() {
         const data = await res.json();
         state.equipments = Array.isArray(data) ? data : [];
         
-        // 渲染输入文件
-        if (window.renderEmsStageInputFiles) {
-            window.renderEmsStageInputFiles();
-        }
+
         
         // 1. 计算各阶段设备数量，并更新 6 大里程碑阶段过滤看板
         const stageKeys = [
@@ -5825,6 +5846,36 @@ window.selectEmsStage = function(stageKey) {
         btnDing.style.display = "none";
     } else {
         dingtalkBlock.style.display = "none";
+    }
+
+    // ----------------------------------------------------
+    // 渲染本设备的输入文件列表
+    // ----------------------------------------------------
+    const inputsList = document.getElementById("ems-workbench-inputs-list");
+    if (inputsList) {
+        inputsList.innerHTML = "";
+        const files = item.input_files || [];
+        if (files.length === 0) {
+            inputsList.innerHTML = `<span style="color: var(--text-muted); font-style: italic; font-size: 0.65rem;">暂无输入文件</span>`;
+        } else {
+            files.forEach(file => {
+                const itemEl = document.createElement("div");
+                itemEl.className = "ems-filter-doc-item";
+                itemEl.style.cursor = "pointer";
+                itemEl.onclick = (e) => {
+                    e.stopPropagation();
+                    showToast(`正在预览输入文件: ${file}`);
+                };
+                itemEl.innerHTML = `
+                    <i data-lucide="file" style="width: 11px; height: 11px; color: var(--text-secondary);"></i>
+                    <span style="color: var(--text-secondary); font-weight: 500; font-size: 0.65rem;">${file}</span>
+                `;
+                inputsList.appendChild(itemEl);
+            });
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
     }
 
     // ----------------------------------------------------

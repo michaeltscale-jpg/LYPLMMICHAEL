@@ -65,6 +65,14 @@ def make_default_equipment_project_plan(active_stage_idx=6):
         start_date = (base + timedelta(days=start_offset)).strftime("%Y-%m-%d")
         end_date = (base + timedelta(days=end_offset)).strftime("%Y-%m-%d")
         
+        stage_inputs = {
+            "stage1_plan": ["项目启动意向书.docx", "前期可行性研究报告.pdf"],
+            "stage2_scheme": ["设备设计任务书.pdf", "工艺性能指标书.xlsx"],
+            "stage3_bidding": ["技术方案评审意见书.docx", "采购请购申请表.xlsx"],
+            "stage4_make": ["中标通知书.pdf", "采购合同与技术协议.pdf"],
+            "stage5_install": ["出厂合格证.pdf", "设备动能供给规范.docx"],
+            "stage6_accept": ["安装自检自测报告.pdf", "设备单机试运转记录.xlsx"]
+        }
         plan[s_key] = {
             "title": s_title,
             "status": s_status,
@@ -73,7 +81,8 @@ def make_default_equipment_project_plan(active_stage_idx=6):
             "owner": s_owner,
             "remark": f"{s_title}阶段正常进展" if s_status != "未开始" else "",
             "attachment_name": att_name if s_status != "未开始" else "",
-            "attachment_url": att_url if s_status != "未开始" else ""
+            "attachment_url": att_url if s_status != "未开始" else "",
+            "input_files": stage_inputs[s_key] if s_status != "未开始" else []
         }
     return json.dumps(plan, ensure_ascii=False)
 
@@ -305,24 +314,50 @@ def init_database(force_reset=False):
         ("pe_wang", "王工艺", "Process Engineer", "启用")
     ])
 
-    # 生成各设备的默认一条龙导入项目进度 JSON
-    p_comp = make_default_equipment_project_plan(6)  # 全部 6 个阶段已完成
-    p_active_install = make_default_equipment_project_plan(4)  # 正在安装调试阶段 (5)
+    # 生成各阶段进度的计划 JSON
+    p_g1 = make_default_equipment_project_plan(0) # G1进行中
+    p_g2 = make_default_equipment_project_plan(1) # G2进行中
+    p_g3 = make_default_equipment_project_plan(2) # G3进行中
+    p_g4 = make_default_equipment_project_plan(3) # G4进行中
+    p_g5 = make_default_equipment_project_plan(4) # G5进行中
+    p_g6_inprogress = make_default_equipment_project_plan(5) # G6进行中
+    p_g6_completed = make_default_equipment_project_plan(6) # G6已完成
     
-    # 插入初始设备数据
+    # 插入初始设备数据 (各阶段均有 3 个或以上设备)
     cursor.executemany("""
     INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, [
-        ("EQ-溅镀-01", "1#磁控溅镀线", "生产设备", "运行中", 92.4, "2026-08-01", '{}', p_comp, "赵工"),
-        ("EQ-生箔-02", "2#生箔机阴极辊", "生产设备", "运行中", 88.5, "2026-08-15", '{}', p_comp, "生箔工艺组"),
-        ("EQ-PA溅镀-02", "2#磁控溅镀处理线", "生产设备", "运行中", 90.1, "2026-08-10", '{}', p_comp, "表处工艺组"),
-        ("EQ-PB-01", "1#高精密PB涂布机", "生产设备", "保养中", 79.5, "2026-07-20", '{}', p_comp, "维保班组"),
-        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "生产设备", "导入中", 0.0, None, '{}', p_active_install, "生箔设备组"),
-        ("EQ-脱膜-05", "1#高速脱膜机", "生产设备", "运行中", 94.2, "2026-08-20", '{}', p_comp, "脱膜班组"),
-        ("EQ-CW-01", "1#超纯水处理机", "厂务设备", "运行中", 95.0, "2026-09-01", '{}', p_comp, "动力机电组"),
-        ("EQ-JC-01", "高精度在线测厚仪", "检测设备", "运行中", 98.0, "2026-09-15", '{}', p_comp, "品质检验组"),
-        ("EQ-AGV-01", "1#自动AGV搬运车", "仓储搬运设备", "运行中", 96.5, "2026-10-01", '{}', p_comp, "仓储物流组")
+        # G1. 立项 (3个)
+        ("EQ-SC-01", "1#极速生箔机", "生产设备", "导入中", 0.0, None, '{}', p_g1, "生箔设备组"),
+        ("EQ-CW-02", "2#纯水分配泵", "厂务设备", "导入中", 0.0, None, '{}', p_g1, "动力机电组"),
+        ("EQ-JC-02", "自动光学缺陷检测仪", "检测设备", "导入中", 0.0, None, '{}', p_g1, "品质检验组"),
+
+        # G2. 拟定技术方案 (3个)
+        ("EQ-SC-02", "2#高精密磁控溅镀线", "生产设备", "导入中", 0.0, None, '{}', p_g2, "表处设备组"),
+        ("EQ-CW-03", "3#酸性尾气吸收塔", "厂务设备", "导入中", 0.0, None, '{}', p_g2, "动力机电组"),
+        ("EQ-AGV-02", "2#重载堆垛AGV", "仓储搬运设备", "导入中", 0.0, None, '{}', p_g2, "仓储物流组"),
+
+        # G3. 请购发包 (3个)
+        ("EQ-SC-03", "1#宽幅高精度涂布机", "生产设备", "导入中", 0.0, None, '{}', p_g3, "涂布设备组"),
+        ("EQ-CW-04", "4#冷冻机组", "厂务设备", "导入中", 0.0, None, '{}', p_g3, "动力机电组"),
+        ("EQ-JC-03", "激光测厚仪A", "检测设备", "导入中", 0.0, None, '{}', p_g3, "品质检验组"),
+
+        # G4. 制作中 (3个)
+        ("EQ-SC-04", "1#精密贴膜机", "生产设备", "导入中", 0.0, None, '{}', p_g4, "贴膜设备组"),
+        ("EQ-CW-05", "纯水除盐吸附柱", "厂务设备", "导入中", 0.0, None, '{}', p_g4, "动力机电组"),
+        ("EQ-AGV-03", "原料自动立体仓叉车", "仓储搬运设备", "导入中", 0.0, None, '{}', p_g4, "仓储物流组"),
+
+        # G5. 安装调试中 (3个)
+        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "生产设备", "导入中", 0.0, None, '{}', p_g5, "生箔设备组"),
+        ("EQ-CW-06", "车间除湿净化空调系统", "厂务设备", "导入中", 0.0, None, '{}', p_g5, "动力机电组"),
+        ("EQ-JC-04", "拉力试验检测仪", "检测设备", "导入中", 0.0, None, '{}', p_g5, "品质检验组"),
+
+        # G6. 验收交付使用与运行中 (4个)
+        ("EQ-SC-06", "1#高速分切收卷机", "生产设备", "导入中", 0.0, None, '{}', p_g6_inprogress, "收卷设备组"),
+        ("EQ-CW-01", "1#超纯水处理机", "厂务设备", "运行中", 95.0, "2026-09-01", '{}', p_g6_completed, "动力机电组"),
+        ("EQ-JC-01", "高精度在线测厚仪", "检测设备", "运行中", 98.0, "2026-09-15", '{}', p_g6_completed, "品质检验组"),
+        ("EQ-AGV-01", "1#自动AGV搬运车", "仓储搬运设备", "运行中", 96.5, "2026-10-01", '{}', p_g6_completed, "仓储物流组")
     ])
 
     # 导入仿真模拟数据
