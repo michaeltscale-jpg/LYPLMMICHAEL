@@ -364,6 +364,9 @@
                 <p style="font-size: 0.68rem; color: var(--text-muted); margin: 0; line-height: 1.4;">
                     💡 这些输入文件作为开启本阶段工作的输入依据，保存后将即时渲染在卡片的输入文件区。
                 </p>
+                <p id="ems-input-files-warning-note" style="font-size: 0.68rem; color: #f59e0b; margin: 4px 0 0 0; line-height: 1.4; display: none;">
+                    ⚠️ 【已验收限制】当前设备已验收通过。已有的输入文件不可修改或删除，仅支持在下方另起一行追加新文件。
+                </p>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-ems-stage-input-files')">取消</button>
@@ -682,17 +685,26 @@
             const btnBind = document.getElementById("btn-bind-attachment");
             const btnDelete = document.getElementById("btn-delete-attachment");
 
+            const isAccepted = plan.stage6_accept && plan.stage6_accept.status === "已完成";
+
             if (item.attachment_name) {
                 attNameEl.innerText = item.attachment_name;
                 attNameEl.style.color = "#f8fafc";
                 btnPreview.style.display = "inline-block";
-                btnDelete.style.display = "inline-block";
-                btnBind.innerText = "重新关联";
+                if (isAccepted) {
+                    btnDelete.style.display = "none";
+                    btnBind.style.display = "none";
+                } else {
+                    btnDelete.style.display = "inline-block";
+                    btnBind.style.display = "inline-block";
+                    btnBind.innerText = "重新关联";
+                }
             } else {
                 attNameEl.innerText = "未归档交付成果件";
                 attNameEl.style.color = "#64748b";
                 btnPreview.style.display = "none";
                 btnDelete.style.display = "none";
+                btnBind.style.display = "inline-block";
                 btnBind.innerText = "关联文件";
             }
 
@@ -925,6 +937,13 @@
             
             textarea.value = (item.input_files || []).join("\n");
             
+            const plan = eq.project_plan || {};
+            const isAccepted = plan.stage6_accept && plan.stage6_accept.status === "已完成";
+            const warningEl = document.getElementById("ems-input-files-warning-note");
+            if (warningEl) {
+                warningEl.style.display = isAccepted ? "block" : "none";
+            }
+            
             const overlay = document.getElementById("modal-ems-stage-input-files");
             overlay.classList.add("active");
         }
@@ -945,6 +964,18 @@
                 .filter(l => l.length > 0);
             
             const plan = JSON.parse(JSON.stringify(eq.project_plan || {}));
+            
+            // Check if accepted
+            const isAccepted = plan.stage6_accept && plan.stage6_accept.status === "已完成";
+            if (isAccepted) {
+                const originalFiles = (eq.project_plan[stageKey] && eq.project_plan[stageKey].input_files) || [];
+                const missingFiles = originalFiles.filter(f => !lines.includes(f));
+                if (missingFiles.length > 0) {
+                    showToast("【已验收限制】已验收设备禁止修改或删除已有的输入文件！只允许在列表末尾追加新文件。", "error");
+                    return;
+                }
+            }
+
             if (!plan[stageKey]) {
                 plan[stageKey] = {
                     title: getEmsStageDefaultTitle(stageKey),
@@ -968,6 +999,15 @@
             const stageKey = document.getElementById("edit-stage-key").value;
             const stageTitle = getEmsStageDefaultTitle(stageKey);
 
+            // Check if accepted and attachment already exists
+            const plan = JSON.parse(JSON.stringify(eq.project_plan || {}));
+            const isAccepted = plan.stage6_accept && plan.stage6_accept.status === "已完成";
+            const currentItem = plan[stageKey] || {};
+            if (isAccepted && currentItem.attachment_name) {
+                showToast("【已验收限制】已验收设备禁止修改或重新关联已有的交付物！", "error");
+                return;
+            }
+
             const defaultFiles = {
                 "stage1_plan": "设备设计技术大纲与要求.pdf",
                 "stage2_scheme": "设备技术方案评审纪要.pdf",
@@ -985,7 +1025,6 @@
                 return;
             }
 
-            const plan = JSON.parse(JSON.stringify(eq.project_plan || {}));
             if (!plan[stageKey]) {
                 plan[stageKey] = {
                     title: stageTitle,
@@ -1007,9 +1046,17 @@
             const eq = state.equipment;
             if (!eq) return;
             const stageKey = document.getElementById("edit-stage-key").value;
+
+            // Check if accepted
+            const plan = JSON.parse(JSON.stringify(eq.project_plan || {}));
+            const isAccepted = plan.stage6_accept && plan.stage6_accept.status === "已完成";
+            if (isAccepted) {
+                showToast("【已验收限制】已验收设备禁止移除已有的交付物！", "error");
+                return;
+            }
+
             if (!confirm("您确定要移除该阶段归档的文件吗？")) return;
 
-            const plan = JSON.parse(JSON.stringify(eq.project_plan || {}));
             if (plan[stageKey]) {
                 const oldName = plan[stageKey].attachment_name;
                 plan[stageKey].attachment_name = "";
