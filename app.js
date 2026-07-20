@@ -2097,31 +2097,31 @@ function updateThicknessTabs(specThickness) {
             };
             
             card.style.borderRadius = "8px";
-            card.style.padding = "6px 16px";
+            card.style.padding = "4px 12px";
             card.style.textAlign = "center";
             card.style.cursor = "pointer";
             card.style.transition = "all 0.2s";
-            card.style.minWidth = "64px";
+            card.style.minWidth = "56px";
             
             if (isActive) {
-                card.style.background = "rgba(56,189,248,0.12)";
-                card.style.border = "1px solid rgba(56,189,248,0.6)";
-                card.style.boxShadow = "0 0 10px rgba(56,189,248,0.2)";
+                card.style.background = "rgba(56,189,248,0.15)";
+                card.style.border = "1px solid rgba(56,189,248,0.8)";
+                card.style.boxShadow = "0 0 10px rgba(56,189,248,0.25)";
             } else {
-                card.style.background = "rgba(30,41,59,0.5)";
-                card.style.border = "1px solid rgba(255,255,255,0.07)";
+                card.style.background = "rgba(255,255,255,0.05)";
+                card.style.border = "1px solid rgba(255,255,255,0.15)";
                 card.style.boxShadow = "none";
             }
             
             const tNum = Number(t);
             const tStr = (tNum % 1 === 0) ? tNum.toFixed(0) : tNum.toFixed(1);
-            const labelColor = isActive ? "#7dd3fc" : "#64748b";
-            const valColor = isActive ? "#38bdf8" : "#64748b";
+            const labelColor = isActive ? "#e0f2fe" : "#94a3b8";
+            const valColor = isActive ? "#38bdf8" : "#e2e8f0";
             const valWeight = isActive ? "900" : "800";
             
             card.innerHTML = `
-                <div style="font-size: 0.6rem; color: ${labelColor}; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">厚度</div>
-                <div style="font-size: 0.92rem; font-weight: ${valWeight}; color: ${valColor};">${tStr} μm</div>
+                <div style="font-size: 0.55rem; color: ${labelColor}; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px;">厚度</div>
+                <div style="font-size: 0.85rem; font-weight: ${valWeight}; color: ${valColor};">${tStr} μm</div>
             `;
             
             container.appendChild(card);
