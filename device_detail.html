@@ -9,8 +9,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
             min-height: 100vh;
             padding-bottom: 40px;
         }
@@ -28,10 +28,10 @@
             align-items: center;
             margin-bottom: 24px;
             padding: 16px 24px;
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.15);
             border-radius: 12px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(148, 163, 184, 0.05);
         }
 
         .btn-back {
@@ -40,21 +40,22 @@
             gap: 6px;
             padding: 8px 16px;
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #e2e8f0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .btn-back:hover {
-            background: rgba(255, 255, 255, 0.16);
-            border-color: rgba(255, 255, 255, 0.4);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(148, 163, 184, 0.12);
         }
 
         /* Horizontal timeline layout */
@@ -69,8 +70,8 @@
         }
 
         .timeline-card {
-            background: rgba(30, 41, 59, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 12px;
             cursor: pointer;
@@ -79,20 +80,21 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 100px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
-            border-top: 4px solid var(--text-muted);
+            box-shadow: 0 2px 4px rgba(148, 163, 184, 0.04);
+            border-top: 4px solid #94a3b8;
         }
 
         .timeline-card:hover {
             transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+            border-color: #94a3b8;
+            box-shadow: 0 8px 16px rgba(148, 163, 184, 0.08);
         }
 
         .timeline-card.active-card {
             border: 2px solid var(--color-primary) !important;
             border-top: 4px solid var(--color-primary) !important;
-            background: rgba(99, 102, 241, 0.03);
+            background: rgba(99, 102, 241, 0.04);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.1);
         }
 
         .timeline-card.completed {
@@ -115,11 +117,11 @@
         }
 
         .workspace-panel {
-            background: rgba(30, 41, 59, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid rgba(148, 163, 184, 0.15);
             border-radius: 12px;
             padding: 24px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(148, 163, 184, 0.05);
         }
 
         .control-panel {
@@ -136,18 +138,18 @@
         .stage-form-group label {
             display: block;
             font-size: 0.72rem;
-            color: #94a3b8;
+            color: #475569;
             margin-bottom: 4px;
             font-weight: 600;
         }
 
         .stage-form-control {
             width: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
             padding: 8px 12px;
-            color: #fff;
+            color: #0f172a;
             font-size: 0.78rem;
             outline: none;
             box-sizing: border-box;
@@ -156,11 +158,12 @@
 
         .stage-form-control:focus {
             border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
         .stage-form-control:disabled {
-            background: rgba(15, 23, 42, 0.3);
-            color: #64748b;
+            background: #f1f5f9;
+            color: #94a3b8;
             cursor: not-allowed;
         }
 
@@ -197,18 +200,18 @@
                     <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> 返回列表
                 </a>
                 <div>
-                    <h2 id="device-title" style="margin: 0; font-size: 1.1rem; color: #fff; font-weight: 700;">加载中...</h2>
+                    <h2 id="device-title" style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 700;">加载中...</h2>
                     <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
                         <span id="device-code" style="font-family: monospace; font-size: 0.72rem; color: var(--color-primary); font-weight: 600;">--</span>
-                        <span style="color: rgba(255,255,255,0.2);">|</span>
-                        <span id="device-category" style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">--</span>
+                        <span style="color: #cbd5e1;">|</span>
+                        <span id="device-category" style="font-size: 0.72rem; color: #475569; font-weight: 600;">--</span>
                     </div>
                 </div>
             </div>
             
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div style="font-size: 0.72rem; text-align: right;">
-                    <span style="color: #94a3b8; display: block;">登录身份</span>
+                    <span style="color: #64748b; display: block;">登录身份</span>
                     <strong id="role-badge" style="color: var(--color-primary); font-weight: 700;">--</strong>
                 </div>
             </div>
@@ -216,7 +219,7 @@
 
         <!-- 6大里程碑管道线看板 -->
         <div class="timeline-wrapper">
-            <h5 style="margin: 0 0 12px; font-size: 0.78rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
+            <h5 style="margin: 0 0 12px; font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
             <div class="timeline-grid" id="detail-milestone-grid">
                 <!-- 由 JS 动态渲染 -->
             </div>
@@ -227,8 +230,8 @@
             <!-- 左侧：主要阶段管控与内容 -->
             <div class="workspace-panel">
                 <!-- 阶段详情标题与状态 -->
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; margin-bottom: 16px;">
-                    <h3 style="margin: 0; font-size: 0.88rem; font-weight: 700; color: #f1f5f9; display: flex; align-items: center; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                    <h3 style="margin: 0; font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 6px;">
                         <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--color-primary);"></i>
                         <span>阶段详情: </span>
                         <span id="workbench-stage-title" style="color: #3b82f6;">--</span>
@@ -237,10 +240,10 @@
                 </div>
 
                 <!-- 输入文件管理 (专属) -->
-                <div style="background: rgba(15, 23, 42, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(255, 255, 255, 0.08); padding-bottom: 6px; margin-bottom: 8px;">
-                        <div style="font-size: 0.76rem; font-weight: 700; color: #60a5fa; display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="folder-open" style="width: 14px; height: 14px; color: #60a5fa;"></i>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
+                        <div style="font-size: 0.76rem; font-weight: 700; color: #1e3a8b; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="folder-open" style="width: 14px; height: 14px; color: #1e3a8b;"></i>
                             <span>📂 本阶段输入文件</span>
                         </div>
                         <button onclick="openEmsInputFilesModal()" class="btn-primary" style="font-size: 0.65rem; padding: 3px 8px; height: auto;">
@@ -253,30 +256,30 @@
                 </div>
 
                 <!-- 交付物与归档管理 (专属) -->
-                <div style="background: rgba(15, 23, 42, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; justify-content: space-between;">
                         <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-                            <i data-lucide="file-text" style="color: #60a5fa; width: 22px; height: 22px; flex-shrink: 0;"></i>
+                            <i data-lucide="file-text" style="color: #2563eb; width: 22px; height: 22px; flex-shrink: 0;"></i>
                             <div style="min-width: 0;">
-                                <div style="font-size: 0.76rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="workbench-attachment-name">未归档交付成果件</div>
-                                <div style="font-size: 0.62rem; color: #94a3b8;" id="workbench-attachment-desc">设备在该阶段产出的技术协议/方案/验收单</div>
+                                <div style="font-size: 0.76rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="workbench-attachment-name">未归档交付成果件</div>
+                                <div style="font-size: 0.62rem; color: #475569;" id="workbench-attachment-desc">设备在该阶段产出的技术协议/方案/验收单</div>
                             </div>
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <button class="dms-action-btn" id="btn-preview-attachment" onclick="previewEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(59, 130, 246, 0.1); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2); display: none;">预览</button>
-                            <button class="dms-action-btn" id="btn-bind-attachment" onclick="bindEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">关联文件</button>
-                            <button class="dms-action-btn" id="btn-delete-attachment" onclick="deleteEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); display: none;">移除</button>
+                            <button class="dms-action-btn" id="btn-preview-attachment" onclick="previewEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(59, 130, 246, 0.06); color: #1d4ed8; border: 1px solid rgba(59, 130, 246, 0.15); display: none;">预览</button>
+                            <button class="dms-action-btn" id="btn-bind-attachment" onclick="bindEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(16, 185, 129, 0.06); color: #047857; border: 1px solid rgba(16, 185, 129, 0.15);">关联文件</button>
+                            <button class="dms-action-btn" id="btn-delete-attachment" onclick="deleteEmsStageAttachment()" style="padding: 4px 10px; font-size: 0.68rem; background: rgba(239, 68, 68, 0.06); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.15); display: none;">移除</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 本阶段专业作业管控要求 -->
-                <div style="background: rgba(99, 102, 241, 0.06); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 8px; padding: 14px;">
-                    <div style="font-size: 0.76rem; font-weight: 700; color: #a5b4fc; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; border-bottom: 1px dashed rgba(165, 180, 252, 0.15); padding-bottom: 6px;">
-                        <i data-lucide="check-square" style="width: 14px; height: 14px; color: #a5b4fc;"></i>
+                <div style="background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: 8px; padding: 14px;">
+                    <div style="font-size: 0.76rem; font-weight: 700; color: #4f46e5; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; border-bottom: 1px dashed rgba(79, 70, 229, 0.15); padding-bottom: 6px;">
+                        <i data-lucide="check-square" style="width: 14px; height: 14px; color: #4f46e5;"></i>
                         <span>📋 本阶段专业作业管控要求</span>
                     </div>
-                    <ul id="workbench-control-standards-list" style="margin: 0; padding-left: 0; list-style: none; font-size: 0.72rem; color: #cbd5e1; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
+                    <ul id="workbench-control-standards-list" style="margin: 0; padding-left: 0; list-style: none; font-size: 0.72rem; color: #334155; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
                         <!-- JS 动态渲染 -->
                     </ul>
                 </div>
@@ -284,21 +287,23 @@
 
             <!-- 右侧：属性表单与流程控制 -->
             <div class="workspace-panel control-panel">
-                <h4 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">📝 阶段管理属性</h4>
+                <h4 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #334155; text-transform: uppercase;">📝 阶段管理属性</h4>
                 
                 <!-- 隐藏的阶段主键 -->
                 <input type="hidden" id="edit-stage-key">
 
                 <div class="stage-form-group">
                     <label>本里程碑负责人</label>
-                    <input type="text" id="edit-stage-owner" class="stage-form-control">
+                    <input type="text" id="edit-stage-owner" class="stage-form-control" placeholder="例如：设备组 / 工艺组">
                 </div>
 
                 <div class="stage-form-group">
                     <label>阶段状态</label>
-                    <select id="edit-stage-status" class="stage-form-control">
+                    <select id="edit-stage-status" class="stage-form-control" onchange="onEmsStageStatusSelectChange()">
                         <option value="未开始">未开始</option>
                         <option value="进行中">进行中</option>
+                        <option value="审批中" disabled>审批中 (发起审批后自动变更为此状态)</option>
+                        <option value="已完成" disabled>已完成 (须审批通过后系统自动完结)</option>
                     </select>
                 </div>
 
@@ -314,10 +319,10 @@
 
                 <div class="stage-form-group">
                     <label>阶段交付物与备注说明</label>
-                    <input type="text" id="edit-stage-remark" class="stage-form-control" placeholder="如：技术协议已签订/图纸评审完成">
+                    <textarea id="edit-stage-remark" class="stage-form-control" rows="3" placeholder="录入阶段成果进展或异常说明..."></textarea>
                 </div>
 
-                <div style="display: flex; gap: 8px; margin-top: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 16px;">
+                <div style="display: flex; gap: 8px; margin-top: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 16px;">
                     <button class="btn-primary" onclick="saveEquipmentStageProgress()" style="flex: 1; font-size: 0.74rem; padding: 8px; justify-content: center;">
                         <i data-lucide="save" style="width: 14px; height: 14px;"></i> 保存修改
                     </button>
@@ -327,10 +332,10 @@
                 </div>
 
                 <!-- 钉钉审批联动 -->
-                <div id="workbench-dingtalk-block" style="background: rgba(30, 41, 59, 0.4); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 14px; display: none; flex-direction: column; gap: 10px;">
+                <div id="workbench-dingtalk-block" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 14px; display: none; flex-direction: column; gap: 10px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <img src="https://img.alicdn.com/tfs/TB1n162qZUrBKNjSZPxXXXw1XXa-1024-1024.png" style="width: 18px; height: 18px;" alt="DingTalk">
-                        <span style="font-size: 0.7rem; color: #cbd5e1; font-weight: 600;" id="workbench-dingtalk-status">可发起钉钉里程碑联合评审</span>
+                        <span style="font-size: 0.7rem; color: #475569; font-weight: 600;" id="workbench-dingtalk-status">可发起钉钉里程碑联合评审</span>
                     </div>
                     <button class="btn-primary" id="btn-launch-dingtalk" onclick="launchEmsStageDingtalkApproval()" style="width: 100%; font-size: 0.74rem; padding: 8px; justify-content: center; height: auto;">
                         <i data-lucide="send" style="width: 14px; height: 14px;"></i> 发起钉钉审批
@@ -581,7 +586,7 @@
                         <span style="font-size:0.6rem; font-weight:700; color:var(--text-muted);">${k.toUpperCase().replace('STAGE', 'G')}</span>
                         <span class="ems-stage-card-status-badge ${badgeClass}" style="font-size:0.55rem; padding:1px 4px;">${item.status}</span>
                     </div>
-                    <div style="font-size:0.74rem; font-weight:700; color:#fff; margin:6px 0 2px;">${item.title}</div>
+                    <div style="font-size:0.74rem; font-weight:700; color:var(--text-primary); margin:6px 0 2px;">${item.title}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; color:#94a3b8;">
                         <span>负责人: ${item.owner || '--'}</span>
                     </div>
