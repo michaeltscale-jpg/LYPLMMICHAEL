@@ -2511,6 +2511,10 @@ function renderBomSubpanel() {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">暂无可用 BOM 数据，点击右上方「新增物料行」开始录入</td></tr>`;
         if (bomVersionSelect) bomVersionSelect.innerHTML = "";
         if (lockedWarningBanner) lockedWarningBanner.style.display = "none";
+        const addRowBtn = document.getElementById("btn-bom-add-row");
+        const editBomSubBtn = document.getElementById("btn-edit-bom-sub");
+        if (addRowBtn) addRowBtn.style.display = 'flex';
+        if (editBomSubBtn) editBomSubBtn.style.display = 'flex';
         return;
     }
 
@@ -2671,11 +2675,11 @@ window.saveBomRowEdit = function() {
     if (!checkPermission(["Admin", "Process Engineer"], "修改配方BOM")) return;
 
     const product = state.activeProduct;
+    if (!product) return;
     let displayBom = product.bom;
-    if (!displayBom) { showToast("未找到活动 BOM", "error"); return; }
+    const bomItems = displayBom ? (displayBom.bom_items || []) : [];
 
     const idx = parseInt(document.getElementById("bom-row-edit-idx").value);
-    const bomItems = displayBom.bom_items || [];
 
     const updatedItem = {
         material_code: document.getElementById("bom-row-edit-code").value.trim(),
@@ -2701,9 +2705,9 @@ window.addBomNewRow = async function() {
     if (!checkPermission(["Admin", "Process Engineer"], "新增配方BOM行")) return;
 
     const product = state.activeProduct;
-    if (!product || !product.bom) { showToast("未找到活动 BOM", "error"); return; }
-
-    const bomItems = product.bom.bom_items || [];
+    if (!product) return;
+    const displayBom = product.bom;
+    const bomItems = displayBom ? (displayBom.bom_items || []) : [];
     document.getElementById("bom-row-edit-idx").value = bomItems.length;
     document.getElementById("bom-row-edit-title").innerText = `新增物料行`;
     document.getElementById("bom-row-edit-ratio").value = '';
@@ -2740,8 +2744,16 @@ window.deleteBomRow = function(idx) {
 
 // 内部辅助：将 bomItems 保存到后端（调用在线保存接口，不升版）
 function _saveBomItemsToServer(product, bomItems, successMsg) {
-    const bom = product.bom;
-    if (!bom) return;
+    const bom = product.bom || {
+        version: "V1.0",
+        copper_wire_ratio: 99.85,
+        sulfuric_acid_ratio: 0.15,
+        additive_gel: product.category === "HIS 载体铜箔" ? 3.0 : 5.2,
+        additive_hec: product.category === "HIS 载体铜箔" ? 4.0 : 3.5,
+        additive_s: product.category === "HIS 载体铜箔" ? 6.5 : 8.0,
+        silane_type: product.category === "HIS 载体铜箔" ? "环保硅烷SL-203" : "常规硅烷-201",
+        silane_conc: product.category === "HIS 载体铜箔" ? 0.6 : 0.8
+    };
 
     const payload = {
         bom_version: bom.version,
