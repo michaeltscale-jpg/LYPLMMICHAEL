@@ -7025,8 +7025,8 @@ function renderUsersTable(users) {
             <td>${roleNames[u.role] || u.role}</td>
             <td><span class="badge ${statusBadge}">${u.status}</span></td>
             <td style="color: var(--text-muted); font-size: 0.75rem;">${formatDate(u.created_at)}</td>
-            <td style="text-align:left; white-space:nowrap; width: 1%;">
-                <div style="display: flex; justify-content: flex-start; align-items: center; gap: 6px;">
+            <td style="text-align:center; white-space:nowrap; width: 1%;">
+                <div style="display: flex; justify-content: center; align-items: center; gap: 6px;">
                     ${editBtn}
                     ${deleteBtn}
                 </div>
