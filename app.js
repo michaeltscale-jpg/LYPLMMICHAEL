@@ -8771,20 +8771,6 @@ window.renderMqcMaterials = function() {
             } else {
                 statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:1px 4px;">${s.approval_status || '📋 需求'}</span>`;
             }
-            
-            // PDF 承认书链接
-            let pdfLink = "";
-            if (s.apply_by && s.apply_by.toLowerCase().endsWith(".pdf")) {
-                const pdfUrl = "/uploads/certificates/" + encodeURIComponent(s.apply_by);
-                pdfLink = `<a href="${pdfUrl}" target="_blank" onclick="event.stopPropagation();"
-                    style="display:inline-flex; align-items:center; color:var(--color-primary); font-size:0.72rem; text-decoration:underline; font-weight:600;"
-                    title="点击预览承认书 PDF">
-                    📄 承认书
-                </a>`;
-            } else {
-                pdfLink = `<span style="color:var(--text-muted); font-size:0.7rem;">无证书</span>`;
-            }
-            
             const shortName = s.supplier_name.length > 8 ? s.supplier_name.substring(0, 7) + "..." : s.supplier_name;
             
             return `
@@ -8792,7 +8778,6 @@ window.renderMqcMaterials = function() {
                     ${tierPrefix}
                     <span style="font-weight:600; color:var(--text-main); min-width:85px; display:inline-block;" title="${s.supplier_name}">${shortName}</span>
                     ${statusBadge}
-                    ${pdfLink}
                 </div>
             `;
         };
