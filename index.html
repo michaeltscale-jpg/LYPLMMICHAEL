@@ -3063,6 +3063,85 @@ requests.post(url, json=payload)</code></pre>
 </div>
 
 
+    <!-- ===== MQC 供应商详情查看弹窗 ===== -->
+    <div class="modal-overlay" id="modal-mqc-supplier-detail" style="z-index: 1100;">
+        <div class="modal-box" style="max-width: 600px; width: 90%;">
+            <div class="modal-header">
+                <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                    <i data-lucide="building-2" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+                    供应商档案详情
+                </h3>
+                <button class="modal-close" onclick="closeModal('modal-mqc-supplier-detail')">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- 供应商基本信息头 -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px;">
+                    <div id="mqc-detail-sup-name" style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);"></div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                        <span id="mqc-detail-sup-tier-badge"></span>
+                        <span id="mqc-detail-sup-status-badge"></span>
+                        <span id="mqc-detail-sup-risk-badge"></span>
+                    </div>
+                </div>
+
+                <!-- 详细属性网格 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                    <div>
+                        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">联系人</label>
+                        <div id="mqc-detail-sup-contact" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);"></div>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">联系电话</label>
+                        <div id="mqc-detail-sup-phone" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);"></div>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">关联物料代号</label>
+                        <div id="mqc-detail-sup-mat-code" style="font-size: 0.85rem; font-weight: 600; color: var(--color-primary);"></div>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">批准/承认日期</label>
+                        <div id="mqc-detail-sup-approved-date" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);"></div>
+                    </div>
+                </div>
+
+                <!-- 承认与测试状况 -->
+                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
+                    <h4 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                        📋 承认及样品测试状态
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">当前承认状态</label>
+                            <div id="mqc-detail-sup-approval-status" style="font-size: 0.85rem; font-weight: 700;"></div>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">厂商承认书 (PDF)</label>
+                            <div id="mqc-detail-sup-certificate" style="font-size: 0.85rem;"></div>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">样品测试周期</label>
+                            <div id="mqc-detail-sup-test-period" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);"></div>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">样品测试结果与结论</label>
+                            <div id="mqc-detail-sup-test-result" style="font-size: 0.82rem; line-height: 1.4; color: var(--text-main); background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 风险说明 -->
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 0.72rem; color: var(--text-muted); display: block;">供应风险备注</label>
+                    <div id="mqc-detail-sup-risk-note" style="font-size: 0.82rem; line-height: 1.4; padding: 10px 14px; border-radius: 8px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 24px;">
+                <button class="btn-secondary" onclick="closeModal('modal-mqc-supplier-detail')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- ===== 受控任务 编辑弹窗 ===== -->
     <div class="modal-overlay" id="modal-task">
         <div class="modal-box" style="max-width:620px;">

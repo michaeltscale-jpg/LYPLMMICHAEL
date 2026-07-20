@@ -8843,7 +8843,7 @@ window.renderMqcMaterials = function() {
             return `
                 <div style="display:grid; grid-template-columns: 50px 165px 75px; align-items:center; gap:8px; font-size:0.76rem; width: 100%;">
                     <div style="text-align:left;">${tierPrefix}</div>
-                    <div style="font-weight:600; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle; width:100%;" title="${s.supplier_name}">
+                    <div style="font-weight:600; color:var(--color-primary); cursor:pointer; text-decoration:underline; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle; width:100%;" title="点击查看供应商档案详情" onclick="event.stopPropagation(); openMqcSupplierDetailModal(${s.id})">
                         ${s.supplier_name}
                     </div>
                     <div style="display:inline-flex; align-items:center; justify-content:flex-start;">
@@ -9679,6 +9679,115 @@ window.deleteMqcMaterial = function(id) {
     });
 };
 
+// 打开供应商档案详情弹窗
+window.openMqcSupplierDetailModal = function(id) {
+    const s = state.mqcSuppliers.find(x => x.id === id);
+    if (!s) {
+        showToast("未找到该供应商档案", "error");
+        return;
+    }
+
+    document.getElementById("mqc-detail-sup-name").innerText = s.supplier_name || "--";
+
+    // 供应级别 Badge
+    const tierConfig = {
+        '一供': { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', label: '🥇 一供 (主供应商)' },
+        '二供': { color: '#10b981', bg: 'rgba(16,185,129,0.1)', label: '🥈 二供 (备用供应商)' },
+        '备供': { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', label: '🔖 备供 (候补)' }
+    };
+    const tc = tierConfig[s.supplier_tier] || tierConfig['备供'];
+    const tierBadge = document.getElementById("mqc-detail-sup-tier-badge");
+    if (tierBadge) {
+        tierBadge.style.cssText = `padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700; background:${tc.bg}; color:${tc.color}; border:1px solid ${tc.color}40;`;
+        tierBadge.innerText = tc.label;
+    }
+
+    // 状态 Badge
+    const statusBadge = document.getElementById("mqc-detail-sup-status-badge");
+    if (statusBadge) {
+        if (s.status === '活跃') {
+            statusBadge.style.cssText = `padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3);`;
+            statusBadge.innerText = "✅ 活跃";
+        } else if (s.status === '暂停') {
+            statusBadge.style.cssText = `padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3);`;
+            statusBadge.innerText = "⏸️ 暂停";
+        } else {
+            statusBadge.style.cssText = `padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3);`;
+            statusBadge.innerText = "❌ 淘汰";
+        }
+    }
+
+    // 风险 Badge
+    const riskConfig = {
+        '低': { color: '#10b981', label: '🟢 低风险' },
+        '中': { color: '#f59e0b', label: '🟡 中风险' },
+        '高': { color: '#ef4444', label: '🔴 高风险' }
+    };
+    const rc = riskConfig[s.risk_level] || riskConfig['中'];
+    const riskBadge = document.getElementById("mqc-detail-sup-risk-badge");
+    if (riskBadge) {
+        riskBadge.style.cssText = `padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:700; color:${rc.color}; background:${rc.color}18; border:1px solid ${rc.color}30;`;
+        riskBadge.innerText = rc.label;
+    }
+
+    // 文本填充
+    document.getElementById("mqc-detail-sup-contact").innerText = s.contact || "未填写";
+    document.getElementById("mqc-detail-sup-phone").innerText = s.phone || "未填写";
+    document.getElementById("mqc-detail-sup-mat-code").innerText = s.mat_code || "--";
+    document.getElementById("mqc-detail-sup-approved-date").innerText = s.approved_date || "未签署承认";
+
+    // 承认状态文字与颜色
+    const approvalStatusEl = document.getElementById("mqc-detail-sup-approval-status");
+    if (approvalStatusEl) {
+        approvalStatusEl.innerText = s.approval_status || "需求提出";
+        if (s.approval_status === "承认通过") {
+            approvalStatusEl.style.color = "#10b981";
+        } else if (s.approval_status === "承认拒绝") {
+            approvalStatusEl.style.color = "#ef4444";
+        } else {
+            approvalStatusEl.style.color = "#3b82f6";
+        }
+    }
+
+    // 证书链接
+    const certEl = document.getElementById("mqc-detail-sup-certificate");
+    if (certEl) {
+        if (s.apply_by) {
+            certEl.innerHTML = `<a href="/uploads/certificates/${encodeURIComponent(s.apply_by)}" target="_blank" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">📄 点击下载/预览承认书</a>`;
+        } else {
+            certEl.innerHTML = `<span style="color:var(--text-muted);">尚未上传承认书附件</span>`;
+        }
+    }
+
+    // 测试周期
+    document.getElementById("mqc-detail-sup-test-period").innerText = 
+        (s.test_start || s.test_end) ? `🔬 自 ${s.test_start || "--"} 至 ${s.test_end || "--"}` : "暂未启动测试排程";
+
+    // 测试结果
+    document.getElementById("mqc-detail-sup-test-result").innerText = s.test_result || "尚无测试结论记录";
+
+    // 风险备注
+    const riskNoteEl = document.getElementById("mqc-detail-sup-risk-note");
+    if (riskNoteEl) {
+        riskNoteEl.innerText = s.risk_note ? `💬 ${s.risk_note}` : "未登记任何供应合规风险";
+        if (s.risk_level === '高') {
+            riskNoteEl.style.background = 'rgba(239,68,68,0.08)';
+            riskNoteEl.style.borderLeft = '3px solid #ef4444';
+            riskNoteEl.style.color = '#ef4444';
+        } else if (s.risk_level === '中') {
+            riskNoteEl.style.background = 'rgba(245,158,11,0.08)';
+            riskNoteEl.style.borderLeft = '3px solid #f59e0b';
+            riskNoteEl.style.color = '#f59e0b';
+        } else {
+            riskNoteEl.style.background = 'rgba(16,185,129,0.08)';
+            riskNoteEl.style.borderLeft = '3px solid #10b981';
+            riskNoteEl.style.color = '#10b981';
+        }
+    }
+
+    openModal("modal-mqc-supplier-detail");
+};
+
 // 打开供应商渠道维护弹窗
 window.openMqcSupplierModal = function(matCode) {
     const role = state.currentUserRole;
@@ -10210,7 +10319,7 @@ window.showMaterialApprovalRecord = async function(matCode, matName) {
             const statusColor2 = { '活跃':'#10b981','冻结':'#ef4444','待审':'#f59e0b' };
             supTbody.innerHTML = suppliers.map(s => `
                 <tr>
-                    <td style="font-weight:600;">${s.supplier_name || '—'}</td>
+                    <td style="font-weight:600; color:var(--color-primary); cursor:pointer; text-decoration:underline;" title="点击查看供应商档案详情" onclick="openMqcSupplierDetailModal(${s.id})">${s.supplier_name || '—'}</td>
                     <td><span class="badge badge-gray" style="font-size:0.7rem;">${s.supplier_tier || '—'}</span></td>
                     <td style="font-size:0.8rem;">${s.contact || '—'}${s.phone ? `<br><span style="color:var(--text-muted);font-size:0.72rem;">${s.phone}</span>` : ''}</td>
                     <td><span style="color:${riskColor[s.risk_level]||'#94a3b8'}; font-weight:700; font-size:0.8rem;">${s.risk_level || '—'}</span></td>
