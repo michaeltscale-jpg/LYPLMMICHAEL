@@ -483,7 +483,7 @@ function initEventListeners() {
                 }
             } else if (tabId === 'ems-panel') {
                 if (checkPermission(["Admin", "Equipment Engineer", "Process Engineer"], "新增设备")) {
-                    openNewEquipmentModal();
+                    window.openNewEquipmentModal();
                 }
             }
         });
