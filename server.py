@@ -2346,6 +2346,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 parameters_json = data.get('parameters_json', '{}')
                 project_plan_json = data.get('project_plan_json')
                 operator = user_display_name
+                using_unit = data.get('using_unit', '').strip() or None
 
                 if not device_code or not device_name or not stage_name:
                     self.send_json({"error": "设备代号、设备名称与所属工段不能为空"}, 400)
@@ -2354,27 +2355,25 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if rid:
                     cursor.execute("""
                         UPDATE equipments 
-                        SET device_code = ?, device_name = ?, stage_name = ?, status = ?, oee = ?, next_maintenance = ?, operator = ?, updated_at = CURRENT_TIMESTAMP
+                        SET device_code = ?, device_name = ?, stage_name = ?, status = ?, oee = ?, next_maintenance = ?, operator = ?, using_unit = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE id = ?
-                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, rid))
+                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, operator, using_unit, rid))
                 else:
-                    # 自动生成默认的 8 阶段项目进度（对于新添加设备，第一阶段进行中，其余未开始）
+                    # 自动生成默认的 6 阶段项目进度
                     if not project_plan_json:
                         stages = [
-                            ("stage1_design", "设备设计开发", "赵工", -50, -45),
-                            ("stage2_scheme", "技术方案确定", "工艺组", -44, -38),
-                            ("stage3_selection", "设备选型", "采购委", -37, -30),
-                            ("stage4_supplier", "供应商开发", "供应商开发部", -29, -22),
-                            ("stage5_bidding", "发包采购", "商务部", -21, -10),
-                            ("stage6_install", "安装调试", "现场工程组", -9, 5),
-                            ("stage7_test", "性能测试", "质检组", 6, 15),
-                            ("stage8_accept", "竣工验收", "项目部", 16, 22)
+                            ("stage1_plan", "立项", "设备组"),
+                            ("stage2_scheme", "拟定技术方案", "工艺组"),
+                            ("stage3_bidding", "请购发包", "采购委"),
+                            ("stage4_make", "制作中", "制造部"),
+                            ("stage5_install", "安装调试中", "现场工程组"),
+                            ("stage6_accept", "验收交付使用", "项目部")
                         ]
                         plan = {}
                         base = datetime.now()
-                        for idx, (s_key, s_title, s_owner, start_offset, end_offset) in enumerate(stages):
+                        for idx, (s_key, s_title, s_owner) in enumerate(stages):
                             s_status = "进行中" if idx == 0 else "未开始"
-                            start_date = (base + timedelta(days=start_offset)).strftime("%Y-%m-%d") if idx == 0 else ""
+                            start_date = base.strftime("%Y-%m-%d") if idx == 0 else ""
                             end_date = ""
                             plan[s_key] = {
                                 "title": s_title,
@@ -2387,9 +2386,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         project_plan_json = json.dumps(plan, ensure_ascii=False)
                     
                     cursor.execute("""
-                        INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator))
+                        INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator, using_unit)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator, using_unit))
                 conn.commit()
                 self.send_json({'ok': True, 'id': rid or cursor.lastrowid})
 
@@ -2545,6 +2544,14 @@ def migrate_ems_database():
     if not cursor.fetchone():
         conn.close()
         return
+        
+    # 检查并自动迁移添加 using_unit 字段
+    cursor.execute("PRAGMA table_info(equipments)")
+    columns = [col[1] for col in cursor.fetchall()]
+    if "using_unit" not in columns:
+        cursor.execute("ALTER TABLE equipments ADD COLUMN using_unit VARCHAR(100)")
+        conn.commit()
+        print("[EMS] 成功为 equipments 表迁移并添加 using_unit 字段")
         
     cursor.execute("SELECT id, device_code, project_plan_json FROM equipments")
     rows = cursor.fetchall()

@@ -5470,7 +5470,8 @@ window.fetchEquipmentsAndRender = async function() {
                         link.style.overflow = "hidden";
                         link.style.textOverflow = "ellipsis";
                         link.style.whiteSpace = "nowrap";
-                        link.style.marginBottom = "2px";
+                        link.style.fontSize = "0.78rem";
+                        link.style.padding = "4px 0";
                         link.innerText = `• ${eq.device_name}`;
                         link.title = `点击查看设备导入详情: ${eq.device_name}`;
                         link.onclick = (e) => {
@@ -5483,49 +5484,44 @@ window.fetchEquipmentsAndRender = async function() {
             }
         });
         
-        // 更新卡片状态徽章 (已通过 / 进行中 / 未开启)
-        stageKeys.forEach((k, idx) => {
+        // 更新卡片部门徽章
+        const stageDeps = {
+            "stage1_plan": "使用部门",
+            "stage2_scheme": "工程部门",
+            "stage3_bidding": "采购部门",
+            "stage4_make": "工程部门",
+            "stage5_install": "工程部门",
+            "stage6_accept": "使用部门"
+        };
+        stageKeys.forEach(k => {
             const statusEl = document.getElementById(`ems-card-status-${k}`);
             if (!statusEl) return;
-            
-            let status = "未开启";
-            if (counts[k] > 0) {
-                status = "进行中";
-            } else {
-                const hasDeviceAfter = state.equipments.some(eq => {
-                    const activeStage = window.getEquipmentActiveStage(eq);
-                    const activeIdx = stageKeys.indexOf(activeStage);
-                    return activeIdx > idx;
-                });
-                if (hasDeviceAfter) {
-                    status = "已通过";
-                }
-            }
-            
-            statusEl.innerText = status;
-            statusEl.className = "ems-stage-card-status-badge";
-            if (status === "已通过") {
-                statusEl.classList.add("ems-stage-card-status-completed");
-            } else if (status === "进行中") {
-                statusEl.classList.add("ems-stage-card-status-inprogress");
-            } else {
-                statusEl.classList.add("ems-stage-card-status-notstarted");
-            }
+            statusEl.innerText = stageDeps[k] || "未知";
+            statusEl.className = "ems-stage-card-status-badge ems-stage-card-status-inprogress";
         });
         
-        // 2. 渲染设备明细表格（展示所有设备项目明细）
+        // 2. 渲染设备明细表格（展示验收后交付使用的设备明细）
         const tbody = document.querySelector("#ems-device-table tbody");
         if (tbody) {
             tbody.innerHTML = "";
             
-            // 根据设备种类标签过滤明细列表
-            let filteredEquipments = state.equipments;
+            // 过滤规则：只有验收交付使用（stage6_accept）状态为"已完成"的设备才进入此列表
+            let filteredEquipments = state.equipments.filter(eq => {
+                let parsedPlan = {};
+                try {
+                    parsedPlan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : eq.project_plan_json || {};
+                } catch (e) {
+                    parsedPlan = {};
+                }
+                return parsedPlan.stage6_accept && parsedPlan.stage6_accept.status === "已完成";
+            });
+
             if (state.emsActiveCategoryFilter && state.emsActiveCategoryFilter !== '全部') {
                 filteredEquipments = filteredEquipments.filter(e => e.stage_name === state.emsActiveCategoryFilter);
             }
             
             if (filteredEquipments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">当前阶段暂无进行中的设备明细</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">当前暂无已验收交付使用的设备</td></tr>`;
             } else {
                 filteredEquipments.forEach(eq => {
                     const tr = document.createElement("tr");
@@ -5539,15 +5535,6 @@ window.fetchEquipmentsAndRender = async function() {
                         window.selectEquipment(eq.id);
                     };
                     
-                    const statusColors = {
-                        "运行中": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
-                        "保养中": { color: "#f59e0b", bg: "rgba(245,158,11,0.15)" },
-                        "故障停机": { color: "#ef4444", bg: "rgba(239,68,68,0.15)" },
-                        "导入中": { color: "#60a5fa", bg: "rgba(96,165,250,0.15)" }
-                    };
-                    const sc = statusColors[eq.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
-                    
-                    // 计算里程碑进度百分比 (共6大阶段)
                     let parsedPlan = {};
                     try {
                         parsedPlan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : eq.project_plan_json || {};
@@ -5555,42 +5542,15 @@ window.fetchEquipmentsAndRender = async function() {
                         parsedPlan = {};
                     }
                     
-                    let completedStages = 0;
-                    stageKeys.forEach(k => {
-                        if (parsedPlan[k] && parsedPlan[k].status === "已完成") {
-                            completedStages++;
-                        }
-                    });
-                    const progressPct = Math.round((completedStages / 6) * 100);
-                    
-                    const activeStageKey = window.getEquipmentActiveStage(eq);
-                    const stageDisplayNames = {
-                        "stage1_plan": "G1. 立项",
-                        "stage2_scheme": "G2. 拟定技术方案",
-                        "stage3_bidding": "G3. 请购发包",
-                        "stage4_make": "G4. 制作中",
-                        "stage5_install": "G5. 安装调试中",
-                        "stage6_accept": "G6. 验收交付使用"
-                    };
-                    const activeStageName = stageDisplayNames[activeStageKey] || "未开启";
+                    const acceptDate = (parsedPlan.stage6_accept && parsedPlan.stage6_accept.end_date) || "--";
+                    const usingUnit = eq.using_unit || "--";
                     
                     tr.innerHTML = `
                         <td style="font-weight: 700; font-family: monospace; color: var(--color-primary);">${eq.device_code}</td>
                         <td style="font-weight: 600; color: var(--color-primary); text-decoration: underline; cursor: pointer; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="event.stopPropagation(); window.location.href='/device_detail.html?id=${eq.id}';" title="${eq.device_name}">${eq.device_name}</td>
                         <td>${eq.stage_name}</td>
-                        <td>
-                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <div class="ems-table-progress-container">
-                                        <div class="ems-table-progress-bar" style="width: ${progressPct}%"></div>
-                                    </div>
-                                    <span class="ems-table-progress-text">${completedStages}/6 (${progressPct}%)</span>
-                                </div>
-                                <div style="font-size: 0.68rem; color: var(--color-primary); font-weight: 600;">
-                                    当前阶段: ${activeStageName}
-                                </div>
-                            </div>
-                        </td>
+                        <td>${acceptDate}</td>
+                        <td>${usingUnit}</td>
                         <td>
                             <div style="display: flex; gap: 8px;">
                                 <button class="dms-action-btn" onclick="window.editEquipment(${eq.id})" style="padding: 2px 6px; font-size: 0.68rem;">编辑</button>
@@ -6464,6 +6424,7 @@ window.openNewEquipmentModal = function() {
     document.getElementById("equipment-edit-code").value = "";
     document.getElementById("equipment-edit-name").value = "";
     document.getElementById("equipment-edit-stage").value = "生产设备";
+    document.getElementById("equipment-edit-using-unit").value = "";
     document.getElementById("equipment-edit-oee").value = "85.0";
     document.getElementById("equipment-edit-maint").value = "";
     
@@ -6484,6 +6445,7 @@ window.editEquipment = function(id) {
     document.getElementById("equipment-edit-code").value = eq.device_code;
     document.getElementById("equipment-edit-name").value = eq.device_name;
     document.getElementById("equipment-edit-stage").value = eq.stage_name;
+    document.getElementById("equipment-edit-using-unit").value = eq.using_unit || "";
     document.getElementById("equipment-edit-oee").value = eq.oee || "85.0";
     document.getElementById("equipment-edit-maint").value = eq.next_maintenance || "";
     
@@ -6495,6 +6457,7 @@ window.saveNewEquipment = async function() {
     const code = document.getElementById("equipment-edit-code").value.trim();
     const name = document.getElementById("equipment-edit-name").value.trim();
     const stage = document.getElementById("equipment-edit-stage").value;
+    const usingUnit = document.getElementById("equipment-edit-using-unit").value.trim();
     const oee = parseFloat(document.getElementById("equipment-edit-oee").value || "85.0");
     const maint = document.getElementById("equipment-edit-maint").value;
     
@@ -6558,6 +6521,7 @@ window.saveNewEquipment = async function() {
             device_code: code,
             device_name: name,
             stage_name: stage,
+            using_unit: usingUnit || null,
             oee: oee,
             next_maintenance: maint || null
         };
