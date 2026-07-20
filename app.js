@@ -8650,7 +8650,7 @@ window.renderMqcMaterials = function() {
                        border-radius:5px; color:var(--color-success); font-size:0.78rem;
                        font-weight:600; text-decoration:none; cursor:pointer;"
                 title="点击在新标签页预览 PDF 承认书">
-                📄 查看承认书
+                📄 承认书
             </a>`;
         } else {
             certBadge = `<span class="badge badge-gray" style="color:var(--text-muted); cursor:pointer;"
