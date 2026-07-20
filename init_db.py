@@ -650,6 +650,7 @@ def init_database(force_reset=False):
             mat_category TEXT,
             apply_date TEXT,
             apply_by TEXT,
+            supplier_name TEXT,
             status TEXT DEFAULT '需求提出',
             test_start TEXT,
             test_end TEXT,

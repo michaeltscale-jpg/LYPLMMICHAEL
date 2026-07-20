@@ -2194,7 +2194,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 data['status'] = status
                 now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 fields = [
-                    'mat_code','mat_name','mat_spec','mat_category',
+                    'mat_code','mat_name','mat_spec','mat_category','supplier_name',
                     'apply_date','apply_by','status',
                     'test_start','test_end','test_result',
                     'conclusion','conclusion_by','conclusion_date','remark',
@@ -2453,6 +2453,7 @@ def init_mqc_tables():
             mat_category TEXT,
             apply_date TEXT,
             apply_by TEXT,
+            supplier_name TEXT,
             status TEXT DEFAULT '需求提出',
             test_start TEXT,
             test_end TEXT,
@@ -2491,6 +2492,8 @@ def init_mqc_tables():
     # 动态迁移 mqc_materials 专属文件列
     c.execute("PRAGMA table_info(mqc_materials)")
     m_cols = [col[1] for col in c.fetchall()]
+    if "supplier_name" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN supplier_name TEXT")
     if "test_record" not in m_cols:
         c.execute("ALTER TABLE mqc_materials ADD COLUMN test_record TEXT")
     if "test_report" not in m_cols:

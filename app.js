@@ -9029,6 +9029,7 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-mat-name").value = "";
         document.getElementById("mqc-mat-spec").value = "";
         document.getElementById("mqc-mat-category").value = "氧化铜粉";
+        document.getElementById("mqc-mat-supplier-name").value = ""; // 供应商名称置空
         document.getElementById("mqc-mat-apply-date").value = new Date().toISOString().split('T')[0];
         document.getElementById("mqc-mat-apply-by").value = ""; // 承认书文件名置空
         document.getElementById("mqc-cert-file-input").value = "";
@@ -9098,6 +9099,7 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-mat-name").value = m.mat_name || "";
         document.getElementById("mqc-mat-spec").value = m.mat_spec || "";
         document.getElementById("mqc-mat-category").value = m.mat_category || "氧化铜粉";
+        document.getElementById("mqc-mat-supplier-name").value = m.supplier_name || ""; // 回显供应商名称
         document.getElementById("mqc-mat-apply-date").value = m.apply_date || "";
         document.getElementById("mqc-mat-apply-by").value = m.apply_by || ""; // 赋值承认书文件名
         // 回显文件上传控件状态
@@ -9287,6 +9289,7 @@ window.saveMqcMaterial = function() {
     const test_report = document.getElementById("mqc-mat-test-report").value.trim();
     const supplier_doc = document.getElementById("mqc-mat-supplier-doc").value.trim();
     const tds_doc = document.getElementById("mqc-mat-tds-doc").value.trim();
+    const supplier_name = document.getElementById("mqc-mat-supplier-name").value.trim();
     
     // 校验必填项
     let hasErr = false;
@@ -9343,7 +9346,8 @@ window.saveMqcMaterial = function() {
         test_record: test_record,
         test_report: test_report,
         supplier_doc: supplier_doc,
-        tds_doc: tds_doc
+        tds_doc: tds_doc,
+        supplier_name: supplier_name
     };
 
 // 通用的 MQC 文件/报告上传函数
