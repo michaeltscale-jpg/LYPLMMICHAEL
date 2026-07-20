@@ -425,9 +425,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (filterEl) filterEl.value = "";
         }
 
-        // 健壮防御：如果缓存的 activeProductId 不存在于拉取到的产品列表中，则强制回退至第一个产品
         if (state.products && state.products.length > 0) {
-            const hasActiveId = state.products.some(p => p.id === state.activeProductId);
+            const hasActiveId = state.products.some(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
             if (!hasActiveId) {
                 console.warn(`Saved activeProductId (${state.activeProductId}) is stale. Fallback to:`, state.products[0].id);
                 state.activeProductId = state.products[0].id;
@@ -1801,7 +1800,7 @@ function renderProductTabs() {
 
     products.forEach(p => {
         const item = document.createElement("div");
-        const isTabActive = p.id === state.activeProductId;
+        const isTabActive = state.activeProductId && Number(p.id) === Number(state.activeProductId);
         item.className = `prod-tab-item ${isTabActive ? 'active' : ''}`;
 
         const thicknesses = p.thicknesses || [];
@@ -1855,7 +1854,7 @@ function renderThicknessTabs() {
     wrap.innerHTML = "";
     return;
 
-    const activeProdRow = (state.products || []).find(p => p.id === state.activeProductId);
+    const activeProdRow = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (!activeProdRow) {
         wrap.style.display = "none";
         return;
@@ -3840,7 +3839,7 @@ function openProjectModal() {
     let defaultCategory = "PTS AI 铜箔";
     let defaultCode = "";
     
-    const activeProd = (state.products || []).find(p => p.id === state.activeProductId);
+    const activeProd = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (activeProd) {
         defaultCode = activeProd.code || "";
         defaultCategory = activeProd.category || "PTS AI 铜箔";
@@ -3857,7 +3856,7 @@ function openProjectModal() {
 }
 
 window.openCloneThicknessModal = function() {
-    const activeProdRow = (state.products || []).find(p => p.id === state.activeProductId);
+    const activeProdRow = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (!activeProdRow) {
         showToast("请先选择一个产品大类！", "error");
         return;
@@ -3896,7 +3895,7 @@ window.submitCloneThickness = function() {
         return;
     }
 
-    const activeProdRow = (state.products || []).find(p => p.id === state.activeProductId);
+    const activeProdRow = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (!activeProdRow) return;
 
     if (activeProdRow.thicknesses && activeProdRow.thicknesses.includes(newThickness)) {
