@@ -4219,10 +4219,31 @@ function submitNewEcn() {
     })
     .then(res => res.json())
     .then(data => {
-        showToast(data.message, "success");
-        closeModal("modal-ecn");
-        fetchEcns();
-        fetchDashboardData();
+        if (data.error) {
+            showToast(data.error, "error");
+            return;
+        }
+        // 自动提交 ECN 设变审批流程
+        fetch(`/api/ecns/${data.ecn_id}/submit_approval`, { method: "POST" })
+        .then(r => r.json())
+        .then(approvalRes => {
+            if (approvalRes.error) {
+                showToast("创建成功，但自动提交审批失败：" + approvalRes.error, "error");
+            } else {
+                showToast("工程设变单 ECN 提交成功，已自动启动钉钉审批流程！", "success");
+            }
+            closeModal("modal-ecn");
+            fetchEcns();
+            fetchDashboardData();
+            fetchDingTalkApprovals();
+        })
+        .catch(err => {
+            console.error("自动送审失败:", err);
+            showToast("设变申请创建成功，自动送审失败，请手动发起送审", "warning");
+            closeModal("modal-ecn");
+            fetchEcns();
+            fetchDashboardData();
+        });
     });
 }
 
