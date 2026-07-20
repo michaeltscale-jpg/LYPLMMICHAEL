@@ -8749,35 +8749,38 @@ window.renderMqcMaterials = function() {
             // Tier label prefix with distinct colors
             let tierPrefix = "";
             if (s.supplier_tier === '一供') {
-                tierPrefix = `<span style="color:#3b82f6; font-weight:700; margin-right:4px;">[一供]</span>`;
+                tierPrefix = `<span style="color:#3b82f6; font-weight:700;">[一供]</span>`;
             } else if (s.supplier_tier === '二供') {
-                tierPrefix = `<span style="color:#10b981; font-weight:700; margin-right:4px;">[二供]</span>`;
+                tierPrefix = `<span style="color:#10b981; font-weight:700;">[二供]</span>`;
             } else {
-                tierPrefix = `<span style="color:#8b5cf6; font-weight:700; margin-right:4px;">[备供]</span>`;
+                tierPrefix = `<span style="color:#8b5cf6; font-weight:700;">[备供]</span>`;
             }
 
             // 承认状态徽章
             let statusBadge = "";
             if (s.approval_status === "需求提出") {
-                statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:1px 4px;">📋 需求</span>`;
+                statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">📋 需求</span>`;
             } else if (s.approval_status === "样品到达") {
-                statusBadge = `<span class="badge" style="background:rgba(14,165,233,0.1); color:#0ea5e9; font-size:0.68rem; padding:1px 4px;">📦 样品</span>`;
+                statusBadge = `<span class="badge" style="background:rgba(14,165,233,0.1); color:#0ea5e9; font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">📦 样品</span>`;
             } else if (s.approval_status === "测试中") {
-                statusBadge = `<span class="badge badge-blue" style="font-size:0.68rem; padding:1px 4px;">🔬 测试</span>`;
+                statusBadge = `<span class="badge badge-blue" style="font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">🔬 测试</span>`;
             } else if (s.approval_status === "承认通过") {
-                statusBadge = `<span class="badge badge-green" style="font-size:0.68rem; padding:1px 4px;">✅ 通过</span>`;
+                statusBadge = `<span class="badge badge-green" style="font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">✅ 通过</span>`;
             } else if (s.approval_status === "承认拒绝") {
-                statusBadge = `<span class="badge badge-danger" style="font-size:0.68rem; padding:1px 4px;">❌ 拒绝</span>`;
+                statusBadge = `<span class="badge badge-danger" style="font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">❌ 拒绝</span>`;
             } else {
-                statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:1px 4px;">${s.approval_status || '📋 需求'}</span>`;
+                statusBadge = `<span class="badge badge-gray" style="font-size:0.68rem; padding:1px 4px; display:inline-flex; align-items:center;">${s.approval_status || '📋 需求'}</span>`;
             }
-            const shortName = s.supplier_name.length > 8 ? s.supplier_name.substring(0, 7) + "..." : s.supplier_name;
             
             return `
-                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:0.76rem;">
-                    ${tierPrefix}
-                    <span style="font-weight:600; color:var(--text-main); min-width:85px; display:inline-block;" title="${s.supplier_name}">${shortName}</span>
-                    ${statusBadge}
+                <div style="display:grid; grid-template-columns: 50px 165px 75px; align-items:center; gap:8px; font-size:0.76rem; width: 100%;">
+                    <div style="text-align:left;">${tierPrefix}</div>
+                    <div style="font-weight:600; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-block; vertical-align:middle; width:100%;" title="${s.supplier_name}">
+                        ${s.supplier_name}
+                    </div>
+                    <div style="display:inline-flex; align-items:center; justify-content:flex-start;">
+                        ${statusBadge}
+                    </div>
                 </div>
             `;
         };
