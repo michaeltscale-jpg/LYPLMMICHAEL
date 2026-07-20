@@ -5814,7 +5814,24 @@ window.selectEmsStage = function(stageKey) {
     badge.style.border = `1px solid ${sc.color}20`;
 
     document.getElementById("ems-edit-stage-owner").value = item.owner || "";
-    document.getElementById("ems-edit-stage-status").value = item.status || "未开始";
+    const statusSelect = document.getElementById("ems-edit-stage-status");
+    if (statusSelect) {
+        statusSelect.innerHTML = "";
+        if (item.status === "已完成") {
+            statusSelect.innerHTML = `<option value="已完成">已完成</option>`;
+            statusSelect.disabled = true;
+        } else if (item.status === "审批中") {
+            statusSelect.innerHTML = `<option value="审批中">审批中</option>`;
+            statusSelect.disabled = true;
+        } else {
+            statusSelect.innerHTML = `
+                <option value="未开始">未开始</option>
+                <option value="进行中">进行中</option>
+            `;
+            statusSelect.value = item.status || "未开始";
+            statusSelect.disabled = false;
+        }
+    }
     document.getElementById("ems-edit-stage-start").value = item.start_date || "";
     document.getElementById("ems-edit-stage-end").value = item.end_date || "";
     document.getElementById("ems-edit-stage-remark").value = item.remark || "";
@@ -6196,6 +6213,31 @@ window.launchEmsStageDingtalkApproval = function() {
     // 模拟审批流 (1.5秒后自动审批通过)
     setTimeout(async () => {
         item.status = "已完成";
+        item.end_date = new Date().toISOString().substring(0, 10); // 审批通过自动填入完成日期
+        
+        // 审批通过自动进入下一阶段且设为“进行中”
+        const stageKeys = [
+            "stage1_plan", "stage2_scheme", "stage3_bidding", "stage4_make",
+            "stage5_install", "stage6_accept"
+        ];
+        const idx = stageKeys.indexOf(stageKey);
+        if (idx >= 0 && idx < 5) {
+            const nextKey = stageKeys[idx + 1];
+            if (!plan[nextKey]) {
+                plan[nextKey] = {
+                    title: window.getEmsStageDefaultTitle(nextKey),
+                    status: "未开始",
+                    start_date: "",
+                    end_date: "",
+                    owner: "",
+                    remark: ""
+                };
+            }
+            plan[nextKey].status = "进行中";
+            plan[nextKey].start_date = new Date().toISOString().substring(0, 10);
+            plan[nextKey].owner = plan[nextKey].owner || "设备组";
+        }
+
         const codeNum = Math.floor(100000 + Math.random() * 900000);
         const logMsg = `【钉钉审批】联合评审流程结束，单号: DING-EMS-${codeNum}。审批通过，本里程碑自动置为已完成。`;
         
@@ -6340,7 +6382,8 @@ window.saveEquipmentStageProgress = async function() {
         owner: owner,
         remark: remark,
         attachment_name: plan[stageKey]?.attachment_name || "",
-        attachment_url: plan[stageKey]?.attachment_url || ""
+        attachment_url: plan[stageKey]?.attachment_url || "",
+        input_files: plan[stageKey]?.input_files || []
     };
 
     let logText = `修改了 G${stageKey.replace('stage', '')} [${plan[stageKey].title}] 阶段属性`;
