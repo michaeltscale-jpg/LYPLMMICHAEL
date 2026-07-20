@@ -8716,14 +8716,14 @@ window.renderMqcMaterials = function() {
         const emptyMsg = isInProgressTab
             ? '🎉 当前无待跟进的承认中物料（所有物料均已承认通过）'
             : '暂无匹配的物料承认记录';
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">${emptyMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">${emptyMsg}</td></tr>`;
         return;
     }
     
     tbody.innerHTML = "";
     // 承认中物料视图：在表格顶部显示黄色提示横幅
     if (isInProgressTab) {
-        tbody.innerHTML = `<tr><td colspan="7" style="background:rgba(251,191,36,0.08); border-left:3px solid #f59e0b; padding:8px 14px; font-size:0.8rem; color:#f59e0b; font-weight:600;">⏳ 以下 ${filtered.length} 项物料尚未取得承认通过结论，请持续跟进</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="background:rgba(251,191,36,0.08); border-left:3px solid #f59e0b; padding:8px 14px; font-size:0.8rem; color:#f59e0b; font-weight:600;">⏳ 以下 ${filtered.length} 项物料尚未取得承认通过结论，请持续跟进</td></tr>`;
     }
     filtered.forEach(m => {
         // 查找该物料关联的供应商列表
@@ -8846,7 +8846,6 @@ window.renderMqcMaterials = function() {
             </td>
             <td><span class="badge badge-gray">${m.mat_category || '其他'}</span></td>
             <td>${supsHtml}</td>
-            <td style="font-family:monospace;">${m.apply_date || '-'}</td>
             <td>${riskHtml}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
                 <div style="display:flex; gap:6px; justify-content:center;">
