@@ -476,8 +476,15 @@ function initEventListeners() {
     const btnNewProj = document.getElementById("btn-new-project");
     if (btnNewProj) {
         btnNewProj.addEventListener("click", () => {
-            if (checkPermission(["Admin", "Product Manager"], "新品开发立项")) {
-                openProjectModal();
+            const tabId = state.activeTab;
+            if (tabId === 'plm-panel' || tabId === 'dashboard-panel') {
+                if (checkPermission(["Admin", "Product Manager"], "新品开发立项")) {
+                    openProjectModal();
+                }
+            } else if (tabId === 'ems-panel') {
+                if (checkPermission(["Admin", "Equipment Engineer", "Process Engineer"], "新增设备")) {
+                    openNewEquipmentModal();
+                }
             }
         });
     }
@@ -662,6 +669,23 @@ function switchTab(tabId) {
     
     state.activeTab = tabId;
     saveStateToLocalStorage();
+    
+    // 动态更新顶栏通用操作按钮
+    const btnNewProj = document.getElementById("btn-new-project");
+    if (btnNewProj) {
+        if (tabId === 'ems-panel') {
+            btnNewProj.style.display = "";
+            btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新增关键设备`;
+        } else if (tabId === 'plm-panel' || tabId === 'dashboard-panel') {
+            btnNewProj.style.display = "";
+            btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新品开发立项`;
+        } else {
+            btnNewProj.style.display = "none";
+        }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    }
     
     const headerTitleMap = {
         'dashboard-panel': '研发驾驶舱 (高频铜箔生命周期总览)',
