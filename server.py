@@ -1072,10 +1072,10 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                             (5, "脱膜工段", "1#高速脱膜机",    "EQ-脱膜-05", {"speed": 5.0, "unwind_tension": 7.0, "rewind_left_tension": 0.0, "rewind_right_tension": 6.0, "trim_left_tension": 0.1, "trim_right_tension": 0.1})
                         ]
 
-                    for r in routings:
+                     for r in routings:
                         cursor.execute("""
-                        INSERT INTO product_routing (product_id, spec_thickness, step_no, stage_name, device_name, device_code, standard_params)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO product_routing (product_id, spec_thickness, routing_version, status, step_no, stage_name, device_name, device_code, standard_params)
+                        VALUES (?, ?, 'R1.0', '活动', ?, ?, ?, ?, ?)
                         """, (product_id, spec_thickness, r[0], r[1], r[2], r[3], json.dumps(r[4])))
 
                     # 1.5 级联写入默认 TDS
