@@ -2224,6 +2224,10 @@ function renderTdsSubpanel() {
 
     if (!displayTds) {
         tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">暂无 TDS 数据，点击上方「新增检验项」开始创建。</td></tr>`;
+        const addRowBtn = document.getElementById("btn-tds-add-row");
+        const publishBtn = document.getElementById("btn-tds-publish");
+        if (addRowBtn) addRowBtn.style.display = 'flex';
+        if (publishBtn) publishBtn.style.display = 'none';
         return;
     }
 
@@ -2332,10 +2336,9 @@ window.saveTdsRowEdit = function() {
 
     const product = state.activeProduct;
     let displayTds = product.tds;
-    if (!displayTds) { showToast("未找到活动 TDS 版本", "error"); return; }
+    const tdsItems = displayTds ? (displayTds.tds_items || []) : [];
 
     const idx = parseInt(document.getElementById("tds-row-edit-idx").value);
-    const tdsItems = displayTds.tds_items || [];
 
     const updatedItem = {
         item_no: parseInt(document.getElementById("tds-row-edit-item-no").value) || (idx + 1),
@@ -2371,9 +2374,7 @@ window.addTdsNewRow = function() {
 
     const product = state.activeProduct;
     let displayTds = product.tds;
-    if (!displayTds) { showToast("未找到活动 TDS 版本", "error"); return; }
-
-    const tdsItems = displayTds.tds_items || [];
+    const tdsItems = displayTds ? (displayTds.tds_items || []) : [];
     const nextItemNo = tdsItems.length > 0 ? (Math.max(...tdsItems.map(i => i.item_no || 0)) + 1) : 1;
 
     document.getElementById("tds-row-edit-idx").value = "-1";
