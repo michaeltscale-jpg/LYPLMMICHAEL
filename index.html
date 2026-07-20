@@ -680,7 +680,7 @@
                                             <tr>
                                                 <th>设备代号</th>
                                                 <th>设备名称</th>
-                                                <th>所属工段</th>
+                                                <th>设备种类</th>
                                                 <th>项目进度</th>
                                                 <th>操作</th>
                                             </tr>
@@ -2972,13 +2972,12 @@ requests.post(url, json=payload)</code></pre>
                         <input type="text" id="equipment-edit-name" class="form-control" placeholder="如: 3#生箔机" required>
                     </div>
                     <div class="form-group">
-                        <label>所属工段 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>设备种类 <span style="color:#ef4444;font-weight:700;">*</span></label>
                         <select id="equipment-edit-stage" class="form-control">
-                            <option value="溅镀工段">溅镀工段</option>
-                            <option value="电镀工段">电镀工段</option>
-                            <option value="PA后处理">PA后处理</option>
-                            <option value="PB涂布">PB涂布</option>
-                            <option value="脱膜工段">脱膜工段</option>
+                            <option value="生产设备">生产设备</option>
+                            <option value="厂务设备">厂务设备</option>
+                            <option value="检测设备">检测设备</option>
+                            <option value="仓储搬运设备">仓储搬运设备</option>
                         </select>
                     </div>
                     <div class="form-group" style="display: none;">

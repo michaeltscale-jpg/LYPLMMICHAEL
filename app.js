@@ -6331,7 +6331,7 @@ window.openNewEquipmentModal = function() {
     document.getElementById("equipment-edit-id").value = "";
     document.getElementById("equipment-edit-code").value = "";
     document.getElementById("equipment-edit-name").value = "";
-    document.getElementById("equipment-edit-stage").value = "溅镀工段";
+    document.getElementById("equipment-edit-stage").value = "生产设备";
     document.getElementById("equipment-edit-oee").value = "85.0";
     document.getElementById("equipment-edit-maint").value = "";
     
