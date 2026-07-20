@@ -44,18 +44,18 @@ def make_default_project_plan(created_time, creator):
 
 def make_default_equipment_project_plan(active_stage_idx=6):
     stages = [
-        ("stage1_plan", "立项请购", "使用部门", "赵工", -50, -45, "设备设计任务书与大纲.pdf", "/docs/eq_design_draft.pdf"),
-        ("stage2_scheme", "拟定技术方案", "工程部门", "工艺组", -44, -38, "设备技术方案评审意见.pdf", "/docs/eq_technical_scheme.pdf"),
-        ("stage3_bidding", "发包作业中", "采购部门", "采购委", -37, -30, "发包技术协议与中标通知.pdf", "/docs/eq_bidding_contract.pdf"),
-        ("stage4_make", "生产制作中", "工程部门", "制造部", -29, -15, "设备制作进度与出厂检核表.pdf", "/docs/eq_make_log.pdf"),
-        ("stage5_install", "安装调试中", "工程部门", "现场工程组", -14, 5, "安装调试规范与自检报告.pdf", "/docs/eq_install_log.pdf"),
-        ("stage6_accept", "验收作业中", "使用部门", "项目部", 6, 12, "竣工验收签收单与合格证.pdf", "/docs/eq_acceptance_sheet.pdf")
+        ("stage1_plan", "立项", "赵工", -50, -45, "设备设计任务书与大纲.pdf", "/docs/eq_design_draft.pdf"),
+        ("stage2_scheme", "拟定技术方案", "工艺组", -44, -38, "设备技术方案评审意见.pdf", "/docs/eq_technical_scheme.pdf"),
+        ("stage3_bidding", "请购发包", "采购委", -37, -30, "发包技术协议与中标通知.pdf", "/docs/eq_bidding_contract.pdf"),
+        ("stage4_make", "制作中", "制造部", -29, -15, "设备制作进度与出厂检核表.pdf", "/docs/eq_make_log.pdf"),
+        ("stage5_install", "安装调试中", "现场工程组", -14, 5, "安装调试规范与自检报告.pdf", "/docs/eq_install_log.pdf"),
+        ("stage6_accept", "验收交付使用", "项目部", 6, 12, "竣工验收签收单与合格证.pdf", "/docs/eq_acceptance_sheet.pdf")
     ]
     
     plan = {}
     base = datetime.now()
     
-    for idx, (s_key, s_title, s_dept, s_owner, start_offset, end_offset, att_name, att_url) in enumerate(stages):
+    for idx, (s_key, s_title, s_owner, start_offset, end_offset, att_name, att_url) in enumerate(stages):
         s_status = "已完成"
         if idx == active_stage_idx:
             s_status = "进行中"
@@ -71,7 +71,6 @@ def make_default_equipment_project_plan(active_stage_idx=6):
             "start_date": start_date,
             "end_date": end_date,
             "owner": s_owner,
-            "department": s_dept,
             "remark": f"{s_title}阶段正常进展" if s_status != "未开始" else "",
             "attachment_name": att_name if s_status != "未开始" else "",
             "attachment_url": att_url if s_status != "未开始" else ""
@@ -275,7 +274,7 @@ def init_database(force_reset=False):
         device_name VARCHAR(100) NOT NULL,
         stage_name VARCHAR(50) NOT NULL,
         status VARCHAR(20) NOT NULL DEFAULT '运行中',
-        category VARCHAR(50) NOT NULL DEFAULT '生产设备',
+        oee REAL DEFAULT 85.0,
         next_maintenance DATE,
         parameters_json TEXT NOT NULL DEFAULT '{}',
         project_plan_json TEXT NOT NULL DEFAULT '{}',
@@ -312,15 +311,15 @@ def init_database(force_reset=False):
     
     # 插入初始设备数据
     cursor.executemany("""
-    INSERT INTO equipments (device_code, device_name, stage_name, status, category, next_maintenance, parameters_json, project_plan_json, operator)
+    INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, [
-        ("EQ-溅镀-01", "1#磁控溅镀线", "溅镀工段", "运行中", "生产设备", "2026-08-01", '{"真空度(Pa)": 0.0002, "工作气压(Pa)": 0.35, "溅镀功率(kW)": 12.0, "溅镀电压(V)": 380}', p_comp, "赵工"),
-        ("EQ-生箔-02", "2#生箔机阴极辊", "电镀工段", "运行中", "生产设备", "2026-08-15", '{"生产速度(m/min)": 0.24, "纯水PH值": 7.0, "纯水电导率(μs/cm)": 1.5, "硫酸铜浓度(g/L)": 130.0, "H2SO4浓度(g/L)": 130.0, "氯离子浓度(ppm)": 70.0, "RF-23 B浓度(ml/L)": 2.0, "RF-23 C浓度(ml/L)": 20.0, "RF-23 L浓度(ml/L)": 10.0, "铜镀液温度(℃)": 23.0, "XL分子浓度(ml/L)": 700.0, "抗氧化液PH值": 6.0, "抗氧化液温度(℃)": 20.0, "过抗氧化液时间(s)": 15.0, "过滤泵压力(Kgf/cm²)": 0.8, "水洗槽温度(℃)": 30.0, "烘箱温度(℃)": 70.0}', p_comp, "生箔工艺组"),
-        ("EQ-PA溅镀-02", "2#磁控溅镀处理线", "PA后处理", "运行中", "生产设备", "2026-08-10", '{"真空度(Pa)": 0.0003, "工作气压(Pa)": 0.30, "处理功率(kW)": 15.0}', p_comp, "表处工艺组"),
-        ("EQ-PB-01", "1#高精密PB涂布机", "PB涂布", "保养中", "生产设备", "2026-07-20", '{"收卷张力(N)": 220, "分切速度(m/min)": 150}', p_comp, "维保班组"),
-        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "电镀工段", "导入中", "生产设备", None, '{}', p_active_install, "生箔设备组"),
-        ("EQ-脱膜-05", "1#高速脱膜机", "脱膜工段", "运行中", "生产设备", "2026-08-20", '{"速度(m/min)": 5.0, "放卷张力(Kg)": 7.0, "收卷左张力(Kg)": 0.0, "收卷右张力(Kg)": 6.0, "切边左张力(Kg)": 0.1, "切边右张力(Kg)": 0.1}', p_comp, "脱膜班组")
+        ("EQ-溅镀-01", "1#磁控溅镀线", "溅镀工段", "运行中", 92.4, "2026-08-01", '{"真空度(Pa)": 0.0002, "工作气压(Pa)": 0.35, "溅镀功率(kW)": 12.0, "溅镀电压(V)": 380}', p_comp, "赵工"),
+        ("EQ-生箔-02", "2#生箔机阴极辊", "电镀工段", "运行中", 88.5, "2026-08-15", '{"生产速度(m/min)": 0.24, "纯水PH值": 7.0, "纯水电导率(μs/cm)": 1.5, "硫酸铜浓度(g/L)": 130.0, "H2SO4浓度(g/L)": 130.0, "氯离子浓度(ppm)": 70.0, "RF-23 B浓度(ml/L)": 2.0, "RF-23 C浓度(ml/L)": 20.0, "RF-23 L浓度(ml/L)": 10.0, "铜镀液温度(℃)": 23.0, "XL分子浓度(ml/L)": 700.0, "抗氧化液PH值": 6.0, "抗氧化液温度(℃)": 20.0, "过抗氧化液时间(s)": 15.0, "过滤泵压力(Kgf/cm²)": 0.8, "水洗槽温度(℃)": 30.0, "烘箱温度(℃)": 70.0}', p_comp, "生箔工艺组"),
+        ("EQ-PA溅镀-02", "2#磁控溅镀处理线", "PA后处理", "运行中", 90.1, "2026-08-10", '{"真空度(Pa)": 0.0003, "工作气压(Pa)": 0.30, "处理功率(kW)": 15.0}', p_comp, "表处工艺组"),
+        ("EQ-PB-01", "1#高精密PB涂布机", "PB涂布", "保养中", 79.5, "2026-07-20", '{"收卷张力(N)": 220, "分切速度(m/min)": 150}', p_comp, "维保班组"),
+        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "电镀工段", "导入中", 0.0, None, '{}', p_active_install, "生箔设备组"),
+        ("EQ-脱膜-05", "1#高速脱膜机", "脱膜工段", "运行中", 94.2, "2026-08-20", '{"速度(m/min)": 5.0, "放卷张力(Kg)": 7.0, "收卷左张力(Kg)": 0.0, "收卷右张力(Kg)": 6.0, "切边左张力(Kg)": 0.1, "切边右张力(Kg)": 0.1}', p_comp, "脱膜班组")
     ])
 
     # 导入仿真模拟数据
