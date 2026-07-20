@@ -581,8 +581,15 @@
                                 <h3 style="margin: 0 0 14px; font-size: 0.88rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between; gap: 6px;">
                                     <span style="display: flex; align-items: center; gap: 6px;">
                                         <i data-lucide="list" style="width: 15px; height: 15px; color: var(--color-primary);"></i>
-                                        进行中的设备明细列表 (所有项目)
+                                        进行中的设备明细列表
                                     </span>
+                                    <div style="display: flex; gap: 6px;" id="ems-category-tags-container">
+                                        <span class="ems-cat-tag active-tag" onclick="window.selectEmsCategoryFilter('全部')">全部</span>
+                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('生产设备')">生产设备</span>
+                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('厂务设备')">厂务设备</span>
+                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('检测设备')">检测设备</span>
+                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('仓储搬运设备')">仓储搬运设备</span>
+                                    </div>
                                 </h3>
                                 <div class="table-wrap">
                                     <table class="custom-table" id="ems-device-table">

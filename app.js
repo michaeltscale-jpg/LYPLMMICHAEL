@@ -5165,6 +5165,7 @@ function formatEmsTime(date) {
     return `${y}-${m}-${d} ${hh}:${mm}`;
 }
 state.emsActiveFilterStage = state.emsActiveFilterStage || "stage1_plan";
+state.emsActiveCategoryFilter = state.emsActiveCategoryFilter || "全部";
 
 window.getEquipmentActiveStage = function(eq) {
     let parsedPlan = {};
@@ -5391,6 +5392,15 @@ window.selectEmsStageFilter = function(stageKey) {
 };
 
 window.fetchEquipmentsAndRender = async function() {
+    // 渲染时确保设备种类过滤标签高亮状态正确
+    const activeCat = state.emsActiveCategoryFilter || "全部";
+    document.querySelectorAll(".ems-cat-tag").forEach(tag => {
+        if (tag.innerText === activeCat) {
+            tag.classList.add("active-tag");
+        } else {
+            tag.classList.remove("active-tag");
+        }
+    });
     try {
         const res = await fetch("/api/equipments");
         const data = await res.json();
@@ -5508,7 +5518,11 @@ window.fetchEquipmentsAndRender = async function() {
         if (tbody) {
             tbody.innerHTML = "";
             
-            const filteredEquipments = state.equipments;
+            // 根据设备种类标签过滤明细列表
+            let filteredEquipments = state.equipments;
+            if (state.emsActiveCategoryFilter && state.emsActiveCategoryFilter !== '全部') {
+                filteredEquipments = filteredEquipments.filter(e => e.stage_name === state.emsActiveCategoryFilter);
+            }
             
             if (filteredEquipments.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">当前阶段暂无进行中的设备明细</td></tr>`;
@@ -10904,4 +10918,20 @@ window.selectBomMqcMaterial = function(code, name, spec, status, category) {
     }
     
     showToast("已成功选择物料：" + code, "success");
+};
+
+window.selectEmsCategoryFilter = function(category) {
+    state.emsActiveCategoryFilter = category;
+    
+    // 更新标签选中高亮
+    document.querySelectorAll(".ems-cat-tag").forEach(tag => {
+        if (tag.innerText === category) {
+            tag.classList.add("active-tag");
+        } else {
+            tag.classList.remove("active-tag");
+        }
+    });
+    
+    // 重新拉取并渲染设备列表
+    window.fetchEquipmentsAndRender();
 };
