@@ -3836,8 +3836,20 @@ window.closeModal = function(id) {
 
 function openProjectModal() {
     openModal("modal-project");
-    document.getElementById("proj-category").value = "PTS AI 铜箔";
-    updateThicknessOptions("PTS AI 铜箔");
+    
+    let defaultCategory = "PTS AI 铜箔";
+    let defaultCode = "";
+    
+    const activeProd = (state.products || []).find(p => p.id === state.activeProductId);
+    if (activeProd) {
+        defaultCode = activeProd.code || "";
+        defaultCategory = activeProd.category || "PTS AI 铜箔";
+    }
+    
+    document.getElementById("proj-code").value = defaultCode;
+    document.getElementById("proj-category").value = defaultCategory;
+    updateThicknessOptions(defaultCategory);
+    
     // 将全部 G1~G5 负责人下拉框填充用户列表
     ['plan-g1-owner','plan-g2-owner','plan-g3-owner','plan-g4-owner','plan-g5-owner'].forEach(id => {
         populateUserSelect(id, '');
