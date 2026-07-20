@@ -11358,3 +11358,337 @@ window.selectEmsCategoryFilter = function(category) {
     // 重新拉取并渲染设备列表
     window.fetchEquipmentsAndRender();
 };
+
+// ======================== 大类编辑、删除与规格对比功能 ========================
+
+// 1. 删除当前大类产品
+window.deleteActiveProduct = function() {
+    const product = state.activeProduct;
+    if (!product) return;
+    
+    if (!checkPermission(["Admin", "Product Manager"], "删除产品大类")) return;
+    
+    if (!confirm(`确定要物理删除产品大类【${product.code}】（${product.name}）吗？\n此操作将永久抹除该产品大类的所有厚度规格、BOM配方、工艺路线及TDS数据，且不可恢复！`)) {
+        return;
+    }
+    
+    const headers = {
+        "Content-Type": "application/json",
+        "X-User-Role": state.currentUserRole || "Admin",
+        "X-User-Name": encodeURIComponent(state.currentUserDisplayName || "系统")
+    };
+    
+    fetch(`/api/products/${product.id}/delete`, {
+        method: "POST",
+        headers: headers
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            showToast(data.message || "产品大类已成功删除", "success");
+            // 重置激活状态，并刷新产品列表
+            state.activeProductId = null;
+            state.activeThickness = null;
+            state.activeProduct = null;
+            fetchDashboardData();
+        }
+    })
+    .catch(err => {
+        showToast("删除操作失败：" + err.message, "error");
+    });
+};
+
+// 2. 打开编辑产品大类弹窗
+window.openEditProductModal = function() {
+    const product = state.activeProduct;
+    if (!product) return;
+    
+    if (!checkPermission(["Admin", "Product Manager"], "编辑产品大类")) return;
+    
+    document.getElementById("edit-prod-code").value = product.code || "";
+    document.getElementById("edit-prod-category").value = product.category || "";
+    document.getElementById("edit-prod-name").value = product.name || "";
+    
+    openModal("modal-edit-product-meta");
+};
+
+// 3. 提交编辑产品大类修改
+window.submitEditProductMeta = function() {
+    const product = state.activeProduct;
+    if (!product) return;
+    
+    const code = document.getElementById("edit-prod-code").value.trim();
+    const category = document.getElementById("edit-prod-category").value.trim();
+    const name = document.getElementById("edit-prod-name").value.trim();
+    
+    if (!code || !category) {
+        showToast("产品型号与类别不能为空！", "error");
+        return;
+    }
+    
+    const headers = {
+        "Content-Type": "application/json",
+        "X-User-Role": state.currentUserRole || "Admin",
+        "X-User-Name": encodeURIComponent(state.currentUserDisplayName || "系统")
+    };
+    
+    fetch(`/api/products/${product.id}/edit_meta`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({ code, category, name })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            showToast(data.message || "大类信息更新成功", "success");
+            closeModal("modal-edit-product-meta");
+            fetchDashboardData();
+        }
+    })
+    .catch(err => {
+        showToast("编辑保存失败：" + err.message, "error");
+    });
+};
+
+// 4. 打开产品对比弹窗并初始化数据
+window.openCompareModal = function() {
+    const prodSelectA = document.getElementById("compare-prod-a");
+    const prodSelectB = document.getElementById("compare-prod-b");
+    if (!prodSelectA || !prodSelectB) return;
+    
+    const products = state.products || [];
+    if (products.length === 0) {
+        showToast("暂无可用于对比的产品大类", "warning");
+        return;
+    }
+    
+    // 渲染产品下拉选框
+    prodSelectA.innerHTML = products.map(p => `<option value="${p.id}">${p.code} (${p.category})</option>`).join('');
+    prodSelectB.innerHTML = products.map(p => `<option value="${p.id}">${p.code} (${p.category})</option>`).join('');
+    
+    // 默认基准设为当前选中产品，对比设为第二个产品（如存在）
+    prodSelectA.value = state.activeProductId || products[0].id;
+    if (products.length > 1) {
+        prodSelectB.value = products.find(p => Number(p.id) !== Number(prodSelectA.value))?.id || products[1].id;
+    } else {
+        prodSelectB.value = products[0].id;
+    }
+    
+    // 初始化子页签
+    window.switchCompareTab('tds');
+    
+    // 级联加载厚度下拉
+    window.onCompareProductAChange();
+    window.onCompareProductBChange();
+    
+    openModal("modal-compare-products");
+};
+
+// 5. 基准产品A选择切换
+window.onCompareProductAChange = function() {
+    const prodId = document.getElementById("compare-prod-a").value;
+    const thickSelect = document.getElementById("compare-thick-a");
+    const products = state.products || [];
+    const p = products.find(prod => Number(prod.id) === Number(prodId));
+    if (p) {
+        const thicknesses = p.thicknesses || [12];
+        thickSelect.innerHTML = thicknesses.map(t => `<option value="${t}">${t} μm</option>`).join('');
+    }
+    window.renderCompareTables();
+};
+
+// 6. 对比产品B选择切换
+window.onCompareProductBChange = function() {
+    const prodId = document.getElementById("compare-prod-b").value;
+    const thickSelect = document.getElementById("compare-thick-b");
+    const products = state.products || [];
+    const p = products.find(prod => Number(prod.id) === Number(prodId));
+    if (p) {
+        const thicknesses = p.thicknesses || [12];
+        thickSelect.innerHTML = thicknesses.map(t => `<option value="${t}">${t} μm</option>`).join('');
+    }
+    window.renderCompareTables();
+};
+
+// 7. 切换对比内部面板的展示
+window.switchCompareTab = function(tabName) {
+    document.querySelectorAll(".compare-sub-panel").forEach(p => p.style.display = 'none');
+    document.querySelectorAll("[id^='compare-tab-']").forEach(btn => btn.classList.remove('active'));
+    
+    const targetPanel = document.getElementById(`compare-panel-${tabName}`);
+    if (targetPanel) targetPanel.style.display = 'block';
+    
+    const targetBtn = document.getElementById(`compare-tab-${tabName}`);
+    if (targetBtn) targetBtn.classList.add('active');
+};
+
+// 8. 核心：并发获取两侧产品详情并执行渲染比对
+window.renderCompareTables = function() {
+    const prodIdA = document.getElementById("compare-prod-a").value;
+    const thickA = document.getElementById("compare-thick-a").value;
+    const prodIdB = document.getElementById("compare-prod-b").value;
+    const thickB = document.getElementById("compare-thick-b").value;
+    
+    if (!prodIdA || !prodIdB || !thickA || !thickB) return;
+    
+    // 更新表头文本
+    const prodAOptText = document.querySelector(`#compare-prod-a option[value='${prodIdA}']`)?.innerText || '产品 A';
+    const prodBOptText = document.querySelector(`#compare-prod-b option[value='${prodIdB}']`)?.innerText || '产品 B';
+    
+    document.getElementById("compare-header-tds-a").innerText = `${prodAOptText} - ${thickA}μm`;
+    document.getElementById("compare-header-tds-b").innerText = `${prodBOptText} - ${thickB}μm`;
+    document.getElementById("compare-header-bom-a").innerText = `${prodAOptText} - ${thickA}μm 比例/单位`;
+    document.getElementById("compare-header-bom-b").innerText = `${prodBOptText} - ${thickB}μm 比例/单位`;
+    document.getElementById("compare-header-routing-a").innerText = `${prodAOptText} - ${thickA}μm 设备与控制基准`;
+    document.getElementById("compare-header-routing-b").innerText = `${prodBOptText} - ${thickB}μm 设备与控制基准`;
+    
+    Promise.all([
+        fetch(`/api/products/${prodIdA}?thickness=${thickA}`).then(r => r.json()),
+        fetch(`/api/products/${prodIdB}?thickness=${thickB}`).then(r => r.json())
+    ])
+    .then(([resA, resB]) => {
+        // --- 1. TDS 对比渲染 ---
+        const tbodyTds = document.getElementById("compare-table-body-tds");
+        tbodyTds.innerHTML = "";
+        const tdsItemsA = resA.tds ? (resA.tds.tds_items || []) : [];
+        const tdsItemsB = resB.tds ? (resB.tds.tds_items || []) : [];
+        
+        // 收集所有检测项
+        const allTdsKeys = [];
+        tdsItemsA.forEach(item => {
+            if (!allTdsKeys.find(k => k.name_zh === item.name_zh)) allTdsKeys.push({name_zh: item.name_zh, name_en: item.name_en, unit: item.unit});
+        });
+        tdsItemsB.forEach(item => {
+            if (!allTdsKeys.find(k => k.name_zh === item.name_zh)) allTdsKeys.push({name_zh: item.name_zh, name_en: item.name_en, unit: item.unit});
+        });
+        
+        allTdsKeys.forEach(k => {
+            const valA = tdsItemsA.find(x => x.name_zh === k.name_zh)?.spec || "--";
+            const valB = tdsItemsB.find(x => x.name_zh === k.name_zh)?.spec || "--";
+            
+            const isDiff = valA !== valB;
+            const diffHtml = isDiff 
+                ? `<span class="badge badge-yellow"><i data-lucide="alert-triangle" style="width:11px;height:11px;vertical-align:middle;"></i> 规格有差异</span>`
+                : `<span style="color:#22c55e;font-size:0.75rem;"><i data-lucide="check" style="width:11px;height:11px;vertical-align:middle;"></i> 规格一致</span>`;
+            
+            const tr = document.createElement("tr");
+            if (isDiff) tr.style.background = "rgba(245, 158, 11, 0.05)";
+            tr.innerHTML = `
+                <td><strong>${k.name_zh}</strong> <span style="font-size:0.65rem;color:var(--text-muted);display:block;">${k.name_en || ''}</span></td>
+                <td><code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;">${k.unit || '--'}</code></td>
+                <td style="font-weight:600;color:${isDiff ? 'var(--color-primary)' : 'var(--text-primary)'}">${valA}</td>
+                <td style="font-weight:600;color:${isDiff ? '#22c55e' : 'var(--text-primary)'}">${valB}</td>
+                <td style="text-align:center;">${diffHtml}</td>
+            `;
+            tbodyTds.appendChild(tr);
+        });
+        
+        // --- 2. BOM 对比渲染 ---
+        const tbodyBom = document.getElementById("compare-table-body-bom");
+        tbodyBom.innerHTML = "";
+        const bomItemsA = resA.bom ? (resA.bom.bom_items || []) : [];
+        const bomItemsB = resB.bom ? (resB.bom.bom_items || []) : [];
+        
+        // 收集所有物料
+        const allBomMats = [];
+        bomItemsA.forEach(item => {
+            if (!allBomMats.find(m => m.code === item.material_code)) {
+                allBomMats.push({ code: item.material_code, name: item.material_name, category: item.material_category });
+            }
+        });
+        bomItemsB.forEach(item => {
+            if (!allBomMats.find(m => m.code === item.material_code)) {
+                allBomMats.push({ code: item.material_code, name: item.material_name, category: item.material_category });
+            }
+        });
+        
+        allBomMats.forEach(m => {
+            const itemA = bomItemsA.find(x => x.material_code === m.code);
+            const itemB = bomItemsB.find(x => x.material_code === m.code);
+            
+            const ratioA = itemA ? `${itemA.ratio_value} ${itemA.unit}` : "--";
+            const ratioB = itemB ? `${itemB.ratio_value} ${itemB.unit}` : "--";
+            
+            const isDiff = (!itemA || !itemB || itemA.ratio_value !== itemB.ratio_value || itemA.unit !== itemB.unit);
+            const diffHtml = isDiff
+                ? `<span class="badge badge-purple">占比不一致</span>`
+                : `<span style="color:#22c55e;font-size:0.75rem;"><i data-lucide="check" style="width:11px;height:11px;vertical-align:middle;"></i> 配比相同</span>`;
+                
+            const tr = document.createElement("tr");
+            if (isDiff) tr.style.background = "rgba(99, 102, 241, 0.05)";
+            tr.innerHTML = `
+                <td>
+                    <div style="font-weight:600;">${m.name}</div>
+                    <div style="font-size:0.65rem;color:var(--text-muted);font-family:monospace;">${m.code}</div>
+                </td>
+                <td><span style="font-size:0.72rem;color:var(--text-secondary);">${m.category || '未分类'}</span></td>
+                <td style="font-weight:600;">${ratioA}</td>
+                <td style="font-weight:600;">${ratioB}</td>
+                <td style="text-align:center;">${diffHtml}</td>
+            `;
+            tbodyBom.appendChild(tr);
+        });
+        
+        // --- 3. Routing 对比渲染 ---
+        const tbodyRouting = document.getElementById("compare-table-body-routing");
+        tbodyRouting.innerHTML = "";
+        const rListA = resA.routing_list || [];
+        const rListB = resB.routing_list || [];
+        
+        // 取得最大工步数
+        const maxSteps = Math.max(rListA.length, rListB.length, 1);
+        for (let i = 0; i < maxSteps; i++) {
+            const stepA = rListA[i];
+            const stepB = rListB[i];
+            
+            const stepNo = stepA ? stepA.step_no : (stepB ? stepB.step_no : i + 1);
+            const stageName = stepA ? stepA.stage_name : (stepB ? stepB.stage_name : "--");
+            
+            // 组装 A 的参数 HTML
+            let paramsHtmlA = "--";
+            if (stepA) {
+                let parsedParams = {};
+                try {
+                    parsedParams = typeof stepA.standard_params === 'string' ? JSON.parse(stepA.standard_params) : stepA.standard_params;
+                } catch(e) {}
+                const paramItems = Object.entries(parsedParams).map(([k, v]) => `<li><code>${k}</code>: <strong>${v}</strong></li>`).join('');
+                paramsHtmlA = `
+                    <div style="font-size:0.72rem;font-weight:600;color:var(--color-primary);">${stepA.device_name} (${stepA.device_code})</div>
+                    <ul style="margin:5px 0 0 14px;padding:0;font-size:0.68rem;color:var(--text-muted);">${paramItems}</ul>
+                `;
+            }
+            
+            // 组装 B 的参数 HTML
+            let paramsHtmlB = "--";
+            if (stepB) {
+                let parsedParams = {};
+                try {
+                    parsedParams = typeof stepB.standard_params === 'string' ? JSON.parse(stepB.standard_params) : stepB.standard_params;
+                } catch(e) {}
+                const paramItems = Object.entries(parsedParams).map(([k, v]) => `<li><code>${k}</code>: <strong>${v}</strong></li>`).join('');
+                paramsHtmlB = `
+                    <div style="font-size:0.72rem;font-weight:600;color:#22c55e;">${stepB.device_name} (${stepB.device_code})</div>
+                    <ul style="margin:5px 0 0 14px;padding:0;font-size:0.68rem;color:var(--text-muted);">${paramItems}</ul>
+                `;
+            }
+            
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td style="text-align:center;font-weight:800;font-family:monospace;font-size:0.9rem;">${stepNo}</td>
+                <td><strong>${stageName}</strong></td>
+                <td>${paramsHtmlA}</td>
+                <td>${paramsHtmlB}</td>
+            `;
+            tbodyRouting.appendChild(tr);
+        }
+        
+        lucide.createIcons();
+    })
+    .catch(err => {
+        showToast("对比加载失败：" + err.message, "error");
+    });
+};

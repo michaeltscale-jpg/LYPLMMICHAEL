@@ -169,6 +169,7 @@
                         </select>
                     </div>
                     <button class="btn-secondary" id="btn-sync-ding"><i data-lucide="refresh-cw"></i> 同步状态</button>
+                    <button class="btn-secondary" id="btn-compare-products" onclick="openCompareModal()"><i data-lucide="git-compare"></i> 产品规格对比</button>
                     <button class="btn-primary" id="btn-new-project"><i data-lucide="plus-circle"></i> 新品开发立项</button>
                 </div>
             </header>
@@ -282,6 +283,16 @@
                         <span><i data-lucide="calendar" style="width:11px; height:11px; vertical-align:middle; margin-right:3px;"></i>立项时间: <strong id="plm-prod-time" style="color:#cbd5e1;">--</strong></span>
                     </div>
                 </div>
+            </div>
+            
+            <!-- 中间：产品大类控制按钮 -->
+            <div style="display: flex; gap: 8px; align-items: center; margin-left: auto; margin-right: 16px;">
+                <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px;" onclick="openEditProductModal()">
+                    <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> 编辑大类
+                </button>
+                <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.72rem; display: flex; align-items: center; gap: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);" onclick="deleteActiveProduct()">
+                    <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i> 删除大类
+                </button>
             </div>
             
             <!-- 右侧：厚度独立标签卡片 -->
@@ -3221,6 +3232,130 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-clone-thickness')">取消</button>
                 <button class="btn-primary" onclick="submitCloneThickness()">确认创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 编辑产品大类弹窗 ===== -->
+    <div class="modal-overlay" id="modal-edit-product-meta" style="z-index: 1100;">
+        <div class="modal-box" style="width: 450px;">
+            <div class="modal-header">
+                <h3><i data-lucide="edit-3" style="vertical-align:middle; margin-right:6px; color:var(--color-primary);"></i> 编辑产品大类信息</h3>
+                <button class="modal-close" onclick="closeModal('modal-edit-product-meta')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 16px 20px;">
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">产品型号 (大类代号)</label>
+                    <input type="text" id="edit-prod-code" class="form-control" style="width: 100%;">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">产品类别</label>
+                    <input type="text" id="edit-prod-category" class="form-control" style="width: 100%;" list="category-list">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">大类名称</label>
+                    <input type="text" id="edit-prod-name" class="form-control" style="width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('modal-edit-product-meta')">取消</button>
+                <button class="btn-primary" onclick="submitEditProductMeta()">保存修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 产品规格对比弹窗 ===== -->
+    <div class="modal-overlay" id="modal-compare-products" style="z-index: 1050;">
+        <div class="modal-box" style="width: 950px; max-width: 95vw; height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3><i data-lucide="git-compare" style="vertical-align:middle; margin-right:6px; color:var(--color-primary);"></i> 产品规格参数对比</h3>
+                <button class="modal-close" onclick="closeModal('modal-compare-products')">&times;</button>
+            </div>
+            
+            <!-- 对比产品选择栏 -->
+            <div style="display: flex; gap: 24px; padding: 16px 20px; background: #f8fafc; border-bottom: 1px solid var(--border-color); align-items: center; justify-content: space-between;">
+                <!-- 左侧产品 A -->
+                <div style="flex: 1; display: flex; gap: 10px; align-items: center;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-primary); white-space: nowrap;">产品 A (基准):</span>
+                    <select id="compare-prod-a" class="form-control" style="flex: 1;" onchange="onCompareProductAChange()"></select>
+                    <select id="compare-thick-a" class="form-control" style="width: 100px;" onchange="renderCompareTables()"></select>
+                </div>
+                
+                <div style="color: var(--text-muted); font-weight: 800; font-size: 1.2rem;">VS</div>
+                
+                <!-- 右侧产品 B -->
+                <div style="flex: 1; display: flex; gap: 10px; align-items: center;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: #22c55e; white-space: nowrap;">产品 B (对比):</span>
+                    <select id="compare-prod-b" class="form-control" style="flex: 1;" onchange="onCompareProductBChange()"></select>
+                    <select id="compare-thick-b" class="form-control" style="width: 100px;" onchange="renderCompareTables()"></select>
+                </div>
+            </div>
+            
+            <!-- 对比模块内部页签 -->
+            <div style="display: flex; gap: 16px; border-bottom: 1px solid var(--border-color); padding: 8px 20px; background: #f1f5f9;">
+                <button class="btn-secondary active" id="compare-tab-tds" onclick="switchCompareTab('tds')" style="padding: 4px 12px; font-size: 0.75rem;">1. TDS 对比</button>
+                <button class="btn-secondary" id="compare-tab-bom" onclick="switchCompareTab('bom')" style="padding: 4px 12px; font-size: 0.75rem;">2. BOM 配方对比</button>
+                <button class="btn-secondary" id="compare-tab-routing" onclick="switchCompareTab('routing')" style="padding: 4px 12px; font-size: 0.75rem;">3. 工艺路线对比</button>
+            </div>
+            
+            <!-- 对比数据展示区域 -->
+            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px;">
+                <!-- TDS 对比面板 -->
+                <div id="compare-panel-tds" class="compare-sub-panel active">
+                    <table class="table-premium" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>技术检验项</th>
+                                <th>单位</th>
+                                <th style="color: var(--color-primary);" id="compare-header-tds-a">产品 A</th>
+                                <th style="color: #22c55e;" id="compare-header-tds-b">产品 B</th>
+                                <th style="text-align: center;">差异对比</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compare-table-body-tds">
+                            <!-- JS 动态注入 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- BOM 对比面板 -->
+                <div id="compare-panel-bom" class="compare-sub-panel" style="display: none;">
+                    <table class="table-premium" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>物料名称 / 代号</th>
+                                <th>物料分类</th>
+                                <th style="color: var(--color-primary);" id="compare-header-bom-a">产品 A 比例 / 单位</th>
+                                <th style="color: #22c55e;" id="compare-header-bom-b">产品 B 比例 / 单位</th>
+                                <th style="text-align: center;">成分差异</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compare-table-body-bom">
+                            <!-- JS 动态注入 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Routing 对比面板 -->
+                <div id="compare-panel-routing" class="compare-sub-panel" style="display: none;">
+                    <table class="table-premium" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">工步</th>
+                                <th style="width: 120px;">工段名称</th>
+                                <th style="color: var(--color-primary);" id="compare-header-routing-a">产品 A 设备 & 核心控制参数</th>
+                                <th style="color: #22c55e;" id="compare-header-routing-b">产品 B 设备 & 核心控制参数</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compare-table-body-routing">
+                            <!-- JS 动态注入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('modal-compare-products')">关闭对比</button>
             </div>
         </div>
     </div>

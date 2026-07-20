@@ -728,6 +728,10 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             required_roles = {"Admin", "Product Manager"}
         elif path == "/api/products/clone_thickness":
             required_roles = {"Admin", "Product Manager"}
+        elif path.endswith("/delete") and "/products/" in path:
+            required_roles = {"Admin", "Product Manager"}
+        elif path.endswith("/edit_meta") and "/products/" in path:
+            required_roles = {"Admin", "Product Manager"}
         elif path.endswith("/save_plan") and "/products/" in path:
             required_roles = {"Admin", "Product Manager"}
         elif (path.endswith("/save_tds_rows") or path.endswith("/publish_tds") or path.endswith("/save_tds")) and "/products/" in path:
@@ -943,6 +947,67 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 except Exception as e:
                     conn.rollback()
                     self.send_json({"error": f"克隆创建规格失败: {str(e)}"}, 500)
+                    return
+
+            elif path.endswith("/delete") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+                
+                try:
+                    # 获取产品代号用于日志
+                    cursor.execute("SELECT code FROM products WHERE id = ?", (product_id,))
+                    p_row = cursor.fetchone()
+                    p_code = p_row[0] if p_row else f"ID {product_id}"
+
+                    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
+                    cursor.execute("DELETE FROM product_bom WHERE product_id = ?", (product_id,))
+                    cursor.execute("DELETE FROM product_routing WHERE product_id = ?", (product_id,))
+                    cursor.execute("DELETE FROM product_tds WHERE product_id = ?", (product_id,))
+                    conn.commit()
+
+                    self.send_json({"message": f"产品大类【{p_code}】及其所有关联规格、BOM、工艺、TDS 已成功删除！"})
+                    return
+                except Exception as e:
+                    self.send_json({"error": f"删除失败: {str(e)}"}, 500)
+                    return
+
+            elif path.endswith("/edit_meta") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+                
+                code = data.get('code', '').strip()
+                name = data.get('name', '').strip()
+                category = data.get('category', '').strip()
+
+                if not code or not category:
+                    self.send_json({"error": "产品型号与产品类别不能为空"}, 400)
+                    return
+
+                try:
+                    # 检查是否与其他产品冲突
+                    cursor.execute("SELECT id FROM products WHERE code = ? AND id != ?", (code, product_id))
+                    dup = cursor.fetchone()
+                    if dup:
+                        self.send_json({"error": f"产品代号【{code}】已存在于其他产品中"}, 400)
+                        return
+
+                    cursor.execute("""
+                        UPDATE products 
+                        SET code = ?, name = ?, category = ?, updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                    """, (code, name or code, category, product_id))
+                    conn.commit()
+
+                    self.send_json({"message": "产品大类基本信息已成功更新！"})
+                    return
+                except Exception as e:
+                    self.send_json({"error": f"更新大类信息失败: {str(e)}"}, 500)
                     return
 
             # 1.2 普通新品研发立项申请
