@@ -793,6 +793,13 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     return
 
                 try:
+                    # 检查新规格是否已存在，避免重复创建
+                    details = self.get_thickness_details(cursor, product_id)
+                    for d in details:
+                        if abs(float(d.get('spec_thickness', 0)) - new_thickness) < 0.0001:
+                            self.send_json({"error": f"规格厚度 {new_thickness}μm 已存在，请勿重复创建！"}, 400)
+                            return
+
                     # 查询大类信息
                     cursor.execute("SELECT code, category FROM products WHERE id = ?", (product_id,))
                     prod_row = cursor.fetchone()
@@ -806,6 +813,11 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if not t_info:
                         self.send_json({"error": f"找不到源规格 {source_thickness}μm 的详细信息"}, 404)
                         return
+
+                    # 幂等清理残余物理数据，防止多余或重复行
+                    cursor.execute("DELETE FROM product_bom WHERE product_id = ? AND spec_thickness = ?", (product_id, new_thickness))
+                    cursor.execute("DELETE FROM product_routing WHERE product_id = ? AND spec_thickness = ?", (product_id, new_thickness))
+                    cursor.execute("DELETE FROM product_tds WHERE product_id = ? AND spec_thickness = ?", (product_id, new_thickness))
 
 
 
