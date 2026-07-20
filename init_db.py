@@ -658,6 +658,8 @@ def init_database(force_reset=False):
             conclusion_by TEXT,
             conclusion_date TEXT,
             remark TEXT,
+            supplier_doc TEXT,
+            tds_doc TEXT,
             created_at TEXT
         )
     ''')

@@ -2198,7 +2198,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     'apply_date','apply_by','status',
                     'test_start','test_end','test_result',
                     'conclusion','conclusion_by','conclusion_date','remark',
-                    'test_record','test_report'
+                    'test_record','test_report','supplier_doc','tds_doc'
                 ]
                 vals = [data.get(f,'') for f in fields]
                 if rid:
@@ -2463,6 +2463,8 @@ def init_mqc_tables():
             remark TEXT,
             test_record TEXT,
             test_report TEXT,
+            supplier_doc TEXT,
+            tds_doc TEXT,
             created_at TEXT
         )
     ''')
@@ -2493,6 +2495,10 @@ def init_mqc_tables():
         c.execute("ALTER TABLE mqc_materials ADD COLUMN test_record TEXT")
     if "test_report" not in m_cols:
         c.execute("ALTER TABLE mqc_materials ADD COLUMN test_report TEXT")
+    if "supplier_doc" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN supplier_doc TEXT")
+    if "tds_doc" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN tds_doc TEXT")
 
     # 动态迁移 mqc_suppliers 专属承认与测试信息字段
     c.execute("PRAGMA table_info(mqc_suppliers)")

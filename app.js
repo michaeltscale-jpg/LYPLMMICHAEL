@@ -9053,6 +9053,21 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-test-report-preview-link").style.display = "none";
         document.getElementById("mqc-test-report-preview-link").href = "#";
 
+        // 重置供应商资料与 TDS
+        document.getElementById("mqc-mat-supplier-doc").value = "";
+        document.getElementById("mqc-supplier-doc-file-input").value = "";
+        document.getElementById("mqc-supplier-doc-file-label").textContent = "未上传";
+        document.getElementById("mqc-supplier-doc-file-label").style.color = "var(--text-secondary)";
+        document.getElementById("mqc-supplier-doc-preview-link").style.display = "none";
+        document.getElementById("mqc-supplier-doc-preview-link").href = "#";
+
+        document.getElementById("mqc-mat-tds-doc").value = "";
+        document.getElementById("mqc-tds-doc-file-input").value = "";
+        document.getElementById("mqc-tds-doc-file-label").textContent = "未上传";
+        document.getElementById("mqc-tds-doc-file-label").style.color = "var(--text-secondary)";
+        document.getElementById("mqc-tds-doc-preview-link").style.display = "none";
+        document.getElementById("mqc-tds-doc-preview-link").href = "#";
+
         document.getElementById("mqc-mat-status").value = "需求提出";
         document.getElementById("mqc-mat-test-start").value = "";
         document.getElementById("mqc-mat-test-end").value = "";
@@ -9133,6 +9148,40 @@ window.openMqcMaterialModal = function(id) {
             testReportLabel.style.color = "var(--text-secondary)";
             testReportPreview.style.display = "none";
             testReportPreview.href = "#";
+        }
+
+        // 回显供应商资料文件
+        document.getElementById("mqc-mat-supplier-doc").value = m.supplier_doc || "";
+        const supplierDocLabel = document.getElementById("mqc-supplier-doc-file-label");
+        const supplierDocPreview = document.getElementById("mqc-supplier-doc-preview-link");
+        document.getElementById("mqc-supplier-doc-file-input").value = "";
+        if (m.supplier_doc) {
+            supplierDocLabel.textContent = "✅ " + m.supplier_doc;
+            supplierDocLabel.style.color = "var(--color-success)";
+            supplierDocPreview.href = "/uploads/certificates/" + encodeURIComponent(m.supplier_doc);
+            supplierDocPreview.style.display = "inline";
+        } else {
+            supplierDocLabel.textContent = "未上传";
+            supplierDocLabel.style.color = "var(--text-secondary)";
+            supplierDocPreview.style.display = "none";
+            supplierDocPreview.href = "#";
+        }
+
+        // 回显 TDS 文件
+        document.getElementById("mqc-mat-tds-doc").value = m.tds_doc || "";
+        const tdsDocLabel = document.getElementById("mqc-tds-doc-file-label");
+        const tdsDocPreview = document.getElementById("mqc-tds-doc-preview-link");
+        document.getElementById("mqc-tds-doc-file-input").value = "";
+        if (m.tds_doc) {
+            tdsDocLabel.textContent = "✅ " + m.tds_doc;
+            tdsDocLabel.style.color = "var(--color-success)";
+            tdsDocPreview.href = "/uploads/certificates/" + encodeURIComponent(m.tds_doc);
+            tdsDocPreview.style.display = "inline";
+        } else {
+            tdsDocLabel.textContent = "未上传";
+            tdsDocLabel.style.color = "var(--text-secondary)";
+            tdsDocPreview.style.display = "none";
+            tdsDocPreview.href = "#";
         }
 
         document.getElementById("mqc-mat-status").value = m.status || "需求提出";
@@ -9236,6 +9285,8 @@ window.saveMqcMaterial = function() {
     const apply_by = document.getElementById("mqc-mat-apply-by").value.trim();
     const test_record = document.getElementById("mqc-mat-test-record").value.trim();
     const test_report = document.getElementById("mqc-mat-test-report").value.trim();
+    const supplier_doc = document.getElementById("mqc-mat-supplier-doc").value.trim();
+    const tds_doc = document.getElementById("mqc-mat-tds-doc").value.trim();
     
     // 校验必填项
     let hasErr = false;
@@ -9290,7 +9341,9 @@ window.saveMqcMaterial = function() {
         test_result: document.getElementById("mqc-mat-test-result").value.trim(),
         remark: document.getElementById("mqc-mat-remark").value.trim(),
         test_record: test_record,
-        test_report: test_report
+        test_report: test_report,
+        supplier_doc: supplier_doc,
+        tds_doc: tds_doc
     };
 
 // 通用的 MQC 文件/报告上传函数
