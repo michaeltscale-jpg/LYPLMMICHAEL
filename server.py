@@ -797,11 +797,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         self.send_json({"error": f"找不到源规格 {source_thickness}μm 的详细信息"}, 404)
                         return
 
-                    # 校验新规格是否已存在
-                    existing_t = self.get_thickness_info(cursor, product_id, new_thickness)
-                    if existing_t:
-                        self.send_json({"error": f"新规格 {new_thickness}μm 已存在，无法重复创建"}, 400)
-                        return
+
 
                     base_time = datetime.now()
                     

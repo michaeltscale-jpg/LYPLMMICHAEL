@@ -3911,10 +3911,7 @@ window.submitCloneThickness = function() {
     const activeProdRow = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (!activeProdRow) return;
 
-    if (activeProdRow.thicknesses && activeProdRow.thicknesses.includes(newThickness)) {
-        showToast(`该产品下已存在 ${newThickness}μm 规格！`, "error");
-        return;
-    }
+
 
     const payload = {
         product_id: state.activeProductId,
