@@ -6996,12 +6996,14 @@ function renderUsersTable(users) {
                        <button class="btn-primary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserPermissionsModal(${u.id})">
                             <i data-lucide="shield" style="width:11px; height:11px;"></i> 权限
                        </button>`;
-            if (!isBuiltIn) {
-                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
+            if (u.username === 'admin') {
+                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--text-muted); opacity:0.4; cursor:not-allowed;" disabled title="超级管理员不可删除">
                                 <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
                              </button>`;
             } else {
-                deleteBtn = `<span style="color:var(--text-muted); font-size:0.72rem; margin-left:4px;">演示基石</span>`;
+                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
+                                <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                             </button>`;
             }
         } else {
             editBtn = `<span style="color:var(--text-muted); font-size:0.72rem;">只读</span>`;

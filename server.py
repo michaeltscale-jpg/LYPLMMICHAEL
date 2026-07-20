@@ -2156,10 +2156,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     return
 
                 username = row['username']
-                # 保护演示基础种子账号，禁止删除
-                demo_usernames = {"admin", "pm_zhang", "pe_li", "qe_chen", "guest"}
-                if username in demo_usernames:
-                    self.send_json({"error": f"安全限制：系统内置的演示基石账号 '{username}' 无法被删除，以保证全套演示场景完整。"}, 400)
+                # 保护超级管理员账号，禁止删除
+                if username == 'admin':
+                    self.send_json({"error": "安全限制：超级管理员账号无法被删除。"}, 400)
                     return
 
                 cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
