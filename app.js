@@ -1526,11 +1526,37 @@ function updateThicknessOptions(category) {
     autoDeriveProjectNameAndCode();
 }
 
+function updateCategoryFilters(products) {
+    const filterEl = document.getElementById("sidebar-category-filter");
+    if (filterEl) {
+        const currentVal = filterEl.value;
+        const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+        
+        // 渲染类型筛选
+        filterEl.innerHTML = `<option value="">全部类型</option>` + 
+            categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+        // 恢复选中状态
+        if (categories.includes(currentVal)) {
+            filterEl.value = currentVal;
+        } else {
+            filterEl.value = "";
+        }
+    }
+    
+    const datalistEl = document.getElementById("category-list");
+    if (datalistEl) {
+        const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+        datalistEl.innerHTML = categories.map(c => `<option value="${c}">`).join('');
+    }
+}
+
 // Fetch dashboard statistical data
 function fetchDashboardData() {
     fetch("/api/products")
         .then(res => res.json())
         .then(products => {
+            updateCategoryFilters(products);
             let developingCount = 0;
             let productionCount = 0;
             products.forEach(p => {
