@@ -6516,15 +6516,15 @@ window.saveNewEquipment = async function() {
         };
         if (!id) {
             // 新增设备时，默认全部里程碑状态设为未开始或进行中
-            const p_active_install = {
-                "stage1_plan": { "title": "立项", "status": "已完成", "start_date": "", "end_date": "", "owner": "赵工", "remark": "立项计划完成" },
-                "stage2_scheme": { "title": "拟定技术方案", "status": "已完成", "start_date": "", "end_date": "", "owner": "工艺组", "remark": "方案会审通过" },
-                "stage3_bidding": { "title": "请购发包", "status": "已完成", "start_date": "", "end_date": "", "owner": "采购委", "remark": "合同签署完成" },
-                "stage4_make": { "title": "制作中", "status": "已完成", "start_date": "", "end_date": "", "owner": "制造部", "remark": "设备出厂调试" },
-                "stage5_install": { "title": "安装调试中", "status": "进行中", "start_date": "", "end_date": "", "owner": "现场工程组", "remark": "正在现场安装调试机台" },
-                "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": "", "end_date": "", "owner": "项目部", "remark": "" }
+            const p_new_initiation = {
+                "stage1_plan": { "title": "立项", "status": "进行中", "start_date": new Date().toISOString().substring(0, 10), "end_date": "", "owner": "设备组", "remark": "启动设备立项流程", "input_files": ["项目启动意向书.docx", "前期可行性研究报告.pdf"] },
+                "stage2_scheme": { "title": "拟定技术方案", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
+                "stage3_bidding": { "title": "请购发包", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
+                "stage4_make": { "title": "制作中", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
+                "stage5_install": { "title": "安装调试中", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
+                "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" }
             };
-            payload.project_plan_json = JSON.stringify(p_active_install);
+            payload.project_plan_json = JSON.stringify(p_new_initiation);
             payload.parameters_json = JSON.stringify(defaultParams);
             payload.status = "导入中";
         }
