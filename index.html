@@ -2394,35 +2394,131 @@ requests.post(url, json=payload)</code></pre>
                     <span id="perms-user-display" style="color: var(--color-primary);">--</span>
                 </div>
                 
-                <!-- Main Modules Permissions Table -->
-                <div style="margin-bottom: 20px;">
-                    <h4 style="font-size: 0.82rem; color: #334155; border-left: 3px solid var(--color-primary); padding-left: 8px; margin-bottom: 10px; font-weight: 700;">系统功能主模块访问权限</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_dashboard"> 研发驾驶舱</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_product"> 产品开发管控</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_mqc"> 物料承认 (MQC)</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_ems"> 设备开发 (EMS)</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_dms"> 文管中心 (DMS)</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_ecn"> 工程设变 (ECN)</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_task"> 研发受控任务</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_users"> 用户权限管理</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-module_dingtalk"> 钉钉协同配置</label>
-                    </div>
-                </div>
-
-                <!-- Stages Permissions Table -->
-                <div>
-                    <h4 style="font-size: 0.82rem; color: #334155; border-left: 3px solid var(--color-success); padding-left: 8px; margin-bottom: 10px; font-weight: 700;">生产工段工艺编辑与操作权限</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_init"> 立项</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_sputter"> 溅镀工段</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_electro"> 电镀工段</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_pa"> PA后处理</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_pb"> PB涂布</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_peel"> 脱膜工段</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_test"> 测试验证</label>
-                        <label class="perms-checkbox-label"><input type="checkbox" id="perm-stage_mass"> 量产送样</label>
-                    </div>
+                <!-- Main Modules & Stages Permissions Table -->
+                <div style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 6px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #cbd5e1; color: #475569; font-weight: 700; background: #edf2f7;">
+                                <th style="text-align: left; padding: 8px 10px;">功能模块 / 生产工段</th>
+                                <th style="text-align: center; padding: 8px 10px; width: 70px;">查看</th>
+                                <th style="text-align: center; padding: 8px 10px; width: 70px;">编辑</th>
+                                <th style="text-align: center; padding: 8px 10px; width: 70px;">删除</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 主功能模块 -->
+                            <tr style="background: rgba(99, 102, 241, 0.06); font-weight: bold; color: var(--color-primary);">
+                                <td colspan="4" style="padding: 6px 10px; border-bottom: 1px solid #e2e8f0;">📂 系统主模块权限</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">研发驾驶舱</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">产品开发管控</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">物料承认 (MQC)</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">设备开发 (EMS)</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">文管中心 (DMS)</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">工程设变 (ECN)</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">研发受控任务</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">用户权限管理</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">钉钉协同配置</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            
+                            <!-- 生产工段工艺 -->
+                            <tr style="background: rgba(16, 185, 129, 0.06); font-weight: bold; color: var(--color-success);">
+                                <td colspan="4" style="padding: 6px 10px; border-bottom: 1px solid #e2e8f0;">🏭 生产工段工艺权限</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">立项</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">溅镀工段</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">电镀工段</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">PA后处理</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">PB涂布</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">脱膜工段</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">测试验证</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 10px; font-weight: 600;">量产送样</td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_view" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_edit" style="width:14px; height:14px;"></td>
+                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_delete" style="width:14px; height:14px;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             <div class="modal-footer" style="margin-top: 0; border-top: 1px solid var(--border-color);">

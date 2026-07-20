@@ -6472,6 +6472,10 @@ window.openNewEquipmentModal = function() {
 
 window.editEquipment = function(id) {
     if (!checkPermission(["Admin", "Equipment Engineer", "Process Engineer"], "编辑设备")) return;
+    if (window.hasModuleActionPermission && !window.hasModuleActionPermission('ems-panel', 'edit')) {
+        showToast("【权限不足】当前身份无权编辑设备项（缺失 EMS 编辑权限），请在页眉切换登录身份。", "error");
+        return;
+    }
     const eq = state.equipments.find(e => e.id === id);
     if (!eq) return;
     
@@ -6820,6 +6824,10 @@ window.updateEquipmentMaintenance = async function() {
 
 window.deleteEquipment = async function(id) {
     if (!checkPermission(["Admin"], "删除设备")) return;
+    if (window.hasModuleActionPermission && !window.hasModuleActionPermission('ems-panel', 'delete')) {
+        showToast("【权限不足】当前身份无权删除设备项（缺失 EMS 删除权限），请在页眉切换登录身份。", "error");
+        return;
+    }
     const eq = state.equipments.find(e => e.id === id);
     if (!eq) return;
     
@@ -7040,8 +7048,8 @@ function renderUsersTable(users) {
     lucide.createIcons();
 }
 
-// 核心助手：校验模块权限
-window.hasModulePermission = function(tabId) {
+// 核心助手：校验模块具体动作权限（view, edit, delete）
+window.hasModuleActionPermission = function(tabId, action = 'view') {
     const user = (state.users || []).find(u => u.username === state.currentUsername);
     if (!user) return true;
     if (user.role === 'Admin') return true;
@@ -7077,11 +7085,22 @@ window.hasModulePermission = function(tabId) {
         return true;
     }
     
+    // Check specific action (e.g. module_dashboard_view)
+    const detailKey = `${key}_${action}`;
+    if (perms[detailKey] !== undefined) {
+        return perms[detailKey] === true;
+    }
+    
+    // Fall back to legacy consolidated boolean
     return perms[key] !== false;
 };
 
-// 核心助手：校验工段工艺操作权限
-window.hasStagePermission = function(stageName) {
+window.hasModulePermission = function(tabId) {
+    return window.hasModuleActionPermission(tabId, 'view');
+};
+
+// 核心助手：校验工段工艺具体操作权限（view, edit, delete）
+window.hasStageActionPermission = function(stageName, action = 'edit') {
     const user = (state.users || []).find(u => u.username === state.currentUsername);
     if (!user) return true;
     if (user.role === 'Admin') return true;
@@ -7113,7 +7132,16 @@ window.hasStagePermission = function(stageName) {
         return true;
     }
     
+    const detailKey = `${key}_${action}`;
+    if (perms[detailKey] !== undefined) {
+        return perms[detailKey] === true;
+    }
+    
     return perms[key] !== false;
+};
+
+window.hasStagePermission = function(stageName) {
+    return window.hasStageActionPermission(stageName, 'edit');
 };
 
 window.openUserPermissionsModal = function(userId) {
@@ -7135,7 +7163,7 @@ window.openUserPermissionsModal = function(userId) {
         }
     }
 
-    // List of checkbox elements
+    // List of checkbox element prefixes
     const keys = [
         'module_dashboard', 'module_product', 'module_mqc', 'module_ems', 
         'module_dms', 'module_ecn', 'module_task', 'module_users', 'module_dingtalk',
@@ -7143,17 +7171,26 @@ window.openUserPermissionsModal = function(userId) {
     ];
 
     keys.forEach(k => {
-        const checkbox = document.getElementById(`perm-${k}`);
-        if (checkbox) {
+        const viewChk = document.getElementById(`perm-${k}_view`);
+        const editChk = document.getElementById(`perm-${k}_edit`);
+        const delChk = document.getElementById(`perm-${k}_delete`);
+
+        if (viewChk && editChk && delChk) {
+            let defaultVal = true;
+            if (k === 'module_users' || k === 'module_dingtalk') {
+                defaultVal = user.role === 'Admin';
+            }
+
+            const legacyVal = perms[k] !== false;
+
             if (Object.keys(perms).length === 0) {
-                // Default settings if not configured
-                if (k === 'module_users' || k === 'module_dingtalk') {
-                    checkbox.checked = user.role === 'Admin';
-                } else {
-                    checkbox.checked = true;
-                }
+                viewChk.checked = defaultVal;
+                editChk.checked = defaultVal;
+                delChk.checked = defaultVal;
             } else {
-                checkbox.checked = perms[k] !== false;
+                viewChk.checked = perms[`${k}_view`] !== undefined ? perms[`${k}_view`] === true : legacyVal;
+                editChk.checked = perms[`${k}_edit`] !== undefined ? perms[`${k}_edit`] === true : legacyVal;
+                delChk.checked = perms[`${k}_delete`] !== undefined ? perms[`${k}_delete`] === true : legacyVal;
             }
         }
     });
@@ -7173,9 +7210,16 @@ window.submitUserPermissions = function() {
 
     const perms = {};
     keys.forEach(k => {
-        const checkbox = document.getElementById(`perm-${k}`);
-        if (checkbox) {
-            perms[k] = checkbox.checked;
+        const viewChk = document.getElementById(`perm-${k}_view`);
+        const editChk = document.getElementById(`perm-${k}_edit`);
+        const delChk = document.getElementById(`perm-${k}_delete`);
+        
+        if (viewChk && editChk && delChk) {
+            perms[`${k}_view`] = viewChk.checked;
+            perms[`${k}_edit`] = editChk.checked;
+            perms[`${k}_delete`] = delChk.checked;
+            // Legacy fallback (use view permission as access flag)
+            perms[k] = viewChk.checked;
         }
     });
 
