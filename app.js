@@ -8716,14 +8716,14 @@ window.renderMqcMaterials = function() {
         const emptyMsg = isInProgressTab
             ? '🎉 当前无待跟进的承认中物料（所有物料均已承认通过）'
             : '暂无匹配的物料承认记录';
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--text-muted); padding:30px;">${emptyMsg}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">${emptyMsg}</td></tr>`;
         return;
     }
     
     tbody.innerHTML = "";
     // 承认中物料视图：在表格顶部显示黄色提示横幅
     if (isInProgressTab) {
-        tbody.innerHTML = `<tr><td colspan="9" style="background:rgba(251,191,36,0.08); border-left:3px solid #f59e0b; padding:8px 14px; font-size:0.8rem; color:#f59e0b; font-weight:600;">⏳ 以下 ${filtered.length} 项物料尚未取得承认通过结论，请持续跟进</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="background:rgba(251,191,36,0.08); border-left:3px solid #f59e0b; padding:8px 14px; font-size:0.8rem; color:#f59e0b; font-weight:600;">⏳ 以下 ${filtered.length} 项物料尚未取得承认通过结论，请持续跟进</td></tr>`;
     }
     filtered.forEach(m => {
         // 查找该物料关联的供应商列表
@@ -8742,12 +8742,20 @@ window.renderMqcMaterials = function() {
             }
         }
 
-        // 渲染单个供应商单元格的 HTML 辅助函数
+        // 渲染单个供应商行的 HTML 辅助函数
         const renderSupCell = (s) => {
-            if (!s) {
-                return `<span style="color:var(--text-muted); font-size:0.75rem;">-</span>`;
-            }
+            if (!s) return "";
             
+            // Tier label prefix with distinct colors
+            let tierPrefix = "";
+            if (s.supplier_tier === '一供') {
+                tierPrefix = `<span style="color:#3b82f6; font-weight:700; margin-right:4px;">[一供]</span>`;
+            } else if (s.supplier_tier === '二供') {
+                tierPrefix = `<span style="color:#10b981; font-weight:700; margin-right:4px;">[二供]</span>`;
+            } else {
+                tierPrefix = `<span style="color:#8b5cf6; font-weight:700; margin-right:4px;">[备供]</span>`;
+            }
+
             // 承认状态徽章
             let statusBadge = "";
             if (s.approval_status === "需求提出") {
@@ -8780,27 +8788,24 @@ window.renderMqcMaterials = function() {
             const shortName = s.supplier_name.length > 8 ? s.supplier_name.substring(0, 7) + "..." : s.supplier_name;
             
             return `
-                <div style="font-size:0.78rem; font-weight:600; line-height:1.3; color:var(--text-main);" title="${s.supplier_name}">
-                    ${shortName}
-                </div>
-                <div style="display:flex; align-items:center; gap:6px; margin-top:3px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:0.76rem;">
+                    ${tierPrefix}
+                    <span style="font-weight:600; color:var(--text-main); min-width:85px; display:inline-block;" title="${s.supplier_name}">${shortName}</span>
                     ${statusBadge}
                     ${pdfLink}
                 </div>
             `;
         };
 
-        const firstSup = sups.find(s => s.supplier_tier === '一供');
-        const secondSup = sups.find(s => s.supplier_tier === '二供');
-        const backupSups = sups.filter(s => s.supplier_tier === '备供');
-
-        const firstSupHtml = renderSupCell(firstSup);
-        const secondSupHtml = renderSupCell(secondSup);
-        
-        let backupSupHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">-</span>`;
-        if (backupSups.length > 0) {
-            backupSupHtml = backupSups.map((s, idx) => {
-                const borderStyle = idx < backupSups.length - 1 ? "border-bottom:1px dashed var(--border-color); padding-bottom:4px; margin-bottom:4px;" : "";
+        let supsHtml = `<span style="color:var(--text-muted); font-size:0.75rem;">无供应商</span>`;
+        if (sups.length > 0) {
+            // Sort suppliers by tier order: 一供, 二供, 备供
+            const sortedSups = [...sups].sort((a, b) => {
+                const order = { '一供': 1, '二供': 2, '备供': 3 };
+                return (order[a.supplier_tier] || 4) - (order[b.supplier_tier] || 4);
+            });
+            supsHtml = sortedSups.map((s, idx) => {
+                const borderStyle = idx < sortedSups.length - 1 ? "border-bottom:1px dashed var(--border-color); padding-bottom:5px; margin-bottom:5px;" : "";
                 return `<div style="${borderStyle}">${renderSupCell(s)}</div>`;
             }).join("");
         }
@@ -8840,9 +8845,7 @@ window.renderMqcMaterials = function() {
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${m.mat_spec || '-'}</div>
             </td>
             <td><span class="badge badge-gray">${m.mat_category || '其他'}</span></td>
-            <td>${firstSupHtml}</td>
-            <td>${secondSupHtml}</td>
-            <td>${backupSupHtml}</td>
+            <td>${supsHtml}</td>
             <td style="font-family:monospace;">${m.apply_date || '-'}</td>
             <td>${riskHtml}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
