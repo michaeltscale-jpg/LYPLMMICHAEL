@@ -981,8 +981,11 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         """, (code, code, category, creator))
                         product_id = cursor.lastrowid
                         
-                    # 校验该品类下是否已存在该厚度规格。如果已存在，则静默更新该厚度的核心性能指标和项目负责人，不报错打断
+                    # 校验该品类下是否已存在该厚度规格。如果已存在，则抛出错误防止重复立项及数据库记录污染
                     t_info = self.get_thickness_info(cursor, product_id, spec_thickness)
+                    if t_info:
+                        self.send_json({"error": f"产品型号 {code} 下已开通 {spec_thickness}μm 规格，请勿重复申请立项"}, 400)
+                        return
                     
                     # 1.2 级联更新 products 表的 thickness_details_json 字段
                     # 动态格式化厚度，去除多余的 .0 小数，例如 12.0 -> 12，1.5 -> 1.5
@@ -1110,7 +1113,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         {"item_no": 6, "name_zh": "铜纯度", "name_en": "Copper Purity", "unit": "%", "spec": "≥99.5", "test_standard": "IPC-TM-650 2.3.15", "group": ""},
                         {"item_no": 7, "name_zh": "Df 介质损耗 @10GHz", "name_en": "Dielectric Loss Df", "unit": "-", "spec": "≤0.0010", "test_standard": "IPC-TM-650 2.5.5", "group": ""}
                     ]
-                    tds_items = default_tds_items_his if product_id == 2 else default_tds_items_pts
+                    tds_items = default_tds_items_his if category == "HIS 载体铜箔" else default_tds_items_pts
                     cursor.execute("""
                     INSERT INTO product_tds (product_id, spec_thickness, tds_version, status, tds_items, notes, updater, created_at)
                     VALUES (?, ?, 'T1.0', '活动', ?, '初始版本', '工艺工程师', ?)
