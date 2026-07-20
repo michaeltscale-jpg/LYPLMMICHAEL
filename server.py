@@ -1612,7 +1612,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     INSERT INTO product_routing (product_id, spec_thickness, routing_version, status, step_no, stage_name, device_name, device_code, standard_params, custom_params, notes, remark, sop, sip, sop_image, sip_image, created_at)
                     VALUES (?, ?, ?, '活动', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, (product_id, thickness, new_version, step_no, stage_name, device_name, device_code,
-                          json.dumps(standard_params), json.dumps(custom_params), version_notes, remark, sop, sip, sop_image, sip_image, datetime.now().isoformat()))
+                          json.dumps(standard_params), json.dumps(custom_params), version_notes, step_remark, sop, sip, sop_image, sip_image, datetime.now().isoformat()))
 
                 cursor.execute("""
                 INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
