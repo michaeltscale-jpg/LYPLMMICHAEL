@@ -12075,13 +12075,15 @@ window.syncPdcaFactorPills = function(factorKey) {
             if (f === factorKey) {
                 btn.style.background = 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
                 btn.style.color = '#ffffff';
-                btn.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.35)';
+                btn.style.borderColor = '#1d4ed8';
+                btn.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.3)';
                 btn.style.fontWeight = '800';
                 btn.classList.add('active');
             } else {
-                btn.style.background = 'transparent';
-                btn.style.color = '#64748b';
-                btn.style.boxShadow = 'none';
+                btn.style.background = '#ffffff';
+                btn.style.color = '#475569';
+                btn.style.borderColor = '#cbd5e1';
+                btn.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
                 btn.style.fontWeight = '700';
                 btn.classList.remove('active');
             }
