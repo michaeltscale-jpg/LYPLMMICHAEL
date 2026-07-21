@@ -12186,22 +12186,22 @@ window.openPdcaDetailModal = function(id) {
         ${progressHtml}
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. 问题现象与差异描述 (Plan)</div>
+            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. 问题识别与差异描述 (Plan)</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.problem_desc || '未填写'}</div>
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. 5-Why 根因分析 (Plan / Do)</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. 5-Why 根因分析 (Plan)</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.root_cause || '未填写'}</div>
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#7c3aed;margin-bottom:6px;">3. CAPA 纠正防错措施 (Do / Check)</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#7c3aed;margin-bottom:6px;">3. CAPA 纠正防错措施 (Do)</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.action_plan || '未填写'}</div>
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 验证结果与收益总结 (Check / Act)</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 效果验证与标准化闭环 (Check / Act)</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.verify_result || '暂无验证结果'}</div>
         </div>
 
