@@ -12416,6 +12416,248 @@ window.approvePDCAStage = function() {
     window.currentPdcaMaxStage = nextStage;
     document.getElementById("pdca-edit-stage").value = nextStage;
     
+    const code = document.getElementById("pdca-edit-code").value;
+    const currentUser = (state.users && state.users[0] && state.users[0].name) || '超级管理员';
+    recordPdcaAuditLog(code, `审核通过 ${currentMax} 阶段 ➔ 推进至 ${nextStage} 阶段`, currentUser);
+    
     switchPDCAStage(nextStage);
     savePdcaRecord();
 };
+
+/* ================= 1. 8D 品质报告导出 (G8D Report Export) ================= */
+window.exportPdca8DReport = function() {
+    const code = document.getElementById("pdca-edit-code").value || "PDCA-TEMP";
+    const title = document.getElementById("pdca-edit-title-input").value || "未定义异常主题";
+    const factor = document.getElementById("pdca-edit-factor").value || "法";
+    const owner = document.getElementById("pdca-edit-owner").value || "李建国";
+    const targetDate = document.getElementById("pdca-edit-target-date").value || "未定";
+    const problem = document.getElementById("pdca-edit-problem").value || "暂无具体描述";
+    const improve = document.getElementById("pdca-edit-improve").value || "暂无应对策略";
+    const rootcause = document.getElementById("pdca-edit-rootcause").value || "人机料法环排查记录中";
+    const action = document.getElementById("pdca-edit-action").value || "中试验证记录中";
+    const verify = document.getElementById("pdca-edit-verify").value || "标准化与 SOP/ECN 归档中";
+    const prodSelect = document.getElementById("pdca-edit-product");
+    const prodName = prodSelect && prodSelect.selectedIndex >= 0 ? prodSelect.options[prodSelect.selectedIndex].text : "全部/通用产品";
+
+    const printWin = window.open("", "_blank", "width=900,height=800");
+    if (!printWin) {
+        showToast("浏览器拦截了弹出窗口，请允许弹出窗口后重试", "warning");
+        return;
+    }
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>聚赫新材 G8D 质量异常解决与持续改善报告 - ${code}</title>
+        <style>
+            body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; color: #1e293b; padding: 24px; line-height: 1.5; background: #fff; }
+            .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px; }
+            .header h1 { font-size: 20px; color: #1d4ed8; margin: 0 0 6px 0; }
+            .header p { font-size: 12px; color: #64748b; margin: 0; }
+            .meta-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+            .meta-table td, .meta-table th { border: 1px solid #cbd5e1; padding: 8px 12px; }
+            .meta-table th { background: #f8fafc; font-weight: 700; color: #334155; text-align: left; width: 18%; }
+            .section { border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 16px; overflow: hidden; }
+            .section-title { background: #eff6ff; color: #1e40af; padding: 8px 14px; font-weight: 700; font-size: 14px; border-bottom: 1px solid #cbd5e1; }
+            .section-body { padding: 12px 14px; font-size: 13px; white-space: pre-wrap; background: #fff; }
+            .footer { margin-top: 30px; display: flex; justify-content: space-between; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+            @media print { .no-print { display: none; } }
+        </style>
+    </head>
+    <body>
+        <div class="no-print" style="margin-bottom: 16px; text-align: right;">
+            <button onclick="window.print()" style="padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 4px; font-weight: 700; cursor: pointer;">🖨️ 打印 / 保存为 PDF 8D 报告</button>
+        </div>
+        <div class="header">
+            <h1>聚赫新材 G8D 质量异常解决与持续改善报告 (CAPA 8D)</h1>
+            <p>GHZ NEW MATERIALS CO., LTD. QUALITY IMPROVEMENT REPORT</p>
+        </div>
+        <table class="meta-table">
+            <tr>
+                <th>改善单号</th>
+                <td>${code}</td>
+                <th>归因分类 (5M1E)</th>
+                <td><strong>${factor}</strong> 分类</td>
+            </tr>
+            <tr>
+                <th>异常改善主题</th>
+                <td colspan="3"><strong>${title}</strong></td>
+            </tr>
+            <tr>
+                <th>关联研发产品</th>
+                <td>${prodName}</td>
+                <th>责任工程师</th>
+                <td>${owner}</td>
+            </tr>
+            <tr>
+                <th>预定完成日期</th>
+                <td>${targetDate}</td>
+                <th>当前流转阶段</th>
+                <td>STAGE_${window.currentPdcaMaxStage || 'Plan'}</td>
+            </tr>
+        </table>
+
+        <div class="section">
+            <div class="section-title">D1. 改善团队与组织 (Team Assembly)</div>
+            <div class="section-body">主导负责人: ${owner} | 协同部门: 品质保证部、工艺研发部、中试生产线组</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D2. 详细问题描述 (Problem Description)</div>
+            <div class="section-body">${problem}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D3. 改善对策与临时围堵措施 (Containment Actions)</div>
+            <div class="section-body">${improve}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D4. 根本原因归因与排查 (Root Cause Analysis - 5M1E)</div>
+            <div class="section-body">${rootcause}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D5 & D6. 永久改善对策执行与效果验证 (PCA & Verification)</div>
+            <div class="section-body">${action}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D7. 预防再发与标准化固化 (Prevent Recurrence - ECN/SOP)</div>
+            <div class="section-body">${verify}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">D8. 团队祝贺与结案归档 (Team Congratulation & Approval)</div>
+            <div class="section-body">状态: [ ${window.currentPdcaMaxStage === 'Act' ? '已闭环标准化归档' : '流转推进中'} ]  | 审核签核意见: 拟由品质总监及技术副总批复归档。</div>
+        </div>
+
+        <div class="footer">
+            <span>报告生成日期: ${new Date().toLocaleString()}</span>
+            <span>聚赫新材 PLM 质量协同控制中心</span>
+        </div>
+    </body>
+    </html>
+    `;
+
+    printWin.document.write(htmlContent);
+    printWin.document.close();
+    showToast("已成功弹出 8D 品质报告生成窗口", "success");
+};
+
+/* ================= 2. 审核履历时间轴 (Audit Trail Timeline) ================= */
+window.recordPdcaAuditLog = function(code, action, user) {
+    if (!code) return;
+    const logsKey = `pdca_logs_${code}`;
+    const nowStr = new Date().toLocaleString();
+    let logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
+    logs.unshift({ time: nowStr, action, user: user || "管理员" });
+    if (logs.length > 20) logs = logs.slice(0, 20);
+    localStorage.setItem(logsKey, JSON.stringify(logs));
+    renderPdcaTimeline();
+};
+
+window.renderPdcaTimeline = function() {
+    const code = document.getElementById("pdca-edit-code").value;
+    const container = document.getElementById("pdca-timeline-list");
+    if (!container) return;
+    
+    const logsKey = `pdca_logs_${code}`;
+    const logs = JSON.parse(localStorage.getItem(logsKey) || "[]");
+    
+    if (logs.length === 0) {
+        container.innerHTML = `<div style="color:#94a3b8; font-size:0.75rem;"><i data-lucide="info" style="width:12px;height:12px;vertical-align:middle;"></i> 暂无阶段审核履历记录</div>`;
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+    
+    let html = "";
+    logs.forEach((log, idx) => {
+        html += `
+            <div style="display:flex; gap:10px; align-items:flex-start; padding-bottom:6px; ${idx < logs.length - 1 ? 'border-bottom:1px dashed #e2e8f0;' : ''}">
+                <div style="width:8px; height:8px; border-radius:50%; background:#2563eb; margin-top:4px; flex-shrink:0;"></div>
+                <div style="flex:1;">
+                    <div style="font-weight:700; color:#1e293b; font-size:0.75rem;">${log.action}</div>
+                    <div style="font-size:0.7rem; color:#64748b;">操作人: ${log.user} | ${log.time}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
+};
+
+/* ================= 3. 驾驶舱品质图表 (Dashboard Quality Charts) ================= */
+window.renderDashboardQualityCharts = function() {
+    const cpkCanvas = document.getElementById("chart-pdca-cpk-trend");
+    const factorCanvas = document.getElementById("chart-pdca-5m-breakdown");
+    if (!cpkCanvas || !factorCanvas) return;
+
+    // 1. CPK 过程能力趋势图
+    if (window.Chart) {
+        if (window.cpkChartInstance) window.cpkChartInstance.destroy();
+        if (window.factorChartInstance) window.factorChartInstance.destroy();
+
+        window.cpkChartInstance = new Chart(cpkCanvas, {
+            type: 'line',
+            data: {
+                labels: ['Batch-01', 'Batch-02', 'Batch-03', 'Batch-04', 'Batch-05', 'Batch-06 (中试)'],
+                datasets: [{
+                    label: 'CPK 过程能力指数',
+                    data: [1.02, 1.15, 1.28, 1.33, 1.45, 1.58],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }, {
+                    label: '管控上限 CPK=1.33',
+                    data: [1.33, 1.33, 1.33, 1.33, 1.33, 1.33],
+                    borderColor: '#ef4444',
+                    borderDash: [4, 4],
+                    fill: false,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, labels: { font: { size: 11 } } } }
+            }
+        });
+
+        // 2. 5M1E 归因占比饼图
+        window.factorChartInstance = new Chart(factorCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['法 (工艺方法)', '机 (设备参数)', '料 (原材料杂质)', '人 (操作规范)', '环 (环境温湿度)'],
+                datasets: [{
+                    data: [40, 25, 20, 10, 5],
+                    backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#64748b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } }
+            }
+        });
+    }
+};
+
+// 监听 tab 切换自动渲染图表与时间轴
+const origOpenPdcaEditModal = window.openPdcaEditModal;
+window.openPdcaEditModal = function(id, isView = false) {
+    if (origOpenPdcaEditModal) origOpenPdcaEditModal(id, isView);
+    setTimeout(() => {
+        renderPdcaTimeline();
+    }, 100);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        renderDashboardQualityCharts();
+    }, 1000);
+});

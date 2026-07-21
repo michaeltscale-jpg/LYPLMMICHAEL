@@ -247,18 +247,18 @@
                             </div>
                         </div>
                         
-                        <!-- Second Row of Charts -->
+                        <!-- Third Row of Charts: PDCA Quality Analytics -->
                         <div class="charts-grid" style="grid-template-columns: 1fr 1fr; margin-top: 24px;">
                             <div class="glass-panel highlight-blue">
-                                <h3><i data-lucide="bar-chart-2"></i> 受控任务 5M1E 类别与状态分布</h3>
+                                <h3><i data-lucide="line-chart"></i> 核心产品品质 CPK 过程能力趋势图</h3>
                                 <div class="chart-wrapper">
-                                    <canvas id="chart-tasks-5m-distribution"></canvas>
+                                    <canvas id="chart-pdca-cpk-trend"></canvas>
                                 </div>
                             </div>
                             <div class="glass-panel highlight-purple">
-                                <h3><i data-lucide="clock"></i> NPI 各阶段平均开发周期 (天)</h3>
+                                <h3><i data-lucide="pie-chart"></i> PDCA 异常 5M1E 归因分类占比</h3>
                                 <div class="chart-wrapper">
-                                    <canvas id="chart-npi-stage-duration"></canvas>
+                                    <canvas id="chart-pdca-5m-breakdown"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -1239,6 +1239,7 @@ requests.post(url, json=payload)</code></pre>
                     <h3 id="modal-pdca-edit-title" style="margin:0; font-size:1.05rem; color:#1e293b;"><i data-lucide="repeat" style="vertical-align:middle;margin-right:6px;color:var(--color-primary);"></i> 发起 PDCA 质量改善单</h3>
                 </div>
                 <div id="pdca-top-action-btns" style="display:flex; gap:10px;">
+                    <button type="button" class="btn-secondary" onclick="exportPdca8DReport()" style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; font-size:0.85rem; color:#2563eb; border-color:#bfdbfe; background:#eff6ff;"><i data-lucide="file-text" style="width:16px; height:16px;"></i> 导出 8D 报告</button>
                     <button class="btn-primary" style="background:#10b981; border:1px solid #059669; display:flex; align-items:center; gap:6px; padding:6px 14px; font-size:0.85rem;" onclick="approvePDCAStage()"><i data-lucide="check-circle" style="width:16px; height:16px;"></i> 审核通过并进入下一阶段</button>
                     <button class="btn-primary" style="display:flex; align-items:center; gap:6px; padding:6px 14px; font-size:0.85rem;" onclick="savePdcaRecord()"><i data-lucide="save" style="width:16px; height:16px;"></i> 保存当前阶段</button>
                 </div>
@@ -1329,6 +1330,16 @@ requests.post(url, json=payload)</code></pre>
                                 <label style="font-size:0.75rem; font-weight:800; color:#6d28d9; display:flex; align-items:center; gap:4px; margin-bottom:6px;"><i data-lucide="check-square" style="width:14px; height:14px;"></i> 本阶段专业作业管控要求</label>
                                 <div id="stage-control-reqs" style="font-size:0.75rem; color:#4c1d95; line-height:1.5;">
                                     <div style="display:flex; gap:6px;"><i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981; margin-top:3px;"></i> <span>需详细阐述不良现象及影响范围。</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 阶段审核与变更履历时间轴 -->
+                            <div style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; padding:12px; margin-top:12px;">
+                                <label style="font-size:0.78rem; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+                                    <i data-lucide="history" style="width:14px; height:14px; color:#2563eb;"></i> 阶段审核与变更履历 (Audit Trail)
+                                </label>
+                                <div id="pdca-timeline-list" style="font-size:0.75rem; color:#475569; display:flex; flex-direction:column; gap:8px;">
+                                    <div style="color:#94a3b8;">暂无阶段审核变更记录</div>
                                 </div>
                             </div>
 
