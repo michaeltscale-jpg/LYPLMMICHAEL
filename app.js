@@ -11984,17 +11984,17 @@ function renderPdcaTable(list) {
 
         html += `
             <tr style="border-bottom:1px solid var(--border-color);">
-                <td style="padding:10px;font-family:monospace;font-weight:700;color:var(--color-primary);font-size:0.78rem;">${row.code}</td>
-                <td style="padding:10px;font-weight:700;font-size:0.82rem;max-width:220px;word-break:break-word;white-space:normal;line-height:1.4;">${row.title}</td>
-                <td style="padding:10px;font-size:0.78rem;color:var(--text-secondary);">${prodText}</td>
-                <td style="padding:10px;text-align:center;">
+                <td style="padding:10px 8px;font-family:monospace;font-weight:700;color:var(--color-primary);font-size:0.78rem;white-space:nowrap;">${row.code}</td>
+                <td style="padding:10px 8px;font-weight:700;font-size:0.82rem;max-width:220px;word-break:break-word;white-space:normal;line-height:1.4;">${row.title}</td>
+                <td style="padding:10px 8px;font-size:0.78rem;color:var(--text-secondary);white-space:nowrap;">${prodText}</td>
+                <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <span style="padding:3px 12px;border-radius:10px;font-size:0.78rem;font-weight:800;white-space:nowrap;display:inline-block;${factorStyle}">${row.factor_5m1e}</span>
                 </td>
-                <td style="padding:10px;text-align:center;">${stageHtml}</td>
-                <td style="padding:10px;text-align:center;font-size:0.76rem;">${statusBadge}</td>
-                <td style="padding:10px;font-size:0.78rem;font-weight:600;">${row.owner || '-'}</td>
-                <td style="padding:10px;font-size:0.75rem;color:var(--text-muted);">${row.target_date || '-'}</td>
-                <td style="padding:10px;text-align:center;">
+                <td style="padding:10px 8px;text-align:center;white-space:nowrap;">${stageHtml}</td>
+                <td style="padding:10px 8px;text-align:center;font-size:0.76rem;white-space:nowrap;">${statusBadge}</td>
+                <td style="padding:10px 8px;font-size:0.78rem;font-weight:600;white-space:nowrap;">${row.owner || '-'}</td>
+                <td style="padding:10px 8px;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${row.target_date || '-'}</td>
+                <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <div style="display:flex;gap:6px;justify-content:center;">
                         <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看</button>
                         <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
