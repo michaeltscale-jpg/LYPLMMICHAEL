@@ -1625,15 +1625,19 @@ function fetchDashboardData() {
             }
         });
 
+    fetch("/api/pdca/list")
+        .then(res => res.json())
+        .then(pdcaList => {
+            const activePdca = (pdcaList || []).filter(item => item.stage !== 'Act' || item.status === '进行中').length;
+            const el = document.getElementById("metric-pdca");
+            if (el) el.innerText = activePdca;
+        })
+        .catch(err => console.error("加载首页 PDCA 统计失败", err));
+
     fetch("/api/tasks")
         .then(res => res.json())
         .then(tasks => {
             window._allTasks = tasks;
-            const activeTasks = tasks.filter(t => t.status === "进行中" || t.status === "待启动").length;
-            const el = document.getElementById("metric-tasks");
-            if (el) el.innerText = activeTasks;
-            
-            // 确保任务加载完毕后重新渲染一遍图表（使堆叠图得到真实数据）
             if (state.activeTab === 'dashboard-panel') {
                 renderDashboardCharts(state.products || []);
             }
