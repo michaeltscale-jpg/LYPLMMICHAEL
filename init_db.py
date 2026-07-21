@@ -793,6 +793,41 @@ def init_database(force_reset=False):
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, row)
 
+    # ---- 6. 创建并初始化 PDCA 质量持续改善表 (pdca_records) ----
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pdca_records (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            code          TEXT NOT NULL UNIQUE,
+            title         TEXT NOT NULL,
+            product_id    INTEGER,
+            thickness     NUMERIC,
+            factor_5m1e   TEXT DEFAULT '法',
+            stage         TEXT DEFAULT 'Plan',
+            status        TEXT DEFAULT '进行中',
+            problem_desc  TEXT,
+            root_cause    TEXT,
+            action_plan   TEXT,
+            verify_result TEXT,
+            owner         TEXT,
+            target_date   TEXT,
+            ecn_id        INTEGER,
+            created_at    TEXT,
+            updated_at    TEXT
+        )
+    """)
+
+    default_pdcas = [
+        ("PDCA-2026-001", "3μm 超薄铜箔剥离强度测试波动分析改善", 1, 3.0, "法", "Check", "进行中", "3μm 生箔脱膜后剥离强度极差达到 0.3 N/mm，超出研发管控上限", "后处理偶联剂涂布辊浸润不均，烘干温度梯度设定偏低导致偶联键合力不稳定", "1. 调整 2# 涂布槽液位与偶联剂温度至 45℃\n2. 优化后处理烘道三段温区为 110℃-130℃-120℃\n3. 拟发起 ECN-20260718-001 工艺参数设变", "中试线连续 5 批次测试极差降至 0.08 N/mm，剥离强度均值提升 18%", "李建国", "2026-07-28", None, now.isoformat(), now.isoformat()),
+        ("PDCA-2026-002", "生箔工段 3# 阴极辊表面晶核微瑕疵归因与消除", 2, 2.0, "机", "Act", "已闭环", "生箔表面出现微米级针孔，影响后续溅镀铜层致密度", "阴极辊表面钛材钝化膜局部磨损，局部电流密度过高产生氢气泡", "1. 执行阴极辊在线抛光精磨工艺\n2. 增加槽液打循环过滤精度至 0.2μm\n3. 建立阴极辊保养标准化 SOP (DMS)", "连续 30 天生产零针孔缺陷，生箔一次合格率提高至 99.4%", "赵设备", "2026-07-15", None, now.isoformat(), now.isoformat()),
+        ("PDCA-2026-003", "二供活性硫整平剂批次杂质超标防错管控", 1, 12.0, "料", "Plan", "进行中", "新入厂第二供应商 AD-SPS-01 纯度分析发现痕量氯离子超标", "供应商预处理提纯工序控温不稳，送样抽检盲区", "1. 规范 MQC 入厂检核标准，新增离子色谱必检项\n2. 发函要求供应商提交 CAPA 8D 改善报告", "待供应商提交整改报告并进行重新抽检验货", "张小贤", "2026-08-05", None, now.isoformat(), now.isoformat())
+    ]
+
+    for row in default_pdcas:
+        cursor.execute("""
+            INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, row)
+
     conn.commit()
     conn.close()
     print("Database initial simulated data imported successfully.")

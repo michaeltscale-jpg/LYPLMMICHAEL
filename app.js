@@ -692,7 +692,8 @@ function switchTab(tabId) {
         'dingtalk-panel': '钉钉协同配置与回调调试中心',
         'users-panel': '用户与系统角色权限控制台',
         'mqc-panel': '物料承认管控中心 (MQC)',
-        'task-panel': '研发受控任务与进度管控中心'
+        'task-panel': '研发受控任务与进度管控中心',
+        'pdca-panel': 'PDCA 质量持续改善控制中心'
     };
     document.getElementById("header-panel-title").innerText = headerTitleMap[tabId] || 'PLM平台';
 
@@ -712,6 +713,8 @@ function switchTab(tabId) {
         fetchMqcData();
     } else if (tabId === 'task-panel') {
         initTaskPanel();
+    } else if (tabId === 'pdca-panel') {
+        fetchPdcaData();
     }
 }
 
@@ -11836,4 +11839,364 @@ window.renderCompareTables = function() {
     .catch(err => {
         showToast("对比加载失败：" + err.message, "error");
     });
+};
+
+// ==========================================
+// PDCA 质量持续改善模块 (5M1E / 8D-CAPA) 交互控制
+// ==========================================
+window.state = window.state || {};
+window.state.pdcaList = [];
+
+// 1. 获取并渲染 PDCA 列表及 KPI
+window.fetchPdcaData = function() {
+    const productId = document.getElementById("pdca-filter-product") ? document.getElementById("pdca-filter-product").value : "";
+    const factor5m = document.getElementById("pdca-filter-factor") ? document.getElementById("pdca-filter-factor").value : "";
+    const stage = document.getElementById("pdca-filter-stage") ? document.getElementById("pdca-filter-stage").value : "";
+
+    let url = `/api/pdca/list?product_id=${encodeURIComponent(productId)}&factor_5m1e=${encodeURIComponent(factor5m)}&stage=${encodeURIComponent(stage)}`;
+
+    if (state.products && state.products.length > 0) {
+        populatePdcaProductDropdowns(state.products);
+    } else {
+        fetch("/api/products")
+            .then(res => res.json())
+            .then(prods => {
+                state.products = prods;
+                populatePdcaProductDropdowns(prods);
+            }).catch(e => console.error(e));
+    }
+
+    fetch(url)
+        .then(res => res.json())
+        .then(list => {
+            state.pdcaList = list || [];
+            renderPdcaKpis(state.pdcaList);
+            renderPdcaTable(state.pdcaList);
+        })
+        .catch(err => {
+            showToast("加载 PDCA 改善单失败: " + err.message, "error");
+        });
+};
+
+function populatePdcaProductDropdowns(products) {
+    const filterSelect = document.getElementById("pdca-filter-product");
+    const editSelect = document.getElementById("pdca-edit-product");
+    if (!filterSelect || !editSelect) return;
+
+    const currentFilterVal = filterSelect.value;
+    const currentEditVal = editSelect.value;
+
+    let filterHtml = '<option value="">全部产品</option>';
+    let editHtml = '<option value="">全部/通用产品</option>';
+
+    products.forEach(p => {
+        filterHtml += `<option value="${p.id}">${p.category} (${p.code})</option>`;
+        editHtml += `<option value="${p.id}">${p.category} (${p.code})</option>`;
+    });
+
+    filterSelect.innerHTML = filterHtml;
+    editSelect.innerHTML = editHtml;
+
+    if (currentFilterVal) filterSelect.value = currentFilterVal;
+    if (currentEditVal) editSelect.value = currentEditVal;
+}
+
+function renderPdcaKpis(list) {
+    const total = list.length;
+    const ongoing = list.filter(item => item.stage !== 'Act' || item.status === '进行中').length;
+    const closed = list.filter(item => item.stage === 'Act' && item.status === '已闭环').length;
+    const rate = total > 0 ? Math.round((closed / total) * 100) : 0;
+
+    const factorCounts = { '人': 0, '机': 0, '料': 0, '法': 0, '环': 0 };
+    list.forEach(item => {
+        if (factorCounts[item.factor_5m1e] !== undefined) {
+            factorCounts[item.factor_5m1e]++;
+        }
+    });
+
+    let topFactor = '法';
+    let maxCount = -1;
+    Object.entries(factorCounts).forEach(([k, v]) => {
+        if (v > maxCount) {
+            maxCount = v;
+            topFactor = k;
+        }
+    });
+
+    const factorNames = { '人': '人 (Man)', '机': '机 (Machine)', '料': '料 (Material)', '法': '法 (Method)', '环': '环 (Environment)' };
+
+    if (document.getElementById("pdca-kpi-total")) document.getElementById("pdca-kpi-total").innerText = total;
+    if (document.getElementById("pdca-kpi-ongoing")) document.getElementById("pdca-kpi-ongoing").innerText = ongoing;
+    if (document.getElementById("pdca-kpi-rate")) document.getElementById("pdca-kpi-rate").innerText = rate + "%";
+    if (document.getElementById("pdca-kpi-5m")) document.getElementById("pdca-kpi-5m").innerText = `${factorNames[topFactor] || '法'}`;
+}
+
+function renderPdcaTable(list) {
+    const tbody = document.getElementById("pdca-table-body");
+    if (!tbody) return;
+
+    if (!list || list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">暂无 PDCA 质量改善记录，点击“发起 PDCA 改善单”开启闭环。</td></tr>`;
+        return;
+    }
+
+    const factorBadgeStyles = {
+        '人': 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;',
+        '机': 'background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;',
+        '料': 'background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;',
+        '法': 'background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd;',
+        '环': 'background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe;'
+    };
+
+    const stageBadges = {
+        'Plan': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(37,99,235,0.12);color:var(--color-primary);font-weight:700;">1. Plan 计划</span>',
+        'Do': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(245,158,11,0.15);color:#d97706;font-weight:700;">2. Do 措施</span>',
+        'Check': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700;">3. Check 验证</span>',
+        'Act': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(16,185,129,0.15);color:#059669;font-weight:700;">4. Act 闭环</span>'
+    };
+
+    let html = '';
+    list.forEach(row => {
+        const factorStyle = factorBadgeStyles[row.factor_5m1e] || factorBadgeStyles['法'];
+        const stageHtml = stageBadges[row.stage] || stageBadges['Plan'];
+
+        let statusBadge = '<span style="color:#eab308;font-weight:700;">● 进行中</span>';
+        if (row.status === '已闭环') {
+            statusBadge = '<span style="color:#10b981;font-weight:700;">✓ 已闭环</span>';
+        } else if (row.status === '暂缓') {
+            statusBadge = '<span style="color:#94a3b8;font-weight:600;">Ⅱ 暂缓</span>';
+        }
+
+        const prodText = row.product_category ? `${row.product_category} ${row.thickness ? row.thickness + 'μm' : ''}` : (row.thickness ? row.thickness + 'μm' : '通用规格');
+
+        html += `
+            <tr style="border-bottom:1px solid var(--border-color);">
+                <td style="padding:10px;font-family:monospace;font-weight:700;color:var(--color-primary);font-size:0.78rem;">${row.code}</td>
+                <td style="padding:10px;font-weight:700;font-size:0.82rem;">${row.title}</td>
+                <td style="padding:10px;font-size:0.78rem;color:var(--text-secondary);">${prodText}</td>
+                <td style="padding:10px;text-align:center;">
+                    <span style="padding:2px 10px;border-radius:10px;font-size:0.72rem;font-weight:800;${factorStyle}">${row.factor_5m1e} (5M)</span>
+                </td>
+                <td style="padding:10px;text-align:center;">${stageHtml}</td>
+                <td style="padding:10px;text-align:center;font-size:0.76rem;">${statusBadge}</td>
+                <td style="padding:10px;font-size:0.78rem;font-weight:600;">${row.owner || '-'}</td>
+                <td style="padding:10px;font-size:0.75rem;color:var(--text-muted);">${row.target_date || '-'}</td>
+                <td style="padding:10px;text-align:center;">
+                    <div style="display:flex;gap:6px;justify-content:center;">
+                        <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看详情</button>
+                        <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
+                        <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
+}
+
+window.openPdcaEditModal = function(id) {
+    const modal = document.getElementById("modal-pdca-edit");
+    if (!modal) return;
+
+    if (id) {
+        const item = state.pdcaList.find(x => x.id === id);
+        if (item) {
+            document.getElementById("modal-pdca-edit-title").innerText = "编辑 PDCA 质量改善单";
+            document.getElementById("pdca-edit-id").value = item.id;
+            document.getElementById("pdca-edit-code").value = item.code;
+            document.getElementById("pdca-edit-factor").value = item.factor_5m1e || '法';
+            document.getElementById("pdca-edit-title-input").value = item.title || '';
+            document.getElementById("pdca-edit-product").value = item.product_id || '';
+            document.getElementById("pdca-edit-thickness").value = item.thickness || '';
+            document.getElementById("pdca-edit-stage").value = item.stage || 'Plan';
+            document.getElementById("pdca-edit-problem").value = item.problem_desc || '';
+            document.getElementById("pdca-edit-rootcause").value = item.root_cause || '';
+            document.getElementById("pdca-edit-action").value = item.action_plan || '';
+            document.getElementById("pdca-edit-verify").value = item.verify_result || '';
+            document.getElementById("pdca-edit-owner").value = item.owner || '';
+            document.getElementById("pdca-edit-target-date").value = item.target_date || '';
+            document.getElementById("pdca-edit-status").value = item.status || '进行中';
+        }
+    } else {
+        document.getElementById("modal-pdca-edit-title").innerText = "发起 PDCA 质量改善单 (8D-CAPA)";
+        document.getElementById("pdca-edit-id").value = "";
+        const now = new Date();
+        const randCode = "PDCA-" + now.getFullYear() + String(now.getMonth()+1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + "-" + String(Math.floor(Math.random()*900)+100);
+        document.getElementById("pdca-edit-code").value = randCode;
+        document.getElementById("pdca-edit-factor").value = "法";
+        document.getElementById("pdca-edit-title-input").value = "";
+        document.getElementById("pdca-edit-product").value = state.activeProductId || "";
+        document.getElementById("pdca-edit-thickness").value = "";
+        document.getElementById("pdca-edit-stage").value = "Plan";
+        document.getElementById("pdca-edit-problem").value = "";
+        document.getElementById("pdca-edit-rootcause").value = "";
+        document.getElementById("pdca-edit-action").value = "";
+        document.getElementById("pdca-edit-verify").value = "";
+        document.getElementById("pdca-edit-owner").value = "李建国";
+        document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
+        document.getElementById("pdca-edit-status").value = "进行中";
+    }
+
+    modal.style.display = "flex";
+};
+
+window.closePdcaModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = "none";
+};
+
+window.savePdcaRecord = function() {
+    const id = document.getElementById("pdca-edit-id").value;
+    const code = document.getElementById("pdca-edit-code").value;
+    const factor_5m1e = document.getElementById("pdca-edit-factor").value;
+    const title = document.getElementById("pdca-edit-title-input").value.trim();
+    const product_id = document.getElementById("pdca-edit-product").value;
+    const thickness = document.getElementById("pdca-edit-thickness").value;
+    const stage = document.getElementById("pdca-edit-stage").value;
+    const problem_desc = document.getElementById("pdca-edit-problem").value.trim();
+    const root_cause = document.getElementById("pdca-edit-rootcause").value.trim();
+    const action_plan = document.getElementById("pdca-edit-action").value.trim();
+    const verify_result = document.getElementById("pdca-edit-verify").value.trim();
+    const owner = document.getElementById("pdca-edit-owner").value.trim();
+    const target_date = document.getElementById("pdca-edit-target-date").value;
+    const status = document.getElementById("pdca-edit-status").value;
+
+    if (!title) {
+        showToast("请输入改善主题", "error");
+        return;
+    }
+
+    const payload = {
+        id: id ? parseInt(id) : null,
+        code,
+        factor_5m1e,
+        title,
+        product_id: product_id ? parseInt(product_id) : null,
+        thickness: thickness ? parseFloat(thickness) : null,
+        stage,
+        problem_desc,
+        root_cause,
+        action_plan,
+        verify_result,
+        owner,
+        target_date,
+        status
+    };
+
+    fetch("/api/pdca/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast("PDCA 质量改善单已成功保存！", "success");
+            closePdcaModal("modal-pdca-edit");
+            fetchPdcaData();
+        } else {
+            showToast("保存失败: " + (data.error || "未知错误"), "error");
+        }
+    })
+    .catch(err => showToast("请求失败: " + err.message, "error"));
+};
+
+window.deletePdcaRecord = function(id) {
+    if (!confirm("确定要删除此条 PDCA 改善记录吗？")) return;
+    fetch("/api/pdca/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showToast("已成功删除记录", "success");
+            fetchPdcaData();
+        } else {
+            showToast("删除失败: " + data.error, "error");
+        }
+    })
+    .catch(err => showToast("网络错误: " + err.message, "error"));
+};
+
+window.openPdcaDetailModal = function(id) {
+    const item = state.pdcaList.find(x => x.id === id);
+    if (!item) return;
+
+    const modal = document.getElementById("modal-pdca-detail");
+    const container = document.getElementById("pdca-detail-content");
+    if (!modal || !container) return;
+
+    const stages = ['Plan', 'Do', 'Check', 'Act'];
+    const stageIdx = stages.indexOf(item.stage);
+
+    let progressHtml = `
+        <div style="display:flex;justify-content:space-between;margin-bottom:20px;position:relative;">
+            <div style="position:absolute;top:15px;left:40px;right:40px;height:4px;background:#e2e8f0;z-index:1;"></div>
+            <div style="position:absolute;top:15px;left:40px;width:${(stageIdx / 3) * 80}%;height:4px;background:var(--color-primary);z-index:2;transition:all 0.4s;"></div>
+    `;
+
+    stages.forEach((stg, idx) => {
+        const isCurrent = (stg === item.stage);
+        const isDone = (idx <= stageIdx);
+        const bgColor = isDone ? 'var(--color-primary)' : '#cbd5e1';
+        const textColor = isDone ? '#ffffff' : '#64748b';
+        progressHtml += `
+            <div style="text-align:center;z-index:3;">
+                <div style="width:32px;height:32px;border-radius:50%;background:${bgColor};color:${textColor};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;margin:0 auto 6px;box-shadow:0 0 0 4px ${isCurrent ? 'rgba(37,99,235,0.2)' : 'transparent'};">
+                    ${idx + 1}
+                </div>
+                <div style="font-size:0.75rem;font-weight:${isCurrent ? '800' : '600'};color:${isCurrent ? 'var(--color-primary)' : 'var(--text-secondary)'};">
+                    ${stg}
+                </div>
+            </div>
+        `;
+    });
+    progressHtml += `</div>`;
+
+    container.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--border-color);margin-bottom:16px;">
+            <div>
+                <span style="font-family:monospace;font-weight:800;color:var(--color-primary);font-size:0.9rem;">${item.code}</span>
+                <h3 style="margin:4px 0 0 0;font-size:1.1rem;color:var(--text-primary);">${item.title}</h3>
+            </div>
+            <div>
+                <span style="padding:4px 12px;border-radius:12px;font-size:0.78rem;font-weight:800;background:rgba(37,99,235,0.12);color:var(--color-primary);">5M1E 归因: ${item.factor_5m1e}</span>
+            </div>
+        </div>
+
+        ${progressHtml}
+
+        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
+            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. 问题现象与差异描述 (Plan)</div>
+            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.problem_desc || '未填写'}</div>
+        </div>
+
+        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
+            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. 5-Why 根因分析 (Plan / Do)</div>
+            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.root_cause || '未填写'}</div>
+        </div>
+
+        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
+            <div style="font-size:0.78rem;font-weight:800;color:#7c3aed;margin-bottom:6px;">3. CAPA 纠正防错措施 (Do / Check)</div>
+            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.action_plan || '未填写'}</div>
+        </div>
+
+        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
+            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 验证结果与收益总结 (Check / Act)</div>
+            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.verify_result || '暂无验证结果'}</div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-secondary);padding-top:10px;border-top:1px solid var(--border-color);">
+            <div>责任人: <strong>${item.owner || '-'}</strong></div>
+            <div>预计完成日期: <strong>${item.target_date || '-'}</strong></div>
+            <div>状态: <strong>${item.status}</strong></div>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    if (window.lucide) lucide.createIcons();
 };

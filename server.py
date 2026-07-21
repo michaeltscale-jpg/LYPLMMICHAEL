@@ -683,6 +683,30 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 rows = cur2.fetchall()
                 self.send_json([dict(zip(cols, r)) for r in rows])
 
+            # ---- PDCA 质量持续改善 GET ----
+            elif path == "/api/pdca/list":
+                q_params = query_params
+                q = """
+                    SELECT p.*, prod.code as product_code, prod.category as product_category
+                    FROM pdca_records p
+                    LEFT JOIN products prod ON p.product_id = prod.id
+                    WHERE 1=1
+                """
+                args = []
+                if q_params.get('product_id', [None])[0]:
+                    q += " AND p.product_id=?"; args.append(q_params['product_id'][0])
+                if q_params.get('factor_5m1e', [None])[0]:
+                    q += " AND p.factor_5m1e=?"; args.append(q_params['factor_5m1e'][0])
+                if q_params.get('stage', [None])[0]:
+                    q += " AND p.stage=?"; args.append(q_params['stage'][0])
+                if q_params.get('status', [None])[0]:
+                    q += " AND p.status=?"; args.append(q_params['status'][0])
+                q += " ORDER BY p.id DESC"
+                cur2 = cursor.execute(q, args)
+                cols = [d[0] for d in cur2.description]
+                rows = cur2.fetchall()
+                self.send_json([dict(zip(cols, r)) for r in rows])
+
             else:
                 self.send_json({"error": "Endpoint not found"}, 404)
 
@@ -2509,6 +2533,51 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 self.send_json({'ok': True})
 
+            # ---- PDCA 质量持续改善 POST ----
+            elif path == "/api/pdca/save":
+                code = data.get("code")
+                title = data.get("title")
+                product_id = data.get("product_id")
+                thickness = data.get("thickness")
+                factor_5m1e = data.get("factor_5m1e", "法")
+                stage = data.get("stage", "Plan")
+                status = data.get("status", "进行中")
+                problem_desc = data.get("problem_desc", "")
+                root_cause = data.get("root_cause", "")
+                action_plan = data.get("action_plan", "")
+                verify_result = data.get("verify_result", "")
+                owner = data.get("owner", "")
+                target_date = data.get("target_date", "")
+                ecn_id = data.get("ecn_id")
+                rec_id = data.get("id")
+
+                now_str = datetime.now().isoformat()
+
+                if rec_id:
+                    cursor.execute("""
+                        UPDATE pdca_records
+                        SET title=?, product_id=?, thickness=?, factor_5m1e=?, stage=?, status=?,
+                            problem_desc=?, root_cause=?, action_plan=?, verify_result=?, owner=?, target_date=?, ecn_id=?, updated_at=?
+                        WHERE id=?
+                    """, (title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, rec_id))
+                else:
+                    if not code:
+                        code = f"PDCA-{datetime.now().strftime('%Y%m%d')}-{int(time.time() * 1000) % 1000:03d}"
+                    cursor.execute("""
+                        INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, now_str))
+
+                conn.commit()
+                self.send_json({"success": True, "message": "PDCA改善单保存成功"})
+
+            elif path == "/api/pdca/delete":
+                rec_id = data.get("id")
+                if rec_id:
+                    cursor.execute("DELETE FROM pdca_records WHERE id=?", (rec_id,))
+                    conn.commit()
+                self.send_json({"success": True, "message": "已删除该PDCA改善单"})
+
             else:
                 self.send_json({"error": "Endpoint not found"}, 404)
 
@@ -2797,9 +2866,39 @@ def migrate_ems_database():
     if updated_count > 0:
         print(f"[EMS] 成功将 {updated_count} 台设备的 8 阶段项目计划无缝迁移至 6 阶段")
 
+def init_pdca_tables():
+    """初始化 PDCA 质量持续改善数据库表"""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS pdca_records (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            code          TEXT NOT NULL UNIQUE,
+            title         TEXT NOT NULL,
+            product_id    INTEGER,
+            thickness     NUMERIC,
+            factor_5m1e   TEXT DEFAULT '法',
+            stage         TEXT DEFAULT 'Plan',
+            status        TEXT DEFAULT '进行中',
+            problem_desc  TEXT,
+            root_cause    TEXT,
+            action_plan   TEXT,
+            verify_result TEXT,
+            owner         TEXT,
+            target_date   TEXT,
+            ecn_id        INTEGER,
+            created_at    TEXT,
+            updated_at    TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+    print("[PDCA] 质量持续改善数据库表已就绪")
+
 if __name__ == "__main__":
     init_mqc_tables()
     init_task_tables()
+    init_pdca_tables()
     migrate_ems_database()
     threading.Thread(target=open_browser, daemon=True).start()
     run_server()
