@@ -1238,6 +1238,10 @@ requests.post(url, json=payload)</code></pre>
                     <button class="btn-secondary" onclick="switchTab('pdca-panel')" style="padding: 6px 12px; display:flex; align-items:center; gap:6px;"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> 返回列表</button>
                     <h3 id="modal-pdca-edit-title" style="margin:0; font-size:1.05rem; color:#1e293b;"><i data-lucide="repeat" style="vertical-align:middle;margin-right:6px;color:var(--color-primary);"></i> 发起 PDCA 质量改善单</h3>
                 </div>
+                <div id="pdca-top-action-btns" style="display:flex; gap:10px;">
+                    <button class="btn-primary" style="background:#10b981; border:1px solid #059669; display:flex; align-items:center; gap:6px; padding:6px 14px; font-size:0.85rem;" onclick="approvePDCAStage()"><i data-lucide="check-circle" style="width:16px; height:16px;"></i> 审核通过并进入下一阶段</button>
+                    <button class="btn-primary" style="display:flex; align-items:center; gap:6px; padding:6px 14px; font-size:0.85rem;" onclick="savePdcaRecord()"><i data-lucide="save" style="width:16px; height:16px;"></i> 保存当前阶段</button>
+                </div>
             </div>
             <div class="modal-body" style="padding:0;">
                 <input type="hidden" id="pdca-edit-id">

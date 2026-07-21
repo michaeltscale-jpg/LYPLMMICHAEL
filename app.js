@@ -12075,7 +12075,9 @@ window.openPdcaEditModal = function(id, isView = false) {
     switchPDCAStage(maxStage);
 
     const actionBtns = document.getElementById("pdca-edit-action-btns");
+    const topActionBtns = document.getElementById("pdca-top-action-btns");
     if (actionBtns) actionBtns.style.display = "flex";
+    if (topActionBtns) topActionBtns.style.display = "flex";
     
     if (isView) {
         document.getElementById("modal-pdca-edit-title").innerText = "审核/查看 PDCA 质量改善单";
