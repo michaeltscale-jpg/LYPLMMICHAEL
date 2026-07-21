@@ -12008,7 +12008,6 @@ function renderPdcaTable(list) {
                 <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <div style="display:flex;gap:6px;justify-content:center;">
                         <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看</button>
-                        <button class="btn-primary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;background:#10b981;border-color:#059669;color:#fff;">审核</button>
                         <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
                         <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>
                     </div>
@@ -12076,10 +12075,10 @@ window.openPdcaEditModal = function(id, isView = false) {
     switchPDCAStage(maxStage);
 
     const actionBtns = document.getElementById("pdca-edit-action-btns");
-    if (actionBtns) actionBtns.style.display = isView ? "none" : "flex";
+    if (actionBtns) actionBtns.style.display = "flex";
     
     if (isView) {
-        document.getElementById("modal-pdca-edit-title").innerText = "查看 PDCA 质量改善单";
+        document.getElementById("modal-pdca-edit-title").innerText = "审核/查看 PDCA 质量改善单";
     }
 
     const inputs = panel.querySelectorAll("input, textarea, select");
