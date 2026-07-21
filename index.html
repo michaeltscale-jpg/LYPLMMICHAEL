@@ -3551,7 +3551,7 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-body" style="padding:16px 20px;">
                 <input type="hidden" id="pdca-edit-id">
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善单号</label>
                         <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成 (如 PDCA-2026-004)" readonly style="background:#f8fafc;">
@@ -3564,12 +3564,6 @@ requests.post(url, json=payload)</code></pre>
                             <option value="料">料 (Material - 原材料/辅料/二供)</option>
                             <option value="人">人 (Man - 操作人员/培训/技能)</option>
                             <option value="环">环 (Environment - 温湿度/洁净度)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
-                        <select id="pdca-edit-owner" class="form-control">
-                            <option value="">― 请选择责任人 ―</option>
                         </select>
                     </div>
                 </div>
@@ -3610,6 +3604,28 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                 </div>
 
+                <!-- 责任人、预计完成日期与改善状态 (置于 1. 问题识别上方) -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:14px; padding:10px 12px; background:rgba(241,245,249,0.5); border-radius:8px; border:1px solid var(--border-color);">
+                    <div>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
+                        <select id="pdca-edit-owner" class="form-control">
+                            <option value="">― 请选择责任人 ―</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">预计完成日期</label>
+                        <input type="date" id="pdca-edit-target-date" class="form-control">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善状态</label>
+                        <select id="pdca-edit-status" class="form-control">
+                            <option value="进行中">进行中</option>
+                            <option value="已闭环">已闭环</option>
+                            <option value="暂缓">暂缓</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- 4 步表单区 (附带快捷生成 8D 模板辅助按钮) -->
                 <div style="margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
@@ -3638,20 +3654,6 @@ requests.post(url, json=payload)</code></pre>
                         <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#059669;" onclick="insertPdcaTemplate('verify')"><i data-lucide="file-check-2" style="width:12px;height:12px;"></i> + 验证与归档模板</button>
                     </div>
                     <textarea id="pdca-edit-verify" class="form-control" rows="2" placeholder="记录中试测试合格率、剥离强度/粗糙度改善数据及 SOP/ECN 归档..."></textarea>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">预计完成日期</label>
-                        <input type="date" id="pdca-edit-target-date" class="form-control">
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善状态</label>
-                        <select id="pdca-edit-status" class="form-control">
-                            <option value="进行中">进行中</option>
-                            <option value="已闭环">已闭环</option>
-                            <option value="暂缓">暂缓</option>
-                        </select>
-                    </div>
                 </div>
             </div>
             <div class="modal-footer">
