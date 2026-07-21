@@ -11999,7 +11999,7 @@ function renderPdcaTable(list) {
                 <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <div style="display:flex;gap:6px;justify-content:center;">
                         <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看</button>
-                        <button class="btn-secondary" onclick="openPdcaEditPage(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
+                        <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
                         <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>
                     </div>
                 </td>
@@ -12011,7 +12011,10 @@ function renderPdcaTable(list) {
     if (window.lucide) lucide.createIcons();
 }
 
-window.openPdcaEditPage = function(id) {
+window.openPdcaEditModal = function(id) {
+    const panel = document.getElementById("pdca-edit-panel");
+    if (!panel) return;
+
 
     if (id) {
         const item = state.pdcaList.find(x => x.id === id);
@@ -12058,7 +12061,7 @@ window.openPdcaEditPage = function(id) {
     window.currentPdcaMaxStage = maxStage;
     switchPDCAStage(maxStage);
 
-    switchTab("pdca-edit-panel");
+    switchTab('pdca-edit-panel');
 };
 
 window.selectPdcaFactor = function(factorKey) {
@@ -12121,7 +12124,7 @@ window.closePdcaModal = function(modalId) {
     if (modal) modal.style.display = "none";
 };
 
-window.savePdcaRecord = function(stayOpen = false) {
+window.savePdcaRecord = function() {
     const id = document.getElementById("pdca-edit-id").value;
     const code = document.getElementById("pdca-edit-code").value;
     const factor_5m1e = document.getElementById("pdca-edit-factor").value;
@@ -12168,9 +12171,7 @@ window.savePdcaRecord = function(stayOpen = false) {
     .then(data => {
         if (data.success) {
             showToast("PDCA 质量改善单已成功保存！", "success");
-            if (!stayOpen) {
-                switchTab("pdca-panel");
-            }
+            closePdcaModal("modal-pdca-edit");
             fetchPdcaData();
         } else {
             showToast("保存失败: " + (data.error || "未知错误"), "error");
@@ -12362,5 +12363,5 @@ window.approvePDCAStage = function() {
     document.getElementById("pdca-edit-stage").value = nextStage;
     
     switchPDCAStage(nextStage);
-    savePdcaRecord(true);
+    savePdcaRecord();
 };

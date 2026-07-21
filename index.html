@@ -1198,7 +1198,7 @@ requests.post(url, json=payload)</code></pre>
                                 <button onclick="fetchPdcaData()" class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; height: 32px;">
                                     <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i> 刷新
                                 </button>
-                                <button class="btn-primary" onclick="openPdcaEditPage(null)" style="padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; margin-left: auto;">
+                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; margin-left: auto;">
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
                                 </button>
                             </div>
@@ -1395,7 +1395,7 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-footer" style="padding:16px 24px; background:#fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <button class="btn-secondary" onclick="closePdcaModal('modal-pdca-edit')">取消</button>
+                    <button class="btn-secondary" onclick="switchTab('pdca-panel')">取消</button>
                 </div>
                 <div style="display:flex; gap:12px;">
                     <button class="btn-primary" style="background:#10b981; border:1px solid #059669;" onclick="approvePDCAStage()">审核通过并进入下一阶段</button>
