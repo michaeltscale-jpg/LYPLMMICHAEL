@@ -7044,7 +7044,7 @@ function populateUserSelect(elId, currentValue) {
         const opt = document.createElement('option');
         opt.value = u.display_name;
         opt.text = `${u.display_name}（${translateRoleName(u.role)}）`;
-        opt.style.background = '#1e293b';
+        // Removed dark background to fix visibility in light theme
         if (currentValue && u.display_name === currentValue) opt.selected = true;
         sel.appendChild(opt);
     });
