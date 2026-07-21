@@ -1281,17 +1281,7 @@ requests.post(url, json=payload)</code></pre>
                         </div>
                         <div style="padding:20px; flex:1;">
                             
-                            <!-- 阶段公共区域: 模拟文件输入 -->
-                            <div style="margin-bottom:20px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:16px;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                                    <label style="font-size:0.8rem; font-weight:700; color:#475569;"><i data-lucide="folder-open" style="width:14px; height:14px; vertical-align:middle;"></i> 本阶段输入文件</label>
-                                    <button type="button" class="btn-primary" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
-                                </div>
-                                <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
-                                    <div style="display:flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px; color:#64748b;"></i> <span>暂未上传该阶段专属文档 (如异常报告或自测记录)</span></div>
-                                </div>
-                            </div>
-                            
+
                             <!-- Plan Textarea -->
                             <div id="tab-Plan" class="pdca-tab">
                                 <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">详细问题描述 <span style="color:red;">*</span></label>
@@ -1314,6 +1304,17 @@ requests.post(url, json=payload)</code></pre>
                             <div id="tab-Act" class="pdca-tab" style="display:none;">
                                 <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">闭环与归档说明 <span style="color:red;">*</span></label>
                                 <textarea id="pdca-edit-verify" class="form-control" rows="5" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
+                            </div>
+
+                            <!-- 阶段公共区域: 模拟文件输入 -->
+                            <div style="margin-top:20px; margin-bottom:20px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:16px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                    <label style="font-size:0.8rem; font-weight:700; color:#475569;"><i data-lucide="folder-open" style="width:14px; height:14px; vertical-align:middle;"></i> 本阶段输入文件</label>
+                                    <button type="button" class="btn-primary" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
+                                </div>
+                                <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
+                                    <div style="display:flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px; color:#64748b;"></i> <span>暂未上传该阶段专属文档 (如异常报告或自测记录)</span></div>
+                                </div>
                             </div>
 
                             <!-- 阶段管控要求提示 -->
