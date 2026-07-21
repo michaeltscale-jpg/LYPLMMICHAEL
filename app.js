@@ -684,7 +684,7 @@ function switchTab(tabId) {
     }
     
     const headerTitleMap = {
-        'dashboard-panel': '研发驾驶舱 (高频铜箔生命周期总览)',
+        'dashboard-panel': '产品开发看板 (高频铜箔生命周期总览)',
         'plm-panel': '产品全生命周期研发控制台 (PLM)',
         'ems-panel': '聚赫新材设备开发管控台 (EMS)',
         'dms-panel': '研发文档与技术规范归档中心 (DMS)',
