@@ -11962,10 +11962,10 @@ function renderPdcaTable(list) {
     };
 
     const stageBadges = {
-        'Plan': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(37,99,235,0.12);color:var(--color-primary);font-weight:700;">1. Plan 计划</span>',
-        'Do': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(245,158,11,0.15);color:#d97706;font-weight:700;">2. Do 措施</span>',
-        'Check': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700;">3. Check 验证</span>',
-        'Act': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(16,185,129,0.15);color:#059669;font-weight:700;">4. Act 闭环</span>'
+        'Plan': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(37,99,235,0.12);color:var(--color-primary);font-weight:700;white-space:nowrap;">1. Plan 计划</span>',
+        'Do': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(245,158,11,0.15);color:#d97706;font-weight:700;white-space:nowrap;">2. Do 措施</span>',
+        'Check': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(139,92,246,0.15);color:#7c3aed;font-weight:700;white-space:nowrap;">3. Check 验证</span>',
+        'Act': '<span style="padding:2px 8px;border-radius:12px;font-size:0.7rem;background:rgba(16,185,129,0.15);color:#059669;font-weight:700;white-space:nowrap;">4. Act 闭环</span>'
     };
 
     let html = '';
