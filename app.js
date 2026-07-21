@@ -686,7 +686,7 @@ function switchTab(tabId) {
     const headerTitleMap = {
         'dashboard-panel': '产品开发看板',
         'plm-panel': '产品研发控制台',
-        'ems-panel': '聚赫新材设备开发管控台 (EMS)',
+        'ems-panel': '设备开发管控台 (EMS)',
         'dms-panel': '研发文档与技术规范归档中心 (DMS)',
         'ecn-panel': '工程变更管控中心 (ECN)',
         'dingtalk-panel': '钉钉协同配置与回调调试中心',
