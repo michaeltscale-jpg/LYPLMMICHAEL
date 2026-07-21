@@ -12035,6 +12035,7 @@ window.openPdcaEditModal = function(id, isView = false) {
             populateUserSelect("pdca-edit-owner", item.owner || '李建国');
             document.getElementById("pdca-edit-target-date").value = item.target_date || '';
             document.getElementById("pdca-edit-status").value = item.status || '进行中';
+            window.currentPdcaStageDates = item.stage_dates ? JSON.parse(item.stage_dates) : {};
             syncPdcaFactorPills(item.factor_5m1e || '法');
         }
     } else {
@@ -12056,6 +12057,7 @@ window.openPdcaEditModal = function(id, isView = false) {
         populateUserSelect("pdca-edit-owner", "李建国");
         document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
         document.getElementById("pdca-edit-status").value = "进行中";
+        window.currentPdcaStageDates = {};
         syncPdcaFactorPills("法");
     }
 
@@ -12209,7 +12211,8 @@ window.savePdcaRecord = function() {
         verify_result,
         owner,
         target_date,
-        status
+        status,
+        stage_dates: JSON.stringify(window.currentPdcaStageDates || {})
     };
 
     fetch("/api/pdca/save", {
@@ -12341,12 +12344,27 @@ window.approvePDCAStage = function() {
     const currentMax = window.currentPdcaMaxStage || 'Plan';
     const currentIndex = stages.indexOf(currentMax);
     
-    if (currentIndex >= stages.length - 1) {
-        showToast("已经是最后阶段，无需继续推进", "info");
+    if (currentIndex >= stages.length) {
+        return;
+    }
+    
+    if (currentIndex === stages.length - 1) {
+        if (!confirm(`确认审核通过 ${currentMax} 阶段并闭环此 PDCA 改善单吗？`)) return;
+        
+        if (!window.currentPdcaStageDates) window.currentPdcaStageDates = {};
+        window.currentPdcaStageDates[currentMax] = new Date().toISOString().split('T')[0];
+        document.getElementById("pdca-edit-status").value = "已闭环";
+        
+        savePdcaRecord();
+        switchPDCAStage(currentMax); // trigger re-render
         return;
     }
     
     if (!confirm(`确认审核通过 ${currentMax} 阶段并进入下一阶段吗？`)) return;
+    
+    // Save approval date
+    if (!window.currentPdcaStageDates) window.currentPdcaStageDates = {};
+    window.currentPdcaStageDates[currentMax] = new Date().toISOString().split('T')[0];
     
     const nextStage = stages[currentIndex + 1];
     window.currentPdcaMaxStage = nextStage;
