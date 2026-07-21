@@ -1336,6 +1336,34 @@ requests.post(url, json=payload)</code></pre>
                             <h4 style="margin:0; font-size:0.85rem; color:#334155;">阶段管理属性</h4>
                         </div>
                         <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px;">
+                            <!-- 1. 改善主题 (最上面) -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 <span style="color:red;">*</span></label>
+                                <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
+                            </div>
+
+                            <!-- 2. 5M1E 归因分类 (排第二) -->
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 <span style="color:red;">*</span></label>
+                                <select id="pdca-edit-factor" style="display:none;">
+                                    <option value="法">法</option>
+                                    <option value="机">机</option>
+                                    <option value="料">料</option>
+                                    <option value="人">人</option>
+                                    <option value="环">环</option>
+                                </select>
+                                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">人</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">机</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">料</button>
+                                    <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:6px 0; font-size:0.75rem; font-weight:700; border-radius:6px; border:1px solid #1d4ed8; background:#2563eb; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(37,99,235,0.2);">法</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">环</button>
+                                </div>
+                            </div>
+
+                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:2px 0;">
+
+                            <!-- 3. 阶段负责人 -->
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 <span style="color:red;">*</span></label>
                                 <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
@@ -1354,16 +1382,10 @@ requests.post(url, json=payload)</code></pre>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">预计完成日期</label>
                                 <input type="date" id="pdca-edit-target-date" class="form-control" style="font-size:0.8rem; background:#fff;">
                             </div>
-                            
-                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:4px 0;">
 
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善单号</label>
                                 <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc; font-size:0.8rem; color:#94a3b8;">
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 <span style="color:red;">*</span></label>
-                                <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
                             </div>
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">关联研发产品</label>
@@ -1374,24 +1396,6 @@ requests.post(url, json=payload)</code></pre>
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">规格厚度 (μm)</label>
                                 <input type="number" step="0.1" id="pdca-edit-thickness" class="form-control" placeholder="例: 12" style="font-size:0.8rem; background:#fff;">
-                            </div>
-                            <div>
-                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 <span style="color:red;">*</span></label>
-                                <select id="pdca-edit-factor" style="display:none;">
-                                    <option value="法">法</option>
-                                    <option value="机">机</option>
-                                    <option value="料">料</option>
-                                    <option value="人">人</option>
-                                    <option value="环">环</option>
-                                </select>
-                                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
-                                    <!-- Use background updates via JS factor selection, inline styles are defaults -->
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">人</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">机</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">料</button>
-                                    <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:6px 0; font-size:0.75rem; font-weight:700; border-radius:6px; border:1px solid #1d4ed8; background:#2563eb; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(37,99,235,0.2);">法</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">环</button>
-                                </div>
                             </div>
                         </div>
                     </div>
