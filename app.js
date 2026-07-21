@@ -685,7 +685,7 @@ function switchTab(tabId) {
     
     const headerTitleMap = {
         'dashboard-panel': '产品开发看板',
-        'plm-panel': '产品全生命周期研发控制台 (PLM)',
+        'plm-panel': '产品研发控制台',
         'ems-panel': '聚赫新材设备开发管控台 (EMS)',
         'dms-panel': '研发文档与技术规范归档中心 (DMS)',
         'ecn-panel': '工程变更管控中心 (ECN)',
