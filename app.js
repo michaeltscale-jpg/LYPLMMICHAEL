@@ -11917,8 +11917,10 @@ function populatePdcaProductDropdowns(products) {
 function renderPdcaKpis(list) {
     const total = list.length;
     const ongoing = list.filter(item => item.stage !== 'Act' || item.status === '进行中').length;
-    const closed = list.filter(item => item.stage === 'Act' && item.status === '已闭环').length;
-    const rate = total > 0 ? Math.round((closed / total) * 100) : 0;
+    
+    const todayStr = new Date().toISOString().split('T')[0];
+    const delayed = list.filter(item => item.status !== '已闭环' && item.target_date && item.target_date < todayStr).length;
+    const delayRate = total > 0 ? Math.round((delayed / total) * 100) : 0;
 
     const factorCounts = { '人': 0, '机': 0, '料': 0, '法': 0, '环': 0 };
     list.forEach(item => {
@@ -11940,7 +11942,7 @@ function renderPdcaKpis(list) {
 
     if (document.getElementById("pdca-kpi-total")) document.getElementById("pdca-kpi-total").innerText = total;
     if (document.getElementById("pdca-kpi-ongoing")) document.getElementById("pdca-kpi-ongoing").innerText = ongoing;
-    if (document.getElementById("pdca-kpi-rate")) document.getElementById("pdca-kpi-rate").innerText = rate + "%";
+    if (document.getElementById("pdca-kpi-delay")) document.getElementById("pdca-kpi-delay").innerText = delayRate + "%";
     if (document.getElementById("pdca-kpi-5m")) document.getElementById("pdca-kpi-5m").innerText = `${factorNames[topFactor] || '法'}`;
 }
 
