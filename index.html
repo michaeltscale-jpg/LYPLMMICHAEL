@@ -1310,9 +1310,10 @@ requests.post(url, json=payload)</code></pre>
                             <div style="margin-top:20px; margin-bottom:20px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:16px;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                                     <label style="font-size:0.8rem; font-weight:700; color:#475569;"><i data-lucide="folder-open" style="width:14px; height:14px; vertical-align:middle;"></i> 本阶段输入文件</label>
-                                    <button type="button" class="btn-primary" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
+                                    <input type="file" id="pdca-edit-file-upload" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" style="display:none;" onchange="handlePdcaFileUpload(this)">
+                                    <button type="button" class="btn-primary" onclick="document.getElementById('pdca-edit-file-upload').click()" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
                                 </div>
-                                <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
+                                <div id="pdca-edit-file-list" style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
                                     <div style="display:flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px; color:#64748b;"></i> <span>暂未上传该阶段专属文档 (如异常报告或自测记录)</span></div>
                                 </div>
                             </div>

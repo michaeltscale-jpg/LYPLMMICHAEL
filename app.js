@@ -12108,6 +12108,41 @@ window.syncPdcaFactorPills = function(factorKey) {
     });
 };
 
+window.handlePdcaFileUpload = function(input) {
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const fileListContainer = document.getElementById("pdca-edit-file-list");
+    if (!fileListContainer) return;
+    
+    // Clear default message if it's the first file
+    if (fileListContainer.innerHTML.includes("暂未上传")) {
+        fileListContainer.innerHTML = "";
+    }
+    
+    const isImage = file.type.startsWith('image/');
+    let previewHtml = '';
+    
+    if (isImage) {
+        previewHtml = `<div style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff; border:1px solid #e2e8f0; border-radius:6px;">
+            <i data-lucide="image" style="width:16px; height:16px; color:#3b82f6;"></i>
+            <span style="flex:1; color:#334155; font-weight:500;">${file.name}</span>
+            <span style="color:#94a3b8;">(${(file.size/1024).toFixed(1)} KB)</span>
+            <span class="badge badge-green" style="font-size:0.65rem;">上传成功</span>
+        </div>`;
+    } else {
+        previewHtml = `<div style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff; border:1px solid #e2e8f0; border-radius:6px;">
+            <i data-lucide="file-text" style="width:16px; height:16px; color:#10b981;"></i>
+            <span style="flex:1; color:#334155; font-weight:500;">${file.name}</span>
+            <span style="color:#94a3b8;">(${(file.size/1024).toFixed(1)} KB)</span>
+            <span class="badge badge-green" style="font-size:0.65rem;">上传成功</span>
+        </div>`;
+    }
+    
+    fileListContainer.insertAdjacentHTML('beforeend', previewHtml);
+    if (window.lucide) lucide.createIcons();
+    input.value = ""; // reset for next upload
+};
+
 window.insertPdcaTemplate = function(type) {
     const templates = {
         'problem': `【What 异常现象】终检剥离强度测量超差极差放大\n【Where 位置/工段】生箔/表面处理工段 3# 槽\n【When 时间批次】2026-07-21 夜班批次\n【How Much 极差数据】指标测量标准 0.8N/mm，实际测得 0.52~0.68N/mm`,
