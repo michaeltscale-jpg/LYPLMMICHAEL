@@ -98,6 +98,9 @@
     </div>
             
             <div class="sidebar-menu">
+                <div class="menu-item" data-target="manual-panel" id="sidebar-manual-menu" style="background:#eff6ff; border:1px solid #bfdbfe; font-weight:700; color:#1d4ed8;">
+                    <i data-lucide="book-open" style="color:#2563eb;"></i> PLM 使用手册
+                </div>
                 <div class="menu-item active" data-target="dashboard-panel">
                     <i data-lucide="layout-dashboard"></i> 产品驾驶舱
                 </div>
@@ -187,7 +190,143 @@
             <!-- Content Body Area -->
             <div class="content-body">
                 <div class="panels-container">
-                    
+
+                    <!-- ================= PANEL 0: USER MANUAL (使用手册) ================= -->
+                    <div class="tab-panel" id="manual-panel">
+                        <!-- Header Banner -->
+                        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); border-radius: 10px; padding: 20px 24px; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.15); margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h2 style="margin: 0 0 6px 0; font-size: 1.35rem; display: flex; align-items: center; gap: 10px;"><i data-lucide="book-open" style="width:24px; height:24px;"></i> 聚赫新材 PLM 系统使用手册与图文操作指南</h2>
+                                    <p style="margin: 0; font-size: 0.82rem; color: #bfdbfe;">版本: V2.5 Professional | 涵盖 NPI 研发门径、配方 BOM 锁定、ECN 设变、PDCA 8D 报告及 EMS 设备协同</p>
+                                </div>
+                                <div>
+                                    <a href="javascript:void(0)" onclick="window.print()" class="btn-primary" style="background: #fff; color: #1d4ed8; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.82rem;"><i data-lucide="printer" style="width: 16px; height: 16px;"></i> 打印使用手册</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 视觉流转图解 (Visual Flowcharts Section) -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                            <!-- NPI 流程卡片 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e40af; font-weight: 800; font-size: 0.95rem;">
+                                    <i data-lucide="layers" style="width: 18px; height: 18px; color: #2563eb;"></i> 1. NPI 新品研发 Gate 1-5 门径流转图
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.78rem;">
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                                        <strong>Gate 1 可行性</strong> <span>设计提案 & 预算评估</span>
+                                    </div>
+                                    <div style="text-align: center; color: #2563eb; font-weight: bold;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                                        <strong>Gate 2 样品研发</strong> <span>配方摸索 & TDS 规格制定</span>
+                                    </div>
+                                    <div style="text-align: center; color: #2563eb; font-weight: bold;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                                        <strong>Gate 3 中试验证</strong> <span>中试线拉丝/涂布物性测试</span>
+                                    </div>
+                                    <div style="text-align: center; color: #2563eb; font-weight: bold;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>Gate 4/5 量产发布</strong> <span>BOM 锁定 & 量产交付</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ECN 流程卡片 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #d97706; font-weight: 800; font-size: 0.95rem;">
+                                    <i data-lucide="git-pull-request" style="width: 18px; height: 18px; color: #d97706;"></i> 2. BOM 锁死与 ECN 设变机制
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.78rem;">
+                                    <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #9a3412;">
+                                        <strong>配方锁定</strong> <span>量产产品 BOM 自动只读锁定</span>
+                                    </div>
+                                    <div style="text-align: center; color: #d97706; font-weight: bold;">↓</div>
+                                    <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #9a3412;">
+                                        <strong>发起 ECN 单</strong> <span>提交物料或工艺参数变更申请</span>
+                                    </div>
+                                    <div style="text-align: center; color: #d97706; font-weight: bold;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>钉钉审批</strong> <span>审批通过后自动级联解锁 BOM</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PDCA 8D 流程卡片 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #059669; font-weight: 800; font-size: 0.95rem;">
+                                    <i data-lucide="repeat" style="width: 18px; height: 18px; color: #10b981;"></i> 3. PDCA 质量改善与 8D 报告导出
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.78rem;">
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>Plan 识别/对策</strong> <span>5M1E 归因与问题分析</span>
+                                    </div>
+                                    <div style="text-align: center; color: #059669; font-weight: bold;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>Do ➔ Check 验证</strong> <span>中试数据验证与阶段审核解封</span>
+                                    </div>
+                                    <div style="text-align: center; color: #059669; font-weight: bold;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1e40af;">
+                                        <strong>Act 标准化</strong> <span>🖨️ 导出 8D 报告与 ECN 联动闭环</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 详细图文模块手册 (Detailed Step-by-Step Sections) -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            
+                            <!-- 模块 1 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #2563eb; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">1</span>
+                                    顶部全局导航与角色权限切换
+                                </h4>
+                                <div style="font-size: 0.82rem; color: #475569; line-height: 1.6;">
+                                    <p>在页面最顶部导航栏中，您可以随时切换当前操作身份：</p>
+                                    <ul>
+                                        <li><strong>超级管理员</strong>：具备全站最高权限，包括研发立项、ECN 审批与用户角色配置。</li>
+                                        <li><strong>研发工程师 / 品质工程师 / 工艺工程师</strong>：专注于对应的模块协作，系统会自动根据所选角色控制操作权限。</li>
+                                        <li><strong>右侧产品大类下拉框</strong>：选择具体的铜箔系列（如 DBJ、PTS2），全站数据将自动动态联动过滤。</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- 模块 2 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #2563eb; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">2</span>
+                                    PDCA 质量改善单审核与 8D 报告导出指南
+                                </h4>
+                                <div style="font-size: 0.82rem; color: #475569; line-height: 1.6;">
+                                    <p>当发现品质不良或测试超差时，进入【PDCA 质量改善】模块进行全闭环推进：</p>
+                                    <ol>
+                                        <li><strong>发起改善单</strong>：点击右上角 <code>[+ 发起 PDCA 改善单]</code>，填写改善主题、5M1E 归因分类及阶段负责人。</li>
+                                        <li><strong>阶段审核与解锁</strong>：改善单采取 4 阶段锁机制（Plan ➔ Do ➔ Check ➔ Act）。在改善单**顶部 Header** 或 **底部操作栏** 点击绿色的 <code>[审核通过并进入下一阶段]</code> 即可完成审核并自动解锁下一阶段。</li>
+                                        <li><strong>导出 8D 报告</strong>：点击改善单顶部的 <code>[导出 8D 报告]</code>，系统自动生成包含 D1-D8 完整维度的标准品质报告，支持直接打印或保存 PDF。</li>
+                                        <li><strong>查看履历时间轴</strong>：改善单左侧底部自动记录 <code>“阶段审核与变更履历 (Audit Trail)”</code>，方便追溯历史审核行为。</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <!-- 模块 3 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #2563eb; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">3</span>
+                                    配方 BOM 锁定与 ECN 工程变更流程
+                                </h4>
+                                <div style="font-size: 0.82rem; color: #475569; line-height: 1.6;">
+                                    <p>为确保生产稳定性，已量产发布的产品配方 BOM 将处于强制只读锁死状态：</p>
+                                    <ul>
+                                        <li>如需调整生箔添加剂比例或工艺参数，必须通过点击 <code>[发起工艺 ECN 设变]</code> 按钮提交变更加载。</li>
+                                        <li>变更单提交后自动启动钉钉协同审批流程，审核通过后由系统自动解锁并更新物料受控版本。</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <!-- ================= PANEL 1: DASHBOARD ================= -->
                     <div class="tab-panel active" id="dashboard-panel">
                         <!-- Dashboard Cards -->

@@ -685,6 +685,7 @@ function switchTab(tabId) {
     }
     
     const headerTitleMap = {
+        'manual-panel': 'PLM 系统使用手册与图文操作指南',
         'dashboard-panel': '产品驾驶舱',
         'plm-panel': '新品开发控制台',
         'ems-panel': '设备开发管控台 (EMS)',
