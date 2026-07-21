@@ -3544,118 +3544,172 @@ requests.post(url, json=payload)</code></pre>
 
     <!-- ===== PDCA 新建/编辑 模态弹窗 ===== -->
     <div class="modal-overlay" id="modal-pdca-edit" style="display:none; z-index:1060;">
-        <div class="modal-box" style="width:700px; max-width:92vw; max-height:90vh; overflow-y:auto;">
-            <div class="modal-header">
+        <div class="modal-box" style="width:1100px; max-width:95vw; max-height:90vh; overflow-y:auto; background:#f8fafc;">
+            <div class="modal-header" style="background:#fff; border-bottom:1px solid #e2e8f0; padding:16px 24px;">
                 <h3 id="modal-pdca-edit-title"><i data-lucide="repeat" style="vertical-align:middle;margin-right:6px;color:var(--color-primary);"></i> 发起 PDCA 质量改善单</h3>
                 <button class="modal-close" onclick="closePdcaModal('modal-pdca-edit')">&times;</button>
             </div>
-            <div class="modal-body" style="padding:16px 20px;">
+            <div class="modal-body" style="padding:24px;">
                 <input type="hidden" id="pdca-edit-id">
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善单号</label>
-                        <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc;">
+                
+                <!-- 隐藏原始的 stage 下拉 -->
+                <select id="pdca-edit-stage" style="display:none;">
+                    <option value="Plan">Plan - 问题分析与计划</option>
+                    <option value="Do">Do - 措施执行与中试</option>
+                    <option value="Check">Check - 效果验证评估</option>
+                    <option value="Act">Act - 标准化与闭环</option>
+                </select>
+                
+                <!-- 管道线 (Pipeline) UI -->
+                <div style="display:flex; gap:16px; margin-bottom:24px;">
+                    <div class="pipeline-card active" id="pipeline-Plan" onclick="switchPDCAStage('Plan')" style="flex:1; background:#fff; border:2px solid #2563eb; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 2px 8px rgba(37,99,235,0.1); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Plan" style="width:12px;height:12px;display:none;margin-right:4px;"></i>STAGE 1_PLAN</div>
+                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">问题识别与计划</div>
                     </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">关联研发产品</label>
-                        <select id="pdca-edit-product" class="form-control">
-                            <option value="">全部/通用产品</option>
-                        </select>
+                    <div class="pipeline-card" id="pipeline-Do" onclick="switchPDCAStage('Do')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Do" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 2_DO</div>
+                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">实施与中试排查</div>
                     </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">规格厚度 (μm)</label>
-                        <input type="number" step="0.1" id="pdca-edit-thickness" class="form-control" placeholder="例: 12">
+                    <div class="pipeline-card" id="pipeline-Check" onclick="switchPDCAStage('Check')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Check" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 3_CHECK</div>
+                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">检查效果与验证</div>
                     </div>
-                </div>
-
-                <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
-                    <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
-                </div>
-
-                <!-- 5M1E 归因分类 独立卡片标签选单 -->
-                <div style="margin-bottom:14px;">
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:6px; color:var(--text-primary);">5M1E 归因分类 <span style="color:red;">*</span></label>
-                    <select id="pdca-edit-factor" style="display:none;">
-                        <option value="法">法</option>
-                        <option value="机">机</option>
-                        <option value="料">料</option>
-                        <option value="人">人</option>
-                        <option value="环">环</option>
-                    </select>
-                    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;">
-                        <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#ffffff; color:#475569; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.2s ease;"><i data-lucide="user" style="width:15px; height:15px;"></i> 人</button>
-                        <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#ffffff; color:#475569; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.2s ease;"><i data-lucide="cog" style="width:15px; height:15px;"></i> 机</button>
-                        <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#ffffff; color:#475569; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.2s ease;"><i data-lucide="package" style="width:15px; height:15px;"></i> 料</button>
-                        <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:800; border-radius:8px; border:1px solid #1d4ed8; cursor:pointer; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:#ffffff; box-shadow:0 4px 12px rgba(37, 99, 235, 0.3); transition:all 0.2s ease;"><i data-lucide="sliders" style="width:15px; height:15px;"></i> 法</button>
-                        <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#ffffff; color:#475569; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.2s ease;"><i data-lucide="wind" style="width:15px; height:15px;"></i> 环</button>
+                    <div class="pipeline-card" id="pipeline-Act" onclick="switchPDCAStage('Act')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Act" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 4_ACT</div>
+                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">标准化闭环与调整</div>
                     </div>
                 </div>
 
-                <!-- 阶段、责任人、预计完成日期与改善状态 (置于 1. 问题识别上方) -->
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px; padding:10px 12px; background:rgba(241,245,249,0.5); border-radius:8px; border:1px solid var(--border-color);">
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">PDCA 当前阶段</label>
-                        <select id="pdca-edit-stage" class="form-control">
-                            <option value="Plan">Plan - 问题分析与计划</option>
-                            <option value="Do">Do - 措施执行与中试</option>
-                            <option value="Check">Check - 效果验证评估</option>
-                            <option value="Act">Act - 标准化与闭环</option>
-                        </select>
+                <!-- 左右双栏结构 -->
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px;">
+                    <!-- 左侧：阶段详情表单 -->
+                    <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
+                        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="map-pin" style="color:#2563eb; width:18px; height:18px;"></i>
+                            <h4 id="stage-detail-title" style="margin:0; font-size:0.9rem; color:#2563eb;">阶段详情: Plan. 问题识别与解决方案</h4>
+                        </div>
+                        <div style="padding:20px; flex:1;">
+                            
+                            <!-- 阶段公共区域: 模拟文件输入 -->
+                            <div style="margin-bottom:20px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:16px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                                    <label style="font-size:0.8rem; font-weight:700; color:#475569;"><i data-lucide="folder-open" style="width:14px; height:14px; vertical-align:middle;"></i> 本阶段输入文件</label>
+                                    <button type="button" class="btn-primary" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
+                                </div>
+                                <div style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
+                                    <div style="display:flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px; color:#64748b;"></i> <span>暂未上传该阶段专属文档 (如异常报告或自测记录)</span></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Plan Textarea -->
+                            <div id="tab-Plan" class="pdca-tab">
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">详细问题描述 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-problem" class="form-control" rows="5" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
+                            </div>
+                            <!-- Do Textarea -->
+                            <div id="tab-Do" class="pdca-tab" style="display:none;">
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">排查与实施过程 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-rootcause" class="form-control" rows="5" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
+                            </div>
+                            <!-- Check Textarea -->
+                            <div id="tab-Check" class="pdca-tab" style="display:none;">
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">效果验证记录 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-action" class="form-control" rows="5" placeholder="记录具体改善步骤、工艺路线调整及中试计划验证结果..."></textarea>
+                            </div>
+                            <!-- Act Textarea -->
+                            <div id="tab-Act" class="pdca-tab" style="display:none;">
+                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">闭环与归档说明 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-verify" class="form-control" rows="5" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
+                            </div>
+
+                            <!-- 阶段管控要求提示 -->
+                            <div style="background:#f4f3ff; border:1px solid #ddd6fe; border-radius:6px; padding:12px; margin-top:20px;">
+                                <label style="font-size:0.75rem; font-weight:800; color:#6d28d9; display:flex; align-items:center; gap:4px; margin-bottom:8px;"><i data-lucide="check-square" style="width:14px; height:14px;"></i> 本阶段专业作业管控要求</label>
+                                <div id="stage-control-reqs" style="font-size:0.75rem; color:#4c1d95; line-height:1.6;">
+                                    <div style="display:flex; gap:6px;"><i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981; margin-top:3px;"></i> <span>需详细阐述不良现象及影响范围。</span></div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
-                        <select id="pdca-edit-owner" class="form-control">
-                            <option value="">― 请选择责任人 ―</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">预计完成日期</label>
-                        <input type="date" id="pdca-edit-target-date" class="form-control">
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善状态</label>
-                        <select id="pdca-edit-status" class="form-control">
-                            <option value="进行中">进行中</option>
-                            <option value="已闭环">已闭环</option>
-                            <option value="暂缓">暂缓</option>
-                        </select>
+
+                    <!-- 右侧：管理属性 -->
+                    <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
+                        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="edit-3" style="color:#d97706; width:18px; height:18px;"></i>
+                            <h4 style="margin:0; font-size:0.9rem; color:#334155;">阶段管理属性</h4>
+                        </div>
+                        <div style="padding:20px; flex:1; display:flex; flex-direction:column; gap:16px;">
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">本里程序负责人 <span style="color:red;">*</span></label>
+                                <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                    <option value="">― 请选择责任人 ―</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段状态</label>
+                                <select id="pdca-edit-status" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                    <option value="进行中">进行中</option>
+                                    <option value="已闭环">已闭环</option>
+                                    <option value="暂缓">暂缓</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">预计完成日期</label>
+                                <input type="date" id="pdca-edit-target-date" class="form-control" style="font-size:0.8rem; background:#fff;">
+                            </div>
+                            
+                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:4px 0;">
+
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善单号</label>
+                                <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc; font-size:0.8rem; color:#94a3b8;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 <span style="color:red;">*</span></label>
+                                <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">关联研发产品</label>
+                                <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                    <option value="">全部/通用产品</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">规格厚度 (μm)</label>
+                                <input type="number" step="0.1" id="pdca-edit-thickness" class="form-control" placeholder="例: 12" style="font-size:0.8rem; background:#fff;">
+                            </div>
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 <span style="color:red;">*</span></label>
+                                <select id="pdca-edit-factor" style="display:none;">
+                                    <option value="法">法</option>
+                                    <option value="机">机</option>
+                                    <option value="料">料</option>
+                                    <option value="人">人</option>
+                                    <option value="环">环</option>
+                                </select>
+                                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+                                    <!-- Use background updates via JS factor selection, inline styles are defaults -->
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">人</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">机</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">料</button>
+                                    <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:6px 0; font-size:0.75rem; font-weight:700; border-radius:6px; border:1px solid #1d4ed8; background:#2563eb; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(37,99,235,0.2);">法</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">环</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 4 步表单区 (附带快捷生成 8D 模板辅助按钮) -->
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <label style="font-size:0.78rem;font-weight:700;">1. Plan 问题识别与解决方案</label>
-                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:var(--color-primary);" onclick="insertPdcaTemplate('problem')"><i data-lucide="file-text" style="width:12px;height:12px;"></i> + 5W2H 现象模板</button>
-                    </div>
-                    <textarea id="pdca-edit-problem" class="form-control" rows="2" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
-                </div>
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <label style="font-size:0.78rem;font-weight:700;">2. Do 实施</label>
-                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#d97706;" onclick="insertPdcaTemplate('rootcause')"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> + 5-Why 排查模板</button>
-                    </div>
-                    <textarea id="pdca-edit-rootcause" class="form-control" rows="2" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
-                </div>
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <label style="font-size:0.78rem;font-weight:700;">3. Check 检查效果</label>
-                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#7c3aed;" onclick="insertPdcaTemplate('action')"><i data-lucide="shield-check" style="width:12px;height:12px;"></i> + CAPA 对策模板</button>
-                    </div>
-                    <textarea id="pdca-edit-action" class="form-control" rows="2" placeholder="记录具体改善步骤、工艺路线调整及中试计划..."></textarea>
-                </div>
-                <div style="margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                        <label style="font-size:0.78rem;font-weight:700;">4. Act 标准化闭环或调整解决方案</label>
-                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#059669;" onclick="insertPdcaTemplate('verify')"><i data-lucide="file-check-2" style="width:12px;height:12px;"></i> + 验证与归档模板</button>
-                    </div>
-                    <textarea id="pdca-edit-verify" class="form-control" rows="2" placeholder="记录中试测试合格率、剥离强度/粗糙度改善数据及 SOP/ECN 归档..."></textarea>
-                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePdcaModal('modal-pdca-edit')">取消</button>
-                <button class="btn-primary" onclick="savePdcaRecord()">保存改善单</button>
+            <div class="modal-footer" style="padding:16px 24px; background:#fff; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <button class="btn-secondary" onclick="closePdcaModal('modal-pdca-edit')">取消</button>
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button class="btn-primary" style="background:#10b981; border:1px solid #059669;" onclick="approvePDCAStage()">审核通过并进入下一阶段</button>
+                    <button class="btn-primary" onclick="savePdcaRecord()">仅保存当前阶段</button>
+                </div>
             </div>
         </div>
     </div>
