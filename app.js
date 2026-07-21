@@ -1625,6 +1625,15 @@ function fetchDashboardData() {
             }
         });
 
+    fetch("/api/equipments")
+        .then(res => res.json())
+        .then(equipments => {
+            const devEquipments = (equipments || []).filter(e => e.status === '导入中' || e.status === '开发中' || e.status === '调试中').length;
+            const el = document.getElementById("metric-equipments");
+            if (el) el.innerText = devEquipments || (equipments || []).length;
+        })
+        .catch(err => console.error("加载首页设备开发统计失败", err));
+
     fetch("/api/pdca/list")
         .then(res => res.json())
         .then(pdcaList => {
