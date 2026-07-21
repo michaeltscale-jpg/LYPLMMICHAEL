@@ -1303,6 +1303,9 @@ requests.post(url, json=payload)</code></pre>
                             <div id="tab-Act" class="pdca-tab" style="display:none;">
                                 <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">闭环与归档说明 <span style="color:red;">*</span></label>
                                 <textarea id="pdca-edit-verify" class="form-control" rows="4" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
+                                <div style="margin-top:8px;">
+                                    <button type="button" class="btn-secondary" onclick="linkPdcaToEcn()" style="padding:4px 10px; font-size:0.75rem; color:#7c3aed; border-color:#ddd6fe; background:#f5f3ff; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="git-pull-request" style="width:14px; height:14px; color:#7c3aed;"></i> 联动发起 ECN 工程设变单</button>
+                                </div>
                             </div>
 
                             <!-- 阶段公共区域: 模拟文件输入 -->
@@ -1391,6 +1394,9 @@ requests.post(url, json=payload)</code></pre>
                                 <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;">
                                     <option value="">全部/通用产品</option>
                                 </select>
+                                <div style="margin-top:4px;">
+                                    <button type="button" class="btn-secondary" onclick="linkPdcaToProduct()" style="padding:2px 8px; font-size:0.72rem; color:#2563eb; border-color:#bfdbfe; background:#eff6ff; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="external-link" style="width:12px; height:12px;"></i> 联动查看产品看板</button>
+                                </div>
                             </div>
                             <input type="hidden" id="pdca-edit-thickness">
                         </div>

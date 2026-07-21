@@ -12310,6 +12310,38 @@ window.switchPDCAStage = function(stage) {
     }
 };
 
+window.linkPdcaToProduct = function() {
+    const prodId = document.getElementById("pdca-edit-product").value;
+    if (!prodId) {
+        showToast("请先在右侧选择关联的研发产品", "warning");
+        return;
+    }
+    state.activeProductId = parseInt(prodId);
+    switchTab('product-detail');
+    if (window.renderProductDetail) renderProductDetail(parseInt(prodId));
+    showToast(`已成功联动跳转至对应的产品看板！`, "success");
+};
+
+window.linkPdcaToEcn = function() {
+    const code = document.getElementById("pdca-edit-code").value;
+    const title = document.getElementById("pdca-edit-title-input").value;
+    const prodId = document.getElementById("pdca-edit-product").value;
+    
+    switchTab('ecn-panel');
+    if (window.openNewEcnModal) {
+        openNewEcnModal();
+        setTimeout(() => {
+            const ecnReason = document.getElementById("ecn-reason");
+            if (ecnReason) ecnReason.value = `由 PDCA 改善单【${code} - ${title || '质量改善'}】标准化结论联动发起`;
+            if (prodId) {
+                const ecnProd = document.getElementById("ecn-product-id");
+                if (ecnProd) ecnProd.value = prodId;
+            }
+        }, 200);
+    }
+    showToast(`已联动携带当前 PDCA 改善单信息并跳转打开 ECN 设变表单！`, "success");
+};
+
 window.approvePDCAStage = function() {
     const stages = ['Plan', 'Do', 'Check', 'Act'];
     const currentMax = window.currentPdcaMaxStage || 'Plan';
