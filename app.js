@@ -12220,8 +12220,14 @@ window.openPdcaDetailModal = function(id) {
 
 window.switchPDCAStage = function(stage) {
     const stages = ['Plan', 'Do', 'Check', 'Act'];
-    window.currentPdcaMaxStage = stage;
-    document.getElementById('pdca-edit-stage').value = stage;
+    const maxStage = window.currentPdcaMaxStage || 'Plan';
+    const maxIndex = stages.indexOf(maxStage);
+    const targetIndex = stages.indexOf(stage);
+
+    if (targetIndex > maxIndex) {
+        showToast("该阶段尚未解锁，请先审核通过前一阶段", "warning");
+        return;
+    }
 
     const titles = {
         'Plan': '阶段详情: Plan. 问题识别与解决方案',
@@ -12236,25 +12242,54 @@ window.switchPDCAStage = function(stage) {
         'Act': '<div style="display:flex; gap:6px;"><i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981; margin-top:3px;"></i> <span>归档 ECN/SOP 等标准文件。</span></div>'
     };
 
-    stages.forEach((s) => {
+    stages.forEach((s, idx) => {
         const card = document.getElementById(`pipeline-${s}`);
         const tab = document.getElementById(`tab-${s}`);
         const lock = document.getElementById(`lock-${s}`);
         
-        // Unlocked
-        if (card) {
-            card.style.background = '#fff';
-            card.style.cursor = 'pointer';
-            card.style.opacity = '1';
-        }
-        if (lock) lock.style.display = 'none';
-        
-        if (s === stage) {
-            if (card) card.style.border = '2px solid #2563eb';
-            if (tab) tab.style.display = 'block';
-        } else {
-            if (card) card.style.border = '1px solid #cbd5e1';
+        if (idx > maxIndex) {
+            // Locked
+            if (card) {
+                card.style.background = '#f8fafc';
+                card.style.cursor = 'not-allowed';
+                card.style.borderColor = '#e2e8f0';
+                card.style.opacity = '0.7';
+            }
+            if (lock) {
+                lock.style.display = 'inline-block';
+                lock.style.color = '#94a3b8';
+            }
             if (tab) tab.style.display = 'none';
+        } else {
+            // Unlocked
+            if (card) {
+                card.style.cursor = 'pointer';
+                card.style.opacity = '1';
+                
+                if (idx < maxIndex) {
+                    // Already Approved Stage
+                    card.style.background = '#ecfdf5';
+                    if (s === stage) {
+                        card.style.border = '2px solid #059669';
+                    } else {
+                        card.style.border = '1px solid #10b981';
+                    }
+                } else {
+                    // Current Pending Stage
+                    card.style.background = '#fff';
+                    if (s === stage) {
+                        card.style.border = '2px solid #2563eb';
+                    } else {
+                        card.style.border = '1px solid #cbd5e1';
+                    }
+                }
+            }
+            if (lock) lock.style.display = 'none';
+            if (s === stage) {
+                if (tab) tab.style.display = 'block';
+            } else {
+                if (tab) tab.style.display = 'none';
+            }
         }
     });
 
@@ -12276,7 +12311,7 @@ window.approvePDCAStage = function() {
         return;
     }
     
-    if (!confirm(`确认保存 ${currentMax} 阶段并进入下一阶段吗？`)) return;
+    if (!confirm(`确认审核通过 ${currentMax} 阶段并进入下一阶段吗？`)) return;
     
     const nextStage = stages[currentIndex + 1];
     window.currentPdcaMaxStage = nextStage;
