@@ -12243,7 +12243,7 @@ window.openPdcaDetailModal = function(id) {
         ${progressHtml}
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. 问题识别与解决方案</div>
+            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. Plan 问题识别与解决方案</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.problem_desc || '未填写'}</div>
         </div>
 
@@ -12258,7 +12258,7 @@ window.openPdcaDetailModal = function(id) {
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 标准化闭环或调整解决方案</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. Act 标准化闭环或调整解决方案</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.verify_result || '暂无验证结果'}</div>
         </div>
 
