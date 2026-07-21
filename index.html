@@ -1338,7 +1338,7 @@ requests.post(url, json=payload)</code></pre>
                         <div style="padding:20px; flex:1; display:flex; flex-direction:column; gap:16px;">
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 <span style="color:red;">*</span></label>
-                                <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
                                     <option value="">― 请选择负责人 ―</option>
                                 </select>
                             </div>

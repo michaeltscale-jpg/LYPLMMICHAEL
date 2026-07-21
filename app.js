@@ -7012,6 +7012,11 @@ window.fetchUsers = async function() {
                 saveStateToLocalStorage(); // 强制把纠偏后的新身份同步保存到本地缓存
             }
         }
+        
+        // 自动填充全站所有阶段/模块的负责人下拉菜单
+        ['pdca-edit-owner', 'g1-proposal-proposer', 'g1-tds-ghz-signer', 'g1-feas-author', 'bom-plan-owner'].forEach(id => {
+            populateUserSelect(id, '');
+        });
     } catch (e) {
         console.error("加载用户列表失败:", e);
     }
@@ -7038,14 +7043,14 @@ function translateRoleName(role) {
 function populateUserSelect(elId, currentValue) {
     const sel = document.getElementById(elId);
     if (!sel) return;
+    const targetVal = currentValue || sel.value;
     sel.innerHTML = '<option value="">― 请选择负责人 ―</option>';
     const users = (state.users || []).filter(u => u.status === '启用');
     users.forEach(u => {
         const opt = document.createElement('option');
         opt.value = u.display_name;
         opt.text = `${u.display_name}（${translateRoleName(u.role)}）`;
-        // Removed dark background to fix visibility in light theme
-        if (currentValue && u.display_name === currentValue) opt.selected = true;
+        if (targetVal && (u.display_name === targetVal || u.username === targetVal)) opt.selected = true;
         sel.appendChild(opt);
     });
 }
@@ -12035,7 +12040,6 @@ window.openPdcaEditModal = function(id, isView = false) {
             populateUserSelect("pdca-edit-owner", item.owner || '李建国');
             document.getElementById("pdca-edit-target-date").value = item.target_date || '';
             document.getElementById("pdca-edit-status").value = item.status || '进行中';
-            window.currentPdcaStageDates = item.stage_dates ? JSON.parse(item.stage_dates) : {};
             syncPdcaFactorPills(item.factor_5m1e || '法');
         }
     } else {
@@ -12057,7 +12061,6 @@ window.openPdcaEditModal = function(id, isView = false) {
         populateUserSelect("pdca-edit-owner", "李建国");
         document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
         document.getElementById("pdca-edit-status").value = "进行中";
-        window.currentPdcaStageDates = {};
         syncPdcaFactorPills("法");
     }
 
@@ -12211,8 +12214,7 @@ window.savePdcaRecord = function() {
         verify_result,
         owner,
         target_date,
-        status,
-        stage_dates: JSON.stringify(window.currentPdcaStageDates || {})
+        status
     };
 
     fetch("/api/pdca/save", {
@@ -12344,27 +12346,12 @@ window.approvePDCAStage = function() {
     const currentMax = window.currentPdcaMaxStage || 'Plan';
     const currentIndex = stages.indexOf(currentMax);
     
-    if (currentIndex >= stages.length) {
-        return;
-    }
-    
-    if (currentIndex === stages.length - 1) {
-        if (!confirm(`确认审核通过 ${currentMax} 阶段并闭环此 PDCA 改善单吗？`)) return;
-        
-        if (!window.currentPdcaStageDates) window.currentPdcaStageDates = {};
-        window.currentPdcaStageDates[currentMax] = new Date().toISOString().split('T')[0];
-        document.getElementById("pdca-edit-status").value = "已闭环";
-        
-        savePdcaRecord();
-        switchPDCAStage(currentMax); // trigger re-render
+    if (currentIndex >= stages.length - 1) {
+        showToast("已经是最后阶段，无需继续推进", "info");
         return;
     }
     
     if (!confirm(`确认审核通过 ${currentMax} 阶段并进入下一阶段吗？`)) return;
-    
-    // Save approval date
-    if (!window.currentPdcaStageDates) window.currentPdcaStageDates = {};
-    window.currentPdcaStageDates[currentMax] = new Date().toISOString().split('T')[0];
     
     const nextStage = stages[currentIndex + 1];
     window.currentPdcaMaxStage = nextStage;
