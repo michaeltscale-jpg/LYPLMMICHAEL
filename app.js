@@ -11985,7 +11985,7 @@ function renderPdcaTable(list) {
         html += `
             <tr style="border-bottom:1px solid var(--border-color);">
                 <td style="padding:10px;font-family:monospace;font-weight:700;color:var(--color-primary);font-size:0.78rem;">${row.code}</td>
-                <td style="padding:10px;font-weight:700;font-size:0.82rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${row.title}">${row.title}</td>
+                <td style="padding:10px;font-weight:700;font-size:0.82rem;max-width:220px;word-break:break-word;white-space:normal;line-height:1.4;">${row.title}</td>
                 <td style="padding:10px;font-size:0.78rem;color:var(--text-secondary);">${prodText}</td>
                 <td style="padding:10px;text-align:center;">
                     <span style="padding:2px 10px;border-radius:10px;font-size:0.72rem;font-weight:800;${factorStyle}">${row.factor_5m1e} (5M)</span>
