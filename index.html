@@ -3551,15 +3551,26 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-body" style="padding:16px 20px;">
                 <input type="hidden" id="pdca-edit-id">
-                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善单号</label>
                         <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
-                        <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">关联研发产品</label>
+                        <select id="pdca-edit-product" class="form-control">
+                            <option value="">全部/通用产品</option>
+                        </select>
                     </div>
+                    <div>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">规格厚度 (μm)</label>
+                        <input type="number" step="0.1" id="pdca-edit-thickness" class="form-control" placeholder="例: 12">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
+                    <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
                 </div>
 
                 <!-- 5M1E 归因分类 独立卡片标签选单 -->
@@ -3580,17 +3591,9 @@ requests.post(url, json=payload)</code></pre>
                         <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:1px solid #cbd5e1; cursor:pointer; background:#ffffff; color:#475569; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all 0.2s ease;"><i data-lucide="wind" style="width:15px; height:15px;"></i> 环</button>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">关联研发产品</label>
-                        <select id="pdca-edit-product" class="form-control">
-                            <option value="">全部/通用产品</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">规格厚度 (μm)</label>
-                        <input type="number" step="0.1" id="pdca-edit-thickness" class="form-control" placeholder="例: 12">
-                    </div>
+
+                <!-- 阶段、责任人、预计完成日期与改善状态 (置于 1. 问题识别上方) -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px; margin-bottom:14px; padding:10px 12px; background:rgba(241,245,249,0.5); border-radius:8px; border:1px solid var(--border-color);">
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">PDCA 当前阶段</label>
                         <select id="pdca-edit-stage" class="form-control">
@@ -3600,10 +3603,6 @@ requests.post(url, json=payload)</code></pre>
                             <option value="Act">Act - 标准化与闭环</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- 责任人、预计完成日期与改善状态 (置于 1. 问题识别上方) -->
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:14px; padding:10px 12px; background:rgba(241,245,249,0.5); border-radius:8px; border:1px solid var(--border-color);">
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
                         <select id="pdca-edit-owner" class="form-control">
