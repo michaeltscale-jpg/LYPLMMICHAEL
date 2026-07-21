@@ -3635,8 +3635,10 @@ requests.post(url, json=payload)</code></pre>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
                     <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任工程师</label>
-                        <input type="text" id="pdca-edit-owner" class="form-control" placeholder="填写入负责人">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人</label>
+                        <select id="pdca-edit-owner" class="form-control">
+                            <option value="">― 请选择责任人 ―</option>
+                        </select>
                     </div>
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">预计完成日期</label>

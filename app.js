@@ -12030,7 +12030,7 @@ window.openPdcaEditModal = function(id) {
             document.getElementById("pdca-edit-rootcause").value = item.root_cause || '';
             document.getElementById("pdca-edit-action").value = item.action_plan || '';
             document.getElementById("pdca-edit-verify").value = item.verify_result || '';
-            document.getElementById("pdca-edit-owner").value = item.owner || '';
+            populateUserSelect("pdca-edit-owner", item.owner || '李建国');
             document.getElementById("pdca-edit-target-date").value = item.target_date || '';
             document.getElementById("pdca-edit-status").value = item.status || '进行中';
             syncPdcaFactorPills(item.factor_5m1e || '法');
@@ -12050,7 +12050,7 @@ window.openPdcaEditModal = function(id) {
         document.getElementById("pdca-edit-rootcause").value = "";
         document.getElementById("pdca-edit-action").value = "";
         document.getElementById("pdca-edit-verify").value = "";
-        document.getElementById("pdca-edit-owner").value = "李建国";
+        populateUserSelect("pdca-edit-owner", "李建国");
         document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
         document.getElementById("pdca-edit-status").value = "进行中";
         syncPdcaFactorPills("法");
