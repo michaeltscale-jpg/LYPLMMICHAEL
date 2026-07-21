@@ -3562,9 +3562,9 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                 </div>
 
-                <!-- 5M1E 归因分类 整列加大可视化快捷选择器 -->
-                <div style="margin-bottom:12px;">
-                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:6px;">5M1E 归因分类 <span style="color:red;">*</span></label>
+                <!-- 5M1E 归因分类 高端精美分段切换标签选单 -->
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:6px; color:var(--text-primary);">5M1E 归因分类 <span style="color:red;">*</span></label>
                     <select id="pdca-edit-factor" style="display:none;">
                         <option value="法">法</option>
                         <option value="机">机</option>
@@ -3572,12 +3572,12 @@ requests.post(url, json=payload)</code></pre>
                         <option value="人">人</option>
                         <option value="环">环</option>
                     </select>
-                    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
-                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">人</button>
-                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">机</button>
-                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">料</button>
-                        <button type="button" class="btn-secondary factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center; background:var(--color-primary); color:white; border-color:var(--color-primary);">法</button>
-                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">环</button>
+                    <div style="background:#f1f5f9; padding:4px; border-radius:10px; display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; border:1px solid #e2e8f0;">
+                        <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:none; cursor:pointer; background:transparent; color:#64748b; transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);"><i data-lucide="user" style="width:15px; height:15px;"></i> 人</button>
+                        <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:none; cursor:pointer; background:transparent; color:#64748b; transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);"><i data-lucide="cog" style="width:15px; height:15px;"></i> 机</button>
+                        <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:none; cursor:pointer; background:transparent; color:#64748b; transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);"><i data-lucide="package" style="width:15px; height:15px;"></i> 料</button>
+                        <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:800; border-radius:8px; border:none; cursor:pointer; background:linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color:#ffffff; box-shadow:0 4px 12px rgba(37, 99, 235, 0.35); transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);"><i data-lucide="sliders" style="width:15px; height:15px;"></i> 法</button>
+                        <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 0; font-size:0.85rem; font-weight:700; border-radius:8px; border:none; cursor:pointer; background:transparent; color:#64748b; transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);"><i data-lucide="wind" style="width:15px; height:15px;"></i> 环</button>
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">

@@ -12073,13 +12073,17 @@ window.syncPdcaFactorPills = function(factorKey) {
         const btn = document.getElementById(`factor-pill-${f}`);
         if (btn) {
             if (f === factorKey) {
-                btn.style.background = 'var(--color-primary)';
-                btn.style.color = 'white';
-                btn.style.borderColor = 'var(--color-primary)';
+                btn.style.background = 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+                btn.style.color = '#ffffff';
+                btn.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.35)';
+                btn.style.fontWeight = '800';
+                btn.classList.add('active');
             } else {
-                btn.style.background = '';
-                btn.style.color = '';
-                btn.style.borderColor = '';
+                btn.style.background = 'transparent';
+                btn.style.color = '#64748b';
+                btn.style.boxShadow = 'none';
+                btn.style.fontWeight = '700';
+                btn.classList.remove('active');
             }
         }
     });
