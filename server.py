@@ -2543,6 +2543,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 stage = data.get("stage", "Plan")
                 status = data.get("status", "进行中")
                 problem_desc = data.get("problem_desc", "")
+                improve_plan = data.get("improve_plan", "")
                 root_cause = data.get("root_cause", "")
                 action_plan = data.get("action_plan", "")
                 verify_result = data.get("verify_result", "")
@@ -2557,16 +2558,16 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     cursor.execute("""
                         UPDATE pdca_records
                         SET title=?, product_id=?, thickness=?, factor_5m1e=?, stage=?, status=?,
-                            problem_desc=?, root_cause=?, action_plan=?, verify_result=?, owner=?, target_date=?, ecn_id=?, updated_at=?
+                            problem_desc=?, improve_plan=?, root_cause=?, action_plan=?, verify_result=?, owner=?, target_date=?, ecn_id=?, updated_at=?
                         WHERE id=?
-                    """, (title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, rec_id))
+                    """, (title, product_id, thickness, factor_5m1e, stage, status, problem_desc, improve_plan, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, rec_id))
                 else:
                     if not code:
                         code = f"PDCA-{datetime.now().strftime('%Y%m%d')}-{int(time.time() * 1000) % 1000:03d}"
                     cursor.execute("""
-                        INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, now_str))
+                        INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, improve_plan, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, improve_plan, root_cause, action_plan, verify_result, owner, target_date, ecn_id, now_str, now_str))
 
                 conn.commit()
                 self.send_json({"success": True, "message": "PDCA改善单保存成功"})
@@ -2881,6 +2882,7 @@ def init_pdca_tables():
             stage         TEXT DEFAULT 'Plan',
             status        TEXT DEFAULT '进行中',
             problem_desc  TEXT,
+            improve_plan  TEXT,
             root_cause    TEXT,
             action_plan   TEXT,
             verify_result TEXT,

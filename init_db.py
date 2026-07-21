@@ -805,6 +805,7 @@ def init_database(force_reset=False):
             stage         TEXT DEFAULT 'Plan',
             status        TEXT DEFAULT '进行中',
             problem_desc  TEXT,
+            improve_plan  TEXT,
             root_cause    TEXT,
             action_plan   TEXT,
             verify_result TEXT,
@@ -824,8 +825,8 @@ def init_database(force_reset=False):
 
     for row in default_pdcas:
         cursor.execute("""
-            INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, improve_plan, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?, ?, ?, ?)
         """, row)
 
     conn.commit()

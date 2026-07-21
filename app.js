@@ -12028,6 +12028,7 @@ window.openPdcaEditModal = function(id, isView = false) {
             document.getElementById("pdca-edit-thickness").value = item.thickness || '';
             document.getElementById("pdca-edit-stage").value = item.stage || 'Plan';
             document.getElementById("pdca-edit-problem").value = item.problem_desc || '';
+            document.getElementById("pdca-edit-improve").value = item.improve_plan || '';
             document.getElementById("pdca-edit-rootcause").value = item.root_cause || '';
             document.getElementById("pdca-edit-action").value = item.action_plan || '';
             document.getElementById("pdca-edit-verify").value = item.verify_result || '';
@@ -12048,6 +12049,7 @@ window.openPdcaEditModal = function(id, isView = false) {
         document.getElementById("pdca-edit-thickness").value = "";
         document.getElementById("pdca-edit-stage").value = "Plan";
         document.getElementById("pdca-edit-problem").value = "";
+        document.getElementById("pdca-edit-improve").value = "";
         document.getElementById("pdca-edit-rootcause").value = "";
         document.getElementById("pdca-edit-action").value = "";
         document.getElementById("pdca-edit-verify").value = "";
@@ -12116,6 +12118,7 @@ window.insertPdcaTemplate = function(type) {
 
     const targetIds = {
         'problem': 'pdca-edit-problem',
+        'improve': 'pdca-edit-improve',
         'rootcause': 'pdca-edit-rootcause',
         'action': 'pdca-edit-action',
         'verify': 'pdca-edit-verify'
@@ -12143,6 +12146,7 @@ window.savePdcaRecord = function() {
     const thickness = document.getElementById("pdca-edit-thickness").value;
     const stage = document.getElementById("pdca-edit-stage").value;
     const problem_desc = document.getElementById("pdca-edit-problem").value.trim();
+    const improve_plan = document.getElementById("pdca-edit-improve").value.trim();
     const root_cause = document.getElementById("pdca-edit-rootcause").value.trim();
     const action_plan = document.getElementById("pdca-edit-action").value.trim();
     const verify_result = document.getElementById("pdca-edit-verify").value.trim();
@@ -12164,6 +12168,7 @@ window.savePdcaRecord = function() {
         thickness: thickness ? parseFloat(thickness) : null,
         stage,
         problem_desc,
+        improve_plan,
         root_cause,
         action_plan,
         verify_result,
