@@ -324,6 +324,77 @@
                                 </div>
                             </div>
 
+                            <!-- 模块 4: 角色与权限矩阵说明表 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #2563eb; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">4</span>
+                                    系统用户角色与权限分配对照表 (Role & Permission Matrix)
+                                </h4>
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px;">
+                                    <thead>
+                                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left; color: #334155;">
+                                            <th style="padding: 8px 12px;">功能模块</th>
+                                            <th style="padding: 8px 12px;">超级管理员</th>
+                                            <th style="padding: 8px 12px;">研发工程师</th>
+                                            <th style="padding: 8px 12px;">品质工程师</th>
+                                            <th style="padding: 8px 12px;">工艺/现场工程师</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 8px 12px; font-weight: 700;">NPI 新品开发立项</td>
+                                            <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">✅ 立项 & 终审</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 提交 & 编辑</td>
+                                            <td style="padding: 8px 12px; color: #64748b;">👁️ 查阅评审</td>
+                                            <td style="padding: 8px 12px; color: #64748b;">👁️ 查阅技术交底</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 8px 12px; font-weight: 700;">BOM 配方与 ECN 设变</td>
+                                            <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">✅ 批复批准生效</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 变更配方/发起设变</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 会签验证数据</td>
+                                            <td style="padding: 8px 12px; color: #64748b;">👁️ 查看更新版 BOM</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 8px 12px; font-weight: 700;">PDCA 质量改善与 8D 导出</td>
+                                            <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">✅ 全流程审批导出</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 对策执行与验证</td>
+                                            <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">✅ 阶段审核与导出 8D</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 现场排查与反馈</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 8px 12px; font-weight: 700;">设备 (EMS) 与 MQC 物料承认</td>
+                                            <td style="padding: 8px 12px; color: #10b981; font-weight: 700;">✅ 终审承认</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 物性测试报告</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ MQC 质检检核</td>
+                                            <td style="padding: 8px 12px; color: #10b981;">✅ 设备调试维护</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 模块 5: 常见问题解答 (FAQ & Troubleshooting) -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h4 style="margin: 0 0 12px 0; font-size: 1rem; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <span style="background: #2563eb; color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem;">5</span>
+                                    常见问题解答与故障排除指南 (FAQ & Troubleshooting)
+                                </h4>
+                                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem;">
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px;">
+                                        <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">❓ Q1: 为什么产品的配方 BOM 输入框显示灰色只读，无法直接改动数据？</div>
+                                        <div style="color: #475569;">💡 <strong>解答</strong>：已发布的量产产品配方处于系统强制锁定状态，防止现场误操作。如需修改配方，请点击 <code>[发起工艺 ECN 设变]</code> 提交变更单，审批通过后系统会自动解锁更新。</div>
+                                    </div>
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px;">
+                                        <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">❓ Q2: 为什么 PDCA 质量改善单的后续阶段卡片提示“该阶段尚未解锁”？</div>
+                                        <div style="color: #475569;">💡 <strong>解答</strong>：PDCA 采取逐级防错锁逻辑。请在改善单顶部 Header 右侧或底部操作栏点击绿色的 <code>[审核通过并进入下一阶段]</code> 按钮，审核通过后后续阶段会自动解锁。</div>
+                                    </div>
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 6px;">
+                                        <div style="font-weight: 700; color: #1e293b; margin-bottom: 4px;">❓ Q3: 点击“导出 8D 报告”时提示“浏览器拦截了弹出窗口”怎么办？</div>
+                                        <div style="color: #475569;">💡 <strong>解答</strong>：报告会在新的标签页中打开。若浏览器拦截，请在地址栏右上角点击拦截图标，选择“始终允许此网站弹出窗口”，然后重新点击 <code>[导出 8D 报告]</code>。</div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
