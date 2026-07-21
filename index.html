@@ -1181,19 +1181,19 @@ requests.post(url, json=payload)</code></pre>
                                     <option value="">全部产品</option>
                                 </select>
                                 <select id="pdca-filter-factor" class="form-control" style="width: 130px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">5M1E 归因(全部)</option>
-                                    <option value="人">人 (Man)</option>
-                                    <option value="机">机 (Machine)</option>
-                                    <option value="料">料 (Material)</option>
-                                    <option value="法">法 (Method)</option>
-                                    <option value="环">环 (Environment)</option>
+                                    <option value="">5M1E 归因 - 全部</option>
+                                    <option value="人">人</option>
+                                    <option value="机">机</option>
+                                    <option value="料">料</option>
+                                    <option value="法">法</option>
+                                    <option value="环">环</option>
                                 </select>
                                 <select id="pdca-filter-stage" class="form-control" style="width: 130px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">阶段(全部)</option>
-                                    <option value="Plan">Plan (计划定案)</option>
-                                    <option value="Do">Do (措施执行)</option>
-                                    <option value="Check">Check (效果验证)</option>
-                                    <option value="Act">Act (标准化闭环)</option>
+                                    <option value="">全部阶段</option>
+                                    <option value="Plan">Plan - 计划定案</option>
+                                    <option value="Do">Do - 措施执行</option>
+                                    <option value="Check">Check - 效果验证</option>
+                                    <option value="Act">Act - 标准化闭环</option>
                                 </select>
                                 <button onclick="fetchPdcaData()" class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; height: 32px;">
                                     <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i> 刷新
@@ -3559,11 +3559,11 @@ requests.post(url, json=payload)</code></pre>
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">5M1E 归因分类 <span style="color:red;">*</span></label>
                         <select id="pdca-edit-factor" class="form-control" onchange="syncPdcaFactorPills(this.value)">
-                            <option value="法">法 - 工艺/参数/SOP</option>
-                            <option value="机">机 - 设备/工装/刀具</option>
-                            <option value="料">料 - 原材料/辅料/二供</option>
-                            <option value="人">人 - 操作人员/培训/技能</option>
-                            <option value="环">环 - 温湿度/洁净度</option>
+                            <option value="法">法</option>
+                            <option value="机">机</option>
+                            <option value="料">料</option>
+                            <option value="人">人</option>
+                            <option value="环">环</option>
                         </select>
                     </div>
                 </div>
