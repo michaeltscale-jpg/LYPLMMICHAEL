@@ -1240,7 +1240,7 @@ requests.post(url, json=payload)</code></pre>
                 </div>
                 
             </div>
-            <div class="modal-body" style="padding:24px;">
+            <div class="modal-body" style="padding:16px 20px;">
                 <input type="hidden" id="pdca-edit-id">
                 
                 <!-- 隐藏原始的 stage 下拉 -->
@@ -1252,76 +1252,76 @@ requests.post(url, json=payload)</code></pre>
                 </select>
                 
                 <!-- 管道线 (Pipeline) UI -->
-                <div style="display:flex; gap:16px; margin-bottom:24px;">
-                    <div class="pipeline-card active" id="pipeline-Plan" onclick="switchPDCAStage('Plan')" style="flex:1; background:#fff; border:2px solid #2563eb; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 2px 8px rgba(37,99,235,0.1); position:relative; transition:all 0.2s ease;">
+                <div style="display:flex; gap:12px; margin-bottom:16px;">
+                    <div class="pipeline-card active" id="pipeline-Plan" onclick="switchPDCAStage('Plan')" style="flex:1; background:#fff; border:2px solid #2563eb; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 8px rgba(37,99,235,0.1); position:relative; transition:all 0.2s ease;">
                         <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Plan" style="width:12px;height:12px;display:none;margin-right:4px;"></i>STAGE 1_PLAN</div>
                         <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">问题识别与对策</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Do" onclick="switchPDCAStage('Do')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                    <div class="pipeline-card" id="pipeline-Do" onclick="switchPDCAStage('Do')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
                         <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Do" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 2_DO</div>
                         <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">实施与中试排查</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Check" onclick="switchPDCAStage('Check')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                    <div class="pipeline-card" id="pipeline-Check" onclick="switchPDCAStage('Check')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
                         <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Check" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 3_CHECK</div>
                         <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">检查效果与验证</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Act" onclick="switchPDCAStage('Act')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
+                    <div class="pipeline-card" id="pipeline-Act" onclick="switchPDCAStage('Act')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
                         <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Act" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 4_ACT</div>
                         <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">标准化闭环与调整</div>
                     </div>
                 </div>
 
                 <!-- 左右双栏结构 -->
-                <div style="display:grid; grid-template-columns: 1fr 350px; gap:24px;">
+                <div style="display:grid; grid-template-columns: 1fr 340px; gap:16px;">
                     <!-- 左侧：阶段详情表单 -->
                     <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
-                        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
-                            <i data-lucide="map-pin" style="color:#2563eb; width:18px; height:18px;"></i>
-                            <h4 id="stage-detail-title" style="margin:0; font-size:0.9rem; color:#2563eb;">阶段详情: Plan. 问题识别与解决方案</h4>
+                        <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="map-pin" style="color:#2563eb; width:16px; height:16px;"></i>
+                            <h4 id="stage-detail-title" style="margin:0; font-size:0.85rem; color:#2563eb;">阶段详情: Plan. 问题识别与解决方案</h4>
                         </div>
-                        <div style="padding:20px; flex:1;">
+                        <div style="padding:16px; flex:1;">
                             
 
                             <!-- Plan Textarea -->
                             <div id="tab-Plan" class="pdca-tab">
-                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">详细问题描述 <span style="color:red;">*</span></label>
-                                <textarea id="pdca-edit-problem" class="form-control" rows="4" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">详细问题描述 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-problem" class="form-control" rows="3" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
 
-                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-top:16px; margin-bottom:8px;">改善对策 <span style="color:red;">*</span></label>
-                                <textarea id="pdca-edit-improve" class="form-control" rows="4" placeholder="详细描述制定的改善步骤、应对策略或预防措施..."></textarea>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-top:12px; margin-bottom:6px;">改善对策 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-improve" class="form-control" rows="3" placeholder="详细描述制定的改善步骤、应对策略或预防措施..."></textarea>
                             </div>
                             <!-- Do Textarea -->
                             <div id="tab-Do" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">排查与实施过程 <span style="color:red;">*</span></label>
-                                <textarea id="pdca-edit-rootcause" class="form-control" rows="5" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">排查与实施过程 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-rootcause" class="form-control" rows="4" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
                             </div>
                             <!-- Check Textarea -->
                             <div id="tab-Check" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">效果验证记录 <span style="color:red;">*</span></label>
-                                <textarea id="pdca-edit-action" class="form-control" rows="5" placeholder="记录具体改善步骤、工艺路线调整及中试计划验证结果..."></textarea>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">效果验证记录 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-action" class="form-control" rows="4" placeholder="记录具体改善步骤、工艺路线调整及中试计划验证结果..."></textarea>
                             </div>
                             <!-- Act Textarea -->
                             <div id="tab-Act" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.85rem; font-weight:700; color:#1e293b; margin-bottom:8px;">闭环与归档说明 <span style="color:red;">*</span></label>
-                                <textarea id="pdca-edit-verify" class="form-control" rows="5" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">闭环与归档说明 <span style="color:red;">*</span></label>
+                                <textarea id="pdca-edit-verify" class="form-control" rows="4" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
                             </div>
 
                             <!-- 阶段公共区域: 模拟文件输入 -->
-                            <div style="margin-top:20px; margin-bottom:20px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:16px;">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                            <div style="margin-top:12px; margin-bottom:12px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:12px 14px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                                     <label style="font-size:0.8rem; font-weight:700; color:#475569;"><i data-lucide="folder-open" style="width:14px; height:14px; vertical-align:middle;"></i> 本阶段输入文件</label>
                                     <input type="file" id="pdca-edit-file-upload" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" style="display:none;" onchange="handlePdcaFileUpload(this)">
-                                    <button type="button" class="btn-primary" onclick="document.getElementById('pdca-edit-file-upload').click()" style="padding:4px 10px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
+                                    <button type="button" class="btn-primary" onclick="document.getElementById('pdca-edit-file-upload').click()" style="padding:3px 8px; font-size:0.75rem;"><i data-lucide="upload" style="width:12px; height:12px;"></i> 录入附件</button>
                                 </div>
-                                <div id="pdca-edit-file-list" style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:6px;">
+                                <div id="pdca-edit-file-list" style="font-size:0.75rem; color:#64748b; display:flex; flex-direction:column; gap:4px;">
                                     <div style="display:flex; align-items:center; gap:6px;"><i data-lucide="file-text" style="width:14px; height:14px; color:#64748b;"></i> <span>暂未上传该阶段专属文档 (如异常报告或自测记录)</span></div>
                                 </div>
                             </div>
 
                             <!-- 阶段管控要求提示 -->
-                            <div style="background:#f4f3ff; border:1px solid #ddd6fe; border-radius:6px; padding:12px; margin-top:20px;">
-                                <label style="font-size:0.75rem; font-weight:800; color:#6d28d9; display:flex; align-items:center; gap:4px; margin-bottom:8px;"><i data-lucide="check-square" style="width:14px; height:14px;"></i> 本阶段专业作业管控要求</label>
-                                <div id="stage-control-reqs" style="font-size:0.75rem; color:#4c1d95; line-height:1.6;">
+                            <div style="background:#f4f3ff; border:1px solid #ddd6fe; border-radius:6px; padding:10px 12px; margin-top:12px;">
+                                <label style="font-size:0.75rem; font-weight:800; color:#6d28d9; display:flex; align-items:center; gap:4px; margin-bottom:6px;"><i data-lucide="check-square" style="width:14px; height:14px;"></i> 本阶段专业作业管控要求</label>
+                                <div id="stage-control-reqs" style="font-size:0.75rem; color:#4c1d95; line-height:1.5;">
                                     <div style="display:flex; gap:6px;"><i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981; margin-top:3px;"></i> <span>需详细阐述不良现象及影响范围。</span></div>
                                 </div>
                             </div>
@@ -1331,11 +1331,11 @@ requests.post(url, json=payload)</code></pre>
 
                     <!-- 右侧：管理属性 -->
                     <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
-                        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
-                            <i data-lucide="edit-3" style="color:#d97706; width:18px; height:18px;"></i>
-                            <h4 style="margin:0; font-size:0.9rem; color:#334155;">阶段管理属性</h4>
+                        <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="edit-3" style="color:#d97706; width:16px; height:16px;"></i>
+                            <h4 style="margin:0; font-size:0.85rem; color:#334155;">阶段管理属性</h4>
                         </div>
-                        <div style="padding:20px; flex:1; display:flex; flex-direction:column; gap:16px;">
+                        <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px;">
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 <span style="color:red;">*</span></label>
                                 <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
