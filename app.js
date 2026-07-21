@@ -12084,6 +12084,11 @@ window.openPdcaEditModal = function(id, isView = false) {
     const inputs = panel.querySelectorAll("input, textarea, select");
     inputs.forEach(el => el.disabled = isView);
 
+    const uploadBtn = document.getElementById("pdca-upload-btn");
+    if (uploadBtn) uploadBtn.style.display = isView ? "none" : "inline-flex";
+    const fileInput = document.getElementById("pdca-edit-file-upload");
+    if (fileInput) fileInput.disabled = isView;
+
     switchTab('pdca-edit-panel');
 };
 
@@ -12117,6 +12122,16 @@ window.syncPdcaFactorPills = function(factorKey) {
             }
         }
     });
+};
+
+window.triggerPdcaFileUpload = function() {
+    const fileInput = document.getElementById('pdca-edit-file-upload');
+    if (!fileInput) return;
+    if (fileInput.disabled) {
+        showToast("当前为查看只读模式，无法修改或录入附件", "warning");
+        return;
+    }
+    fileInput.click();
 };
 
 window.handlePdcaFileUpload = function(input) {
