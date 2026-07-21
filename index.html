@@ -3551,36 +3551,34 @@ requests.post(url, json=payload)</code></pre>
             </div>
             <div class="modal-body" style="padding:16px 20px;">
                 <input type="hidden" id="pdca-edit-id">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善单号</label>
                         <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">5M1E 归因分类 <span style="color:red;">*</span></label>
-                        <select id="pdca-edit-factor" class="form-control" onchange="syncPdcaFactorPills(this.value)">
-                            <option value="法">法</option>
-                            <option value="机">机</option>
-                            <option value="料">料</option>
-                            <option value="人">人</option>
-                            <option value="环">环</option>
-                        </select>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
+                        <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
                     </div>
                 </div>
 
-                <!-- 5M1E 可视化快速选择胶囊 -->
-                <div style="margin-bottom:12px; padding:8px 12px; background:rgba(241,245,249,0.7); border-radius:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">5M1E 快速点选:</span>
-                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">人</button>
-                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">机</button>
-                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">料</button>
-                    <button type="button" class="btn-secondary factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px; background:var(--color-primary); color:white;">法</button>
-                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">环</button>
-                </div>
-
+                <!-- 5M1E 归因分类 整列加大可视化快捷选择器 -->
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
-                    <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
+                    <label style="display:block; font-size:0.78rem; font-weight:700; margin-bottom:6px;">5M1E 归因分类 <span style="color:red;">*</span></label>
+                    <select id="pdca-edit-factor" style="display:none;">
+                        <option value="法">法</option>
+                        <option value="机">机</option>
+                        <option value="料">料</option>
+                        <option value="人">人</option>
+                        <option value="环">环</option>
+                    </select>
+                    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
+                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">人</button>
+                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">机</button>
+                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">料</button>
+                        <button type="button" class="btn-secondary factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center; background:var(--color-primary); color:white; border-color:var(--color-primary);">法</button>
+                        <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:7px 0; font-size:0.85rem; font-weight:700; border-radius:6px; text-align:center;">环</button>
+                    </div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
