@@ -12026,7 +12026,7 @@ window.openPdcaEditModal = function(id, isView = false) {
 
 
     if (id) {
-        const item = state.pdcaList.find(x => x.id === id);
+        const item = state.pdcaList.find(x => String(x.id) === String(id));
         if (item) {
             document.getElementById("modal-pdca-edit-title").innerText = "编辑 PDCA 质量改善单";
             document.getElementById("pdca-edit-id").value = item.id;
