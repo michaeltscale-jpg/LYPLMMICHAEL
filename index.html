@@ -1172,9 +1172,10 @@ requests.post(url, json=payload)</code></pre>
                             </div>
                         </div>
 
-                        <!-- 筛选与操作栏 -->
-                        <div class="glass-panel" style="margin-bottom: 16px; padding: 12px 20px;">
-                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <!-- 筛选与数据表格组合卡片 -->
+                        <div class="glass-panel" style="padding: 16px;">
+                            <!-- 筛选与操作工具栏 -->
+                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color);">
                                 <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 700;">筛选：</span>
                                 <select id="pdca-filter-product" class="form-control" style="width: 150px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
                                     <option value="">全部产品</option>
@@ -1201,10 +1202,6 @@ requests.post(url, json=payload)</code></pre>
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
                                 </button>
                             </div>
-                        </div>
-
-                        <!-- 数据表格/列表 -->
-                        <div class="glass-panel" style="padding: 16px;">
                             <div class="table-responsive">
                                 <table class="data-table" style="width: 100%; border-collapse: collapse;">
                                     <thead>
