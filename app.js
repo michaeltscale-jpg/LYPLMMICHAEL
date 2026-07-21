@@ -12033,6 +12033,7 @@ window.openPdcaEditModal = function(id) {
             document.getElementById("pdca-edit-owner").value = item.owner || '';
             document.getElementById("pdca-edit-target-date").value = item.target_date || '';
             document.getElementById("pdca-edit-status").value = item.status || '进行中';
+            syncPdcaFactorPills(item.factor_5m1e || '法');
         }
     } else {
         document.getElementById("modal-pdca-edit-title").innerText = "发起 PDCA 质量改善单 (8D-CAPA)";
@@ -12052,9 +12053,59 @@ window.openPdcaEditModal = function(id) {
         document.getElementById("pdca-edit-owner").value = "李建国";
         document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
         document.getElementById("pdca-edit-status").value = "进行中";
+        syncPdcaFactorPills("法");
     }
 
     modal.style.display = "flex";
+};
+
+window.selectPdcaFactor = function(factorKey) {
+    const sel = document.getElementById("pdca-edit-factor");
+    if (sel) {
+        sel.value = factorKey;
+        syncPdcaFactorPills(factorKey);
+    }
+};
+
+window.syncPdcaFactorPills = function(factorKey) {
+    const factors = ['人', '机', '料', '法', '环'];
+    factors.forEach(f => {
+        const btn = document.getElementById(`factor-pill-${f}`);
+        if (btn) {
+            if (f === factorKey) {
+                btn.style.background = 'var(--color-primary)';
+                btn.style.color = 'white';
+                btn.style.borderColor = 'var(--color-primary)';
+            } else {
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+            }
+        }
+    });
+};
+
+window.insertPdcaTemplate = function(type) {
+    const templates = {
+        'problem': `【What 异常现象】终检剥离强度测量超差极差放大\n【Where 位置/工段】生箔/表面处理工段 3# 槽\n【When 时间批次】2026-07-21 夜班批次\n【How Much 极差数据】指标测量标准 0.8N/mm，实际测得 0.52~0.68N/mm`,
+        'rootcause': `【1-Why 现象】铜箔附着力降低\n【2-Why 直接原因】添加剂硫含量测定值低于工艺下限\n【3-Why 过程原因】二供整平剂批次杂质偏高导致反应效率下降\n【4-Why 5M1E 归因】料 (Material) - 二供供应商原材料批次质量波动`,
+        'action': `【临时围堵对策】封存问题批次整平剂，切换一供备用料，不良卷全数隔离\n【永久纠正措施】调增极板电流密度 2.5A/dm²，优化粗化槽液循环流速\n【Poka-Yoke 防错】添加槽液自动滴加在线比重/电导率超限报警`,
+        'verify': `【数据对比】改善前合格率: 88.5% -> 改善后合格率: 99.2% (CPK: 1.45)\n【中试测算】连续 3 批次中试剥离强度均值 0.86N/mm\n【标准化固化】SOP 变更文号: SOP-2026-088 (V2.1)\n【ECN 联动】已发起工程设变单 ECN-2026-015 归档`
+    };
+
+    const targetIds = {
+        'problem': 'pdca-edit-problem',
+        'rootcause': 'pdca-edit-rootcause',
+        'action': 'pdca-edit-action',
+        'verify': 'pdca-edit-verify'
+    };
+
+    const targetEl = document.getElementById(targetIds[type]);
+    if (targetEl && templates[type]) {
+        if (!targetEl.value || confirm("当前输入框已有内容，是否替换为标准 8D 模板？")) {
+            targetEl.value = templates[type];
+        }
+    }
 };
 
 window.closePdcaModal = function(modalId) {

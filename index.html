@@ -3558,7 +3558,7 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                     <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">5M1E 归因分类 <span style="color:red;">*</span></label>
-                        <select id="pdca-edit-factor" class="form-control">
+                        <select id="pdca-edit-factor" class="form-control" onchange="syncPdcaFactorPills(this.value)">
                             <option value="法">法 (Method - 工艺/参数/SOP)</option>
                             <option value="机">机 (Machine - 设备/工装/刀具)</option>
                             <option value="料">料 (Material - 原材料/辅料/二供)</option>
@@ -3567,6 +3567,17 @@ requests.post(url, json=payload)</code></pre>
                         </select>
                     </div>
                 </div>
+
+                <!-- 5M1E 可视化快速选择胶囊 -->
+                <div style="margin-bottom:12px; padding:8px 12px; background:rgba(241,245,249,0.7); border-radius:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">5M1E 快速点选:</span>
+                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">人 (Man)</button>
+                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">机 (Machine)</button>
+                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">料 (Material)</button>
+                    <button type="button" class="btn-secondary factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px; background:var(--color-primary); color:white;">法 (Method)</button>
+                    <button type="button" class="btn-secondary factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:2px 10px; font-size:0.72rem; border-radius:12px;">环 (Environment)</button>
+                </div>
+
                 <div style="margin-bottom:12px;">
                     <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">改善主题 <span style="color:red;">*</span></label>
                     <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常或持续改善主题...">
@@ -3592,20 +3603,34 @@ requests.post(url, json=payload)</code></pre>
                         </select>
                     </div>
                 </div>
+
+                <!-- 4 步表单区 (附带快捷生成 8D 模板辅助按钮) -->
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">1. 问题识别与差异描述 (Plan)</label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label style="font-size:0.78rem;font-weight:700;">1. 问题识别与差异描述 (Plan)</label>
+                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:var(--color-primary);" onclick="insertPdcaTemplate('problem')"><i data-lucide="file-text" style="width:12px;height:12px;"></i> + 5W2H 现象模板</button>
+                    </div>
                     <textarea id="pdca-edit-problem" class="form-control" rows="2" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
                 </div>
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">2. 5-Why 根因分析 (Plan)</label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label style="font-size:0.78rem;font-weight:700;">2. 5-Why 根因分析 (Plan)</label>
+                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#d97706;" onclick="insertPdcaTemplate('rootcause')"><i data-lucide="sparkles" style="width:12px;height:12px;"></i> + 5-Why 排查模板</button>
+                    </div>
                     <textarea id="pdca-edit-rootcause" class="form-control" rows="2" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
                 </div>
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">3. CAPA 纠正防错措施 (Do)</label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label style="font-size:0.78rem;font-weight:700;">3. CAPA 纠正防错措施 (Do)</label>
+                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#7c3aed;" onclick="insertPdcaTemplate('action')"><i data-lucide="shield-check" style="width:12px;height:12px;"></i> + CAPA 对策模板</button>
+                    </div>
                     <textarea id="pdca-edit-action" class="form-control" rows="2" placeholder="记录具体改善步骤、工艺路线调整及中试计划..."></textarea>
                 </div>
                 <div style="margin-bottom:12px;">
-                    <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">4. 效果验证与标准化闭环 (Check / Act)</label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <label style="font-size:0.78rem;font-weight:700;">4. 效果验证与标准化闭环 (Check / Act)</label>
+                        <button type="button" class="btn-secondary" style="padding:2px 8px; font-size:0.7rem; color:#059669;" onclick="insertPdcaTemplate('verify')"><i data-lucide="file-check-2" style="width:12px;height:12px;"></i> + 验证与归档模板</button>
+                    </div>
                     <textarea id="pdca-edit-verify" class="form-control" rows="2" placeholder="记录中试测试合格率、剥离强度/粗糙度改善数据及 SOP/ECN 归档..."></textarea>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
