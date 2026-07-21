@@ -1391,7 +1391,7 @@ requests.post(url, json=payload)</code></pre>
                             </div>
                             <div>
                                 <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">关联研发产品</label>
-                                <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populatePdcaProductDropdowns()" onclick="if(this.options.length<=1) populatePdcaProductDropdowns()">
                                     <option value="">全部/通用产品</option>
                                 </select>
                                 <div style="margin-top:4px;">

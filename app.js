@@ -413,6 +413,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         const prodRes = await fetch(url);
         state.products = await prodRes.json();
+        populatePdcaProductDropdowns(state.products);
 
         // 健壮防御：如果因为缓存的过滤导致拉取产品列表为空，则强制重置过滤条件并重刷
         if ((!state.products || state.products.length === 0) && categoryFilter) {
@@ -11896,28 +11897,31 @@ window.fetchPdcaData = function() {
         });
 };
 
-function populatePdcaProductDropdowns(products) {
+window.populatePdcaProductDropdowns = function(products) {
+    const prods = products || state.products || [];
     const filterSelect = document.getElementById("pdca-filter-product");
     const editSelect = document.getElementById("pdca-edit-product");
-    if (!filterSelect || !editSelect) return;
-
-    const currentFilterVal = filterSelect.value;
-    const currentEditVal = editSelect.value;
 
     let filterHtml = '<option value="">全部产品</option>';
     let editHtml = '<option value="">全部/通用产品</option>';
 
-    products.forEach(p => {
-        filterHtml += `<option value="${p.id}">${p.category} (${p.code})</option>`;
-        editHtml += `<option value="${p.id}">${p.category} (${p.code})</option>`;
+    prods.forEach(p => {
+        const displayName = p.name ? `${p.name} (${p.category || p.code})` : `${p.category || '研发产品'} (${p.code})`;
+        filterHtml += `<option value="${p.id}">${displayName}</option>`;
+        editHtml += `<option value="${p.id}">${displayName}</option>`;
     });
 
-    filterSelect.innerHTML = filterHtml;
-    editSelect.innerHTML = editHtml;
-
-    if (currentFilterVal) filterSelect.value = currentFilterVal;
-    if (currentEditVal) editSelect.value = currentEditVal;
-}
+    if (filterSelect) {
+        const currentFilterVal = filterSelect.value;
+        filterSelect.innerHTML = filterHtml;
+        if (currentFilterVal) filterSelect.value = currentFilterVal;
+    }
+    if (editSelect) {
+        const currentEditVal = editSelect.value;
+        editSelect.innerHTML = editHtml;
+        if (currentEditVal) editSelect.value = currentEditVal;
+    }
+};
 
 function renderPdcaKpis(list) {
     const total = list.length;
@@ -12038,6 +12042,7 @@ window.openPdcaEditModal = function(id, isView = false) {
             document.getElementById("pdca-edit-action").value = item.action_plan || '';
             document.getElementById("pdca-edit-verify").value = item.verify_result || '';
             populateUserSelect("pdca-edit-owner", item.owner || '李建国');
+            populatePdcaProductDropdowns();
             document.getElementById("pdca-edit-target-date").value = item.target_date || '';
             document.getElementById("pdca-edit-status").value = item.status || '进行中';
             syncPdcaFactorPills(item.factor_5m1e || '法');
@@ -12059,6 +12064,7 @@ window.openPdcaEditModal = function(id, isView = false) {
         document.getElementById("pdca-edit-action").value = "";
         document.getElementById("pdca-edit-verify").value = "";
         populateUserSelect("pdca-edit-owner", "李建国");
+        populatePdcaProductDropdowns();
         document.getElementById("pdca-edit-target-date").value = new Date(Date.now() + 7*86400000).toISOString().split('T')[0];
         document.getElementById("pdca-edit-status").value = "进行中";
         syncPdcaFactorPills("法");
