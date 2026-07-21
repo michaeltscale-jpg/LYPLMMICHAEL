@@ -691,7 +691,7 @@ function switchTab(tabId) {
         'ecn-panel': '工程变更管控中心 (ECN)',
         'dingtalk-panel': '钉钉协同配置与回调调试中心',
         'users-panel': '用户与系统角色权限控制台',
-        'mqc-panel': '物料承认管控中心 (MQC) — 新料承认 · 一供/二供风险监控',
+        'mqc-panel': '物料承认管控中心 (MQC)',
         'task-panel': '研发受控任务与进度管控中心'
     };
     document.getElementById("header-panel-title").innerText = headerTitleMap[tabId] || 'PLM平台';
