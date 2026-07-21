@@ -12258,7 +12258,7 @@ window.openPdcaDetailModal = function(id) {
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 效果验证与标准化闭环</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. 效果验证</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.verify_result || '暂无验证结果'}</div>
         </div>
 
