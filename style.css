@@ -1475,6 +1475,39 @@ body {
     padding: 6px 10px;
 }
 
+/* 页首产品类别下拉框样式 */
+#header-category-select {
+    background: #ffffff !important;
+    color: var(--text-primary) !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px;
+    padding: 2px 24px 2px 8px !important;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='3 4.5 6 7.5 9 4.5'></polyline></svg>") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 8px center !important;
+    transition: var(--transition-smooth);
+}
+
+#header-category-select:hover {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+#header-category-select option {
+    background-color: #ffffff !important;
+    color: var(--text-primary) !important;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
 
 /* DMS 按钮统一大小样式 */
 .dms-action-btn {

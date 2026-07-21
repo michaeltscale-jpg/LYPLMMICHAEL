@@ -1815,9 +1815,52 @@ function getEcnStatusBadgeClass(status) {
     return "badge-gray";
 }
 
+// 渲染顶栏产品类别下拉框（替代原产品规格对比按钮）
+function renderHeaderCategorySelect() {
+    const selectEl = document.getElementById("header-category-select");
+    if (!selectEl) return;
+
+    const products = state.products || [];
+    if (products.length === 0) {
+        selectEl.innerHTML = `<option value="">暂无产品类别</option>`;
+        return;
+    }
+
+    selectEl.innerHTML = products.map(p => {
+        const thicknesses = p.thicknesses || [];
+        const isSelected = state.activeProductId && Number(p.id) === Number(state.activeProductId);
+        const code = p.code || '';
+        const catName = p.category || p.name || '';
+        const displayCat = (catName && catName !== code) ? catName : '';
+        const label = `${code}${displayCat ? ' · ' + displayCat : ''} (${thicknesses.length}个厚度)`;
+        return `<option value="${p.id}" ${isSelected ? 'selected' : ''}>${label}</option>`;
+    }).join('');
+
+    if (state.activeProductId) {
+        selectEl.value = state.activeProductId;
+    }
+}
+
+window.onHeaderCategoryChange = function(selectEl) {
+    const selectedId = Number(selectEl.value);
+    if (!selectedId) return;
+    if (Number(state.activeProductId) === selectedId) return;
+
+    state.activeProductId = selectedId;
+    const activeProdRow = (state.products || []).find(p => Number(p.id) === selectedId);
+    const thicknesses = activeProdRow ? (activeProdRow.thicknesses || []) : [];
+    state.activeThickness = thicknesses.length > 0 ? thicknesses[0] : 12;
+
+    saveStateToLocalStorage();
+    renderProductTabs();
+    renderThicknessTabs();
+    loadProductDetails(selectedId, state.activeThickness);
+};
+
 // Render left sidebar product list
 // Render top product tabs bar (标签更换，所有模块内容跟着主产品联动)
 function renderProductTabs() {
+    renderHeaderCategorySelect();
     const tabsWrap = document.getElementById("product-tabs-bar");
     if (!tabsWrap) return;
     tabsWrap.innerHTML = "";
