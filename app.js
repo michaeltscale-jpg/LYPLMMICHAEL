@@ -644,13 +644,10 @@ function switchTab(tabId) {
     }
     const prodTabsSection = document.getElementById("sidebar-product-tabs-section");
     const thickTabs = document.getElementById("thickness-tabs-bar");
-    if (prodTabsSection && thickTabs) {
-        if (tabId === 'plm-panel' || tabId === 'dms-panel') {
-            prodTabsSection.style.display = "";
-        } else {
-            prodTabsSection.style.display = "none";
-        }
-
+    if (prodTabsSection) {
+        prodTabsSection.style.display = "none";
+    }
+    if (thickTabs) {
         thickTabs.style.display = "none";
     }
 
