@@ -776,14 +776,21 @@ body {
 
 .form-control {
     width: 100%;
+    box-sizing: border-box;
+    height: 36px;
     background-color: #ffffff;
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    padding: 10px 12px;
+    padding: 6px 12px;
     border-radius: 6px;
     outline: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
     transition: var(--transition-smooth);
+}
+
+textarea.form-control {
+    height: auto;
 }
 
 .form-control:focus {
