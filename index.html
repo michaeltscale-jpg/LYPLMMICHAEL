@@ -3557,12 +3557,6 @@ requests.post(url, json=payload)</code></pre>
                         <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成 (如 PDCA-2026-004)" readonly style="background:#f8fafc;">
                     </div>
                     <div>
-                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
-                        <select id="pdca-edit-owner" class="form-control">
-                            <option value="">― 请选择责任人 ―</option>
-                        </select>
-                    </div>
-                    <div>
                         <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">5M1E 归因分类 <span style="color:red;">*</span></label>
                         <select id="pdca-edit-factor" class="form-control" onchange="syncPdcaFactorPills(this.value)">
                             <option value="法">法 (Method - 工艺/参数/SOP)</option>
@@ -3570,6 +3564,12 @@ requests.post(url, json=payload)</code></pre>
                             <option value="料">料 (Material - 原材料/辅料/二供)</option>
                             <option value="人">人 (Man - 操作人员/培训/技能)</option>
                             <option value="环">环 (Environment - 温湿度/洁净度)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.78rem;font-weight:700;margin-bottom:4px;">责任人 <span style="color:red;">*</span></label>
+                        <select id="pdca-edit-owner" class="form-control">
+                            <option value="">― 请选择责任人 ―</option>
                         </select>
                     </div>
                 </div>
