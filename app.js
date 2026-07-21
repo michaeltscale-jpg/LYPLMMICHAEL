@@ -1827,12 +1827,8 @@ function renderHeaderCategorySelect() {
     }
 
     selectEl.innerHTML = products.map(p => {
-        const thicknesses = p.thicknesses || [];
         const isSelected = state.activeProductId && Number(p.id) === Number(state.activeProductId);
-        const code = p.code || '';
-        const catName = p.category || p.name || '';
-        const displayCat = (catName && catName !== code) ? catName : '';
-        const label = `${code}${displayCat ? ' · ' + displayCat : ''} (${thicknesses.length}个厚度)`;
+        const label = p.category || p.name || p.code || '';
         return `<option value="${p.id}" ${isSelected ? 'selected' : ''}>${label}</option>`;
     }).join('');
 
