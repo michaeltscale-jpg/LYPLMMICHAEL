@@ -12248,7 +12248,7 @@ window.openPdcaDetailModal = function(id) {
         </div>
 
         <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. 5-Why 根因分析</div>
+            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. Do 实施</div>
             <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.root_cause || '未填写'}</div>
         </div>
 
