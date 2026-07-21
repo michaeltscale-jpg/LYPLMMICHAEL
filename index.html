@@ -1397,7 +1397,7 @@ requests.post(url, json=payload)</code></pre>
                 <div>
                     <button class="btn-secondary" onclick="switchTab('pdca-panel')">取消</button>
                 </div>
-                <div style="display:flex; gap:12px;">
+                <div id="pdca-edit-action-btns" style="display:flex; gap:12px;">
                     <button class="btn-primary" style="background:#10b981; border:1px solid #059669;" onclick="approvePDCAStage()">审核通过并进入下一阶段</button>
                     <button class="btn-primary" onclick="savePdcaRecord()">仅保存当前阶段</button>
                 </div>
@@ -3718,21 +3718,7 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
-    <!-- ===== PDCA 详情与推展履历 模态弹窗 ===== -->
-    <div class="modal-overlay" id="modal-pdca-detail" style="display:none; z-index:1060;">
-        <div class="modal-box" style="width:740px; max-width:92vw; max-height:90vh; overflow-y:auto;">
-            <div class="modal-header">
-                <h3><i data-lucide="file-text" style="vertical-align:middle;margin-right:6px;color:var(--color-primary);"></i> PDCA 8D 质量改善单详情</h3>
-                <button class="modal-close" onclick="closePdcaModal('modal-pdca-detail')">&times;</button>
-            </div>
-            <div class="modal-body" style="padding:20px;" id="pdca-detail-content">
-                <!-- 由 JS 动态渲染 -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closePdcaModal('modal-pdca-detail')">关闭</button>
-            </div>
-        </div>
-    </div>
+
 
 </body>
 </html>

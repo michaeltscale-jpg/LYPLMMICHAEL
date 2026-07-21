@@ -12011,7 +12011,7 @@ function renderPdcaTable(list) {
     if (window.lucide) lucide.createIcons();
 }
 
-window.openPdcaEditModal = function(id) {
+window.openPdcaEditModal = function(id, isView = false) {
     const panel = document.getElementById("pdca-edit-panel");
     if (!panel) return;
 
@@ -12060,6 +12060,16 @@ window.openPdcaEditModal = function(id) {
     const maxStage = document.getElementById("pdca-edit-stage").value || 'Plan';
     window.currentPdcaMaxStage = maxStage;
     switchPDCAStage(maxStage);
+
+    const actionBtns = document.getElementById("pdca-edit-action-btns");
+    if (actionBtns) actionBtns.style.display = isView ? "none" : "flex";
+    
+    if (isView) {
+        document.getElementById("modal-pdca-edit-title").innerText = "查看 PDCA 质量改善单";
+    }
+
+    const inputs = panel.querySelectorAll("input, textarea, select");
+    inputs.forEach(el => el.disabled = isView);
 
     switchTab('pdca-edit-panel');
 };
@@ -12200,82 +12210,7 @@ window.deletePdcaRecord = function(id) {
 };
 
 window.openPdcaDetailModal = function(id) {
-    const item = state.pdcaList.find(x => x.id === id);
-    if (!item) return;
-
-    const modal = document.getElementById("modal-pdca-detail");
-    const container = document.getElementById("pdca-detail-content");
-    if (!modal || !container) return;
-
-    const stages = ['Plan', 'Do', 'Check', 'Act'];
-    const stageIdx = stages.indexOf(item.stage);
-
-    let progressHtml = `
-        <div style="display:flex;justify-content:space-between;margin-bottom:20px;position:relative;">
-            <div style="position:absolute;top:15px;left:40px;right:40px;height:4px;background:#e2e8f0;z-index:1;"></div>
-            <div style="position:absolute;top:15px;left:40px;width:${(stageIdx / 3) * 80}%;height:4px;background:var(--color-primary);z-index:2;transition:all 0.4s;"></div>
-    `;
-
-    stages.forEach((stg, idx) => {
-        const isCurrent = (stg === item.stage);
-        const isDone = (idx <= stageIdx);
-        const bgColor = isDone ? 'var(--color-primary)' : '#cbd5e1';
-        const textColor = isDone ? '#ffffff' : '#64748b';
-        progressHtml += `
-            <div style="text-align:center;z-index:3;">
-                <div style="width:32px;height:32px;border-radius:50%;background:${bgColor};color:${textColor};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;margin:0 auto 6px;box-shadow:0 0 0 4px ${isCurrent ? 'rgba(37,99,235,0.2)' : 'transparent'};">
-                    ${idx + 1}
-                </div>
-                <div style="font-size:0.75rem;font-weight:${isCurrent ? '800' : '600'};color:${isCurrent ? 'var(--color-primary)' : 'var(--text-secondary)'};">
-                    ${stg}
-                </div>
-            </div>
-        `;
-    });
-    progressHtml += `</div>`;
-
-    container.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--border-color);margin-bottom:16px;">
-            <div>
-                <span style="font-family:monospace;font-weight:800;color:var(--color-primary);font-size:0.9rem;">${item.code}</span>
-                <h3 style="margin:4px 0 0 0;font-size:1.1rem;color:var(--text-primary);">${item.title}</h3>
-            </div>
-            <div>
-                <span style="padding:4px 12px;border-radius:12px;font-size:0.78rem;font-weight:800;background:rgba(37,99,235,0.12);color:var(--color-primary);">5M1E 归因: ${item.factor_5m1e}</span>
-            </div>
-        </div>
-
-        ${progressHtml}
-
-        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:var(--color-primary);margin-bottom:6px;">1. Plan 问题识别与解决方案</div>
-            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.problem_desc || '未填写'}</div>
-        </div>
-
-        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#d97706;margin-bottom:6px;">2. Do 实施</div>
-            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.root_cause || '未填写'}</div>
-        </div>
-
-        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#7c3aed;margin-bottom:6px;">3. Check 检查效果</div>
-            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.action_plan || '未填写'}</div>
-        </div>
-
-        <div class="glass-panel" style="padding:14px;margin-bottom:14px;background:#f8fafc;">
-            <div style="font-size:0.78rem;font-weight:800;color:#059669;margin-bottom:6px;">4. Act 标准化闭环或调整解决方案</div>
-            <div style="font-size:0.82rem;color:var(--text-primary);white-space:pre-wrap;">${item.verify_result || '暂无验证结果'}</div>
-        </div>
-
-        <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-secondary);padding-top:10px;border-top:1px solid var(--border-color);">
-            <div>责任人: <strong>${item.owner || '-'}</strong></div>
-            <div>预计完成日期: <strong>${item.target_date || '-'}</strong></div>
-            <div>状态: <strong>${item.status}</strong></div>
-        </div>
-    `;
-
-    modal.style.display = "flex";
-    if (window.lucide) lucide.createIcons();
+    window.openPdcaEditModal(id, true);
 };
 
 window.switchPDCAStage = function(stage) {
