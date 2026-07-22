@@ -3016,41 +3016,42 @@ window.renderRoutingStepsForVersion = function(version) {
             `;
         }
 
-        // 为每个工段构建全景独立 SOP & SIP 配置与保存版块
+        // 每个工段的 SOP 与 SIP 独成一页，提供各自单独个别的保存控制
         const sopId = `routing-step-sop-${r.id}`;
         const sipId = `routing-step-sip-${r.id}`;
 
         const sopSipSection = `
-            <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                    <div style="font-weight: 700; font-size: 0.82rem; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="book-open" style="width: 15px; height: 15px; color: var(--color-primary);"></i>
-                        <span>【${r.stage_name}】工段作业规程 (SOP) 与检验规范 (SIP) 独立管理</span>
+            <div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <!-- SOP 独立成页控制卡片 -->
+                <div style="background: #ffffff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 14px; box-shadow: 0 2px 8px rgba(37,99,235,0.06); display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eff6ff; padding-bottom: 8px;">
+                        <div style="font-weight: 800; font-size: 0.82rem; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-text" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                            <span>📄 [SOP 独立页] ${r.stage_name} 标准作业程序</span>
+                        </div>
+                        ${r.status === '活动' ? `
+                        <button class="btn-primary" style="padding: 3px 10px; font-size: 0.72rem; border-radius: 6px; background: linear-gradient(135deg, #2563eb, #3b82f6);" onclick="saveSingleStepDoc(${r.id}, 'sop', '${r.stage_name}')">
+                            <i data-lucide="save" style="width: 12px; height: 12px;"></i> 单独保存 SOP 页
+                        </button>` : ''}
                     </div>
-                    ${r.status === '活动' ? `
-                    <button class="btn-primary" style="padding: 4px 12px; font-size: 0.72rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(37,99,235,0.25);" onclick="saveSingleStepSopSip(${r.id}, '${r.stage_name}')">
-                        <i data-lucide="save" style="width: 13px; height: 13px;"></i> 独立保存【${r.stage_name}】SOP/SIP
-                    </button>` : ''}
+                    <textarea id="${sopId}" class="form-control" placeholder="【${r.stage_name}】SOP 独立页：请输入该工段的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 95px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sop || ''}</textarea>
+                    ${r.sop_image ? `<div style="margin-top: 8px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SOP 规范图形"></div>` : ''}
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <!-- SOP 独立控制组 -->
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                        <label style="display: block; font-weight: 700; font-size: 0.75rem; color: var(--color-primary); margin-bottom: 6px; display:flex; align-items:center; gap:4px;">
-                            <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> SOP 标准作业程序
-                        </label>
-                        <textarea id="${sopId}" class="form-control" placeholder="请输入【${r.stage_name}】的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 85px; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.4;">${r.sop || ''}</textarea>
-                        ${r.sop_image ? `<div style="margin-top: 6px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击查看大图"></div>` : ''}
+                <!-- SIP 独立成页控制卡片 -->
+                <div style="background: #ffffff; border: 1.5px solid #a7f3d0; border-radius: 8px; padding: 14px; box-shadow: 0 2px 8px rgba(5,150,105,0.06); display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #ecfdf5; padding-bottom: 8px;">
+                        <div style="font-weight: 800; font-size: 0.82rem; color: #065f46; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="check-square" style="width: 16px; height: 16px; color: #059669;"></i>
+                            <span>📄 [SIP 独立页] ${r.stage_name} 标准检验规范</span>
+                        </div>
+                        ${r.status === '活动' ? `
+                        <button class="btn-primary" style="padding: 3px 10px; font-size: 0.72rem; border-radius: 6px; background: linear-gradient(135deg, #059669, #10b981);" onclick="saveSingleStepDoc(${r.id}, 'sip', '${r.stage_name}')">
+                            <i data-lucide="save" style="width: 12px; height: 12px;"></i> 单独保存 SIP 页
+                        </button>` : ''}
                     </div>
-
-                    <!-- SIP 独立控制组 -->
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                        <label style="display: block; font-weight: 700; font-size: 0.75rem; color: var(--color-success); margin-bottom: 6px; display:flex; align-items:center; gap:4px;">
-                            <i data-lucide="check-square" style="width: 13px; height: 13px;"></i> SIP 标准检验规范
-                        </label>
-                        <textarea id="${sipId}" class="form-control" placeholder="请输入【${r.stage_name}】的检验项目、规格标准公差与检测工具..." style="width: 100%; min-height: 85px; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.4;">${r.sip || ''}</textarea>
-                        ${r.sip_image ? `<div style="margin-top: 6px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击查看大图"></div>` : ''}
-                    </div>
+                    <textarea id="${sipId}" class="form-control" placeholder="【${r.stage_name}】SIP 独立页：请输入该工段的受控检验项目、规格公差与判定标准..." style="width: 100%; min-height: 95px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sip || ''}</textarea>
+                    ${r.sip_image ? `<div style="margin-top: 8px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SIP 规范图形"></div>` : ''}
                 </div>
             </div>
         `;
@@ -3087,7 +3088,40 @@ window.renderRoutingStepsForVersion = function(version) {
     lucide.createIcons();
 };
 
-// 单工段 SOP/SIP 独立就地保存函数
+// 工段单文档 (SOP 页 或 SIP 页) 独立成页单独个别保存函数
+window.saveSingleStepDoc = function(stepId, docType, stageName) {
+    const product = state.activeProduct;
+    if (!product || !stepId) return;
+
+    const isSop = docType === 'sop';
+    const el = document.getElementById(`routing-step-${docType}-${stepId}`);
+    const content = el ? el.value.trim() : '';
+
+    fetch(`/api/products/${product.id}/save_step_single_doc`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            step_id: stepId,
+            doc_type: docType,
+            content: content
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            const labelName = isSop ? "SOP 标准作业程序页" : "SIP 标准检验规范页";
+            showToast(data.message || `✨ 已成功将【${stageName}】的 ${labelName} 独成一页，单独保存归档至文管中心 (DMS)！`, "success");
+            loadProductDetails(product.id, state.activeThickness);
+        } else {
+            showToast(data.error || "保存失败，请重试", "error");
+        }
+    })
+    .catch(err => {
+        showToast("网络连接异常，保存失败", "error");
+    });
+};
+
+// 单工段双规程保存兼容函数
 window.saveSingleStepSopSip = function(stepId, stageName) {
     const product = state.activeProduct;
     if (!product || !stepId) return;

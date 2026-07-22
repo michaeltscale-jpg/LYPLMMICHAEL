@@ -1752,6 +1752,58 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 self.send_json({"status": "success", "message": f"✨ 已成功独立保存【{stage_name}】工段 SOP/SIP，并自动同步受控归档至文管中心 (DMS)！", "step_id": step_id, "stage_name": stage_name})
 
+            # 4.5.2 工段 SOP 或 SIP 独成一页单独个别保存接口
+            elif path.endswith("/save_step_single_doc") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+
+                step_id = data.get('step_id')
+                doc_type = (data.get('doc_type') or 'sop').lower()
+                content = data.get('content', '')
+                image = data.get('image', '')
+
+                if not step_id:
+                    self.send_json({"error": "step_id is required"}, 400)
+                    return
+
+                cursor.execute("SELECT id, stage_name, spec_thickness, sop, sip, sop_image, sip_image FROM product_routing WHERE id = ? AND product_id = ?", (step_id, product_id))
+                step_row = cursor.fetchone()
+                if not step_row:
+                    self.send_json({"error": "Step not found"}, 404)
+                    return
+
+                stage_name = step_row['stage_name']
+                thickness = step_row['spec_thickness']
+
+                if doc_type == 'sop':
+                    cursor.execute("UPDATE product_routing SET sop=?, sop_image=? WHERE id=? AND product_id=?", (content, image, step_id, product_id))
+                    doc_label = "SOP 标准作业程序"
+                else:
+                    cursor.execute("UPDATE product_routing SET sip=?, sip_image=? WHERE id=? AND product_id=?", (content, image, step_id, product_id))
+                    doc_label = "SIP 标准检验规范"
+
+                cursor.execute("""
+                INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
+                VALUES (?, ?, '单文档独成一页归档', '--', '--', ?, '工艺工程师', ?, ?)
+                """, (
+                    product_id, thickness,
+                    json.dumps({"step_id": step_id, "stage_name": stage_name, "doc_type": doc_type, "content": content}),
+                    f"已单独将【{stage_name}】工段的 {doc_label} 独成一页保存并归档至文管中心 (DMS)。",
+                    datetime.now().isoformat()
+                ))
+
+                conn.commit()
+                self.send_json({
+                    "status": "success", 
+                    "message": f"✨ 已成功将【{stage_name}】的 {doc_label} 独立成一页，单独个别保存并归档至文管中心 (DMS)！", 
+                    "step_id": step_id, 
+                    "stage_name": stage_name,
+                    "doc_type": doc_type
+                })
+
             # 4.6 TDS 微调保存（不升版）
             elif path.endswith("/save_tds_rows") and "/products/" in path:
                 try:
