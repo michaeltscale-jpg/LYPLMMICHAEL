@@ -812,7 +812,6 @@ def init_database(force_reset=False):
             owner         TEXT,
             target_date   TEXT,
             ecn_id        INTEGER,
-            stage_dates   TEXT DEFAULT '{}',
             created_at    TEXT,
             updated_at    TEXT
         )
