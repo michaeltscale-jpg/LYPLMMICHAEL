@@ -1707,6 +1707,51 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 self.send_json({"message": f"工步「{stage_name}」参数微调成功，已更新基准参数（当前版本不变）。", "spec_thickness": thickness})
 
+            # 4.5.1 单工段 SOP/SIP 专属独立保存（数据隔离）
+            elif path.endswith("/save_step_sop_sip") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+
+                step_id = data.get('step_id')
+                if not step_id:
+                    self.send_json({"error": "step_id is required"}, 400)
+                    return
+
+                sop = data.get('sop', '')
+                sip = data.get('sip', '')
+                sop_image = data.get('sop_image', '')
+                sip_image = data.get('sip_image', '')
+
+                cursor.execute("SELECT id, stage_name, spec_thickness FROM product_routing WHERE id = ? AND product_id = ?", (step_id, product_id))
+                step_row = cursor.fetchone()
+                if not step_row:
+                    self.send_json({"error": "Step not found"}, 404)
+                    return
+
+                stage_name = step_row['stage_name']
+                thickness = step_row['spec_thickness']
+
+                cursor.execute("""
+                UPDATE product_routing SET sop=?, sip=?, sop_image=?, sip_image=?
+                WHERE id=? AND product_id=?
+                """, (sop, sip, sop_image, sip_image, step_id, product_id))
+
+                cursor.execute("""
+                INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
+                VALUES (?, ?, 'SOP/SIP独立保存', '--', '--', ?, '工艺工程师', ?, ?)
+                """, (
+                    product_id, thickness,
+                    json.dumps({"step_id": step_id, "stage_name": stage_name, "sop": sop, "sip": sip}),
+                    f"已独立更新保存【{stage_name}】工段的 SOP 与 SIP 规程。",
+                    datetime.now().isoformat()
+                ))
+
+                conn.commit()
+                self.send_json({"status": "success", "message": f"✨ 已成功独立更新并保存【{stage_name}】工段的 SOP 与 SIP 规程！", "step_id": step_id, "stage_name": stage_name})
+
             # 4.6 TDS 微调保存（不升版）
             elif path.endswith("/save_tds_rows") and "/products/" in path:
                 try:

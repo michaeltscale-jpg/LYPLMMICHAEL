@@ -3016,26 +3016,44 @@ window.renderRoutingStepsForVersion = function(version) {
             `;
         }
 
-        // SOP/SIP 展示
-        let sopSipHtml = '';
-        if (r.sop || r.sip) {
-            sopSipHtml = `
-                <div style="margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem; color: var(--text-secondary);">
-                    ${r.sop ? `
-                    <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
-                        <div style="font-weight: 700; color: var(--color-primary); margin-bottom: 6px; display:flex; align-items:center; gap:4px;"><i data-lucide="book-open" style="width: 12px; height: 12px;"></i> SOP 标准作业程序：</div>
-                        <div style="white-space: pre-wrap; line-height: 1.4; margin-bottom: 6px;">${r.sop}</div>
-                        ${r.sop_image ? `<div style="margin-top: 8px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 240px; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer;" onclick="window.open(this.src)"></div>` : ''}
-                    </div>` : ''}
-                    ${r.sip ? `
-                    <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
-                        <div style="font-weight: 700; color: var(--color-success); margin-bottom: 6px; display:flex; align-items:center; gap:4px;"><i data-lucide="check-square" style="width: 12px; height: 12px;"></i> SIP 标准检验程序：</div>
-                        <div style="white-space: pre-wrap; line-height: 1.4; margin-bottom: 6px;">${r.sip}</div>
-                        ${r.sip_image ? `<div style="margin-top: 8px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 240px; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer;" onclick="window.open(this.src)"></div>` : ''}
-                    </div>` : ''}
+        // 为每个工段构建全景独立 SOP & SIP 配置与保存版块
+        const sopId = `routing-step-sop-${r.id}`;
+        const sipId = `routing-step-sip-${r.id}`;
+
+        const sopSipSection = `
+            <div style="margin-top: 14px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                    <div style="font-weight: 700; font-size: 0.82rem; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="book-open" style="width: 15px; height: 15px; color: var(--color-primary);"></i>
+                        <span>【${r.stage_name}】工段作业规程 (SOP) 与检验规范 (SIP) 独立管理</span>
+                    </div>
+                    ${r.status === '活动' ? `
+                    <button class="btn-primary" style="padding: 4px 12px; font-size: 0.72rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(37,99,235,0.25);" onclick="saveSingleStepSopSip(${r.id}, '${r.stage_name}')">
+                        <i data-lucide="save" style="width: 13px; height: 13px;"></i> 独立保存【${r.stage_name}】SOP/SIP
+                    </button>` : ''}
                 </div>
-            `;
-        }
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <!-- SOP 独立控制组 -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                        <label style="display: block; font-weight: 700; font-size: 0.75rem; color: var(--color-primary); margin-bottom: 6px; display:flex; align-items:center; gap:4px;">
+                            <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> SOP 标准作业程序
+                        </label>
+                        <textarea id="${sopId}" class="form-control" placeholder="请输入【${r.stage_name}】的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 85px; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.4;">${r.sop || ''}</textarea>
+                        ${r.sop_image ? `<div style="margin-top: 6px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击查看大图"></div>` : ''}
+                    </div>
+
+                    <!-- SIP 独立控制组 -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                        <label style="display: block; font-weight: 700; font-size: 0.75rem; color: var(--color-success); margin-bottom: 6px; display:flex; align-items:center; gap:4px;">
+                            <i data-lucide="check-square" style="width: 13px; height: 13px;"></i> SIP 标准检验规范
+                        </label>
+                        <textarea id="${sipId}" class="form-control" placeholder="请输入【${r.stage_name}】的检验项目、规格标准公差与检测工具..." style="width: 100%; min-height: 85px; font-size: 0.76rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.4;">${r.sip || ''}</textarea>
+                        ${r.sip_image ? `<div style="margin-top: 6px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击查看大图"></div>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
 
         // 版本注释展示
         let notesHtml = '';
@@ -3060,13 +3078,46 @@ window.renderRoutingStepsForVersion = function(version) {
                 ${stdParamsHtml}
             </div>
             ${stepRemarkHtml}
-            ${sopSipHtml}
+            ${sopSipSection}
             ${notesHtml}
         `;
         container.appendChild(card);
     });
 
     lucide.createIcons();
+};
+
+// 单工段 SOP/SIP 独立就地保存函数
+window.saveSingleStepSopSip = function(stepId, stageName) {
+    const product = state.activeProduct;
+    if (!product || !stepId) return;
+
+    const sopEl = document.getElementById(`routing-step-sop-${stepId}`);
+    const sipEl = document.getElementById(`routing-step-sip-${stepId}`);
+    const sop = sopEl ? sopEl.value.trim() : '';
+    const sip = sipEl ? sipEl.value.trim() : '';
+
+    fetch(`/api/products/${product.id}/save_step_sop_sip`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            step_id: stepId,
+            sop: sop,
+            sip: sip
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            showToast(data.message || `✨ 已成功独立保存【${stageName}】工段的 SOP 与 SIP！`, "success");
+            loadProductDetails(product.id, state.activeThickness);
+        } else {
+            showToast(data.error || "保存失败，请重试", "error");
+        }
+    })
+    .catch(err => {
+        showToast("网络连接异常，保存失败", "error");
+    });
 };
 
 window.openRoutingDesigner = function() {
