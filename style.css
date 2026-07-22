@@ -725,6 +725,7 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+    max-height: 90vh;
     overflow: hidden;
     animation: modalShow 0.3s cubic-bezier(0.1, 0.8, 0.25, 1);
 }
@@ -740,6 +741,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .modal-header h3 {
@@ -758,8 +760,10 @@ body {
 
 .modal-body {
     padding: 20px 24px;
-    overflow-y: auto;
+    overflow-y: auto !important;
+    max-height: calc(90vh - 120px);
     flex: 1;
+    -webkit-overflow-scrolling: touch;
 }
 
 .form-group {
@@ -2613,6 +2617,20 @@ textarea.is-maximized {
     border-color: #2563eb;
     transform: scale(1.05);
 }
+
+/* 确保页面全域与弹窗内容区域在文本框拉高后均可流畅上下滚动 */
+.main-content,
+.content-body,
+.panels-container,
+.tab-content,
+.tab-panel,
+.modal-body,
+.pdca-tab,
+.modal-overlay {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
 
 
 
