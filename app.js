@@ -13113,6 +13113,204 @@ window.XiaoheAI = {
         }
     },
 
+    // --------------------------------------------------------------------------
+    // 小赫 AI 助手：“光标/鼠标落停即协助” (Focus & Hover Sensing Methods)
+    // --------------------------------------------------------------------------
+    currentTargetElement: null,
+    currentTargetLabel: "",
+    pillHideTimer: null,
+
+    // 全局绑定光标与鼠标停靠监听
+    bindGlobalFocusTracker: function() {
+        const self = this;
+
+        // 监听 focusin (光标点击落停)
+        document.addEventListener('focusin', function(e) {
+            self.handleInputInteraction(e.target, 'focus');
+        }, true);
+
+        // 监听 mouseover (鼠标悬停移入)
+        document.addEventListener('mouseover', function(e) {
+            if (e.target && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.type === 'text'))) {
+                self.handleInputInteraction(e.target, 'hover');
+            }
+        }, true);
+
+        // 鼠标移出或失去焦点时缓动淡出微型胶囊
+        document.addEventListener('mouseout', function(e) {
+            if (e.target && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.type === 'text'))) {
+                self.scheduleHidePill();
+            }
+        }, true);
+    },
+
+    // 处理输入框交互
+    handleInputInteraction: function(target, type) {
+        if (!target) return;
+        // 排除小赫自身的输入框与按钮
+        if (target.closest('#xiaohe-drawer') || target.id === 'xiaohe-input') return;
+
+        if (target.tagName === 'TEXTAREA' || (target.tagName === 'INPUT' && target.type === 'text')) {
+            if (this.pillHideTimer) {
+                clearTimeout(this.pillHideTimer);
+                this.pillHideTimer = null;
+            }
+
+            this.currentTargetElement = target;
+            this.currentTargetLabel = this.inferFieldLabel(target);
+
+            // 更新右侧抽屉顶部的上下文感知
+            this.updateContextDisplay();
+
+            // 显示随动胶囊
+            this.showFocusPill(target);
+        }
+    },
+
+    // 推导输入框名称
+    inferFieldLabel: function(el) {
+        if (!el) return "活动文本框";
+        
+        // 1. 尝试找同一个 parent 或上一个 element 里的 label
+        let parent = el.parentNode;
+        if (parent) {
+            let label = parent.querySelector('label');
+            if (label && label.innerText) {
+                return label.innerText.replace('*', '').trim();
+            }
+        }
+        
+        // 2. 尝试从 placeholder 读取
+        if (el.placeholder && el.placeholder.length > 2) {
+            return el.placeholder.slice(0, 14) + "...";
+        }
+
+        // 3. 尝试从 ID 匹配
+        if (el.id) {
+            if (el.id.includes('sop')) return "SOP 标准作业程序";
+            if (el.id.includes('sip')) return "SIP 标准检验规范";
+            if (el.id.includes('problem')) return "详细问题描述";
+            if (el.id.includes('improve')) return "改善对策";
+            if (el.id.includes('reason')) return "变更原因描述";
+            if (el.id.includes('remark')) return "备注说明框";
+        }
+
+        return "当前编辑框";
+    },
+
+    // 刷新上下文 UI (包含感知到的焦点框)
+    updateContextDisplay: function() {
+        const sensing = this.getContextSensing();
+        const displayEl = document.getElementById('xiaohe-context-display');
+        if (displayEl) {
+            const targetText = this.currentTargetLabel ? ` 🎯 [目标框: ${this.currentTargetLabel}]` : '';
+            displayEl.innerText = `${sensing.current_view} | ${sensing.context_name}${targetText}`;
+        }
+    },
+
+    // 显示随动微型胶囊
+    showFocusPill: function(target) {
+        const pill = document.getElementById('xiaohe-focus-pill');
+        const pillText = document.getElementById('xiaohe-pill-text');
+        if (!pill || !target) return;
+
+        const rect = target.getBoundingClientRect();
+        // 避开过小的隐藏元素
+        if (rect.width === 0 || rect.height === 0) return;
+
+        // 计算居右悬浮坐标
+        const top = rect.top + window.scrollY + 6;
+        const left = rect.right + window.scrollX - 95;
+
+        pill.style.top = `${Math.max(top, 10)}px`;
+        pill.style.left = `${Math.max(left, 10)}px`;
+
+        if (pillText) {
+            pillText.innerText = `✨ 小赫起草`;
+        }
+
+        pill.classList.add('active');
+        if (window.lucide) lucide.createIcons();
+    },
+
+    // 计划隐藏胶囊
+    scheduleHidePill: function() {
+        const self = this;
+        if (this.pillHideTimer) clearTimeout(this.pillHideTimer);
+        this.pillHideTimer = setTimeout(function() {
+            self.hideFocusPill();
+        }, 1800);
+    },
+
+    hideFocusPill: function() {
+        const pill = document.getElementById('xiaohe-focus-pill');
+        if (pill) pill.classList.remove('active');
+    },
+
+    // 点击跟随胶囊直接生成草稿并填入
+    triggerPillClick: function(e) {
+        if (e) e.stopPropagation();
+        this.hideFocusPill();
+        this.openDrawer();
+
+        let actionType = "general";
+        if (this.currentTargetElement && this.currentTargetElement.id) {
+            const id = this.currentTargetElement.id;
+            if (id.includes('sop')) actionType = "sop_draft";
+            else if (id.includes('sip')) actionType = "sip_draft";
+            else if (id.includes('problem') || id.includes('improve')) actionType = "quality_diagnosis";
+        }
+
+        const label = this.currentTargetLabel || "当前编辑框";
+        this.sendMessage(`请针对当前鼠标聚焦的【${label}】起草规范草稿`, actionType);
+    },
+
+    // 回填草稿到鼠标锁定的输入框中 (一键落子)
+    applyDraft: function(rawElemId, targetFieldId) {
+        const rawElem = document.getElementById(rawElemId);
+        if (!rawElem) return;
+        const text = rawElem.value;
+
+        // 优先寻找鼠标刚才锁定的焦点输入框
+        let field = this.currentTargetElement;
+
+        // 次选：通过传参 ID 寻找
+        if (!field && targetFieldId) {
+            field = document.getElementById(targetFieldId);
+        }
+
+        // 备选：查找页面激活焦点
+        if (!field) {
+            field = document.activeElement;
+            if (field && (field.tagName !== 'TEXTAREA' && field.tagName !== 'INPUT')) {
+                field = document.querySelector('textarea:not(#xiaohe-input), input[type="text"]:not(#xiaohe-input)');
+            }
+        }
+
+        if (field && (field.tagName === 'TEXTAREA' || field.tagName === 'INPUT')) {
+            field.value = text;
+            field.focus();
+            
+            // 触发蓝光聚焦脉冲动画
+            field.classList.remove('xiaohe-applied-highlight');
+            void field.offsetWidth; // 触发 reflow
+            field.classList.add('xiaohe-applied-highlight');
+
+            const labelName = this.currentTargetLabel || "目标编辑框";
+            if (window.showToast) {
+                showToast(`✨ 已成功将小赫草稿精准注入到【${labelName}】！`, "success");
+            } else {
+                alert(`已成功回填草稿至【${labelName}】！`);
+            }
+        } else {
+            // 未找到可回填字段，自动复制
+            this.copyDraft(rawElemId);
+            if (window.showToast) {
+                showToast("📋 页面未锁定活动表单，已将草稿复制到剪贴板！", "info");
+            }
+        }
+    },
+
     // 复制草稿到剪贴板
     copyDraft: function(rawElemId) {
         const rawElem = document.getElementById(rawElemId);
@@ -13136,9 +13334,11 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
         if (window.XiaoheAI) {
             XiaoheAI.updateContextDisplay();
+            XiaoheAI.bindGlobalFocusTracker();
         }
-    }, 1000);
+    }, 800);
 });
+
 
 
 
