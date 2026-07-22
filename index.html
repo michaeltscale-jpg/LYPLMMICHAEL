@@ -206,12 +206,33 @@
                             </div>
                         </div>
 
-                        <!-- 视觉流转图解 (Visual Flowcharts Section - 6 大核心模块全覆盖) -->
+                        <!-- 视觉流转图解 (Visual Flowcharts Section - 9 大功能模块独立介绍框) -->
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                            <!-- NPI 流程卡片 -->
+                            
+                            <!-- 1. 产品驾驶舱 -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e3a8a; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="layout-dashboard" style="width: 18px; height: 18px; color: #2563eb;"></i> 1. 产品驾驶舱 (Dashboard)
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
+                                        <strong>指标大屏</strong> <span>研发/设备/ECN/PDCA 实时看板</span>
+                                    </div>
+                                    <div style="text-align: center; color: #1e3a8a; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
+                                        <strong>CPK 过程能力</strong> <span>实时绘制剥离强度极差与能力图</span>
+                                    </div>
+                                    <div style="text-align: center; color: #1e3a8a; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #6d28d9;">
+                                        <strong>5M1E 归因占比</strong> <span>直观饼图分析异常根因比例</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. NPI 新品开发控制台 -->
                             <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e40af; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="layers" style="width: 18px; height: 18px; color: #2563eb;"></i> 1. NPI 新品研发 Gate 1-5 门径流转
+                                    <i data-lucide="layers" style="width: 18px; height: 18px; color: #2563eb;"></i> 2. NPI 新品开发控制台
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
@@ -232,10 +253,70 @@
                                 </div>
                             </div>
 
-                            <!-- ECN 流程卡片 -->
+                            <!-- 3. 物料承认管控 (MQC) -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #059669; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="package-check" style="width: 18px; height: 18px; color: #10b981;"></i> 3. 物料承认管控 (MQC)
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>样品提送</strong> <span>二供原材料物性交验</span>
+                                    </div>
+                                    <div style="text-align: center; color: #059669; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>入厂检核</strong> <span>离子色谱测试与质检签核</span>
+                                    </div>
+                                    <div style="text-align: center; color: #059669; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1e40af;">
+                                        <strong>准入结果</strong> <span>承认会签或拉起 ECN/PDCA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. 设备开发管控台 (EMS) -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #6d28d9; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="cpu" style="width: 18px; height: 18px; color: #8b5cf6;"></i> 4. 设备开发管控台 (EMS)
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
+                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #5b21b6;">
+                                        <strong>设备建档</strong> <span>生箔机/阴极辊关键设备台账</span>
+                                    </div>
+                                    <div style="text-align: center; color: #6d28d9; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #5b21b6;">
+                                        <strong>状态追踪</strong> <span>设计中 ➔ 调试中 ➔ 正常运行</span>
+                                    </div>
+                                    <div style="text-align: center; color: #6d28d9; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>参数监控</strong> <span>槽液循环与电流密度在线监控</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. 文管中心 (DMS) -->
+                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #0284c7; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="folder-open" style="width: 18px; height: 18px; color: #0284c7;"></i> 5. 文管中心 (DMS)
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
+                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #0369a1;">
+                                        <strong>文档归档</strong> <span>可研报告、TDS 规范与自测记录</span>
+                                    </div>
+                                    <div style="text-align: center; color: #0284c7; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #0369a1;">
+                                        <strong>权限控制</strong> <span>受控版本号调阅与受限查看</span>
+                                    </div>
+                                    <div style="text-align: center; color: #0284c7; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
+                                        <strong>标准固化</strong> <span>关联 SOP 文件归档存档</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 6. 工程设变 (ECN) -->
                             <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #d97706; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="git-pull-request" style="width: 18px; height: 18px; color: #d97706;"></i> 2. BOM 锁死与 ECN 设变机制
+                                    <i data-lucide="git-pull-request" style="width: 18px; height: 18px; color: #d97706;"></i> 6. 工程设变 (ECN)
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #9a3412;">
@@ -252,10 +333,10 @@
                                 </div>
                             </div>
 
-                            <!-- PDCA 8D 流程卡片 -->
+                            <!-- 7. PDCA 质量改善 -->
                             <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #059669; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="repeat" style="width: 18px; height: 18px; color: #10b981;"></i> 3. PDCA 质量改善与 8D 导出
+                                    <i data-lucide="repeat" style="width: 18px; height: 18px; color: #10b981;"></i> 7. PDCA 质量改善 (5M1E & 8D)
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
@@ -272,62 +353,42 @@
                                 </div>
                             </div>
 
-                            <!-- EMS & MQC 流程卡片 -->
+                            <!-- 8. 受控任务与甘特图 -->
                             <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #6d28d9; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="cpu" style="width: 18px; height: 18px; color: #8b5cf6;"></i> 4. EMS 设备开发与 MQC 物料承认
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #be123c; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="check-square" style="width: 18px; height: 18px; color: #f43f5e;"></i> 8. 受控任务与甘特图
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
-                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #5b21b6;">
-                                        <strong>设备开发(EMS)</strong> <span>生箔机/阴极辊状态跟踪</span>
-                                    </div>
-                                    <div style="text-align: center; color: #6d28d9; font-weight: bold; font-size:0.7rem;">↓</div>
-                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #5b21b6;">
-                                        <strong>MQC 原材料承认</strong> <span>样品物性测试与准入核验</span>
-                                    </div>
-                                    <div style="text-align: center; color: #6d28d9; font-weight: bold; font-size:0.7rem;">↓</div>
-                                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
-                                        <strong>完成准入</strong> <span>会签记录并纳入配方 BOM 库</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DMS & 甘特图 流程卡片 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #0284c7; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="folder-open" style="width: 18px; height: 18px; color: #0284c7;"></i> 5. DMS 文档中心与受控任务甘特图
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
-                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #0369a1;">
-                                        <strong>DMS 文管中心</strong> <span>TDS/SOP 规范自动归档受控</span>
-                                    </div>
-                                    <div style="text-align: center; color: #0284c7; font-weight: bold; font-size:0.7rem;">↓</div>
-                                    <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #0369a1;">
-                                        <strong>受控任务排期</strong> <span>结合甘特图按月追踪进度</span>
-                                    </div>
-                                    <div style="text-align: center; color: #0284c7; font-weight: bold; font-size:0.7rem;">↓</div>
                                     <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #be123c;">
-                                        <strong>超期警示</strong> <span>临期或延期自动醒目标红预警</span>
+                                        <strong>节点排期</strong> <span>结合甘特图按月追踪进度</span>
+                                    </div>
+                                    <div style="text-align: center; color: #be123c; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #be123c;">
+                                        <strong>进度打卡</strong> <span>各岗位节点交付物打卡</span>
+                                    </div>
+                                    <div style="text-align: center; color: #be123c; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #be123c;">
+                                        <strong>超期警示</strong> <span>临期黄标 / 延期红标预警</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 驾驶舱 & CPK 流程卡片 -->
+                            <!-- 9. 用户权限与钉钉协同 -->
                             <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e3a8a; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="layout-dashboard" style="width: 18px; height: 18px; color: #1e3a8a;"></i> 6. 产品驾驶舱与品质 CPK 趋势
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #475569; font-weight: 800; font-size: 0.92rem;">
+                                    <i data-lucide="users" style="width: 18px; height: 18px; color: #64748b;"></i> 9. 权限管理与钉钉协同
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
-                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
-                                        <strong>指标大屏</strong> <span>研发/设备/ECN/PDCA 实时看板</span>
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #334155;">
+                                        <strong>角色配置</strong> <span>管理员/研发/品质/工艺角色划分</span>
                                     </div>
-                                    <div style="text-align: center; color: #1e3a8a; font-weight: bold; font-size:0.7rem;">↓</div>
-                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
-                                        <strong>CPK 过程能力</strong> <span>实时绘制剥离强度极差与能力图</span>
+                                    <div style="text-align: center; color: #64748b; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #334155;">
+                                        <strong>权限管控</strong> <span>根据登录身份控制模块读写</span>
                                     </div>
-                                    <div style="text-align: center; color: #1e3a8a; font-weight: bold; font-size:0.7rem;">↓</div>
-                                    <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #6d28d9;">
-                                        <strong>5M1E 归因占比</strong> <span>直观饼图分析异常根因比例</span>
+                                    <div style="text-align: center; color: #64748b; font-weight: bold; font-size:0.7rem;">↓</div>
+                                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
+                                        <strong>钉钉对接</strong> <span>应用 AppKey 配置与 API 回调</span>
                                     </div>
                                 </div>
                             </div>
