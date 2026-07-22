@@ -2618,17 +2618,17 @@ textarea.is-maximized {
     transform: scale(1.05);
 }
 
-/* 确保页面全域与弹窗内容区域在文本框拉高后均可流畅上下滚动 */
-.main-content,
-.content-body,
-.panels-container,
-.tab-content,
-.tab-panel,
-.modal-body,
-.pdca-tab,
-.modal-overlay {
+/* 仅针对弹窗体开启纵向滑动，防止全局 Flex 布局卡片被挤压变形 */
+.modal-body {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
+}
+
+/* 防挤压保护：产品横幅头部卡片 */
+#plm-panel > .glass-panel:first-child {
+    flex-shrink: 0 !important;
+    min-height: 64px !important;
+    padding: 10px 16px !important;
 }
 
 
