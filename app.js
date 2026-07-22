@@ -686,7 +686,7 @@ function switchTab(tabId) {
     
     const headerTitleMap = {
         'manual-panel': 'PLM 系统使用手册与图文操作指南',
-        'dashboard-panel': '产品驾驶舱',
+        'dashboard-panel': 'PLM 驾驶舱',
         'plm-panel': '新品开发控制台',
         'ems-panel': '设备开发管控台 (EMS)',
         'dms-panel': '研发文档与技术规范归档中心 (DMS)',
@@ -12676,7 +12676,7 @@ window.openManualDetailModal = function(tabId) {
     
     const detailsMap = {
         'dashboard-panel': {
-            title: '📖 1. 产品驾驶舱 (Dashboard) - 操作指南与 SOP',
+            title: '📖 1. PLM 驾驶舱 (Dashboard) - 操作指南与 SOP',
             content: `
                 <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #1e3a8a;">
                     <strong style="color: #1d4ed8; font-size: 0.95rem;">📌 模块概述：</strong>
