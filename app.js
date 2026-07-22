@@ -13297,7 +13297,6 @@ window.XiaoheAI = {
 
         if (field && (field.tagName === 'TEXTAREA' || field.tagName === 'INPUT')) {
             field.value = text;
-            field.focus();
             
             // 自动自适应增高文本框高度
             if (window.autoResizeTextarea) {
@@ -13309,9 +13308,20 @@ window.XiaoheAI = {
             void field.offsetWidth; // 触发 reflow
             field.classList.add('xiaohe-applied-highlight');
 
+            // 小赫助手自动退出收起抽屉
+            this.closeDrawer();
+
+            // 视场平滑聚焦并选中当前目标输入框
+            setTimeout(function() {
+                field.focus();
+                if (field.scrollIntoView) {
+                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 200);
+
             const labelName = this.currentTargetLabel || "目标编辑框";
             if (window.showToast) {
-                showToast(`✨ 已成功将小赫草稿精准注入到【${labelName}】！`, "success");
+                showToast(`✨ 已成功注入草稿到【${labelName}】，小赫已自动退场！`, "success");
             } else {
                 alert(`已成功回填草稿至【${labelName}】！`);
             }
