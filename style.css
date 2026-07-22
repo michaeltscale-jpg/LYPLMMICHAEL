@@ -2145,22 +2145,7 @@ textarea.form-control {
 
 /* 全局悬浮球 (Xiaohe Float Button) */
 .xiaohe-float-btn {
-    position: fixed;
-    bottom: 28px;
-    right: 28px;
-    z-index: 9990;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 18px 10px 12px;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
-    border: 1px solid rgba(147, 197, 253, 0.4);
-    border-radius: 40px;
-    color: #ffffff;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45), 0 0 12px rgba(99, 102, 241, 0.3);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    user-select: none;
+    display: none !important;
 }
 
 .xiaohe-float-btn:hover {
