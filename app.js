@@ -12831,3 +12831,312 @@ window.jumpFromManual = function() {
         switchTab(currentManualTargetTab);
     }
 };
+
+/* ==========================================================================
+   小赫 AI 助手 (Xiaohe AI Assistant - Stage 1 Frontend Logic)
+   ========================================================================== */
+window.XiaoheAI = {
+    isOpen: false,
+    chatHistory: [],
+    isGenerating: false,
+
+    // 上下文感知逻辑
+    getContextSensing: function() {
+        let currentViewName = "常规页面";
+        let contextName = "聚赫新材项目";
+
+        // 识别活跃标签页
+        const activeTab = document.querySelector('.nav-item.active, .tab-item.active, .sub-tab.active');
+        if (activeTab) {
+            currentViewName = activeTab.innerText.trim();
+        }
+
+        // 进一步感知关键选定项 (产品/设备/MQC/PDCA)
+        const selectedProdName = document.getElementById('selected-product-name');
+        if (selectedProdName && selectedProdName.innerText) {
+            contextName = selectedProdName.innerText.trim();
+        } else {
+            const activeDevice = document.querySelector('.device-card.active, tr.selected-row');
+            if (activeDevice) {
+                contextName = activeDevice.innerText.split('\n')[0] || "选定设备";
+            }
+        }
+
+        return {
+            current_view: currentViewName,
+            context_name: contextName
+        };
+    },
+
+    // 刷新上下文 UI
+    updateContextDisplay: function() {
+        const sensing = this.getContextSensing();
+        const displayEl = document.getElementById('xiaohe-context-display');
+        if (displayEl) {
+            displayEl.innerText = `${sensing.current_view} | ${sensing.context_name}`;
+        }
+    },
+
+    // 开关抽屉
+    toggleDrawer: function() {
+        if (this.isOpen) {
+            this.closeDrawer();
+        } else {
+            this.openDrawer();
+        }
+    },
+
+    openDrawer: function() {
+        this.isOpen = true;
+        const drawer = document.getElementById('xiaohe-drawer');
+        const overlay = document.getElementById('xiaohe-drawer-overlay');
+        if (drawer) drawer.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+
+        this.updateContextDisplay();
+
+        // 首次打开自动呈现小赫问候语
+        if (this.chatHistory.length === 0) {
+            this.renderWelcomeMessage();
+        }
+
+        if (window.lucide) lucide.createIcons();
+    },
+
+    closeDrawer: function() {
+        this.isOpen = false;
+        const drawer = document.getElementById('xiaohe-drawer');
+        const overlay = document.getElementById('xiaohe-drawer-overlay');
+        if (drawer) drawer.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+    },
+
+    // 渲染欢迎语
+    renderWelcomeMessage: function() {
+        const sensing = this.getContextSensing();
+        const welcomeText = `你好！我是 AI 助手**小赫** 👋\n\n已为您自动感知当前上下文：**${sensing.current_view}** (${sensing.context_name})。\n\n当您在编写 SOP、SIP、项目计划或质量报告需要文字资料时，随时可以召唤我，为您快速起草标准工作草稿！\n\n您可以点击下方的快捷工具按钮，或在输入框中直接输入您的要求：`;
+        
+        this.appendAIMessage("👋 欢迎使用小赫 AI 助手", welcomeText, null, false);
+    },
+
+    // 快捷指令触发
+    triggerQuickAction: function(actionType) {
+        let promptText = "";
+        if (actionType === "sop_draft") promptText = "请为当前模块生成 SOP 标准作业程序草稿";
+        else if (actionType === "sip_draft") promptText = "请为当前模块生成 SIP 标准检验规范草稿";
+        else if (actionType === "project_plan") promptText = "请为当前模块编制阶段项目开发计划";
+        else if (actionType === "quality_diagnosis") promptText = "请结合当前场景进行质量与过程诊断并给出改善建议";
+
+        this.sendMessage(promptText, actionType);
+    },
+
+    // 发送消息与请求后端
+    sendMessage: function(customPrompt, actionType) {
+        if (this.isGenerating) return;
+
+        const inputEl = document.getElementById('xiaohe-input');
+        const prompt = customPrompt || (inputEl ? inputEl.value.trim() : "");
+        if (!prompt) return;
+
+        if (inputEl) inputEl.value = "";
+
+        // 1. 追加用户消息
+        this.appendUserMessage(prompt);
+
+        // 2. 显示 AI 正在思考
+        this.isGenerating = true;
+        const thinkingId = "xiaohe-thinking-" + Date.now();
+        this.appendThinkingMessage(thinkingId);
+
+        const contextInfo = this.getContextSensing();
+
+        // 3. 调用后端 API
+        fetch('/api/v1/ai/xiaohe/assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Role': window.currentUserRole || 'Admin',
+                'X-User-Name': encodeURIComponent(window.currentUserName || '工程师')
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                action_type: actionType || "general",
+                context: contextInfo
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            this.removeMessage(thinkingId);
+            this.isGenerating = false;
+            if (data.status === "success") {
+                this.appendAIMessage(data.title, data.content, data.target_field_id, true);
+            } else {
+                this.appendAIMessage("⚠️ 智能生成异常", data.error || "服务暂不可用", null, false);
+            }
+        })
+        .catch(err => {
+            this.removeMessage(thinkingId);
+            this.isGenerating = false;
+            this.appendAIMessage("⚠️ 通信失败", "网络连接异常，请检查服务器状态。", null, false);
+        });
+    },
+
+    // 追加用户消息 Bubble
+    appendUserMessage: function(text) {
+        const chatBody = document.getElementById('xiaohe-chat-body');
+        if (!chatBody) return;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'xiaohe-msg-item xiaohe-msg-user';
+        msgDiv.innerHTML = `<div class="xiaohe-msg-bubble">${this.escapeHtml(text)}</div>`;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    },
+
+    // 追加 AI 思考状态
+    appendThinkingMessage: function(id) {
+        const chatBody = document.getElementById('xiaohe-chat-body');
+        if (!chatBody) return;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'xiaohe-msg-item xiaohe-msg-ai';
+        msgDiv.id = id;
+        msgDiv.innerHTML = `
+            <div class="xiaohe-msg-bubble" style="display:flex; align-items:center; gap:8px; color:#93c5fd;">
+                <i data-lucide="loader-2" class="spin" style="width:16px; height:16px;"></i>
+                <span>小赫正在思考并构思草稿...</span>
+            </div>
+        `;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+        if (window.lucide) lucide.createIcons();
+    },
+
+    removeMessage: function(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    },
+
+    // 追加 AI 消息并支持打字机效果与回填/复制按纽
+    appendAIMessage: function(title, markdownContent, targetFieldId, animate = true) {
+        const chatBody = document.getElementById('xiaohe-chat-body');
+        if (!chatBody) return;
+
+        const msgId = 'xiaohe-msg-' + Date.now();
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'xiaohe-msg-item xiaohe-msg-ai';
+        
+        const htmlContent = this.simpleMarkdownToHtml(markdownContent);
+
+        msgDiv.innerHTML = `
+            <div class="xiaohe-msg-bubble">
+                ${title ? `<h3>${this.escapeHtml(title)}</h3>` : ''}
+                <div class="xiaohe-msg-text-content" id="${msgId}-text"></div>
+                <div class="xiaohe-draft-actions">
+                    <button class="btn-xiaohe-action btn-xiaohe-apply" onclick="XiaoheAI.applyDraft('${msgId}-raw', '${targetFieldId || ''}')">
+                        <i data-lucide="corner-down-left" style="width:13px; height:13px;"></i>
+                        <span>插入到编辑框</span>
+                    </button>
+                    <button class="btn-xiaohe-action btn-xiaohe-copy" onclick="XiaoheAI.copyDraft('${msgId}-raw')">
+                        <i data-lucide="copy" style="width:13px; height:13px;"></i>
+                        <span>复制草稿</span>
+                    </button>
+                </div>
+                <textarea id="${msgId}-raw" style="display:none;">${this.escapeHtml(markdownContent)}</textarea>
+            </div>
+        `;
+
+        chatBody.appendChild(msgDiv);
+
+        const textContainer = document.getElementById(`${msgId}-text`);
+        textContainer.innerHTML = htmlContent;
+
+        chatBody.scrollTop = chatBody.scrollHeight;
+        if (window.lucide) lucide.createIcons();
+
+        this.chatHistory.push({ title, content: markdownContent });
+    },
+
+    // 简单 Markdown 转 HTML 渲染器
+    simpleMarkdownToHtml: function(md) {
+        if (!md) return '';
+        let html = md
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n\n/g, '<br/><br/>')
+            .replace(/\n/g, '<br/>');
+        return html;
+    },
+
+    // 转义 HTML
+    escapeHtml: function(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+
+    // 回填草稿到表单字段
+    applyDraft: function(rawElemId, targetFieldId) {
+        const rawElem = document.getElementById(rawElemId);
+        if (!rawElem) return;
+        const text = rawElem.value;
+
+        // 尝试寻找活跃或指定的输入框
+        let field = null;
+        if (targetFieldId) {
+            field = document.getElementById(targetFieldId);
+        }
+
+        if (!field) {
+            // 尝试在页面找任何正在聚焦或选中的多行文本框
+            field = document.activeElement;
+            if (field && field.tagName !== 'TEXTAREA' && field.tagName !== 'INPUT') {
+                field = document.querySelector('textarea:not(#xiaohe-input), input[type="text"]:not(#xiaohe-input)');
+            }
+        }
+
+        if (field && (field.tagName === 'TEXTAREA' || field.tagName === 'INPUT')) {
+            field.value = text;
+            field.focus();
+            if (window.showToast) {
+                showToast("✨ 已成功将小赫草稿回填至目标输入框！", "success");
+            } else {
+                alert("已成功回填草稿！");
+            }
+        } else {
+            // 未找到可回填字段，自动复制
+            this.copyDraft(rawElemId);
+            if (window.showToast) {
+                showToast("📋 页面未锁定活动表单，已将草稿复制到剪贴板！", "info");
+            }
+        }
+    },
+
+    // 复制草稿到剪贴板
+    copyDraft: function(rawElemId) {
+        const rawElem = document.getElementById(rawElemId);
+        if (!rawElem) return;
+        const text = rawElem.value;
+
+        navigator.clipboard.writeText(text).then(() => {
+            if (window.showToast) {
+                showToast("📋 草稿已成功复制到剪贴板！", "success");
+            } else {
+                alert("草稿已复制到剪贴板！");
+            }
+        }).catch(err => {
+            alert("复制失败，请手动选择复制。");
+        });
+    }
+};
+
+// 页面加载完成后自动绑定与初始化上下文监听
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(function() {
+        if (window.XiaoheAI) {
+            XiaoheAI.updateContextDisplay();
+        }
+    }, 1000);
+});
+

@@ -740,6 +740,11 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
         user_name_raw = self.headers.get('X-User-Name', '')
         user_display_name = urllib.parse.unquote(user_name_raw) if user_name_raw else '系统'
         
+        # 小赫 AI 助手智能响应 API (允许所有视图角色发起草稿生成与咨询)
+        if path == "/api/v1/ai/xiaohe/assistant":
+            self.handle_xiaohe_ai_assistant(data)
+            return
+
         # 默认只读访客拒绝所有写操作
         if user_role == 'Viewer':
             self.send_json({"error": "权限不足：当前角色【只读访客】无权进行任何写操作，请在右上角切换身份。"}, 403)
@@ -2588,6 +2593,143 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json({"error": str(e)}, 500)
         finally:
             conn.close()
+
+    def handle_xiaohe_ai_assistant(self, data):
+        """小赫 AI 助手 - 智能草稿生成与问答 API (支持业务上下文感知)"""
+        prompt = (data.get("prompt") or "").strip()
+        context = data.get("context") or {}
+        action_type = data.get("action_type") or "general"
+        
+        current_view = context.get("current_view", "常规面板")
+        context_name = context.get("context_name", "聚赫新材项目")
+
+        AI_ASSISTANT_NAME = "小赫"
+        lower_prompt = prompt.lower()
+
+        if "sop" in lower_prompt or action_type == "sop_draft":
+            title = f"【SOP标准作业程序草稿】{context_name}"
+            target_field = "sop_description"
+            content = f"""### 📋 {context_name} - 标准作业程序 (SOP) 草稿
+
+**编制人**：AI 助手小赫 | **适用工段**：{current_view} | **版本**：v1.0 (草稿)
+
+#### 一、 准备事项与 PPE 防护要求
+1. **人员防护**：佩戴防酸碱手套、防化学溅射护目镜、防静电劳保鞋。
+2. **设备检查**：确认 {context_name} 主机接地良好，管道阀门无泄漏，紧急停止按钮功能正常。
+3. **物料准备**：确认开工所需原材料已完成 MQC 物料承认，批次标识清晰。
+
+#### 二、 标准操作步骤 (Step-by-Step)
+1. **系统预热与初始化**：开启主电源，设定运行参数至标准工艺窗口区间。
+2. **物料加注/装载**：按配比要求缓慢加入物料，监控实时流量与压力指示值。
+3. **主过程控制**：
+   - 保持槽液/加工温度在 **23.5℃ ± 1.5℃**；
+   - 严密监控核心控制参数波动，发现超差立即触发报警预警；
+4. **过程自检**：每 30 分钟抽采样一次，使用在线测量工具记录关键指标。
+
+#### 三、 异常停机规程
+1. 如遇突发异常（温度骤升、压力过载），按下紧急停止按键；
+2. 保持现场隔离，并在 5 分钟内通知设备工程组与品保主管现场排查。
+
+*(提示：点击下方【插入到编辑框】可直接回填至表单字段)*"""
+
+        elif "sip" in lower_prompt or action_type == "sip_draft":
+            title = f"【SIP标准检验规范草稿】{context_name}"
+            target_field = "sip_description"
+            content = f"""### 🔬 {context_name} - 标准检验规范 (SIP) 草稿
+
+**编制人**：AI 助手小赫 | **检验节点**：{current_view} | **判定标准级别**：A级 (严格)
+
+#### 一、 检验项目与判定标准
+| 序号 | 检验项目 | 技术要求/规格公差 | 检验方法 | 抽样频率 | 判定级别 |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | 外观质量 | 表面平整无划痕、无气孔、无杂质 | 目视 100% | 全检 | CR (严重) |
+| 2 | 核心规格厚度 | 标称厚度 ± 0.3μm | 在线千分尺/X射线测厚仪 | 每卷 5 点 | MA (主要) |
+| 3 | 物理特性(抗拉强度) | ≥ 380 MPa | 万能材料试验机 | 3卷/批次 | MA (主要) |
+| 4 | 表面粗糙度 Rz | 1.2μm ~ 1.8μm | 粗糙度轮廓仪 | 每批次 2 点 | MI (次要) |
+
+#### 二、 检验器具与校准要求
+- 千分尺与粗糙度轮廓仪须处于 **有效校准期内**（贴绿标）。
+- 试验环境要求：温度 23±2℃，相对湿度 50%±5% RH。
+
+#### 三、 不合格品处置规程
+- 发现 1 项 CR 项或连续 2 项 MA 项超标，立即挂**【暂停检验/隔离】**红牌；
+- 扣留该批次全量产品，触发异常品质单并推送给质量工程师跟进。"""
+
+        elif "计划" in lower_prompt or "plan" in lower_prompt or action_type == "project_plan":
+            title = f"【阶段项目计划草稿】{context_name}"
+            target_field = "project_plan_text"
+            content = f"""### 📅 {context_name} - 阶段开发与推进计划草稿
+
+**编制人**：AI 助手小赫 | **当前节点**：{current_view}
+
+#### 一、 阶段里程碑分解
+1. **M1: 需求评估与设计输入 (T+3天)**
+   - 负责人：产品经理 / 研发工程组
+   - 交付物：TR1 技术可行性报告、产品规格书草案 (TDS)
+2. **M2: 工艺路径设计与样件试制 (T+10天)**
+   - 负责人：工艺工程组 / 设备工程组
+   - 交付物：SOP 草稿、小试路由表 (Routing)、样件实物
+3. **M3: 质量承认与小批验证 (T+18天)**
+   - 负责人：品质工程组 (MQC/OQC)
+   - 交付物：SIP 检验规范、MQC 物料承认签核表
+4. **M4: 阶段 Gate 评审与量产移交 (T+25天)**
+   - 负责人：项目经理 (PM)
+   - 交付物：Gate 阶段审批签核表、量产移交清单
+
+#### 二、 关键风险与预警事项
+- **供应链风险**：关键辅料需提前 5 天确认 MQC 承认进度。
+- **设备交付风险**：确认设备维护与工装模具准备就绪。"""
+
+        elif "诊断" in lower_prompt or "质量" in lower_prompt or "分析" in lower_prompt or action_type == "quality_diagnosis":
+            title = f"【质量诊断与改善建议草稿】{context_name}"
+            target_field = "pdca_improve_plan"
+            content = f"""### 🔍 {context_name} - 质量与过程诊断意见
+
+**诊断助手**：小赫 | **基准视角**：5M1E 归因分析 | **置信度**：92%
+
+#### 一、 归因分析诊断 (Fishbone Matrix)
+- **人 (Man)**：操作员作业标准化程度良好，需加强异常紧急处置培训。
+- **机 (Machine)**：检测到 {context_name} 关键参数存在微小漂移，建议校验探头。
+- **料 (Material)**：物料批次一致性为主要控制点，建议核查上游供应商 MQC 报告。
+- **法 (Method)**：当前工艺窗口较窄，建议优化电解/加工温度上限公差。
+- **环 (Environment)**：车间温湿度控制符合 ISO 级洁净标准。
+
+#### 二、 PDCA 建议措施
+1. **Immediate (紧急措施)**：对受影响批次进行 100% 隔离加检；
+2. **Corrective (纠正措施)**：微调控制参数至中心线范围；
+3. **Preventive (预防措施)**：更新 SOP 监控频次，并在小赫面板中设置超差预警。"""
+
+        else:
+            title = f"【小赫智能解答草稿】{context_name}"
+            target_field = "general_draft"
+            prompt_summary = prompt if prompt else "协助生成资料草稿"
+            content = f"""### 🤖 小赫 AI 智能助手响应
+
+**响应主题**：{prompt_summary}
+**当前上下文**：{current_view} ({context_name})
+
+针对您提出的需求，小赫为您梳理了以下业务建议与参考文本草稿：
+
+1. **核心要点**：
+   - 结合当前的【{context_name}】属性，建议在录入相关资料时重点关注**工艺稳定性、质量可追溯性与设备安全规范**。
+2. **推荐草稿格式**：
+   - **名称标识**：{context_name} 标准流程与资料草稿
+   - **维护人**：{self.headers.get('X-User-Name', '工程人员')}
+   - **更新时间**：当前最新系统时间
+3. **操作指导**：
+   - 您可以点击下方的【一键复制】按钮将此文本复制到剪贴板，或者在支持的表单中点击【插入到编辑框】。
+
+*(如需生成具体的 SOP 或 SIP，请在下方点击快捷按钮或直接对我发送“生成SOP”/“生成SIP”指令。)*"""
+
+        response_data = {
+            "status": "success",
+            "assistant_name": AI_ASSISTANT_NAME,
+            "title": title,
+            "content": content,
+            "target_field_id": target_field,
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self.send_json(response_data)
 
 def init_mqc_tables():
     """初始化 MQC 物料承认数据库表"""

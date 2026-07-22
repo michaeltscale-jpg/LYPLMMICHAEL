@@ -4166,5 +4166,83 @@ requests.post(url, json=payload)</code></pre>
 
 
 
+    <!-- ===== 小赫 AI 助手 (Xiaohe AI Assistant Stage 1 Component) ===== -->
+    <!-- 1. 全局悬浮球 -->
+    <div class="xiaohe-float-btn" id="xiaohe-float-btn" onclick="XiaoheAI.toggleDrawer()" title="点击召唤小赫 AI 助手">
+        <div class="xiaohe-avatar-wrapper">
+            <i data-lucide="sparkles" class="xiaohe-avatar-icon"></i>
+            <span class="xiaohe-online-dot"></span>
+        </div>
+        <span class="xiaohe-btn-text">小赫助手</span>
+        <span class="xiaohe-badge-pulse" id="xiaohe-status-badge">AI就绪</span>
+    </div>
+
+    <!-- 2. 抽屉背景遮罩 -->
+    <div class="xiaohe-drawer-overlay" id="xiaohe-drawer-overlay" onclick="XiaoheAI.closeDrawer()"></div>
+
+    <!-- 3. 右侧抽屉面板 -->
+    <div class="xiaohe-drawer" id="xiaohe-drawer">
+        <!-- Header -->
+        <div class="xiaohe-drawer-header">
+            <div class="xiaohe-title-box">
+                <div class="xiaohe-avatar-wrapper" style="width:34px; height:34px;">
+                    <i data-lucide="bot" class="xiaohe-avatar-icon"></i>
+                    <span class="xiaohe-online-dot"></span>
+                </div>
+                <div>
+                    <div class="xiaohe-header-name">
+                        小赫 AI 助手
+                        <span class="xiaohe-status-tag">v1.0 智能感知</span>
+                    </div>
+                </div>
+            </div>
+            <button class="xiaohe-close-btn" onclick="XiaoheAI.closeDrawer()" title="关闭面板">
+                <i data-lucide="x" style="width:20px; height:20px;"></i>
+            </button>
+        </div>
+
+        <!-- Context Sensing Bar -->
+        <div class="xiaohe-context-bar">
+            <i data-lucide="compass" style="width:16px; height:16px; color:#60a5fa;"></i>
+            <span class="xiaohe-context-label">上下文感知：</span>
+            <span class="xiaohe-context-val" id="xiaohe-context-display">已感知当前模块</span>
+        </div>
+
+        <!-- Quick Tools -->
+        <div class="xiaohe-quick-tools">
+            <div class="xiaohe-tool-chip" onclick="XiaoheAI.triggerQuickAction('sop_draft')">
+                <i data-lucide="file-text" style="width:14px; height:14px; color:#60a5fa;"></i>
+                <span>生成 SOP 草稿</span>
+            </div>
+            <div class="xiaohe-tool-chip" onclick="XiaoheAI.triggerQuickAction('sip_draft')">
+                <i data-lucide="check-square" style="width:14px; height:14px; color:#34d399;"></i>
+                <span>生成 SIP 规范</span>
+            </div>
+            <div class="xiaohe-tool-chip" onclick="XiaoheAI.triggerQuickAction('project_plan')">
+                <i data-lucide="calendar" style="width:14px; height:14px; color:#fbbf24;"></i>
+                <span>编制项目计划</span>
+            </div>
+            <div class="xiaohe-tool-chip" onclick="XiaoheAI.triggerQuickAction('quality_diagnosis')">
+                <i data-lucide="activity" style="width:14px; height:14px; color:#f87171;"></i>
+                <span>质量诊断分析</span>
+            </div>
+        </div>
+
+        <!-- Chat Body -->
+        <div class="xiaohe-chat-body" id="xiaohe-chat-body">
+            <!-- 初始小赫欢迎消息由 JS 自动渲染 -->
+        </div>
+
+        <!-- Footer Input -->
+        <div class="xiaohe-drawer-footer">
+            <div class="xiaohe-input-wrapper">
+                <input type="text" class="xiaohe-input-field" id="xiaohe-input" placeholder="请向小赫提问或要求生成资料草稿..." onkeydown="if(event.key==='Enter') XiaoheAI.sendMessage()">
+                <button class="xiaohe-send-btn" onclick="XiaoheAI.sendMessage()" title="发送指令">
+                    <i data-lucide="send" style="width:18px; height:18px;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

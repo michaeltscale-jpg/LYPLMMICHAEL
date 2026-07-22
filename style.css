@@ -2138,3 +2138,396 @@ textarea.form-control {
     padding: 10px 12px;
     font-size: 0.84rem;
 }
+
+/* ==========================================================================
+   小赫 AI 助手 (Xiaohe AI Assistant - Stage 1 Component Styles)
+   ========================================================================== */
+
+/* 全局悬浮球 (Xiaohe Float Button) */
+.xiaohe-float-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9990;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px 10px 12px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #6366f1 100%);
+    border: 1px solid rgba(147, 197, 253, 0.4);
+    border-radius: 40px;
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45), 0 0 12px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.xiaohe-float-btn:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.6), 0 0 20px rgba(129, 140, 248, 0.5);
+    border-color: rgba(191, 219, 254, 0.7);
+}
+
+.xiaohe-avatar-wrapper {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #60a5fa, #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.4);
+}
+
+.xiaohe-avatar-icon {
+    width: 20px;
+    height: 20px;
+    color: #ffffff;
+}
+
+.xiaohe-online-dot {
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 10px;
+    height: 10px;
+    background-color: #22c55e;
+    border: 2px solid #1e3a8a;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #22c55e;
+}
+
+.xiaohe-btn-text {
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.xiaohe-badge-pulse {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 侧边栏抽屉 (Xiaohe AI Drawer) */
+.xiaohe-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 9992;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.xiaohe-drawer-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.xiaohe-drawer {
+    position: fixed;
+    top: 0;
+    right: -440px;
+    width: 420px;
+    max-width: 92vw;
+    height: 100vh;
+    z-index: 9995;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.xiaohe-drawer.open {
+    right: 0;
+}
+
+/* Header */
+.xiaohe-drawer-header {
+    padding: 16px 20px;
+    background: linear-gradient(90deg, rgba(30, 58, 138, 0.6), rgba(30, 27, 75, 0.4));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.xiaohe-title-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.xiaohe-header-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.xiaohe-status-tag {
+    font-size: 0.7rem;
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.15);
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    font-weight: 500;
+}
+
+.xiaohe-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.xiaohe-close-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Context Sensing Bar */
+.xiaohe-context-bar {
+    margin: 12px 16px 4px 16px;
+    padding: 10px 14px;
+    background: rgba(30, 58, 138, 0.25);
+    border: 1px dashed rgba(96, 165, 250, 0.4);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.xiaohe-context-label {
+    font-weight: 700;
+    color: #60a5fa;
+    white-space: nowrap;
+}
+
+.xiaohe-context-val {
+    color: #e2e8f0;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Quick Tools */
+.xiaohe-quick-tools {
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.xiaohe-tool-chip {
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.xiaohe-tool-chip:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(96, 165, 250, 0.5);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Chat & Output Body */
+.xiaohe-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.xiaohe-msg-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 98%;
+}
+
+.xiaohe-msg-user {
+    align-self: flex-end;
+}
+
+.xiaohe-msg-user .xiaohe-msg-bubble {
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 14px 14px 2px 14px;
+    padding: 10px 14px;
+    font-size: 0.84rem;
+}
+
+.xiaohe-msg-ai {
+    align-self: flex-start;
+}
+
+.xiaohe-msg-ai .xiaohe-msg-bubble {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    border-radius: 14px 14px 14px 2px;
+    padding: 14px;
+    font-size: 0.83rem;
+    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Markdown in AI bubble */
+.xiaohe-msg-bubble h3 {
+    font-size: 0.95rem;
+    color: #60a5fa;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.xiaohe-msg-bubble h4 {
+    font-size: 0.86rem;
+    color: #93c5fd;
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+.xiaohe-msg-bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 0.76rem;
+}
+
+.xiaohe-msg-bubble th, .xiaohe-msg-bubble td {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 5px 8px;
+    text-align: left;
+}
+
+.xiaohe-msg-bubble th {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+}
+
+.xiaohe-draft-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.btn-xiaohe-action {
+    padding: 5px 12px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.btn-xiaohe-apply {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+}
+
+.btn-xiaohe-apply:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-1px);
+}
+
+.btn-xiaohe-copy {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-xiaohe-copy:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* Footer Input Area */
+.xiaohe-drawer-footer {
+    padding: 14px 16px;
+    background: rgba(15, 23, 42, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.xiaohe-input-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.xiaohe-input-field {
+    flex: 1;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #f8fafc;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.xiaohe-input-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.xiaohe-send-btn {
+    width: 38px;
+    height: 38px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.xiaohe-send-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
