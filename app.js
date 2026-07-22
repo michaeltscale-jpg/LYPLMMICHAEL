@@ -8307,63 +8307,81 @@ function renderDmsDeliverablesTable(product) {
         tbody.appendChild(tr);
     });
 
-    // 动态追加每个工段真实独立保存的 SOP / SIP 受控文件至 DMS 列表
+    // 每一个工段（1. 溅镀工段、2. 电镀工段、3. PA后处理、4. PB涂布、5. 脱膜工段等）在文管中心 (DMS) 都要全量独立列出 SOP 与 SIP 受控记录
+    let activeSteps = [];
     if (product.routing_list && product.routing_list.length > 0) {
-        const activeSteps = product.routing_list.filter(r => r.status === '活动') || product.routing_list;
-        activeSteps.forEach(r => {
-            const prodCode = product.code ? `${product.code}-${product.spec_thickness || '12'}μm` : 'PTS-AI';
-            
-            if (r.sop) {
-                const sopTr = document.createElement("tr");
-                const fileCode = `${prodCode}_SOP_${r.stage_name}.pdf`;
-                const docName = `📖 [SOP] ${r.stage_name} 标准作业程序受控文件`;
-                sopTr.innerHTML = `
-                    <td style="font-size:0.72rem; color:#2563eb; font-weight:700;">工段规程受控</td>
-                    <td><span class="badge" style="background:rgba(37,99,235,0.08); color:#2563eb; border:1px solid rgba(37,99,235,0.2);">${r.stage_name}</span></td>
-                    <td style="font-weight:600; font-size:0.75rem;">
-                        ${docName}
-                        <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
-                            受控归档代码: ${fileCode} | 推荐机台: ${r.device_name} (${r.device_code})
-                        </div>
-                    </td>
-                    <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'} (工段受控)</td>
-                    <td><span class="badge badge-success">受控归档</span></td>
-                    <td>
-                        <div style="display:flex; gap:8px;">
-                            <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id}, 'sop', '${r.stage_name}')">预览</button>
-                            <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id}, 'sop', '${r.stage_name}')">下载</button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(sopTr);
-            }
-
-            if (r.sip) {
-                const sipTr = document.createElement("tr");
-                const fileCode = `${prodCode}_SIP_${r.stage_name}.pdf`;
-                const docName = `🔬 [SIP] ${r.stage_name} 标准检验规范受控文件`;
-                sipTr.innerHTML = `
-                    <td style="font-size:0.72rem; color:#059669; font-weight:700;">工段规程受控</td>
-                    <td><span class="badge" style="background:rgba(5,150,105,0.08); color:#059669; border:1px solid rgba(5,150,105,0.2);">${r.stage_name}</span></td>
-                    <td style="font-weight:600; font-size:0.75rem;">
-                        ${docName}
-                        <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
-                            受控归档代码: ${fileCode} | 推荐机台: ${r.device_name} (${r.device_code})
-                        </div>
-                    </td>
-                    <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'} (工段受控)</td>
-                    <td><span class="badge badge-success">受控归档</span></td>
-                    <td>
-                        <div style="display:flex; gap:8px;">
-                            <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id}, 'sip', '${r.stage_name}')">预览</button>
-                            <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id}, 'sip', '${r.stage_name}')">下载</button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(sipTr);
-            }
-        });
+        activeSteps = product.routing_list.filter(r => r.status === '活动');
+        if (activeSteps.length === 0) activeSteps = product.routing_list;
+    } else {
+        activeSteps = [
+            { id: 101, step_no: 1, stage_name: "溅镀工段", device_name: "磁控溅镀机", device_code: "PVD-01", sop: "", sip: "", routing_version: "v1.0" },
+            { id: 102, step_no: 2, stage_name: "电镀工段", device_name: "连续电镀线", device_code: "ECD-02", sop: "", sip: "", routing_version: "v1.0" },
+            { id: 103, step_no: 3, stage_name: "PA后处理", device_name: "表面钝化槽", device_code: "PAS-03", sop: "", sip: "", routing_version: "v1.0" },
+            { id: 104, step_no: 4, stage_name: "PB涂布", device_name: "防氧化涂布机", device_code: "COAT-04", sop: "", sip: "", routing_version: "v1.0" },
+            { id: 105, step_no: 5, stage_name: "脱膜工段", device_name: "剥离脱膜机", device_code: "STRIP-05", sop: "", sip: "", routing_version: "v1.0" }
+        ];
     }
+
+    activeSteps.forEach((r, idx) => {
+        const prodCode = product.code ? `${product.code}-${product.spec_thickness || '12'}μm` : 'PTS-AI';
+        const stepNum = r.step_no || (idx + 1);
+
+        // 1. 每一个工段独成的 SOP 受控行
+        const sopTr = document.createElement("tr");
+        const sopCode = `${prodCode}_SOP_${stepNum}_${r.stage_name}.pdf`;
+        const hasSop = !!(r.sop && r.sop.trim());
+        const sopStatus = hasSop 
+            ? `<span class="badge badge-success">受控发布</span>` 
+            : `<span class="badge badge-warning" style="background:rgba(217,119,6,0.1); color:#d97706; border:1px solid rgba(217,119,6,0.3);">待工段提交</span>`;
+        
+        sopTr.innerHTML = `
+            <td style="font-size:0.72rem; color:#2563eb; font-weight:700;">工段规程受控</td>
+            <td><span class="badge" style="background:rgba(37,99,235,0.08); color:#2563eb; border:1px solid rgba(37,99,235,0.2);">${stepNum}. ${r.stage_name}</span></td>
+            <td style="font-weight:600; font-size:0.75rem;">
+                📖 [SOP] ${r.stage_name} 标准作业程序受控文件
+                <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
+                    受控归档代码: ${sopCode} | 执行机台: ${r.device_name || '默认生产线'} (${r.device_code || 'DEV-01'})
+                </div>
+            </td>
+            <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'}</td>
+            <td>${sopStatus}</td>
+            <td>
+                <div style="display:flex; gap:8px;">
+                    <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id || stepNum}, 'sop', '${r.stage_name}')">预览</button>
+                    <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id || stepNum}, 'sop', '${r.stage_name}')">下载</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(sopTr);
+
+        // 2. 每一个工段独成的 SIP 受控行
+        const sipTr = document.createElement("tr");
+        const sipCode = `${prodCode}_SIP_${stepNum}_${r.stage_name}.pdf`;
+        const hasSip = !!(r.sip && r.sip.trim());
+        const sipStatus = hasSip 
+            ? `<span class="badge badge-success">受控发布</span>` 
+            : `<span class="badge badge-warning" style="background:rgba(217,119,6,0.1); color:#d97706; border:1px solid rgba(217,119,6,0.3);">待工段提交</span>`;
+        
+        sipTr.innerHTML = `
+            <td style="font-size:0.72rem; color:#059669; font-weight:700;">工段规程受控</td>
+            <td><span class="badge" style="background:rgba(5,150,105,0.08); color:#059669; border:1px solid rgba(5,150,105,0.2);">${stepNum}. ${r.stage_name}</span></td>
+            <td style="font-weight:600; font-size:0.75rem;">
+                🔬 [SIP] ${r.stage_name} 标准检验规范受控文件
+                <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
+                    受控归档代码: ${sipCode} | 执行机台: ${r.device_name || '默认生产线'} (${r.device_code || 'DEV-01'})
+                </div>
+            </td>
+            <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'}</td>
+            <td>${sipStatus}</td>
+            <td>
+                <div style="display:flex; gap:8px;">
+                    <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id || stepNum}, 'sip', '${r.stage_name}')">预览</button>
+                    <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id || stepNum}, 'sip', '${r.stage_name}')">下载</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(sipTr);
+    });
 
     lucide.createIcons({
         attrs: { "stroke-width": 1.8 },
