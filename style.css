@@ -2631,6 +2631,22 @@ textarea.is-maximized {
     padding: 10px 16px !important;
 }
 
+/* 顶部产品切换高亮凸显标签框 */
+.header-product-badge-box:hover {
+    background: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(99,102,241,0.2) 100%) !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3) !important;
+    transform: translateY(-1px);
+}
+
+#header-category-select:hover,
+#header-category-select:focus {
+    border-color: #1d4ed8 !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.35) !important;
+}
+
+
 
 
 
