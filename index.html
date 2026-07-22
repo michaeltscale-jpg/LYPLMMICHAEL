@@ -155,7 +155,26 @@
 
         <!-- 2. Main Workspace -->
         <main class="main-content">
-            <!-- Header Area -->
+            <!-- 使用手册模块详细说明 Modal 弹窗 -->
+    <div class="modal-overlay" id="modal-manual-detail" style="display: none; align-items: center; justify-content: center; z-index: 9999; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px);">
+        <div class="modal-content" style="max-width: 760px; width: 92%; max-height: 88vh; overflow-y: auto; border-radius: 12px; padding: 0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #fff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="manual-detail-title" style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; color: #fff;"><i data-lucide="book-open" style="width:22px; height:22px;"></i> 模块详细操作手册与 SOP 标准</h3>
+                <button class="modal-close" onclick="closeManualDetailModal()" style="color: #fff; font-size: 1.6rem; background: none; border: none; cursor: pointer; opacity: 0.8;">&times;</button>
+            </div>
+            <div class="modal-body" id="manual-detail-body" style="padding: 24px; font-size: 0.85rem; line-height: 1.65; color: #334155;">
+                <!-- 由 app.js 动态渲染 -->
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
+                <button class="btn-primary" id="manual-detail-jump-btn" onclick="jumpFromManual()" style="background: #2563eb; color: #fff; border: none; font-weight: 700; padding: 8px 18px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem;">
+                    <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> 🚀 立即前往该功能模块操作
+                </button>
+                <button class="btn-secondary" onclick="closeManualDetailModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; font-weight: 600; border-radius: 6px; cursor: pointer;">关闭窗口</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
             <header class="top-header">
                 <div class="header-title">
                     <h2 id="header-panel-title">产品驾驶舱</h2>
@@ -206,13 +225,16 @@
                             </div>
                         </div>
 
-                        <!-- 视觉流转图解 (Visual Flowcharts Section - 9 大功能模块独立介绍框) -->
+                        <!-- 视觉流转图解 (Visual Flowcharts Section - 9 大功能模块独立介绍框，支持点击查看详细 SOP) -->
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
                             
                             <!-- 1. 产品驾驶舱 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e3a8a; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="layout-dashboard" style="width: 18px; height: 18px; color: #2563eb;"></i> 1. 产品驾驶舱 (Dashboard)
+                            <div onclick="openManualDetailModal('dashboard-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(37,99,235,0.12)'; this.style.borderColor='#93c5fd';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #1e3a8a; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="layout-dashboard" style="width: 18px; height: 18px; color: #2563eb;"></i> 1. 产品驾驶舱 (Dashboard)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #1d4ed8;">
@@ -230,9 +252,12 @@
                             </div>
 
                             <!-- 2. NPI 新品开发控制台 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #1e40af; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="layers" style="width: 18px; height: 18px; color: #2563eb;"></i> 2. NPI 新品开发控制台
+                            <div onclick="openManualDetailModal('plm-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(37,99,235,0.12)'; this.style.borderColor='#93c5fd';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #1e40af; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="layers" style="width: 18px; height: 18px; color: #2563eb;"></i> 2. NPI 新品开发控制台
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #eff6ff; color: #2563eb; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
@@ -254,9 +279,12 @@
                             </div>
 
                             <!-- 3. 物料承认管控 (MQC) -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #059669; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="package-check" style="width: 18px; height: 18px; color: #10b981;"></i> 3. 物料承认管控 (MQC)
+                            <div onclick="openManualDetailModal('mqc-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(16,185,129,0.12)'; this.style.borderColor='#a7f3d0';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #059669; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="package-check" style="width: 18px; height: 18px; color: #10b981;"></i> 3. 物料承认管控 (MQC)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
@@ -274,9 +302,12 @@
                             </div>
 
                             <!-- 4. 设备开发管控台 (EMS) -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #6d28d9; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="cpu" style="width: 18px; height: 18px; color: #8b5cf6;"></i> 4. 设备开发管控台 (EMS)
+                            <div onclick="openManualDetailModal('ems-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(139,92,246,0.12)'; this.style.borderColor='#ddd6fe';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #6d28d9; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="cpu" style="width: 18px; height: 18px; color: #8b5cf6;"></i> 4. 设备开发管控台 (EMS)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #f4f3ff; color: #6d28d9; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #5b21b6;">
@@ -294,9 +325,12 @@
                             </div>
 
                             <!-- 5. 文管中心 (DMS) -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #0284c7; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="folder-open" style="width: 18px; height: 18px; color: #0284c7;"></i> 5. 文管中心 (DMS)
+                            <div onclick="openManualDetailModal('dms-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(2,132,199,0.12)'; this.style.borderColor='#bae6fd';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #0284c7; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="folder-open" style="width: 18px; height: 18px; color: #0284c7;"></i> 5. 文管中心 (DMS)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #f0f9ff; color: #0284c7; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #0369a1;">
@@ -314,9 +348,12 @@
                             </div>
 
                             <!-- 6. 工程设变 (ECN) -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #d97706; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="git-pull-request" style="width: 18px; height: 18px; color: #d97706;"></i> 6. 工程设变 (ECN)
+                            <div onclick="openManualDetailModal('ecn-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(217,119,6,0.12)'; this.style.borderColor='#fed7aa';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #d97706; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="git-pull-request" style="width: 18px; height: 18px; color: #d97706;"></i> 6. 工程设变 (ECN)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #fff7ed; color: #d97706; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #9a3412;">
@@ -334,9 +371,12 @@
                             </div>
 
                             <!-- 7. PDCA 质量改善 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #059669; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="repeat" style="width: 18px; height: 18px; color: #10b981;"></i> 7. PDCA 质量改善 (5M1E & 8D)
+                            <div onclick="openManualDetailModal('pdca-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(5,150,105,0.12)'; this.style.borderColor='#a7f3d0';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #059669; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="repeat" style="width: 18px; height: 18px; color: #10b981;"></i> 7. PDCA 质量改善 (5M1E & 8D)
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #ecfdf5; color: #059669; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #065f46;">
@@ -354,9 +394,12 @@
                             </div>
 
                             <!-- 8. 受控任务与甘特图 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #be123c; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="check-square" style="width: 18px; height: 18px; color: #f43f5e;"></i> 8. 受控任务与甘特图
+                            <div onclick="openManualDetailModal('task-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(190,18,60,0.12)'; this.style.borderColor='#fecdd3';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #be123c; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="check-square" style="width: 18px; height: 18px; color: #f43f5e;"></i> 8. 受控任务与甘特图
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #fff1f2; color: #be123c; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #be123c;">
@@ -374,9 +417,12 @@
                             </div>
 
                             <!-- 9. 用户权限与钉钉协同 -->
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; color: #475569; font-weight: 800; font-size: 0.92rem;">
-                                    <i data-lucide="users" style="width: 18px; height: 18px; color: #64748b;"></i> 9. 权限管理与钉钉协同
+                            <div onclick="openManualDetailModal('users-panel')" style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(71,85,105,0.12)'; this.style.borderColor='#cbd5e1';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'; this.style.borderColor='#cbd5e1';">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; color: #475569; font-weight: 800; font-size: 0.92rem;">
+                                        <i data-lucide="users" style="width: 18px; height: 18px; color: #64748b;"></i> 9. 权限管理与钉钉协同
+                                    </div>
+                                    <span style="font-size: 0.7rem; background: #f8fafc; color: #475569; padding: 2px 6px; border-radius: 4px; font-weight: 700;">点击展开 ➔</span>
                                 </div>
                                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.76rem;">
                                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; color: #334155;">
