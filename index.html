@@ -156,20 +156,20 @@
         <!-- 2. Main Workspace -->
         <main class="main-content">
             <!-- 使用手册模块详细说明 Modal 弹窗 -->
-    <div class="modal-overlay" id="modal-manual-detail" style="display: none; align-items: center; justify-content: center; z-index: 9999; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px);">
-        <div class="modal-content" style="max-width: 760px; width: 92%; max-height: 88vh; overflow-y: auto; border-radius: 12px; padding: 0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #fff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 id="manual-detail-title" style="margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; color: #fff;"><i data-lucide="book-open" style="width:22px; height:22px;"></i> 模块详细操作手册与 SOP 标准</h3>
-                <button class="modal-close" onclick="closeManualDetailModal()" style="color: #fff; font-size: 1.6rem; background: none; border: none; cursor: pointer; opacity: 0.8;">&times;</button>
+    <div class="modal-overlay" id="modal-manual-detail" style="display: none; align-items: center; justify-content: center; z-index: 9999; background: rgba(15,23,42,0.75); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background: #ffffff; max-width: 760px; width: 92%; max-height: 88vh; overflow-y: auto; border-radius: 12px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid #94a3b8;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; border-radius: 12px 12px 0 0; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="manual-detail-title" style="margin: 0; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; color: #ffffff;"><i data-lucide="book-open" style="width:22px; height:22px;"></i> 模块详细操作手册与 SOP 标准</h3>
+                <button class="modal-close" onclick="closeManualDetailModal()" style="color: #ffffff; font-size: 1.8rem; background: none; border: none; cursor: pointer; opacity: 0.9; line-height: 1;">&times;</button>
             </div>
-            <div class="modal-body" id="manual-detail-body" style="padding: 24px; font-size: 0.85rem; line-height: 1.65; color: #334155;">
+            <div class="modal-body" id="manual-detail-body" style="background: #ffffff; padding: 24px; font-size: 0.88rem; line-height: 1.7; color: #0f172a;">
                 <!-- 由 app.js 动态渲染 -->
             </div>
-            <div class="modal-footer" style="padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
-                <button class="btn-primary" id="manual-detail-jump-btn" onclick="jumpFromManual()" style="background: #2563eb; color: #fff; border: none; font-weight: 700; padding: 8px 18px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem;">
+            <div class="modal-footer" style="padding: 14px 24px; background: #f8fafc; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
+                <button class="btn-primary" id="manual-detail-jump-btn" onclick="jumpFromManual()" style="background: #2563eb; color: #ffffff; border: none; font-weight: 700; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">
                     <i data-lucide="external-link" style="width: 16px; height: 16px;"></i> 🚀 立即前往该功能模块操作
                 </button>
-                <button class="btn-secondary" onclick="closeManualDetailModal()" style="padding: 8px 18px; background: #e2e8f0; color: #475569; border: none; font-weight: 600; border-radius: 6px; cursor: pointer;">关闭窗口</button>
+                <button class="btn-secondary" onclick="closeManualDetailModal()" style="padding: 10px 20px; background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; border-radius: 6px; cursor: pointer;">关闭窗口</button>
             </div>
         </div>
     </div>

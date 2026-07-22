@@ -12678,136 +12678,136 @@ window.openManualDetailModal = function(tabId) {
         'dashboard-panel': {
             title: '📖 1. 产品驾驶舱 (Dashboard) - 操作指南与 SOP',
             content: `
-                <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #1d4ed8;">📌 模块概述：</strong>
-                    聚合全公司研发立项、生产设备台账、工程设变 (ECN) 及质量改善单 (PDCA) 的核心 KPI，提供实时的 CPK 过程能力趋势图与 5M1E 异常归因分析。
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #1e3a8a;">
+                    <strong style="color: #1d4ed8; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #1e293b; font-weight: 500;">聚合全公司研发立项、生产设备台账、工程设变 (ECN) 及质量改善单 (PDCA) 的核心 KPI，提供实时的 CPK 过程能力趋势图与 5M1E 异常归因分析。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>快速数据穿透：</strong> 点击顶部的 4 大 KPI 统计卡片，可直接跳转至对应的研发、设备、ECN 或 PDCA 控制台。</li>
-                    <li><strong>CPK 过程能力监控：</strong> 实时查看铜箔剥离强度的 Cp、Cpk 指数与极差趋势图，Cpk &lt; 1.33 时系统自动黄色预警。</li>
-                    <li><strong>5M1E 根因分析：</strong> 饼图直观展现人、机、料、法、环 5 大维度的质量异常占比，帮助决策层锁定改进重点。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">快速数据穿透：</strong> 点击顶部的 4 大 KPI 统计卡片，可直接跳转至对应的研发、设备、ECN 或 PDCA 控制台。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">CPK 过程能力监控：</strong> 实时查看铜箔剥离强度的 Cp、Cpk 指数与极差趋势图，Cpk &lt; 1.33 时系统自动黄色预警。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">5M1E 根因分析：</strong> 饼图直观展现人、机、料、法、环 5 大维度的质量异常占比，帮助决策层锁定改进重点。</li>
                 </ol>
             `
         },
         'plm-panel': {
             title: '📖 2. NPI 新品开发控制台 - 操作指南与 SOP',
             content: `
-                <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #1d4ed8;">📌 模块概述：</strong>
-                    全面承载铜箔新品从 Gate 1 可行性提案、Gate 2 样品配方摸索、Gate 3 中试验证到 Gate 4/5 量产发布的 5 阶段门径管理。
+                <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #1e3a8a;">
+                    <strong style="color: #1d4ed8; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #1e293b; font-weight: 500;">全面承载铜箔新品从 Gate 1 可行性提案、Gate 2 样品配方摸索、Gate 3 中试验证到 Gate 4/5 量产发布的 5 阶段门径管理。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>新建产品立项：</strong> 点击 <code>[+ 发起新品立项]</code>，选择铜箔系列（如 DBJ 高频极薄），填写拟定拉丝速度、涂布厚度等参数。</li>
-                    <li><strong>TDS 规格与配方搭建：</strong> 在研发阶段录入生箔添加剂（如氯离子、整平剂）与物理抗拉强度规格。</li>
-                    <li><strong>Gate 阶段评审：</strong> 研发工程师提交交付物，品质与超级管理员会签打卡通过后方可推进至下一门径。</li>
-                    <li><strong>🔒 量产 BOM 锁死防错：</strong> 产品一旦升至 Gate 4/5 量产状态，其配方 BOM 自动锁定为只读防错状态，修改必须通过 ECN。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">新建产品立项：</strong> 点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[+ 发起新品立项]</code>，选择铜箔系列（如 DBJ 高频极薄），填写拟定拉丝速度、涂布厚度等参数。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">TDS 规格与配方搭建：</strong> 在研发阶段录入生箔添加剂（如氯离子、整平剂）与物理抗拉强度规格。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">Gate 阶段评审：</strong> 研发工程师提交交付物，品质与超级管理员会签打卡通过后方可推进至下一门径。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">🔒 量产 BOM 锁死防错：</strong> 产品一旦升至 Gate 4/5 量产状态，其配方 BOM 自动锁定为只读防错状态，修改必须通过 ECN。</li>
                 </ol>
             `
         },
         'mqc-panel': {
             title: '📖 3. 物料承认管控 (MQC) - 操作指南与 SOP',
             content: `
-                <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #065f46;">📌 模块概述：</strong>
-                    针对生箔添加剂、整平剂、阴极辊抛光轮等第二供应商原材料进行全生命周期准入审核与品质检验。
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #065f46;">
+                    <strong style="color: #047857; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #064e3b; font-weight: 500;">针对生箔添加剂、整平剂、阴极辊抛光轮等第二供应商原材料进行全生命周期准入审核与品质检验。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>新建 MQC 申请：</strong> 提交新物料样品规格书、MSDS 安全数据表及第三方 SGS 检验报告。</li>
-                    <li><strong>离子色谱与物性检核：</strong> 品质工程师录入入厂抽检数据（如微量杂质 ppm 浓度）。</li>
-                    <li><strong>会签与准入库：</strong> 检验合格后会签通过，物料自动进入受控原材料 BOM 选择库。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">新建 MQC 申请：</strong> 提交新物料样品规格书、MSDS 安全数据表及第三方 SGS 检验报告。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">离子色谱与物性检核：</strong> 品质工程师录入入厂抽检数据（如微量杂质 ppm 浓度）。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">会签与准入库：</strong> 检验合格后会签通过，物料自动进入受控原材料 BOM 选择库。</li>
                 </ol>
             `
         },
         'ems-panel': {
             title: '📖 4. 设备开发管控台 (EMS) - 操作指南与 SOP',
             content: `
-                <div style="background: #f4f3ff; border-left: 4px solid #8b5cf6; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #5b21b6;">📌 模块概述：</strong>
-                    监控生箔机、阴极辊、后处理表面处理槽等极薄铜箔核心生产设备的研发调试、维保台账及工艺参数。
+                <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #5b21b6;">
+                    <strong style="color: #6d28d9; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #4c1d95; font-weight: 500;">监控生箔机、阴极辊、后处理表面处理槽等极薄铜箔核心生产设备的研发调试、维保台账及工艺参数。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>设备建档：</strong> 点击 <code>[新增关键设备]</code>，记录设备型号、阴极辊直径及制造商信息。</li>
-                    <li><strong>运行状态变更：</strong> 跟踪设备阶段（设计中 ➔ 中试调试中 ➔ 正常量产中）。</li>
-                    <li><strong>在线参数监控：</strong> 查看生箔槽液循环流速、阴极辊电流密度与温度在线趋势曲线。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">设备建档：</strong> 点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[新增关键设备]</code>，记录设备型号、阴极辊直径及制造商信息。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">运行状态变更：</strong> 跟踪设备阶段（设计中 ➔ 中试调试中 ➔ 正常量产中）。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">在线参数监控：</strong> 查看生箔槽液循环流速、阴极辊电流密度与温度在线趋势曲线。</li>
                 </ol>
             `
         },
         'dms-panel': {
             title: '📖 5. 文管中心 (DMS) - 操作指南与 SOP',
             content: `
-                <div style="background: #f0f9ff; border-left: 4px solid #0284c7; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #0369a1;">📌 模块概述：</strong>
-                    企业级研发文档集中归档中心，受控管理可行性报告、TDS 规格书、实验自测记录及现场 SOP 作业标准。
+                <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #0369a1;">
+                    <strong style="color: #0284c7; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #0c4a6e; font-weight: 500;">企业级研发文档集中归档中心，受控管理可行性报告、TDS 规格书、实验自测记录及现场 SOP 作业标准。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>上传受控文档：</strong> 选取产品关联并上传 PDF/Excel 规范文件，系统自动递增文档版本号（如 Rev A.1）。</li>
-                    <li><strong>权限隔离与版本追溯：</strong> 研发与品质工程师可调阅最新版本，过往版本自动存入归档历史防篡改。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">上传受控文档：</strong> 选取产品关联并上传 PDF/Excel 规范文件，系统自动递增文档版本号（如 Rev A.1）。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">权限隔离与版本追溯：</strong> 研发与品质工程师可调阅最新版本，过往版本自动存入归档历史防篡改。</li>
                 </ol>
             `
         },
         'ecn-panel': {
             title: '📖 6. 工程变更管控 (ECN) - 操作指南与 SOP',
             content: `
-                <div style="background: #fff7ed; border-left: 4px solid #d97706; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #9a3412;">📌 模块概述：</strong>
-                    对于已锁定量产的产品配方或工艺参数，必须通过 ECN 工程变更流程进行严密修改管控与钉钉协同审批。
+                <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #9a3412;">
+                    <strong style="color: #c2410c; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #7c2d12; font-weight: 500;">对于已锁定量产的产品配方或工艺参数，必须通过 ECN 工程变更流程进行严密修改管控与钉钉协同审批。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>发起 ECN 单：</strong> 填写设变原因（如“降低添加剂耗量”、“提升抗拉强度上限”）及影响范围。</li>
-                    <li><strong>钉钉协同审批：</strong> 变更单自动推送到钉钉审批流，经过研发主管、品质主管与生产总监会签批复。</li>
-                    <li><strong>自动解锁更新：</strong> 审批通过后，系统自动解封产品 BOM 并升版更新受控参数。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">发起 ECN 单：</strong> 填写设变原因（如“降低添加剂耗量”、“提升抗拉强度上限”）及影响范围。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">钉钉协同审批：</strong> 变更单自动推送到钉钉审批流，经过研发主管、品质主管与生产总监会签批复。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">自动解锁更新：</strong> 审批通过后，系统自动解封产品 BOM 并升版更新受控参数。</li>
                 </ol>
             `
         },
         'pdca-panel': {
             title: '📖 7. PDCA 质量改善与 8D 报告 - 操作指南与 SOP',
             content: `
-                <div style="background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #065f46;">📌 模块概述：</strong>
-                    品质不良与工艺超差的闭环改善中心。支持 5M1E 归因排查、Plan-Do-Check-Act 4阶段防错锁及一键导出标准 G8D 报告。
+                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #065f46;">
+                    <strong style="color: #047857; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #064e3b; font-weight: 500;">品质不良与工艺超差的闭环改善中心。支持 5M1E 归因排查、Plan-Do-Check-Act 4阶段防错锁及一键导出标准 G8D 报告。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>发起改善单：</strong> 点击 <code>[+ 发起 PDCA 改善单]</code>，选择 5M1E 异常归因（如“料-添加剂纯度不足”）。</li>
-                    <li><strong>阶段审核解封：</strong> 改善单包含 4 阶段锁。点击 Header 顶部或底部绿色的 <code>[审核通过并进入下一阶段]</code> 完成审核并解锁后一步。</li>
-                    <li><strong>🖨️ 导出 8D 报告：</strong> 点击改善单顶部的 <code>[导出 8D 报告]</code> 按钮，一键生成带有 D1-D8 维度的标准品质分析报告并支持保存 PDF。</li>
-                    <li><strong>查看时间轴：</strong> 改善单左下侧内置 <code>“阶段审核与变更履历 (Audit Trail)”</code>，全程留痕可追溯。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">发起改善单：</strong> 点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[+ 发起 PDCA 改善单]</code>，选择 5M1E 异常归因（如“料-添加剂纯度不足”）。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">阶段审核解封：</strong> 改善单包含 4 阶段锁。点击 Header 顶部或底部绿色的 <code style="background: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[审核通过并进入下一阶段]</code> 完成审核并解锁后一步。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">🖨️ 导出 8D 报告：</strong> 点击改善单顶部的 <code style="background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[导出 8D 报告]</code> 按钮，一键生成带有 D1-D8 维度的标准品质分析报告并支持保存 PDF。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">查看时间轴：</strong> 改善单左下侧内置 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">“阶段审核与变更履历 (Audit Trail)”</code>，全程留痕可追溯。</li>
                 </ol>
             `
         },
         'task-panel': {
             title: '📖 8. 受控任务与甘特图 - 操作指南与 SOP',
             content: `
-                <div style="background: #fff1f2; border-left: 4px solid #f43f5e; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #be123c;">📌 模块概述：</strong>
-                    研发课题与关键交付节点的甘特图进度排期工具。具备按月翻页查看、岗位任务打卡及超期红标预警。
+                <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #be123c;">
+                    <strong style="color: #e11d48; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #881337; font-weight: 500;">研发课题与关键交付节点的甘特图进度排期工具。具备按月翻页查看、岗位任务打卡及超期红标预警。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>查看月度甘特图：</strong> 导航栏点击月份切换按钮，快速预览各研发攻关小组的起止时间条。</li>
-                    <li><strong>完成打卡：</strong> 节点负责人上传交付物后点击 <code>[标记完成]</code>，进度条自动亮绿灯。</li>
-                    <li><strong>超期预警：</strong> 距离截止日期不足 3 天显示黄标预警，已超期未完成自动醒目标红提醒。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">查看月度甘特图：</strong> 导航栏点击月份切换按钮，快速预览各研发攻关小组的起止时间条。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">完成打卡：</strong> 节点负责人上传交付物后点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[标记完成]</code>，进度条自动亮绿灯。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">超期预警：</strong> 距离截止日期不足 3 天显示黄标预警，已超期未完成自动醒目标红提醒。</li>
                 </ol>
             `
         },
         'users-panel': {
             title: '📖 9. 权限管理与钉钉协同 - 操作指南与 SOP',
             content: `
-                <div style="background: #f8fafc; border-left: 4px solid #64748b; padding: 12px 16px; margin-bottom: 16px; border-radius: 4px;">
-                    <strong style="color: #334155;">📌 模块概述：</strong>
-                    管理系统用户角色与读写权限划分，并配置钉钉开放平台 AppKey/AppSecret 以支持审批流与消息通知。
+                <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #334155;">
+                    <strong style="color: #1e293b; font-size: 0.95rem;">📌 模块概述：</strong>
+                    <div style="margin-top: 4px; color: #0f172a; font-weight: 500;">管理系统用户角色与读写权限划分，并配置钉钉开放平台 AppKey/AppSecret 以支持审批流与消息通知。</div>
                 </div>
-                <h4 style="color: #1e293b; margin-bottom: 8px;">🚀 标准作业步骤 (SOP)：</h4>
-                <ol style="padding-left: 20px; line-height: 1.8;">
-                    <li><strong>角色分配：</strong> 可将用户设置为“超级管理员”、“研发工程师”、“品质工程师”或“工艺工程师”。</li>
-                    <li><strong>顶栏快捷切换：</strong> 在页面最顶端下拉框中，可随时切换身份测试不同权限下的按钮显隐。</li>
-                    <li><strong>钉钉 API 调试：</strong> 录入企业钉钉凭证，支持发起在线 API 连通性测试与回调日志校验。</li>
+                <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
+                <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">角色分配：</strong> 可将用户设置为“超级管理员”、“研发工程师”、“品质工程师”或“工艺工程师”。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">顶栏快捷切换：</strong> 在页面最顶端下拉框中，可随时切换身份测试不同权限下的按钮显隐。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">钉钉 API 调试：</strong> 录入企业钉钉凭证，支持发起在线 API 连通性测试与回调日志校验。</li>
                 </ol>
             `
         }
