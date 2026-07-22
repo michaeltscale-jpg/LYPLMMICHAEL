@@ -8273,12 +8273,164 @@ function renderDmsDeliverablesTable(product) {
         tbody.appendChild(tr);
     });
 
+    // 动态追加每个工段真实独立保存的 SOP / SIP 受控文件至 DMS 列表
+    if (product.routing_list && product.routing_list.length > 0) {
+        const activeSteps = product.routing_list.filter(r => r.status === '活动') || product.routing_list;
+        activeSteps.forEach(r => {
+            const prodCode = product.code ? `${product.code}-${product.spec_thickness || '12'}μm` : 'PTS-AI';
+            
+            if (r.sop) {
+                const sopTr = document.createElement("tr");
+                const fileCode = `${prodCode}_SOP_${r.stage_name}.pdf`;
+                const docName = `📖 [SOP] ${r.stage_name} 标准作业程序受控文件`;
+                sopTr.innerHTML = `
+                    <td style="font-size:0.72rem; color:#2563eb; font-weight:700;">工段规程受控</td>
+                    <td><span class="badge" style="background:rgba(37,99,235,0.08); color:#2563eb; border:1px solid rgba(37,99,235,0.2);">${r.stage_name}</span></td>
+                    <td style="font-weight:600; font-size:0.75rem;">
+                        ${docName}
+                        <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
+                            受控归档代码: ${fileCode} | 推荐机台: ${r.device_name} (${r.device_code})
+                        </div>
+                    </td>
+                    <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'} (工段受控)</td>
+                    <td><span class="badge badge-success">受控归档</span></td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id}, 'sop', '${r.stage_name}')">预览</button>
+                            <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id}, 'sop', '${r.stage_name}')">下载</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(sopTr);
+            }
+
+            if (r.sip) {
+                const sipTr = document.createElement("tr");
+                const fileCode = `${prodCode}_SIP_${r.stage_name}.pdf`;
+                const docName = `🔬 [SIP] ${r.stage_name} 标准检验规范受控文件`;
+                sipTr.innerHTML = `
+                    <td style="font-size:0.72rem; color:#059669; font-weight:700;">工段规程受控</td>
+                    <td><span class="badge" style="background:rgba(5,150,105,0.08); color:#059669; border:1px solid rgba(5,150,105,0.2);">${r.stage_name}</span></td>
+                    <td style="font-weight:600; font-size:0.75rem;">
+                        ${docName}
+                        <div style="font-size:0.68rem; color:var(--text-muted); font-weight:normal; margin-top:2px;">
+                            受控归档代码: ${fileCode} | 推荐机台: ${r.device_name} (${r.device_code})
+                        </div>
+                    </td>
+                    <td style="font-size:0.72rem; font-family:monospace;">${r.routing_version || 'v1.0'} (工段受控)</td>
+                    <td><span class="badge badge-success">受控归档</span></td>
+                    <td>
+                        <div style="display:flex; gap:8px;">
+                            <button class="dms-action-btn btn-preview" onclick="previewSegmentSopSipInDms(${r.id}, 'sip', '${r.stage_name}')">预览</button>
+                            <button class="dms-action-btn btn-download" onclick="downloadSegmentSopSipInDms(${r.id}, 'sip', '${r.stage_name}')">下载</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(sipTr);
+            }
+        });
+    }
+
     lucide.createIcons({
         attrs: { "stroke-width": 1.8 },
         nameAttr: "data-lucide",
         node: tbody
     });
 }
+
+// 文管中心在线高保真受控预览工段 SOP / SIP
+window.previewSegmentSopSipInDms = function(stepId, docType, stageName) {
+    const product = state.activeProduct || state.products[0];
+    if (!product || !product.routing_list) return;
+
+    const targetStep = product.routing_list.find(r => Number(r.id) === Number(stepId));
+    if (!targetStep) {
+        showToast("未找到该工段的受控数据", "error");
+        return;
+    }
+
+    const isSop = docType === 'sop';
+    const titleText = isSop 
+        ? `📖 [SOP受控文件] ${product.name} (${product.spec_thickness}μm) - ${stageName}标准作业规程`
+        : `🔬 [SIP受控文件] ${product.name} (${product.spec_thickness}μm) - ${stageName}标准检验规范`;
+    
+    const titleEl = document.getElementById("dms-pdf-title");
+    if (titleEl) titleEl.innerText = titleText;
+
+    const contentText = isSop ? (targetStep.sop || '暂无SOP规程描述') : (targetStep.sip || '暂无SIP检验规范描述');
+    const imageSrc = isSop ? targetStep.sop_image : targetStep.sip_image;
+
+    const htmlContent = `
+        <div style="background: #ffffff; padding: 24px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto; box-shadow: 0 4px 16px rgba(0,0,0,0.06);">
+            <div style="border-bottom: 2px solid ${isSop ? '#2563eb' : '#059669'}; padding-bottom: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: ${isSop ? '#1e3a8a' : '#064e3b'};">聚赫新材文管中心 (DMS) - 受控体系文件</h2>
+                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">受控文件名：<strong>${titleText}</strong></div>
+                </div>
+                <div style="text-align: right; font-size: 0.72rem; color: #64748b;">
+                    <div>文档状态：<span style="color: #059669; font-weight: bold;">[受控发布]</span></div>
+                    <div>归档编号：DMS-${isSop ? 'SOP' : 'SIP'}-${targetStep.id}-${stageName}</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 18px; font-size: 0.78rem;">
+                <div><strong>产品归属：</strong>${product.name} (${product.code})</div>
+                <div><strong>标称厚度：</strong>${product.spec_thickness} μm</div>
+                <div><strong>归属工段：</strong>${stageName}</div>
+                <div><strong>推荐执行设备：</strong>${targetStep.device_name} (${targetStep.device_code})</div>
+                <div><strong>规程版本：</strong>${targetStep.routing_version || 'v1.0'} (独立版本)</div>
+                <div><strong>归档时间：</strong>${formatDate(targetStep.created_at || new Date())}</div>
+            </div>
+
+            <div style="margin-bottom: 18px;">
+                <h4 style="font-size: 0.9rem; font-weight: 700; color: ${isSop ? '#2563eb' : '#059669'}; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="${isSop ? 'file-text' : 'check-square'}" style="width: 16px; height: 16px;"></i>
+                    ${isSop ? 'SOP 标准作业程序正文 (Step-by-Step Guidelines)' : 'SIP 标准检验规范要求 (Quality Control Matrix)'}
+                </h4>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; font-size: 0.82rem; line-height: 1.6; white-space: pre-wrap; color: #334155;">
+                    ${contentText}
+                </div>
+            </div>
+
+            ${imageSrc ? `
+            <div style="margin-top: 18px;">
+                <h4 style="font-size: 0.9rem; font-weight: 700; color: #475569; margin-bottom: 8px;">📷 规范附图与检测示意图</h4>
+                <div style="text-align: center; background: #f1f5f9; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e1;">
+                    <img src="${imageSrc}" style="max-width: 100%; max-height: 360px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)">
+                </div>
+            </div>` : ''}
+
+            <div style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 0.72rem; color: #94a3b8; display: flex; justify-content: space-between;">
+                <span>聚赫新材 (GHZ High-Frequency Copper Foil) PLM & DMS 自动化流转平台</span>
+                <span>未经授权禁止复制流通</span>
+            </div>
+        </div>
+    `;
+
+    const pdfViewer = document.getElementById("dms-pdf-content-viewer");
+    if (pdfViewer) {
+        pdfViewer.innerHTML = htmlContent;
+        if (window.lucide) lucide.createIcons({ node: pdfViewer });
+    }
+
+    openModal("modal-dms-pdf-viewer");
+};
+
+window.downloadSegmentSopSipInDms = function(stepId, docType, stageName) {
+    const product = state.activeProduct || state.products[0];
+    const isSop = docType === 'sop';
+    const targetStep = product.routing_list ? product.routing_list.find(r => Number(r.id) === Number(stepId)) : null;
+    const content = targetStep ? (isSop ? targetStep.sop : targetStep.sip) : '';
+    
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${product.name}_${stageName}_${docType.toUpperCase()}_受控规范.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    if (window.showToast) showToast(`已成功导出下载【${stageName}】${docType.toUpperCase()} 受控规范`, "success");
+};
 
 window.previewDmsTemplate = function(fileCode, fileName) {
     const selectedProd = state.activeProduct || state.products.find(p => Number(p.id) === Number(state.dmsActiveProductId)) || state.products[0] || {};

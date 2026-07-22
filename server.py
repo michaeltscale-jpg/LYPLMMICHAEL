@@ -1750,7 +1750,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 ))
 
                 conn.commit()
-                self.send_json({"status": "success", "message": f"✨ 已成功独立更新并保存【{stage_name}】工段的 SOP 与 SIP 规程！", "step_id": step_id, "stage_name": stage_name})
+                self.send_json({"status": "success", "message": f"✨ 已成功独立保存【{stage_name}】工段 SOP/SIP，并自动同步受控归档至文管中心 (DMS)！", "step_id": step_id, "stage_name": stage_name})
 
             # 4.6 TDS 微调保存（不升版）
             elif path.endswith("/save_tds_rows") and "/products/" in path:
