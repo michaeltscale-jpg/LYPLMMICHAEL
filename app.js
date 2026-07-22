@@ -13299,6 +13299,11 @@ window.XiaoheAI = {
             field.value = text;
             field.focus();
             
+            // 自动自适应增高文本框高度
+            if (window.autoResizeTextarea) {
+                autoResizeTextarea(field);
+            }
+
             // 触发蓝光聚焦脉冲动画
             field.classList.remove('xiaohe-applied-highlight');
             void field.offsetWidth; // 触发 reflow
@@ -13337,15 +13342,79 @@ window.XiaoheAI = {
     }
 };
 
-// 页面加载完成后自动绑定与初始化上下文监听
+/* ==========================================================================
+   输入框内容自适应拉高 & 点击右下角一键最大化展开 (Auto-Expand & Maximize Engine)
+   ========================================================================== */
+
+// 自动调整 textarea 高度以完整显示所有内容
+window.autoResizeTextarea = function(el) {
+    if (!el || el.tagName !== 'TEXTAREA') return;
+    if (el.id === 'xiaohe-input') return;
+
+    if (el.classList.contains('is-maximized')) return;
+
+    el.style.height = 'auto';
+    const newHeight = Math.max(el.scrollHeight + 6, 68);
+    el.style.height = newHeight + 'px';
+};
+
+// 切换最大化展开与收起
+window.toggleMaximizeTextarea = function(el) {
+    if (!el || el.tagName !== 'TEXTAREA') return;
+    
+    if (el.classList.contains('is-maximized')) {
+        el.classList.remove('is-maximized');
+        autoResizeTextarea(el);
+        if (window.showToast) showToast("已收起文本框高度", "info");
+    } else {
+        el.classList.add('is-maximized');
+        el.style.height = 'auto';
+        const targetHeight = Math.max(el.scrollHeight + 14, 180);
+        el.style.height = targetHeight + 'px';
+        if (window.showToast) showToast("已最大化展开文本框完整显示内容", "success");
+    }
+};
+
+// 全局绑定输入自适应与右下角手柄单击最大化
+window.bindAutoResizeEvents = function() {
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.tagName === 'TEXTAREA' && e.target.id !== 'xiaohe-input') {
+            autoResizeTextarea(e.target);
+        }
+    }, true);
+
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.tagName === 'TEXTAREA' && e.target.id !== 'xiaohe-input') {
+            const rect = e.target.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            // 点击右下角 24px x 24px 斜线拖拽区域
+            if (clickX >= rect.width - 24 && clickY >= rect.height - 24) {
+                e.preventDefault();
+                toggleMaximizeTextarea(e.target);
+            }
+        }
+    }, true);
+
+    document.querySelectorAll('textarea:not(#xiaohe-input)').forEach(function(ta) {
+        autoResizeTextarea(ta);
+    });
+};
+
+// 页面加载完成后自动绑定与初始化
 document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
         if (window.XiaoheAI) {
             XiaoheAI.updateContextDisplay();
             XiaoheAI.bindGlobalFocusTracker();
         }
+        if (window.bindAutoResizeEvents) {
+            bindAutoResizeEvents();
+        }
     }, 800);
 });
+
 
 
 
