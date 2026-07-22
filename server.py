@@ -2727,7 +2727,7 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             "title": title,
             "content": content,
             "target_field_id": target_field,
-            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         self.send_json(response_data)
 
