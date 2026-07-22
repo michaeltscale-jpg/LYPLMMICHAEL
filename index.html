@@ -1711,20 +1711,10 @@ requests.post(url, json=payload)</code></pre>
 
                             <!-- Plan Textarea -->
                             <div id="tab-Plan" class="pdca-tab">
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                    <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:0;">详细问题描述 <span style="color:red;">*</span></label>
-                                    <a href="javascript:void(0)" onclick="XiaoheAI.triggerInline('pdca-edit-problem', 'quality_diagnosis')" style="font-size: 0.74rem; color: #2563eb; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(37,99,235,0.2);">
-                                        <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> ✨ 召唤小赫诊断
-                                    </a>
-                                </div>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">详细问题描述 <span style="color:red;">*</span></label>
                                 <textarea id="pdca-edit-problem" class="form-control" rows="3" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
 
-                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; margin-bottom:6px;">
-                                    <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:0;">改善对策 <span style="color:red;">*</span></label>
-                                    <a href="javascript:void(0)" onclick="XiaoheAI.triggerInline('pdca-edit-improve', 'quality_diagnosis')" style="font-size: 0.74rem; color: #2563eb; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(37,99,235,0.2);">
-                                        <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> ✨ 召唤小赫起草对策
-                                    </a>
-                                </div>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-top:12px; margin-bottom:6px;">改善对策 <span style="color:red;">*</span></label>
                                 <textarea id="pdca-edit-improve" class="form-control" rows="3" placeholder="详细描述制定的改善步骤、应对策略或预防措施..."></textarea>
                             </div>
                             <!-- Do Textarea -->
@@ -2923,12 +2913,7 @@ requests.post(url, json=payload)</code></pre>
                     <div style="margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0; font-weight: 600;">SOP 标准作业程序</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <a href="javascript:void(0)" onclick="XiaoheAI.triggerInline('step-edit-sop', 'sop_draft')" style="font-size: 0.74rem; color: #2563eb; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(37,99,235,0.2);">
-                                    <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> ✨ 召唤小赫起草
-                                </a>
-                                <a href="javascript:void(0)" onclick="loadRoutingTemplateEdit(this, 'sop')" style="font-size: 0.72rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">载入模版</a>
-                            </div>
+                            <a href="javascript:void(0)" onclick="loadRoutingTemplateEdit(this, 'sop')" style="font-size: 0.72rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">载入模版</a>
                         </div>
                         <textarea id="step-edit-sop" class="form-control" rows="6" style="font-size: 0.78rem; width: 100%; resize: vertical; line-height: 1.4; padding: 6px 10px;" placeholder="输入作业指导规范..."></textarea>
                         <!-- SOP 附图 -->
@@ -2947,12 +2932,7 @@ requests.post(url, json=payload)</code></pre>
                     <div style="margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0; font-weight: 600;">SIP 标准检验程序</label>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <a href="javascript:void(0)" onclick="XiaoheAI.triggerInline('step-edit-sip', 'sip_draft')" style="font-size: 0.74rem; color: #2563eb; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; background: rgba(37,99,235,0.08); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(37,99,235,0.2);">
-                                    <i data-lucide="sparkles" style="width: 12px; height: 12px;"></i> ✨ 召唤小赫起草
-                                </a>
-                                <a href="javascript:void(0)" onclick="loadRoutingTemplateEdit(this, 'sip')" style="font-size: 0.72rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">载入模版</a>
-                            </div>
+                            <a href="javascript:void(0)" onclick="loadRoutingTemplateEdit(this, 'sip')" style="font-size: 0.72rem; color: var(--color-primary); text-decoration: none; font-weight: 500;">载入模版</a>
                         </div>
                         <textarea id="step-edit-sip" class="form-control" rows="6" style="font-size: 0.78rem; width: 100%; resize: vertical; line-height: 1.4; padding: 6px 10px;" placeholder="输入检验控制指标..."></textarea>
                         <!-- SIP 附图 -->
