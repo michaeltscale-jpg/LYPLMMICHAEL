@@ -13128,6 +13128,160 @@ window.XiaoheAI = {
         }).catch(err => {
             alert("复制失败，请手动选择复制。");
         });
+    },
+
+    // --------------------------------------------------------------------------
+    // 召唤形式 1：输入框内快捷呼叫 (Inline Trigger & Popover Methods)
+    // --------------------------------------------------------------------------
+    activeInlinePopoverId: null,
+
+    // 触发内联弹出气泡
+    triggerInline: function(targetFieldId, actionType) {
+        const targetEl = document.getElementById(targetFieldId);
+        if (!targetEl) return;
+
+        this.closeInlinePopover();
+
+        let wrapper = targetEl.closest('.xiaohe-input-wrapper-inline');
+        if (!wrapper) {
+            wrapper = document.createElement('div');
+            wrapper.className = 'xiaohe-input-wrapper-inline';
+            targetEl.parentNode.insertBefore(wrapper, targetEl);
+            wrapper.appendChild(targetEl);
+        }
+
+        // 创建或获取 Popover
+        let popover = wrapper.querySelector('.xiaohe-inline-popover');
+        if (!popover) {
+            popover = document.createElement('div');
+            popover.className = 'xiaohe-inline-popover';
+            popover.id = 'xiaohe-popover-' + targetFieldId;
+            popover.innerHTML = `
+                <div class="xiaohe-popover-header">
+                    <span>✨ 小赫 AI 智能起草</span>
+                    <button class="xiaohe-close-btn" onclick="XiaoheAI.closeInlinePopover()" style="padding:2px;"><i data-lucide="x" style="width:14px; height:14px;"></i></button>
+                </div>
+                <div class="xiaohe-popover-body" id="xiaohe-popover-body-${targetFieldId}">
+                    <div style="display:flex; align-items:center; gap:8px; color:#93c5fd; padding:12px 0;">
+                        <i data-lucide="loader-2" class="spin" style="width:16px; height:16px;"></i>
+                        <span>小赫正在为您起草专有内容...</span>
+                    </div>
+                </div>
+                <div class="xiaohe-popover-footer" id="xiaohe-popover-footer-${targetFieldId}" style="display:none;">
+                    <button class="btn-xiaohe-action btn-xiaohe-apply" onclick="XiaoheAI.applyInlineDraft('${targetFieldId}')">
+                        <i data-lucide="corner-down-left" style="width:13px; height:13px;"></i>
+                        <span>填入此框</span>
+                    </button>
+                    <button class="btn-xiaohe-action btn-xiaohe-copy" onclick="XiaoheAI.closeInlinePopover()">
+                        <span>取消</span>
+                    </button>
+                </div>
+            `;
+            wrapper.appendChild(popover);
+        }
+
+        popover.classList.add('active');
+        this.activeInlinePopoverId = popover.id;
+        if (window.lucide) lucide.createIcons();
+
+        // 自动发送 API 请求获取起草
+        const contextInfo = this.getContextSensing();
+        fetch('/api/v1/ai/xiaohe/assistant', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-User-Role': window.currentUserRole || 'Admin',
+                'X-User-Name': encodeURIComponent(window.currentUserName || '工程师')
+            },
+            body: JSON.stringify({
+                prompt: `请针对字段 ${targetFieldId} 自动起草标准内容`,
+                action_type: actionType || "general",
+                context: contextInfo
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const bodyEl = document.getElementById(`xiaohe-popover-body-${targetFieldId}`);
+            const footerEl = document.getElementById(`xiaohe-popover-footer-${targetFieldId}`);
+            if (bodyEl && data.status === "success") {
+                bodyEl.innerHTML = `
+                    <div style="font-weight:700; color:#60a5fa; margin-bottom:4px;">${this.escapeHtml(data.title)}</div>
+                    <div>${this.simpleMarkdownToHtml(data.content)}</div>
+                    <textarea id="xiaohe-inline-raw-${targetFieldId}" style="display:none;">${this.escapeHtml(data.content)}</textarea>
+                `;
+                if (footerEl) footerEl.style.display = "flex";
+            }
+        })
+        .catch(err => {
+            const bodyEl = document.getElementById(`xiaohe-popover-body-${targetFieldId}`);
+            if (bodyEl) bodyEl.innerHTML = `<div style="color:#f87171;">⚠️ 起草生成失败，请重试</div>`;
+        });
+    },
+
+    closeInlinePopover: function() {
+        if (this.activeInlinePopoverId) {
+            const popover = document.getElementById(this.activeInlinePopoverId);
+            if (popover) popover.classList.remove('active');
+            this.activeInlinePopoverId = null;
+        }
+    },
+
+    // 填入此输入框
+    applyInlineDraft: function(targetFieldId) {
+        const rawElem = document.getElementById(`xiaohe-inline-raw-${targetFieldId}`);
+        const targetEl = document.getElementById(targetFieldId);
+
+        if (rawElem && targetEl) {
+            targetEl.value = rawElem.value;
+            targetEl.focus();
+            
+            targetEl.style.transition = "box-shadow 0.3s ease";
+            targetEl.style.boxShadow = "0 0 14px rgba(59, 130, 246, 0.8)";
+            setTimeout(() => { targetEl.style.boxShadow = ""; }, 1200);
+
+            if (window.showToast) {
+                showToast("✨ 已将小赫起草内容填入当前文本框！", "success");
+            }
+        }
+        this.closeInlinePopover();
+    },
+
+    // 自动挂载所有重点文本域
+    autoAttachInlineTriggers: function() {
+        const targetIds = [
+            { id: 'step-edit-sop', type: 'sop_draft', label: '✨ 小赫起草SOP' },
+            { id: 'step-edit-sip', type: 'sip_draft', label: '✨ 小赫起草SIP' },
+            { id: 'pdca-edit-problem', type: 'quality_diagnosis', label: '✨ 小赫诊断分析' },
+            { id: 'pdca-edit-improve', type: 'quality_diagnosis', label: '✨ 小赫起草对策' },
+            { id: 'ecn-change-reason', type: 'general', label: '✨ 小赫描述原因' },
+            { id: 'mqc-mat-test-result', type: 'sip_draft', label: '✨ 小赫起草结论' }
+        ];
+
+        targetIds.forEach(item => {
+            const el = document.getElementById(item.id);
+            if (el) {
+                let wrapper = el.closest('.xiaohe-input-wrapper-inline');
+                if (!wrapper) {
+                    wrapper = document.createElement('div');
+                    wrapper.className = 'xiaohe-input-wrapper-inline';
+                    el.parentNode.insertBefore(wrapper, el);
+                    wrapper.appendChild(el);
+                }
+                if (!wrapper.querySelector('.btn-xiaohe-inline-trigger')) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn-xiaohe-inline-trigger';
+                    btn.innerHTML = `<i data-lucide="sparkles" style="width:12px; height:12px;"></i><span>${item.label}</span>`;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        XiaoheAI.triggerInline(item.id, item.type);
+                    };
+                    wrapper.appendChild(btn);
+                }
+            }
+        });
+        if (window.lucide) lucide.createIcons();
     }
 };
 
@@ -13136,7 +13290,9 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(function() {
         if (window.XiaoheAI) {
             XiaoheAI.updateContextDisplay();
+            XiaoheAI.autoAttachInlineTriggers();
         }
-    }, 1000);
+    }, 800);
 });
+
 

@@ -2531,3 +2531,99 @@ textarea.form-control {
     transform: scale(1.05);
 }
 
+/* ==========================================================================
+   召唤形式 1：输入框快捷呼叫 (Xiaohe Inline Trigger & Popover Styles)
+   ========================================================================== */
+
+.xiaohe-input-wrapper-inline {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+/* 内置【✨ 小赫起草】微型按钮 */
+.btn-xiaohe-inline-trigger {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    z-index: 10;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #3b82f6;
+    background: rgba(37, 99, 235, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-xiaohe-inline-trigger:hover {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: #ffffff;
+    border-color: #60a5fa;
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* 内联 Popover 弹窗卡片 */
+.xiaohe-inline-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    z-index: 9980;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    padding: 12px 14px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    animation: popoverFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.xiaohe-inline-popover.active {
+    display: flex;
+}
+
+@keyframes popoverFadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.xiaohe-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+.xiaohe-popover-body {
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: #e2e8f0;
+}
+
+.xiaohe-popover-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
