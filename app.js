@@ -12864,7 +12864,9 @@ window.XiaoheAI = {
 
         return {
             current_view: currentViewName,
-            context_name: contextName
+            context_name: contextName,
+            field_id: this.currentTargetElement ? this.currentTargetElement.id : "",
+            field_label: this.currentTargetLabel || ""
         };
     },
 
@@ -13254,12 +13256,18 @@ window.XiaoheAI = {
         this.openDrawer();
 
         let actionType = "general";
-        if (this.currentTargetElement && this.currentTargetElement.id) {
-            const id = this.currentTargetElement.id;
-            if (id.includes('sop')) actionType = "sop_draft";
-            else if (id.includes('sip')) actionType = "sip_draft";
-            else if (id.includes('problem') || id.includes('improve')) actionType = "quality_diagnosis";
-        }
+        const targetId = (this.currentTargetElement && this.currentTargetElement.id) ? this.currentTargetElement.id.toLowerCase() : "";
+        const targetLabel = this.currentTargetLabel ? this.currentTargetLabel.toLowerCase() : "";
+        const combined = `${targetId} ${targetLabel}`;
+
+        if (combined.includes('sop')) actionType = "sop_draft";
+        else if (combined.includes('sip')) actionType = "sip_draft";
+        else if (combined.includes('problem') || combined.includes('improve') || combined.includes('cause') || combined.includes('pdca')) actionType = "quality_diagnosis";
+        else if (combined.includes('market') || combined.includes('proposal') || combined.includes('痛点') || combined.includes('市场')) actionType = "market_draft";
+        else if (combined.includes('feas') || combined.includes('tech') || combined.includes('技术') || combined.includes('可行性')) actionType = "tech_draft";
+        else if (combined.includes('ecn') || combined.includes('change') || combined.includes('变更')) actionType = "ecn_draft";
+        else if (combined.includes('tds') || combined.includes('version') || combined.includes('版本')) actionType = "tds_draft";
+        else if (combined.includes('mqc') || combined.includes('result') || combined.includes('结论')) actionType = "mqc_draft";
 
         const label = this.currentTargetLabel || "当前编辑框";
         this.sendMessage(`请针对当前鼠标聚焦的【${label}】起草规范草稿`, actionType);

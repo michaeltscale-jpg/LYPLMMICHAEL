@@ -2595,20 +2595,24 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
 
     def handle_xiaohe_ai_assistant(self, data):
-        """小赫 AI 助手 - 智能草稿生成与问答 API (支持业务上下文感知)"""
+        """小赫 AI 助手 - 智能草稿生成与问答 API (支持多主题精准匹配)"""
         prompt = (data.get("prompt") or "").strip()
         context = data.get("context") or {}
         action_type = data.get("action_type") or "general"
+        field_id = (context.get("field_id") or "").lower()
+        field_label = (context.get("field_label") or "").strip()
         
         current_view = context.get("current_view", "常规面板")
         context_name = context.get("context_name", "聚赫新材项目")
 
         AI_ASSISTANT_NAME = "小赫"
         lower_prompt = prompt.lower()
+        combined_key = f"{lower_prompt} {field_id} {field_label.lower()} {action_type}"
 
-        if "sop" in lower_prompt or action_type == "sop_draft":
+        # 1. SOP 标准作业程序
+        if "sop" in combined_key:
             title = f"【SOP标准作业程序草稿】{context_name}"
-            target_field = "sop_description"
+            target_field = "step-edit-sop"
             content = f"""### 📋 {context_name} - 标准作业程序 (SOP) 草稿
 
 **编制人**：AI 助手小赫 | **适用工段**：{current_view} | **版本**：v1.0 (草稿)
@@ -2628,13 +2632,12 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 #### 三、 异常停机规程
 1. 如遇突发异常（温度骤升、压力过载），按下紧急停止按键；
-2. 保持现场隔离，并在 5 分钟内通知设备工程组与品保主管现场排查。
+2. 保持现场隔离，并在 5 分钟内通知设备工程组与品保主管现场排查。"""
 
-*(提示：点击下方【插入到编辑框】可直接回填至表单字段)*"""
-
-        elif "sip" in lower_prompt or action_type == "sip_draft":
+        # 2. SIP 标准检验规范
+        elif "sip" in combined_key:
             title = f"【SIP标准检验规范草稿】{context_name}"
-            target_field = "sip_description"
+            target_field = "step-edit-sip"
             content = f"""### 🔬 {context_name} - 标准检验规范 (SIP) 草稿
 
 **编制人**：AI 助手小赫 | **检验节点**：{current_view} | **判定标准级别**：A级 (严格)
@@ -2655,7 +2658,112 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 - 发现 1 项 CR 项或连续 2 项 MA 项超标，立即挂**【暂停检验/隔离】**红牌；
 - 扣留该批次全量产品，触发异常品质单并推送给质量工程师跟进。"""
 
-        elif "计划" in lower_prompt or "plan" in lower_prompt or action_type == "project_plan":
+        # 3. 市场需求与痛点分析 (针对 G1 立项提案)
+        elif "market" in combined_key or "proposal" in combined_key or "痛点" in combined_key or "市场" in combined_key:
+            title = f"【市场痛点与立项背景分析】{context_name}"
+            target_field = "g1-proposal-market-bg"
+            content = f"""### 💡 {context_name} - 市场痛点与业务机会分析
+
+**撰写助手**：小赫 | **所属产品**：{context_name}
+
+#### 一、 客户核心痛点 (Customer Pain Points)
+1. **现有产品性能瓶颈**：当前终端客户在高速高频应用场景中，对电解铜箔的抗拉强度（Tensile Strength）与表面粗糙度（Rz）提出更高剥离力要求；
+2. **加工损耗高**：在下游 PCB 压合过程中容易产生针孔与翘曲问题，良率难以突破 92%；
+3. **国产化替代需求**：高端载体铜箔依赖海外进口，交期长达 12 周以上且单价偏高。
+
+#### 二、 市场机会与业务价值 (Business Opportunity)
+- **目标市场**：AI 算力服务器、5G/6G 基站、车载高频 PCB 供应链；
+- **替代优势**：具备极低粗糙度 (Rz ≤ 1.5μm) 与超高拉伸强度，预计提升下游客户压合良率 3%~5%；
+- **经济效益**：实现国产高精铜箔自主可控，单卷生产成本预计降低 18%。"""
+
+        # 4. 技术可行性评估与工艺瓶颈
+        elif "feas" in combined_key or "tech" in combined_key or "技术" in combined_key or "可行性" in combined_key:
+            title = f"【技术可行性评估报告草稿】{context_name}"
+            target_field = "g1-feas-tech"
+            content = f"""### 🛠️ {context_name} - 技术可行性与工艺控制评估
+
+**撰写助手**：小赫 | **评估基准**：现有产线设备与控制精度
+
+#### 一、 工艺路线与能力评估
+1. **电解工段能力**：现有阴极钛辊与高压电解槽表面精度符合 Rz 1.2μm 要求，电流密度控制精度可保持在 ±1.5 A/dm² 范围；
+2. **添加剂配比窗口**：已掌握复合硅烷与有机添加剂配比工艺，具备窄窗口稳定加注控制机制；
+3. **分切与表面处理**：防氧化钝化处理能力可覆盖该标称厚度规格要求。
+
+#### 二、 关键技术瓶颈与解决思路
+- **技术瓶颈**：极薄/高强度铜箔在高速收卷时易产生微褶皱与边缘撕裂；
+- **解决对策**：引入收卷张力自动反馈调节器，并在小试阶段微调延伸率指标，确保成品率 ≥ 96%。"""
+
+        # 5. ECN 工程变更原因与对比分析
+        elif "ecn" in combined_key or "change" in combined_key or "变更" in combined_key:
+            title = f"【ECN 工程变更说明草稿】{context_name}"
+            target_field = "ecn-change-reason"
+            content = f"""### 🔄 {context_name} - ECN 工程变更原因与参数对比
+
+**撰写助手**：小赫 | **变更属性**：工艺参数/BOM 配方优化
+
+#### 一、 变更动机与背景 (Change Driver)
+为了进一步提升 {context_name} 产品在客户小试阶段的剥离强度表现，并降低极差漂移风险，拟对电解液添加剂加注浓度进行微调。
+
+#### 二、 变更前后参数对比 (Before vs After)
+- **变更前 (Before)**：添加剂明胶加注浓度为 5.2 ppm，硫酸浓度为 80 g/L；
+- **变更后 (After)**：优化为添加剂明胶加注浓度 4.2 ppm，添加极微量复合有机改性剂 0.5 ppm；
+- **预期成果**：表面粗糙度 Rz 从 1.8μm 降至 1.45μm，且剥离强度提升约 12%。
+
+#### 三、 风险评估与验证计划
+- **验证结论**：已在小试线完成 3 批次样品试制，测试各项物理指标全数合格，无产线停机风险。"""
+
+        # 6. TDS / BOM 版本变更说明
+        elif "tds" in combined_key or "version" in combined_key or "版本" in combined_key:
+            title = f"【TDS 版本变更说明草稿】{context_name}"
+            target_field = "tds-publish-notes"
+            content = f"""### 📝 {context_name} - TDS 技术规格书版本升级说明
+
+**撰写助手**：小赫 | **变更属性**：发布新版本 TDS
+
+#### 一、 版本变更主要内容
+1. **新增测试标准项**：补充表面三维粗糙度 (Sdr) 检验项与 10GHz 介电损耗因子上限指标；
+2. **公差收紧**：将标称厚度公差由原 ±0.5μm 进一步收紧至 ±0.3μm，抗张强度指标门槛提升至 ≥ 380 MPa；
+3. **附图修正**：更新防氧化层截面金相结构示意图。
+
+#### 二、 产线指导建议
+- 生产工程组需依据本版 TDS 同步调整在线测厚仪警戒公差上限。"""
+
+        # 7. MQC 物料与检验结论
+        elif "mqc" in combined_key or "result" in combined_key or "结论" in combined_key:
+            title = f"【MQC 物料承认检验结论草稿】{context_name}"
+            target_field = "mqc-mat-test-result"
+            content = f"""### 🧪 {context_name} - MQC 物料承认与理化检验结论
+
+**撰写助手**：小赫 | **判定结论**：合格 (Pass)
+
+#### 一、 关键测试数据摘要
+1. **主成分纯度**：测定值为 **99.996%** (标准要求 ≥ 99.990%)；
+2. **微量杂质含量**：铁、铅等重金属杂质含量符合标准，无超标异常；
+3. **溶解速率与稳定性**：在标准酸度下 15 分钟内完全溶解，无沉淀与悬浮物。
+
+#### 二、 品质承认意见
+- **综合判定**：样品各项指标均符合 GHZ-MQC-2026 技术规范，拟同意该批次物料小批入库与上线试用。"""
+
+        # 8. PDCA 质量诊断与改善对策
+        elif "pdca" in combined_key or "problem" in combined_key or "improve" in combined_key or "诊断" in combined_key or "对策" in combined_key:
+            title = f"【PDCA 质量诊断与改善对策】{context_name}"
+            target_field = "pdca-edit-improve"
+            content = f"""### 🔍 {context_name} - 5M1E 归因诊断与改善对策
+
+**诊断助手**：小赫 | **置信度**：94%
+
+#### 一、 5M1E 原因分析归因
+- **机 (Machine)**：检测到电解槽主导电辊局部磨损导致电流密度微小波动；
+- **料 (Material)**：进料铜盐溶液添加剂浓度在批次切换时存在 0.3ppm 波动；
+- **法 (Method)**：当前检验抽样频次公差窗口偏宽。
+
+#### 二、 PDCA 纠正措施 (Action Plan)
+1. **紧急响应 (Containment)**：对该批次受影响产品进行 100% 隔离加检；
+2. **纠正措施 (Corrective Action)**：更换导电辊碳刷，重新校准电解槽加药计量泵；
+3. **预防措施 (Preventive Action)**：更新 SOP 检验监控频次，并在系统设置预警阈值。"""
+
+        # 9. 阶段项目开发计划
+        elif "计划" in combined_key or "plan" in combined_key:
             title = f"【阶段项目计划草稿】{context_name}"
             target_field = "project_plan_text"
             content = f"""### 📅 {context_name} - 阶段开发与推进计划草稿
@@ -2680,46 +2788,22 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 - **供应链风险**：关键辅料需提前 5 天确认 MQC 承认进度。
 - **设备交付风险**：确认设备维护与工装模具准备就绪。"""
 
-        elif "诊断" in lower_prompt or "质量" in lower_prompt or "分析" in lower_prompt or action_type == "quality_diagnosis":
-            title = f"【质量诊断与改善建议草稿】{context_name}"
-            target_field = "pdca_improve_plan"
-            content = f"""### 🔍 {context_name} - 质量与过程诊断意见
-
-**诊断助手**：小赫 | **基准视角**：5M1E 归因分析 | **置信度**：92%
-
-#### 一、 归因分析诊断 (Fishbone Matrix)
-- **人 (Man)**：操作员作业标准化程度良好，需加强异常紧急处置培训。
-- **机 (Machine)**：检测到 {context_name} 关键参数存在微小漂移，建议校验探头。
-- **料 (Material)**：物料批次一致性为主要控制点，建议核查上游供应商 MQC 报告。
-- **法 (Method)**：当前工艺窗口较窄，建议优化电解/加工温度上限公差。
-- **环 (Environment)**：车间温湿度控制符合 ISO 级洁净标准。
-
-#### 二、 PDCA 建议措施
-1. **Immediate (紧急措施)**：对受影响批次进行 100% 隔离加检；
-2. **Corrective (纠正措施)**：微调控制参数至中心线范围；
-3. **Preventive (预防措施)**：更新 SOP 监控频次，并在小赫面板中设置超差预警。"""
-
+        # 10. 通用字段草稿 (根据输入框 label 智能匹配)
         else:
-            title = f"【小赫智能解答草稿】{context_name}"
+            title = f"【小赫智能起草】{field_label if field_label else context_name}"
             target_field = "general_draft"
-            prompt_summary = prompt if prompt else "协助生成资料草稿"
-            content = f"""### 🤖 小赫 AI 智能助手响应
+            content = f"""### 🤖 {context_name} - {field_label if field_label else '规范资料草稿'}
 
-**响应主题**：{prompt_summary}
-**当前上下文**：{current_view} ({context_name})
+**起草助手**：小赫 | **匹配上下文**：{current_view} ({context_name})
 
-针对您提出的需求，小赫为您梳理了以下业务建议与参考文本草稿：
+针对当前【{field_label if field_label else '选定文本框'}】，小赫为您归纳了以下业务规范草稿：
 
-1. **核心要点**：
-   - 结合当前的【{context_name}】属性，建议在录入相关资料时重点关注**工艺稳定性、质量可追溯性与设备安全规范**。
-2. **推荐草稿格式**：
-   - **名称标识**：{context_name} 标准流程与资料草稿
-   - **维护人**：{self.headers.get('X-User-Name', '工程人员')}
-   - **更新时间**：当前最新系统时间
-3. **操作指导**：
-   - 您可以点击下方的【一键复制】按钮将此文本复制到剪贴板，或者在支持的表单中点击【插入到编辑框】。
+#### 一、 核心要点 (Key Guidelines)
+1. **业务合规**：遵循聚赫新材规范，确保 {context_name} 关键参数真实可追溯；
+2. **过程控制**：记录人、机、料、法、环关键要素变化，明确控制公差边界；
+3. **质量闭环**：关键变更须经研发与品质工程师评审确认后再行生效。
 
-*(如需生成具体的 SOP 或 SIP，请在下方点击快捷按钮或直接对我发送“生成SOP”/“生成SIP”指令。)*"""
+*(提示：点击下方【插入到编辑框】可直接回填至当前输入框)*"""
 
         response_data = {
             "status": "success",
