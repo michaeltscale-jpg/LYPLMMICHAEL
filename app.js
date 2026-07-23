@@ -441,6 +441,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         fetchDashboardData();
 
         // 还原主 Tab 及产品详情
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramTab = urlParams.get("tab");
+        if (paramTab) {
+            state.activeTab = paramTab;
+            saveStateToLocalStorage();
+        }
         switchTab(state.activeTab);
         if (state.activeProductId) {
             loadProductDetails(state.activeProductId, state.activeThickness);

@@ -6,19 +6,21 @@
     <title>设备导入项目详情 - 聚赫新材 PLM</title>
     <link rel="stylesheet" href="style.css">
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="vendor/lucide.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: #1e293b;
-            min-height: 100vh;
-            padding-bottom: 40px;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
 
         .detail-container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
         }
 
         /* Top Bar styling */
@@ -192,13 +194,57 @@
     </style>
 </head>
 <body>
-    <div class="detail-container">
-        <!-- Top Bar Navigation and Meta Info -->
-        <div class="detail-header">
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <a href="/#ems" class="btn-back">
-                    <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> 返回列表
-                </a>
+    <div class="app-container">
+        <!-- 1. Left Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">F</div>
+                <span class="brand-name">聚赫新材 PLM</span>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-item" onclick="window.location.href='/?tab=dashboard-panel'">
+                    <i data-lucide="layout-dashboard"></i> PLM 驾驶舱
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=plm-panel'">
+                    <i data-lucide="layers"></i> 新品开发控制台
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=mqc-panel'">
+                    <i data-lucide="package-check"></i> 物料承认 (MQC)
+                </div>
+                <div class="menu-item active" onclick="window.location.href='/?tab=ems-panel'">
+                    <i data-lucide="cpu"></i> 设备开发 (EMS)
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=dms-panel'">
+                    <i data-lucide="folder-open"></i> 文管中心 (DMS)
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=ecn-panel'">
+                    <i data-lucide="git-pull-request"></i> 工程设变 (ECN)
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=pdca-panel'">
+                    <i data-lucide="repeat"></i> PDCA 质量改善
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=users-panel'">
+                    <i data-lucide="users"></i> 用户权限管理
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=dingtalk-panel'">
+                    <i data-lucide="settings-2"></i> 钉钉协同配置
+                </div>
+                <div class="menu-item" onclick="window.location.href='/?tab=manual-panel'" style="background:#eff6ff; border:1px solid #bfdbfe; font-weight:700; color:#1d4ed8; margin-top:8px;">
+                    <i data-lucide="book-open" style="color:#2563eb;"></i> PLM 使用手册
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. Main Workspace -->
+        <main class="main-content" style="overflow-y: auto; padding: 20px 24px; flex: 1;">
+            <div class="detail-container">
+                <!-- Top Bar Navigation and Meta Info -->
+                <div class="detail-header">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <a href="/?tab=ems-panel" class="btn-back">
+                            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> 返回列表
+                        </a>
                 <div>
                     <h2 id="device-title" style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 700;">加载中...</h2>
                     <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
@@ -374,6 +420,9 @@
             </div>
         </div>
     </div>
+            </div> <!-- End detail-container -->
+        </main> <!-- End main-content -->
+    </div> <!-- End app-container -->
 
     <script>
         // Global State variables
