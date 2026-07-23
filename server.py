@@ -137,78 +137,102 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
 
     def handle_file_upload(self, path, content_type):
         """处理 multipart/form-data 文件上传请求"""
-        import cgi
         import io
-        
-        # 解析 multipart 表单数据
+        import urllib.parse
+        import traceback
+
         try:
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length)
             
-            # 手动解析 boundary
-            boundary_match = re.search(r'boundary=([^\s;]+)', content_type)
+            # 手动解析 boundary，剥离两端可能存在的双引号或单引号
+            boundary_match = re.search(r'boundary=([^\s;]+)', content_type, re.IGNORECASE)
             if not boundary_match:
-                self.send_json({"error": "No boundary in Content-Type"}, 400)
+                self.send_json({"error": "Content-Type 缺少 boundary 参数"}, 400)
                 return
-            boundary = boundary_match.group(1).encode()
             
-            # 解析每个 part
+            raw_boundary_str = boundary_match.group(1).strip('"\'' )
+            boundary = raw_boundary_str.encode('utf-8')
+            
+            # 分割表单 part
             parts = body.split(b'--' + boundary)
             file_data = None
             file_name = None
             
             for part in parts:
-                if b'Content-Disposition' not in part:
+                if not part or part.startswith(b'--') or part == b'--\r\n':
                     continue
                 header_end = part.find(b'\r\n\r\n')
                 if header_end == -1:
                     continue
-                headers_raw = part[:header_end].decode('utf-8', errors='replace')
+                
+                headers_bytes = part[:header_end]
                 file_content = part[header_end + 4:]
-                # 去掉尾部 \r\n
                 if file_content.endswith(b'\r\n'):
                     file_content = file_content[:-2]
                 
-                if 'filename=' in headers_raw:
-                    fname_match = re.search(r'filename="([^"]+)"', headers_raw)
-                    if fname_match:
-                        file_name = fname_match.group(1)
+                headers_str = headers_bytes.decode('utf-8', errors='ignore')
+                
+                if 'Content-Disposition' in headers_str and ('filename' in headers_str or 'filename*' in headers_str):
+                    # 优先 1: filename*=UTF-8''xxx (RFC 5987 标准中文/特殊字符文件名)
+                    m_utf8 = re.search(r"filename\*=utf-8''([^\s;\r\n]+)", headers_str, re.IGNORECASE)
+                    if m_utf8:
+                        file_name = urllib.parse.unquote(m_utf8.group(1))
+                    else:
+                        # 优先 2: filename="xxx"
+                        m_quote = re.search(r'filename="([^"]+)"', headers_str, re.IGNORECASE)
+                        if m_quote:
+                            file_name = m_quote.group(1)
+                        else:
+                            # 优先 3: filename=xxx (无引号)
+                            m_noquote = re.search(r'filename=([^\s;\r\n]+)', headers_str, re.IGNORECASE)
+                            if m_noquote:
+                                file_name = m_noquote.group(1).strip('"\'' )
+                    
+                    if file_name:
+                        file_name = os.path.basename(file_name)
                         file_data = file_content
-            
-            if path == "/api/mqc/upload_certificate":
-                if not file_data or not file_name:
-                    self.send_json({"error": "未找到上传的文件"}, 400)
-                    return
-                
-                # 校验格式，支持 PDF、Word、Excel、图片及压缩包
-                allowed_exts = ('.pdf', '.docx', '.doc', '.xlsx', '.xls', '.png', '.jpg', '.jpeg', '.zip', '.rar')
-                if not file_name.lower().endswith(allowed_exts):
-                    self.send_json({"error": "不支持的文件格式。支持格式：PDF, Word, Excel, 图片, 压缩包"}, 400)
-                    return
-                
-                # 确保目录存在
-                cert_dir = os.path.join(DIRECTORY, "uploads", "certificates")
-                os.makedirs(cert_dir, exist_ok=True)
-                
-                # 用时间戳避免文件名冲突
-                safe_name = re.sub(r'[^\w\.\-\u4e00-\u9fff]', '_', file_name)
-                ts = datetime.now().strftime("%Y%m%d%H%M%S")
-                saved_name = f"{ts}_{safe_name}"
-                save_path = os.path.join(cert_dir, saved_name)
-                
-                with open(save_path, 'wb') as f:
-                    f.write(file_data)
-                
-                self.send_json({
-                    "success": True,
-                    "filename": saved_name,
-                    "original_name": file_name,
-                    "url": f"/uploads/certificates/{saved_name}"
-                })
-            else:
-                self.send_json({"error": "未知的文件上传路径"}, 404)
+                        break
+
+            if not file_data or not file_name:
+                self.send_json({"error": "解析上传数据失败，未检测到包含有效文件内容的表单数据"}, 400)
+                return
+
+            # 支持的通用格式校验
+            allowed_exts = ('.pdf', '.docx', '.doc', '.xlsx', '.xls', '.png', '.jpg', '.jpeg', '.zip', '.rar', '.txt', '.csv')
+            base_name, file_ext = os.path.splitext(file_name)
+            file_ext_lower = file_ext.lower()
+
+            if file_ext_lower and file_ext_lower not in allowed_exts:
+                self.send_json({"error": f"不支持的文件格式（{file_ext}）。支持格式：PDF, Word, Excel, 图片, 压缩包, TXT, CSV"}, 400)
+                return
+
+            # 确保保存目录存在
+            cert_dir = os.path.join(DIRECTORY, "uploads", "certificates")
+            os.makedirs(cert_dir, exist_ok=True)
+
+            # 清理文件名中的危险/特殊字符，保留中英文、数字、减号、下划线及空格
+            safe_base = re.sub(r'[^\w\.\-\u4e00-\u9fff\s]', '_', base_name).strip()
+            if not safe_base:
+                safe_base = "file"
+
+            ts = datetime.now().strftime("%Y%m%d%H%M%S")
+            saved_name = f"{ts}_{safe_base}{file_ext_lower or '.bin'}"
+            save_path = os.path.join(cert_dir, saved_name)
+
+            with open(save_path, 'wb') as f:
+                f.write(file_data)
+
+            self.send_json({
+                "success": True,
+                "ok": True,
+                "filename": saved_name,
+                "original_name": file_name,
+                "url": f"/uploads/certificates/{saved_name}"
+            })
         except Exception as e:
-            self.send_json({"error": f"文件上传失败: {str(e)}"}, 500)
+            traceback.print_exc()
+            self.send_json({"error": f"服务器保存上传文件失败: {str(e)}"}, 500)
 
     # === API GET 请求处理 ===
     def handle_api_get(self, path, query_params):
