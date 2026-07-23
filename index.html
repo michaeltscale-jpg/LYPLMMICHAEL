@@ -189,14 +189,14 @@
                     </div>
                     <button class="btn-secondary" id="btn-sync-ding"><i data-lucide="refresh-cw"></i> 同步状态</button>
                     <!-- 顶部产品切换高亮凸显标签框 -->
-                    <div class="header-product-badge-box" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(99,102,241,0.12) 100%); padding: 5px 14px; border-radius: 8px; border: 1.5px solid rgba(37, 99, 235, 0.45); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); transition: all 0.25s ease;">
+                    <div class="header-product-badge-box" style="display: none; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(37,99,235,0.08) 0%, rgba(99,102,241,0.12) 100%); padding: 5px 14px; border-radius: 8px; border: 1.5px solid rgba(37, 99, 235, 0.45); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); transition: all 0.25s ease;">
                         <i data-lucide="layers" style="width: 17px; height: 17px; color: #2563eb; filter: drop-shadow(0 0 4px rgba(37,99,235,0.4));"></i>
                         <span style="font-size: 0.9rem; color: #1e3a8a; white-space: nowrap; font-weight: 800; letter-spacing: 0.3px;">产品:</span>
                         <select id="header-category-select" onchange="onHeaderCategoryChange(this)" style="font-size: 0.92rem; font-weight: 800; color: #1e40af; background: #ffffff; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 4px 10px; cursor: pointer; outline: none; box-shadow: 0 2px 6px rgba(37,99,235,0.15); transition: all 0.2s ease;">
                             <!-- 动态加载产品大类 -->
                         </select>
                     </div>
-                    <button class="btn-primary" id="btn-new-project"><i data-lucide="plus-circle"></i> 新品开发立项</button>
+                    <button class="btn-primary" id="btn-new-project" style="display: none;"><i data-lucide="plus-circle"></i> 新品开发立项</button>
                 </div>
             </header>
 

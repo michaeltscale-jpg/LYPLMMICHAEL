@@ -673,13 +673,15 @@ function switchTab(tabId) {
     state.activeTab = tabId;
     saveStateToLocalStorage();
     
-    // 动态更新顶栏通用操作按钮
+    // 动态更新顶栏通用操作按钮及产品标签框
     const btnNewProj = document.getElementById("btn-new-project");
+    const productBadgeBox = document.querySelector(".header-product-badge-box");
+
     if (btnNewProj) {
         if (tabId === 'ems-panel') {
             btnNewProj.style.display = "";
             btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新增关键设备`;
-        } else if (tabId === 'plm-panel' || tabId === 'dashboard-panel') {
+        } else if (tabId === 'plm-panel') {
             btnNewProj.style.display = "";
             btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新品开发立项`;
         } else {
@@ -687,6 +689,14 @@ function switchTab(tabId) {
         }
         if (window.lucide) {
             lucide.createIcons();
+        }
+    }
+
+    if (productBadgeBox) {
+        if (tabId === 'plm-panel') {
+            productBadgeBox.style.display = "flex";
+        } else {
+            productBadgeBox.style.display = "none";
         }
     }
     
