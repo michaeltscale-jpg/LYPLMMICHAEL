@@ -12900,7 +12900,9 @@ window.renderDashboardQualityCharts = function() {
             }
         });
 
-        // 2. 5M1E 归因占比饼图
+        // 2. 5M1E 归因占比饼图（并在图扇切面区直观绘制“人机料法环”文字）
+        const sliceShortLabels = ['法 40%', '机 25%', '料 20%', '人 10%', '环 5%'];
+
         window.factorChartInstance = new Chart(factorCanvas, {
             type: 'doughnut',
             data: {
@@ -12913,8 +12915,34 @@ window.renderDashboardQualityCharts = function() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } }
-            }
+                plugins: {
+                    legend: { position: 'right', labels: { font: { size: 11 } } }
+                }
+            },
+            plugins: [{
+                id: 'sliceTextPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx } = chart;
+                    const meta = chart.getDatasetMeta(0);
+                    if (!meta || !meta.data) return;
+
+                    meta.data.forEach((element, i) => {
+                        const pos = element.tooltipPosition();
+                        const text = sliceShortLabels[i];
+                        if (!text || !pos) return;
+
+                        ctx.save();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 12px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+                        ctx.shadowBlur = 4;
+                        ctx.fillText(text, pos.x, pos.y);
+                        ctx.restore();
+                    });
+                }
+            }]
         });
     }
 };
