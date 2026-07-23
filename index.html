@@ -180,10 +180,10 @@
                     <h2 id="header-panel-title">PLM 驾驶舱</h2>
                 </div>
                 <div class="header-actions" style="display: flex; align-items: center; gap: 12px;">
-                    <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-color);">
-                        <i data-lucide="user" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
-                        <span style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap;">登录身份:</span>
-                        <select id="user-role-select" onchange="onUserRoleChange(this)">
+                    <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); padding: 6px 14px; border-radius: 8px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 6px rgba(148, 163, 184, 0.12);">
+                        <i data-lucide="user-check" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <span style="font-size: 0.88rem; color: #334155; font-weight: 700; white-space: nowrap; letter-spacing: 0.2px;">登录身份:</span>
+                        <select id="user-role-select" onchange="onUserRoleChange(this)" style="font-size: 0.9rem; font-weight: 700; color: #0f172a; background: #ffffff; border: 1.5px solid #94a3b8; border-radius: 6px; padding: 4px 10px; cursor: pointer; outline: none; transition: all 0.2s ease;">
                             <!-- 动态加载数据库用户 -->
                         </select>
                     </div>
