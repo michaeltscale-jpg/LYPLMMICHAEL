@@ -1025,6 +1025,7 @@ textarea.form-control {
     grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     width: 100%;
+    align-items: stretch;
 }
 
 .npi-gate-card {
@@ -1035,7 +1036,7 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 280px;
+    height: 100%;
     transition: var(--transition-smooth);
     border-top: 4px solid var(--text-muted);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
@@ -1071,7 +1072,7 @@ textarea.form-control {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .npi-gate-index {
@@ -1089,7 +1090,7 @@ textarea.form-control {
 .npi-gate-title {
     font-size: 1.05rem;
     font-weight: 800;
-    margin-top: 6px;
+    margin-top: 4px;
     margin-bottom: 8px;
     color: #0f172a;
     letter-spacing: 0.3px;
@@ -1097,7 +1098,9 @@ textarea.form-control {
 
 .npi-gate-card-body {
     flex: 1;
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
     font-size: 0.75rem;
     color: var(--text-secondary);
     line-height: 1.5;
@@ -1107,7 +1110,7 @@ textarea.form-control {
     background: #f8fafc;
     border-radius: 6px;
     padding: 8px 10px;
-    margin-top: 10px;
+    margin-top: 8px;
     border: 1px solid var(--border-color);
 }
 
@@ -1131,6 +1134,8 @@ textarea.form-control {
 }
 
 .npi-gate-card-footer {
+    margin-top: auto;
+    padding-top: 14px;
     display: flex;
     flex-direction: column;
     gap: 8px;
