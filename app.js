@@ -867,7 +867,9 @@ function renderNpiSubpanel() {
             gate2: [
                 { code: "Formulation_BOM_V1.0.xlsx",      label: "配方 BOM V1.0" },
                 { code: "Electrolyte_Chemistry_Spec.pdf", label: "电解液化学规范" },
-                { code: "Grain_SEM_Analysis.pdf",         label: "金相晶粒分析" }
+                { code: "Grain_SEM_Analysis.pdf",         label: "金相晶粒分析" },
+                { code: "EVT_Sample_Test_Report.pdf",     label: "EVT 样品物性全检报告" },
+                { code: "Initial_DFMEA_Report.pdf",        label: "初始 DFMEA 风险评估" }
             ],
             gate3: [
                 { code: "DVT_Routing_Card.xlsx",    label: "中试工艺路线卡" },
