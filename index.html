@@ -742,11 +742,11 @@
 
                         <!-- Third Row of Charts: PDCA Quality Analytics (Now Main Chart Grid) -->
                         <div class="charts-grid" style="grid-template-columns: 1fr 1fr; margin-top: 24px;">
-                            <div class="glass-panel highlight-blue" onclick="openCpkDetailDataModal()" style="cursor: pointer; position: relative; transition: all 0.25s ease;" title="点击查看 5M1E 异常原因详细列表">
+                            <div class="glass-panel highlight-blue" onclick="openCpkAnalysisDetailModal()" style="cursor: pointer; position: relative; transition: all 0.25s ease;" title="点击查看 CPK 过程能力详细分析数据">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                     <h3 style="margin: 0;"><i data-lucide="line-chart"></i> 核心产品品质 CPK 过程能力趋势图</h3>
                                     <span style="font-size: 0.72rem; color: #2563eb; background: rgba(37, 99, 235, 0.1); padding: 3px 10px; border-radius: 6px; font-weight: 700; border: 1px solid rgba(37, 99, 235, 0.25); display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(37,99,235,0.08);">
-                                        <i data-lucide="table" style="width: 12px; height: 12px;"></i> 点击查看 5M1E 异常原因列表
+                                        <i data-lucide="table" style="width: 12px; height: 12px;"></i> 点击查看 CPK 详细分析数据
                                     </span>
                                 </div>
                                 <div class="chart-wrapper">
@@ -3594,6 +3594,149 @@ requests.post(url, json=payload)</code></pre>
                     <button class="btn-secondary" onclick="closeModal('modal-mqc-material')">取消</button>
                     <button class="btn-primary" onclick="saveMqcMaterial()">保存</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CPK 过程能力趋势详细分析数据透视弹窗 ===== -->
+    <div class="modal-overlay" id="modal-cpk-analysis-detail">
+        <div class="modal-content" style="max-width: 980px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(37, 99, 235, 0.25); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(96, 165, 250, 0.4);">
+                        <i data-lucide="line-chart" style="width: 20px; height: 20px; color: #60a5fa;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;">核心产品品质 CPK 过程能力详细分析数据</h3>
+                        <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 500;">极薄高频铜箔关键指标 (剥离强度/粗糙度) 过程能力指数 Cp / Cpk 统计明细</span>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-cpk-analysis-detail')" style="color: #cbd5e1; font-size: 1.6rem; background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px 24px; max-height: 72vh; overflow-y: auto; background: #fafafa;">
+                
+                <!-- CPK 顶部核心能力看板 -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 2px;">目标检测项目</div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #1e293b;">抗剥离强度 (Peel Strength)</div>
+                    </div>
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 2px;">品质管控上限 (USL)</div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #dc2626;">CPK = 1.33</div>
+                    </div>
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 2px;">最新中试 Cpk (Batch-06)</div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #059669;">1.58 (优良)</div>
+                    </div>
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                        <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 2px;">过程能力总评</div>
+                        <div style="font-size: 0.92rem; font-weight: 800; color: #2563eb;">100% 受控稳定</div>
+                    </div>
+                </div>
+
+                <!-- CPK 详细分析数据表格 -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="margin: 0; font-size: 0.95rem; color: #0f172a; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="table" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                            <span>批次 CPK 过程能力参数分析明细表</span>
+                        </h4>
+                        <span style="font-size: 0.74rem; color: #64748b;">规格取样范围：HF-PTS-12 (12μm) 连续 6 批次中试样本</span>
+                    </div>
+
+                    <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                        <thead>
+                            <tr style="background: #f8fafc; color: #334155; text-align: left; font-weight: 700;">
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1;">生产批次号</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1;">检测产品规格</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">样本量 N</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">均值 μ (N/mm)</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">标准差 σ</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">管控规格下/上限</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">过程能力指数 Cp</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">实际 Cpk 指数</th>
+                                <th style="padding: 10px; border-bottom: 2px solid #cbd5e1; text-align: center;">品质状态判定</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700; color: #2563eb;">Batch-06 (中试)</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.82 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.015</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.65</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #059669; font-size: 0.9rem;">1.58</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-success" style="padding: 3px 8px;">A+ 受控良好 (Cpk≥1.33)</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700;">Batch-05</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.81 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.018</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #059669; font-size: 0.9rem;">1.45</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-success" style="padding: 3px 8px;">A+ 受控良好 (Cpk≥1.33)</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700;">Batch-04</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.79 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.021</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.38</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #059669; font-size: 0.9rem;">1.33</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-success" style="padding: 3px 8px;">A 达标受控 (Cpk=1.33)</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700;">Batch-03</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.76 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.026</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.32</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #d97706; font-size: 0.9rem;">1.28</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-warning" style="padding: 3px 8px;">B 预警监控 (Cpk&lt;1.33)</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700;">Batch-02</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.74 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.031</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.20</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #d97706; font-size: 0.9rem;">1.15</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-warning" style="padding: 3px 8px;">B 预警监控 (Cpk&lt;1.33)</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; font-weight: 700;">Batch-01</td>
+                                <td style="padding: 10px;">HF-PTS-12 (12μm)</td>
+                                <td style="padding: 10px; text-align: center;">50</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 600;">0.71 N/mm</td>
+                                <td style="padding: 10px; text-align: center;">0.038</td>
+                                <td style="padding: 10px; text-align: center; color: #64748b;">0.65 ~ 1.00</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 700;">1.05</td>
+                                <td style="padding: 10px; text-align: center; font-weight: 800; color: #dc2626; font-size: 0.9rem;">1.02</td>
+                                <td style="padding: 10px; text-align: center;"><span class="badge badge-danger" style="padding: 3px 8px;">C 不足待改善 (Cpk&lt;1.33)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <button class="btn-secondary" onclick="exportCpkAnalysisToCsv()" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 0.82rem; font-weight: 700; color: #2563eb; border-color: #bfdbfe; background: #eff6ff;">
+                    <i data-lucide="download" style="width: 14px; height: 14px;"></i> 导出 CPK 过程能力分析表 (.csv)
+                </button>
+                <button class="btn-secondary" onclick="closeModal('modal-cpk-analysis-detail')" style="padding: 8px 20px; font-weight: 700; background: #cbd5e1; color: #0f172a;">关闭窗口</button>
             </div>
         </div>
     </div>

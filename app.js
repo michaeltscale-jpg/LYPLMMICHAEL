@@ -13140,7 +13140,38 @@ window.filterCpkModal5mCategory = function(targetCat) {
     if (window.lucide) lucide.createIcons();
 };
 
-// 详细数据透视表弹窗控制与导出
+// 详细 CPK 过程能力数据透视弹窗控制与导出
+window.openCpkAnalysisDetailModal = function() {
+    const modal = document.getElementById("modal-cpk-analysis-detail");
+    if (modal) {
+        modal.classList.add("active");
+        if (window.lucide) lucide.createIcons();
+    }
+};
+
+window.exportCpkAnalysisToCsv = function() {
+    const csvHeader = "生产批次号,检测产品规格,样本量N,均值μ(N/mm),标准差σ,管控规格上下限,过程能力指数Cp,实际Cpk指数,品质状态判定\n";
+    const data = [
+        ["Batch-06 (中试)", "HF-PTS-12 (12μm)", "50", "0.82", "0.015", "0.65 ~ 1.00", "1.65", "1.58", "A+ 受控良好"],
+        ["Batch-05", "HF-PTS-12 (12μm)", "50", "0.81", "0.018", "0.65 ~ 1.00", "1.50", "1.45", "A+ 受控良好"],
+        ["Batch-04", "HF-PTS-12 (12μm)", "50", "0.79", "0.021", "0.65 ~ 1.00", "1.38", "1.33", "A 达标受控"],
+        ["Batch-03", "HF-PTS-12 (12μm)", "50", "0.76", "0.026", "0.65 ~ 1.00", "1.32", "1.28", "B 预警监控"],
+        ["Batch-02", "HF-PTS-12 (12μm)", "50", "0.74", "0.031", "0.65 ~ 1.00", "1.20", "1.15", "B 预警监控"],
+        ["Batch-01", "HF-PTS-12 (12μm)", "50", "0.71", "0.038", "0.65 ~ 1.00", "1.05", "1.02", "C 不足待改善"]
+    ];
+    const rows = data.map(r => r.map(cell => `"${cell}"`).join(","));
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csvHeader + rows.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "GHZ_PLM_CPK_Process_Capability_Analysis_Data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("CPK 过程能力详细分析数据导出成功！", "success");
+};
+
+// 详细 PDCA 5M1E 数据透视表弹窗控制与导出
 window.openCpkDetailDataModal = function(initialCategory = '全部') {
     const modal = document.getElementById("modal-cpk-detail-data");
     if (modal) {
