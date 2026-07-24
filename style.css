@@ -2687,6 +2687,86 @@ textarea.is-maximized {
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45) !important;
 }
 
+/* ==========================================================================
+   ECN 附件与证明照片上传 (Dropzone & Attachment Thumbnails)
+   ========================================================================== */
+.ecn-upload-dropzone {
+    border: 2px dashed #93c5fd;
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ecn-upload-dropzone:hover,
+.ecn-upload-dropzone.dragover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.ecn-attachment-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: relative;
+    max-width: 260px;
+    transition: all 0.2s ease;
+}
+
+.ecn-attachment-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
+}
+
+.ecn-attachment-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.ecn-attachment-thumb:hover {
+    transform: scale(1.05);
+}
+
+.ecn-attachment-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    background: #ef4444;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ecn-attachment-remove:hover {
+    background: #dc2626;
+}
+
 
 
 

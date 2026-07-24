@@ -1414,6 +1414,7 @@
                                             <th>产品代码</th>
                                             <th>变更类型</th>
                                             <th>变更原因</th>
+                                            <th>证明附件与照片</th>
                                             <th>变更前状态</th>
                                             <th>变更后状态</th>
                                             <th>风险评估</th>
@@ -2757,6 +2758,28 @@ requests.post(url, json=payload)</code></pre>
                             <label>提报发起人</label>
                             <input type="text" class="form-control" id="ecn-creator" value="李建国" required>
                         </div>
+                    </div>
+
+                    <!-- 关联附件与证明资料 (文档 / 照片) -->
+                    <div class="form-group" style="margin-top: 14px;">
+                        <label style="display: flex; align-items: center; justify-content: space-between; font-weight: 700; color: var(--text-primary);">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="paperclip" style="width: 15px; height: 15px; color: #2563eb;"></i>
+                                插入证明文档与现场照片 (证明资料)
+                            </span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: normal;">支持 PDF、Excel、Word 及照片预览</span>
+                        </label>
+                        
+                        <!-- 拖拽/点击上传区域 -->
+                        <div class="ecn-upload-dropzone" id="ecn-upload-dropzone" onclick="document.getElementById('ecn-file-input').click()" ondragover="window.handleEcnDragOver(event)" ondragleave="window.handleEcnDragLeave(event)" ondrop="window.handleEcnDrop(event)">
+                            <i data-lucide="upload-cloud" style="width: 32px; height: 32px; color: #2563eb; margin-bottom: 6px;"></i>
+                            <div style="font-size: 0.82rem; font-weight: 700; color: #1e293b;">点击此处选择文件 或 将文档/照片拖拽至此处</div>
+                            <div style="font-size: 0.72rem; color: #64748b; margin-top: 4px;">支持格式: .pdf, .xlsx, .docx, .png, .jpg, .jpeg, .webp (照片自动生成微缩图预览)</div>
+                            <input type="file" id="ecn-file-input" multiple accept=".pdf,.xlsx,.xls,.docx,.doc,.png,.jpg,.jpeg,.webp" style="display: none;" onchange="window.handleEcnFileInputChange(event)">
+                        </div>
+
+                        <!-- 已上传文件/照片预览缩略图列表 -->
+                        <div id="ecn-attachments-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;"></div>
                     </div>
                 </form>
             </div>
@@ -4550,10 +4573,15 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
-    <!-- 4. 单例鼠标/光标落停跟随微型胶囊 -->
-    <div class="xiaohe-focus-pill" id="xiaohe-focus-pill" onclick="XiaoheAI.triggerPillClick(event)">
-        <i data-lucide="sparkles" style="width:13px; height:13px;"></i>
-        <span id="xiaohe-pill-text">✨ 小赫起草</span>
+    <!-- Image Lightbox Modal for Photo Preview -->
+    <div class="modal-overlay" id="modal-image-lightbox" style="z-index: 99999;" onclick="closeModal('modal-image-lightbox')">
+        <div class="modal-box" style="width: auto; max-width: 90vw; background: transparent; border: none; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;" onclick="event.stopPropagation()">
+            <div style="position: relative; max-width: 100%;">
+                <button class="modal-close" onclick="closeModal('modal-image-lightbox')" style="position: absolute; top: -15px; right: -15px; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; color: #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10;">&times;</button>
+                <img id="lightbox-img" src="" alt="照片大图预览" style="max-width: 85vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); object-fit: contain; background: #fff;">
+            </div>
+            <div id="lightbox-caption" style="color: #ffffff; margin-top: 12px; font-size: 0.9rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(0,0,0,0.6); padding: 4px 16px; border-radius: 20px;"></div>
+        </div>
     </div>
 
 </body>

@@ -14,6 +14,14 @@ PORT = 8080
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(DIRECTORY, "plm.db")
 
+try:
+    _conn_mig = sqlite3.connect(DB_PATH)
+    _conn_mig.execute("ALTER TABLE ecn_records ADD COLUMN attachments TEXT")
+    _conn_mig.commit()
+    _conn_mig.close()
+except Exception:
+    pass
+
 class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
@@ -2041,12 +2049,25 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_json({"error": "产品、变更类型与原因必填"}, 400)
                     return
 
+                attachments = data.get('attachments', [])
+                if isinstance(attachments, (list, dict)):
+                    attachments_json = json.dumps(attachments, ensure_ascii=False)
+                else:
+                    attachments_json = str(attachments)
+
                 ecn_no = f"ECN-{datetime.now().strftime('%Y%m%d')}-{int(time.time()) % 1000:03d}"
 
-                cursor.execute("""
-                INSERT INTO ecn_records (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, risk_assessment, status, creator, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, json.dumps(risk_assessment), "草稿", creator, datetime.now().isoformat(), datetime.now().isoformat()))
+                try:
+                    cursor.execute("""
+                    INSERT INTO ecn_records (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, risk_assessment, attachments, status, creator, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, json.dumps(risk_assessment), attachments_json, "草稿", creator, datetime.now().isoformat(), datetime.now().isoformat()))
+                except sqlite3.OperationalError:
+                    # Fallback if attachments column not present
+                    cursor.execute("""
+                    INSERT INTO ecn_records (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, risk_assessment, status, creator, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (ecn_no, product_id, spec_thickness, change_type, change_reason, change_before, change_after, json.dumps(risk_assessment), "草稿", creator, datetime.now().isoformat(), datetime.now().isoformat()))
                 
                 conn.commit()
                 self.send_json({"message": "设变单 ECN 创建成功", "ecn_no": ecn_no, "ecn_id": cursor.lastrowid, "spec_thickness": spec_thickness})

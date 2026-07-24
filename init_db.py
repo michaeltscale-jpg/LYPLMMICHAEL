@@ -208,6 +208,7 @@ def init_database(force_reset=False):
         change_before TEXT NOT NULL,
         change_after TEXT NOT NULL,
         risk_assessment TEXT NOT NULL,
+        attachments TEXT,
         status VARCHAR(50) NOT NULL,
         dingtalk_instance_id VARCHAR(100),
         creator VARCHAR(50) NOT NULL,

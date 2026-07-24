@@ -3795,7 +3795,7 @@ function renderEcnTable(ecns) {
     tbody.innerHTML = "";
 
     if (ecns.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">暂无工程设变单记录</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-muted);">暂无工程设变单记录</td></tr>`;
         return;
     }
 
@@ -3804,13 +3804,35 @@ function renderEcnTable(ecns) {
         
         let riskText = "";
         if (e.risk_assessment) {
-            const peel = e.risk_assessment.peel_effect || '--';
-            const df = e.risk_assessment.df_effect || '--';
-            const other = e.risk_assessment.other_risk;
+            let riskObj = e.risk_assessment;
+            if (typeof riskObj === "string") {
+                try { riskObj = JSON.parse(riskObj); } catch(ex){}
+            }
+            const peel = riskObj.peel_effect || '--';
+            const df = riskObj.df_effect || '--';
+            const other = riskObj.other_risk;
             riskText = `剥离: ${peel}<br>Df损耗: ${df}`;
             if (other) {
                 riskText += `<br><span style="color:var(--text-muted); font-size:0.7rem;" title="${other}">其他: ${other}</span>`;
             }
+        }
+
+        let attachHtml = `<span style="color:var(--text-muted); font-size:0.72rem;">无附件</span>`;
+        let attachList = e.attachments;
+        if (typeof attachList === "string") {
+            try { attachList = JSON.parse(attachList); } catch(ex){}
+        }
+        if (Array.isArray(attachList) && attachList.length > 0) {
+            attachHtml = `<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">`;
+            attachList.forEach((att, aIdx) => {
+                if (att.is_image) {
+                    attachHtml += `<img src="${att.url}" class="ecn-attachment-thumb" style="width:32px; height:32px;" title="${att.name} (点击预览照片)" onclick="window.openLightboxImage('${att.url}', '${att.name}')" />`;
+                } else {
+                    const ext = att.name ? att.name.split('.').pop().toUpperCase() : 'DOC';
+                    attachHtml += `<a href="${att.url}" download="${att.name}" style="font-size:0.68rem; padding:2px 6px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:4px; color:#1d4ed8; font-weight:600; text-decoration:none;" title="点击下载 ${att.name}">${ext} 📄</a>`;
+                }
+            });
+            attachHtml += `</div>`;
         }
 
         let actionBtn = "";
@@ -3826,7 +3848,8 @@ function renderEcnTable(ecns) {
             <td style="font-weight: 600;">${e.ecn_no}</td>
             <td>${e.product_code}</td>
             <td><span class="badge badge-purple">${e.change_type}</span></td>
-            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${e.change_reason}">${e.change_reason}</td>
+            <td style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${e.change_reason}">${e.change_reason}</td>
+            <td>${attachHtml}</td>
             <td style="font-size: 0.75rem;">${e.change_before}</td>
             <td style="font-size: 0.75rem;">${e.change_after}</td>
             <td style="font-size: 0.75rem; color: var(--text-secondary);">${riskText}</td>
@@ -4359,6 +4382,10 @@ function openEcnModal() {
     document.querySelectorAll("#risk-peel-group .risk-option").forEach(o => o.classList.toggle("selected", o.getAttribute("data-val") === "低/无影响"));
     document.querySelectorAll("#risk-df-group .risk-option").forEach(o => o.classList.toggle("selected", o.getAttribute("data-val") === "低/无影响"));
 
+    // 重置已选附件列表
+    state.pendingEcnAttachments = [];
+    window.renderPendingEcnAttachments();
+
     openModal("modal-ecn");
 }
 
@@ -4383,6 +4410,7 @@ function submitNewEcn() {
             df_effect: riskDf,
             other_risk: otherRiskVal
         },
+        attachments: state.pendingEcnAttachments || [],
         creator: document.getElementById("ecn-creator").value
     };
 
@@ -13998,6 +14026,131 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }, 800);
 });
+
+// ==========================================================================
+// ECN 附件与证明照片上传及大图预览处理逻辑
+// ==========================================================================
+if (!state.pendingEcnAttachments) {
+    state.pendingEcnAttachments = [];
+}
+
+window.handleEcnDragOver = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const zone = document.getElementById("ecn-upload-dropzone");
+    if (zone) zone.classList.add("dragover");
+};
+
+window.handleEcnDragLeave = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const zone = document.getElementById("ecn-upload-dropzone");
+    if (zone) zone.classList.remove("dragover");
+};
+
+window.handleEcnDrop = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const zone = document.getElementById("ecn-upload-dropzone");
+    if (zone) zone.classList.remove("dragover");
+    if (e.dataTransfer && e.dataTransfer.files) {
+        window.processEcnUploadedFiles(e.dataTransfer.files);
+    }
+};
+
+window.handleEcnFileInputChange = function(e) {
+    if (e.target && e.target.files) {
+        window.processEcnUploadedFiles(e.target.files);
+    }
+};
+
+window.processEcnUploadedFiles = function(files) {
+    if (!state.pendingEcnAttachments) state.pendingEcnAttachments = [];
+    const fileList = Array.from(files);
+    if (fileList.length === 0) return;
+    
+    let loadedCount = 0;
+    fileList.forEach(file => {
+        const isImage = file.type.startsWith("image/");
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const fileSizeStr = fileSizeMB < 0.1 ? Math.round(file.size / 1024) + " KB" : fileSizeMB + " MB";
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            state.pendingEcnAttachments.push({
+                name: file.name,
+                type: file.type || "application/octet-stream",
+                is_image: isImage,
+                url: e.target.result,
+                size: fileSizeStr,
+                uploaded_at: new Date().toISOString().replace('T', ' ').substring(0, 16)
+            });
+            loadedCount++;
+            if (loadedCount === fileList.length) {
+                window.renderPendingEcnAttachments();
+                if (typeof showToast === "function") {
+                    showToast(`已成功插入 ${fileList.length} 个证明文档/照片`, "success");
+                }
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+window.removePendingEcnAttachment = function(index) {
+    if (state.pendingEcnAttachments && state.pendingEcnAttachments[index]) {
+        state.pendingEcnAttachments.splice(index, 1);
+        window.renderPendingEcnAttachments();
+    }
+};
+
+window.renderPendingEcnAttachments = function() {
+    const container = document.getElementById("ecn-attachments-container");
+    if (!container) return;
+    container.innerHTML = "";
+    
+    if (!state.pendingEcnAttachments || state.pendingEcnAttachments.length === 0) {
+        container.innerHTML = `<span style="font-size:0.75rem; color:#94a3b8; font-style:italic;">暂未插入任何证明文档或照片</span>`;
+        return;
+    }
+    
+    state.pendingEcnAttachments.forEach((att, idx) => {
+        const card = document.createElement("div");
+        card.className = "ecn-attachment-card";
+        
+        let iconOrThumb = "";
+        if (att.is_image) {
+            iconOrThumb = `<img src="${att.url}" class="ecn-attachment-thumb" title="点击放大预览照片" onclick="window.openLightboxImage('${att.url}', '${att.name}')" />`;
+        } else if (att.name.endsWith(".pdf")) {
+            iconOrThumb = `<div style="width:44px; height:44px; background:#fef2f2; border:1px solid #fecdd3; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#ef4444; font-weight:800; font-size:0.7rem;">PDF</div>`;
+        } else if (att.name.endsWith(".xlsx") || att.name.endsWith(".xls")) {
+            iconOrThumb = `<div style="width:44px; height:44px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#10b981; font-weight:800; font-size:0.7rem;">XLS</div>`;
+        } else {
+            iconOrThumb = `<div style="width:44px; height:44px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#2563eb; font-weight:800; font-size:0.7rem;">DOC</div>`;
+        }
+        
+        card.innerHTML = `
+            <div class="ecn-attachment-remove" onclick="window.removePendingEcnAttachment(${idx})" title="移除此文件">&times;</div>
+            ${iconOrThumb}
+            <div style="flex:1; overflow:hidden;">
+                <div style="font-weight:600; color:#1e293b; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${att.name}">${att.name}</div>
+                <div style="font-size:0.68rem; color:#64748b;">${att.size} • ${att.uploaded_at || ''}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+};
+
+window.openLightboxImage = function(imgUrl, caption) {
+    const lightboxModal = document.getElementById("modal-image-lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxCaption = document.getElementById("lightbox-caption");
+    if (lightboxModal && lightboxImg) {
+        lightboxImg.src = imgUrl;
+        if (lightboxCaption) lightboxCaption.innerText = caption || "照片大图预览";
+        openModal("modal-image-lightbox");
+    }
+};
 
 
 
