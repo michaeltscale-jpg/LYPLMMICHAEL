@@ -1120,7 +1120,11 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     # 动态格式化厚度，去除多余的 .0 小数，例如 12.0 -> 12，1.5 -> 1.5
                     thick_str = str(spec_thickness).rstrip('0').rstrip('.') if '.' in str(spec_thickness) else str(spec_thickness)
                     code_for_thick = f"{code}-{thick_str}" # 例如 PTS2-12
-                    name_for_thick = f"{code} {thick_str}um {category}" # 例如 PTS2 12um 高频铜箔
+                    clean_cat = category or "PTS2 AI 铜箔"
+                    if f"{thick_str}μm" in clean_cat or f"{thick_str}um" in clean_cat:
+                        name_for_thick = clean_cat
+                    else:
+                        name_for_thick = f"{clean_cat} {thick_str}μm"
                     base_time = datetime.now()
                     npi_owners = data.get('npi_owners', {})
                     g1_owner = npi_owners.get('gate1') or creator

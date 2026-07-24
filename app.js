@@ -2001,11 +2001,29 @@ function loadProductDetails(id, thickness) {
             saveStateToLocalStorage();
             
             const catEl = document.getElementById("plm-prod-category");
-            if (catEl) catEl.innerText = product.category || "--";
             const nameEl = document.getElementById("plm-prod-name");
             if (nameEl) {
-                // 主品名只显示品类名称，不带任何厚度或多余后缀
-                nameEl.innerText = product.category || product.name || '--';
+                let displayName = product.category || product.name || '--';
+                // 彻底清除并过滤任何可能重复出现的 "PTS2 AI 铜箔 12um PTS2 AI 铜箔 12um"
+                if (typeof displayName === 'string' && displayName.includes(" ")) {
+                    const parts = displayName.split(/\s+/).filter(Boolean);
+                    const len = parts.length;
+                    if (len >= 2 && len % 2 === 0) {
+                        const half = len / 2;
+                        if (parts.slice(0, half).join(" ") === parts.slice(half).join(" ")) {
+                            displayName = parts.slice(0, half).join(" ");
+                        }
+                    }
+                }
+                nameEl.innerText = displayName;
+            }
+            if (catEl) {
+                if (product.category && product.name && product.category !== product.name) {
+                    catEl.innerText = product.category;
+                    catEl.style.display = "inline-block";
+                } else {
+                    catEl.style.display = "none";
+                }
             }
             
             const modelEl = document.getElementById("plm-prod-model-code");
