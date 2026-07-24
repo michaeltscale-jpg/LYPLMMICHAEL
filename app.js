@@ -4686,32 +4686,35 @@ function renderDashboardCharts(products) {
         state.charts.lifecycle.destroy();
     }
 
-    const ctxDoughnut = document.getElementById("chart-doughnut-lifecycle").getContext("2d");
-    state.charts.lifecycle = new Chart(ctxDoughnut, {
-        type: 'doughnut',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: backgroundColors,
-                borderWidth: 1,
-                borderColor: '#1e293b'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        color: '#475569',
-                        font: { size: 9 }
+    const canvasLifecycle = document.getElementById("chart-doughnut-lifecycle");
+    if (canvasLifecycle) {
+        const ctxDoughnut = canvasLifecycle.getContext("2d");
+        state.charts.lifecycle = new Chart(ctxDoughnut, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 1,
+                    borderColor: '#1e293b'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#475569',
+                            font: { size: 9 }
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     const pts = products.find(p => p.code === "PTS-AI");
     const his = products.find(p => p.code === "HIS-AI");
@@ -4755,8 +4758,10 @@ function renderDashboardCharts(products) {
         state.charts.performance.destroy();
     }
 
-    const ctxRadar = document.getElementById("chart-radar-performance").getContext("2d");
-    state.charts.performance = new Chart(ctxRadar, {
+    const canvasRadar = document.getElementById("chart-radar-performance");
+    if (canvasRadar) {
+        const ctxRadar = canvasRadar.getContext("2d");
+        state.charts.performance = new Chart(ctxRadar, {
         type: 'radar',
         data: {
             labels: ['高频损耗指数(1/Df)', '剥离结合强度(N/mm)', '超低粗糙度指数(1/Rz)', '抗拉拉伸极限指数', '塑性延伸率指数'],
@@ -4847,6 +4852,7 @@ function renderDashboardCharts(products) {
             }
         }
     });
+    }
 
     // 新增：高频铜箔物性批次稳定性走势图 (双轴)
     if (state.charts.quality) {
