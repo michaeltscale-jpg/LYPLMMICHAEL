@@ -1267,6 +1267,15 @@
                                             <i data-lucide="folder-git"></i> 请在左侧列表中选择产品型号
                                         </h2>
                                     </div>
+                                    <!-- 右侧 G1-G5 门禁筛选标签 -->
+                                    <div class="dms-gate-tabs" style="display: flex; gap: 6px; align-items: center;">
+                                        <button class="dms-gate-tab-btn active" data-gate="all" onclick="filterDmsByGate('all')">全部</button>
+                                        <button class="dms-gate-tab-btn" data-gate="G1" onclick="filterDmsByGate('G1')">G1. 立项</button>
+                                        <button class="dms-gate-tab-btn" data-gate="G2" onclick="filterDmsByGate('G2')">G2. EVT</button>
+                                        <button class="dms-gate-tab-btn" data-gate="G3" onclick="filterDmsByGate('G3')">G3. DVT</button>
+                                        <button class="dms-gate-tab-btn" data-gate="G4" onclick="filterDmsByGate('G4')">G4. PVT</button>
+                                        <button class="dms-gate-tab-btn" data-gate="G5" onclick="filterDmsByGate('G5')">G5. PPAP</button>
+                                    </div>
                                 </div>
                             </div>
 

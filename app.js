@@ -8184,6 +8184,24 @@ window.renderDmsPanel = function() {
     }
 };
 
+state.dmsActiveGateFilter = 'all';
+
+window.filterDmsByGate = function(gateKey) {
+    state.dmsActiveGateFilter = gateKey;
+    document.querySelectorAll('.dms-gate-tab-btn').forEach(btn => {
+        const attrGate = btn.getAttribute('data-gate');
+        if (attrGate === gateKey) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    const activeProd = state.activeProduct || (state.products && state.products[0]);
+    if (activeProd) {
+        renderDmsDeliverablesTable(activeProd);
+    }
+};
+
 function renderDmsDeliverablesTable(product) {
     const tbody = document.querySelector("#dms-deliverables-table tbody");
     if (!tbody) return;
@@ -8212,7 +8230,19 @@ function renderDmsDeliverablesTable(product) {
         { phase: "G5 量产阶段", stage: "品质质检", code: "QC_Engineering_Standard.xlsx" }
     ];
 
-    docs.forEach(d => {
+    const activeFilter = state.dmsActiveGateFilter || 'all';
+    const filteredDocs = (activeFilter === 'all')
+        ? docs
+        : docs.filter(d => d.phase.startsWith(activeFilter));
+
+    if (filteredDocs.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">该阶段暂无输出文档记录</td>`;
+        tbody.appendChild(tr);
+        return;
+    }
+
+    filteredDocs.forEach(d => {
         const spec = getDynamicDmsTemplate(d.code, product);
         if (!spec) return;
         
