@@ -8179,11 +8179,6 @@ window.renderDmsPanel = function() {
             titleEl.innerHTML = `<i data-lucide="folder-git"></i> 技术规格与研发归档：${pName}`;
         }
         
-        const metaEl = document.getElementById("dms-selected-product-meta");
-        if (metaEl) {
-            metaEl.innerText = `产品代号: ${activeProd.code} | 标称厚度: ${activeProd.spec_thickness}μm | 表面配方: ${activeProd.surface_treatment || 'STD常规'} | 当前生命周期状态: ${activeProd.status}`;
-        }
-        
         renderDmsDeliverablesTable(activeProd);
         lucide.createIcons();
     }
