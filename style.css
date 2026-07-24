@@ -1087,10 +1087,12 @@ textarea.form-control {
 .npi-gate-card.failed .npi-gate-index { color: var(--color-danger); }
 
 .npi-gate-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-top: 4px;
-    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    color: #0f172a;
+    letter-spacing: 0.3px;
 }
 
 .npi-gate-card-body {
@@ -2018,10 +2020,11 @@ textarea.form-control {
 }
 
 .ems-filter-card-title {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 4px 0 10px 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 6px 0 10px 0;
+    letter-spacing: 0.3px;
 }
 
 .ems-filter-card-body {
