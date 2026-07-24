@@ -8161,7 +8161,22 @@ window.renderDmsPanel = function() {
         
         const titleEl = document.getElementById("dms-selected-product-title");
         if (titleEl) {
-            titleEl.innerHTML = `<i data-lucide="folder-git"></i> 技术规格与研发归档：${activeProd.name} ${activeProd.spec_thickness}um`;
+            let pName = activeProd.category || activeProd.name || '';
+            if (typeof pName === 'string' && pName.includes(" ")) {
+                const parts = pName.split(/\s+/).filter(Boolean);
+                const len = parts.length;
+                if (len >= 2 && len % 2 === 0) {
+                    const half = len / 2;
+                    if (parts.slice(0, half).join(" ") === parts.slice(half).join(" ")) {
+                        pName = parts.slice(0, half).join(" ");
+                    }
+                }
+            }
+            const thickStr = String(activeProd.spec_thickness || '');
+            if (thickStr && !pName.includes(thickStr)) {
+                pName = `${pName} ${thickStr}μm`;
+            }
+            titleEl.innerHTML = `<i data-lucide="folder-git"></i> 技术规格与研发归档：${pName}`;
         }
         
         const metaEl = document.getElementById("dms-selected-product-meta");
