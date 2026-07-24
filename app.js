@@ -12915,6 +12915,16 @@ window.renderDashboardQualityCharts = function() {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: (evt, activeElements) => {
+                    if (activeElements && activeElements.length > 0) {
+                        const index = activeElements[0].index;
+                        const categories = ['法', '机', '料', '人', '环'];
+                        const selectedCat = categories[index] || '全部';
+                        openCpkDetailDataModal(selectedCat);
+                    } else {
+                        openCpkDetailDataModal('全部');
+                    }
+                },
                 plugins: {
                     legend: { position: 'right', labels: { font: { size: 11 } } }
                 }
@@ -12961,6 +12971,200 @@ document.addEventListener("DOMContentLoaded", () => {
         renderDashboardQualityCharts();
     }, 1000);
 });
+
+// PDCA 5M1E 异常明细全量数据集
+window.pdca5mExceptionList = [
+    {
+        id: "PDCA-2026-015",
+        category: "法",
+        title: "生箔 3# 槽粗化槽液循环流速低于工艺下限",
+        impact: "导致 Batch-01 剥离强度极差由 0.12N/mm 扩大至 0.28N/mm",
+        target: "3# 阴极生箔槽 / 工艺",
+        owner: "赵工 (工艺部)",
+        date: "2026-07-21",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "调整 PLC 滴加泵频率，添加槽液自动比重在线报警"
+    },
+    {
+        id: "PDCA-2026-014",
+        category: "法",
+        title: "高频双晶铜箔表面钝化槽浸泡时间缩短 1.5s",
+        impact: "抗氧化耐热性衰减 5%",
+        target: "钝化段 / 速度控制",
+        owner: "钱工 (品质部)",
+        date: "2026-07-18",
+        status: "验证中",
+        badgeStyle: "background:#3b82f6; color:#fff;",
+        action: "更新 SOP-2026-088 标准卷速限制参数"
+    },
+    {
+        id: "PDCA-2026-012",
+        category: "机",
+        title: "2# 生产线阴极辊导电碳刷局部异常磨损",
+        impact: "槽电压微幅跳动 0.4V，局部版面粗糙度波动",
+        target: "2# 生箔机 / 导电刷",
+        owner: "孙工 (设备部)",
+        date: "2026-07-16",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "更换银铜复合导电刷，定检周期由 30天 缩短至 15天"
+    },
+    {
+        id: "PDCA-2026-010",
+        category: "机",
+        title: "钛阳极板表面涂层局部剥落退化",
+        impact: "电流密度分布不均，阴极边缘厚度超差",
+        target: "阳极电极槽",
+        owner: "李工 (设备部)",
+        date: "2026-07-12",
+        status: "处理中",
+        badgeStyle: "background:#f59e0b; color:#fff;",
+        action: "安排下机重喷涂铱钽贵金属涂层"
+    },
+    {
+        id: "PDCA-2026-009",
+        category: "料",
+        title: "二供整平剂批次杂质比重偏高 0.03%",
+        impact: "结晶致密度下降，Batch-02 剥离强度微幅下抖",
+        target: "原材料整平剂批次-202607A",
+        owner: "周工 (采购/品质)",
+        date: "2026-07-10",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "封存二供异常批次，紧急切换一供备用物料"
+    },
+    {
+        id: "PDCA-2026-007",
+        category: "料",
+        title: "高纯硫酸铜主盐微量铁离子含量超标",
+        impact: "铜箔箔面产生针孔微瑕疵",
+        target: "主盐溶铜槽",
+        owner: "吴工 (质检科)",
+        date: "2026-07-05",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "增加双级精密活性炭+螯合树脂过滤系统"
+    },
+    {
+        id: "PDCA-2026-005",
+        category: "人",
+        title: "夜班操作员剥离测试取样剪裁手法角度偏差",
+        impact: "测量读数产生 ±0.04N/mm 人为测试误差",
+        target: "物理检测实验室",
+        owner: "郑工 (实验中心)",
+        date: "2026-06-28",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "配备自动恒速切样机，重新考核全员 SOP 操作规范"
+    },
+    {
+        id: "PDCA-2026-002",
+        category: "环",
+        title: "万级洁净室夏季梅雨季相对湿度超标 (达 72% RH)",
+        impact: "铜箔出槽后表面易吸附微水汽导致氧化斑点",
+        target: "分切包装洁净区",
+        owner: "王工 (厂务部)",
+        date: "2026-06-20",
+        status: "已完成固化",
+        badgeStyle: "background:#10b981; color:#fff;",
+        action: "调增恒温恒湿空调除湿段功率，增加氮气包装柜"
+    }
+];
+
+window.filterCpkModal5mCategory = function(targetCat) {
+    document.querySelectorAll(".btn-5m-filter").forEach(btn => {
+        btn.classList.remove("active");
+        btn.style.background = "transparent";
+        btn.style.color = "#475569";
+        btn.style.boxShadow = "none";
+    });
+    
+    const activeBtnId = targetCat === "全部" ? "btn-5m-filter-all" : `btn-5m-filter-${targetCat}`;
+    const activeBtn = document.getElementById(activeBtnId);
+    if (activeBtn) {
+        activeBtn.classList.add("active");
+        activeBtn.style.background = "#ffffff";
+        activeBtn.style.color = "#2563eb";
+        activeBtn.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+    }
+
+    const titleEl = document.getElementById("cpk-5m1e-modal-title");
+    if (titleEl) {
+        titleEl.textContent = targetCat === "全部" 
+            ? "PDCA 5M1E 人机料法环 异常原因明细列表 (全部 8 项)"
+            : `PDCA 5M1E 归因分类明细列表 —【${targetCat}】维度明细列表`;
+    }
+
+    const tbody = document.getElementById("cpk-5m1e-exception-table-body");
+    if (!tbody) return;
+
+    const list = targetCat === "全部"
+        ? window.pdca5mExceptionList
+        : window.pdca5mExceptionList.filter(item => item.category === targetCat);
+
+    if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color:#94a3b8;">暂无【${targetCat}】维度的异常记录</td></tr>`;
+        return;
+    }
+
+    const categoryBadges = {
+        '法': '<span class="badge badge-blue" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">📋 法 (工艺)</span>',
+        '机': '<span class="badge badge-green" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0;">⚙️ 机 (设备)</span>',
+        '料': '<span class="badge badge-warning" style="background:#fffbeb; color:#b45309; border:1px solid #fde68a;">📦 料 (物料)</span>',
+        '人': '<span class="badge badge-purple" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe;">👤 人 (人员)</span>',
+        '环': '<span class="badge badge-gray" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1;">🌐 环 (环境)</span>'
+    };
+
+    tbody.innerHTML = list.map(item => `
+        <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+            <td style="padding: 9px 10px; font-weight: 700; color: #1e293b; font-family: monospace;">${item.id}</td>
+            <td style="padding: 9px 10px;">${categoryBadges[item.category] || item.category}</td>
+            <td style="padding: 9px 10px; color: #1e293b;">
+                <strong style="color: #0f172a; display: block; margin-bottom: 2px;">${item.title}</strong>
+                <span style="font-size: 0.73rem; color: #64748b;">${item.impact}</span>
+            </td>
+            <td style="padding: 9px 10px; color: #475569; font-size: 0.76rem;">${item.target}</td>
+            <td style="padding: 9px 10px; color: #334155; font-weight: 600;">${item.owner}</td>
+            <td style="padding: 9px 10px; color: #047857; font-size: 0.76rem; font-weight: 500;">${item.action}</td>
+            <td style="padding: 9px 10px;"><span class="badge" style="${item.badgeStyle}">${item.status}</span></td>
+        </tr>
+    `).join('');
+
+    if (window.lucide) lucide.createIcons();
+};
+
+// 详细数据透视表弹窗控制与导出
+window.openCpkDetailDataModal = function(initialCategory = '全部') {
+    const modal = document.getElementById("modal-cpk-detail-data");
+    if (modal) {
+        modal.classList.add("active");
+        filterCpkModal5mCategory(initialCategory);
+        if (window.lucide) lucide.createIcons();
+    }
+};
+
+window.exportCpkDetailDataToCsv = function() {
+    const csvHeader = "批次编号,检测日期,剥离强度 (N/mm),粗糙度 Rz (μm),标准差 σ,CPK 指数,状态判定\n";
+    const rows = [
+        "Batch-01,2026-06-05,0.72,0.95,0.058,1.02,能力不足 (需防错)",
+        "Batch-02,2026-06-12,0.76,0.88,0.051,1.15,微幅波动",
+        "Batch-03,2026-06-20,0.71,0.92,0.046,1.28,接近上限",
+        "Batch-04,2026-06-28,0.78,0.82,0.042,1.33,达到标准上限",
+        "Batch-05,2026-07-06,0.75,0.85,0.038,1.45,能力优秀",
+        "Batch-06 (中试),2026-07-15,0.82,0.78,0.032,1.58,最佳中试状态"
+    ];
+    
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csvHeader + rows.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "GHZ_PLM_CPK_Quality_Detailed_Data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("CPK 与 5M1E 详细数据表导出成功！", "success");
+};
 
 // ================= MANUAL DETAIL POPUP LOGIC =================
 let currentManualTargetTab = 'dashboard-panel';
