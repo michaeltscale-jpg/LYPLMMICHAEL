@@ -613,69 +613,69 @@
 
                     <!-- ================= PANEL 1: DASHBOARD ================= -->
                     <div class="tab-panel active" id="dashboard-panel">
-                        <!-- Dashboard Cards (Enlarged Height + Badge Above Left Icon + Single-Line Sentences) -->
+                        <!-- Dashboard Cards (Enlarged Height +5mm + Badge Above Left Icon + Clean Submetrics) -->
                         <div class="metrics-grid">
-                            <div class="metric-card" onclick="switchTab('plm-panel')" style="cursor: pointer; padding: 18px 18px; min-height: 112px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0;">
-                                    <span style="font-size: 0.68rem; color: #2563eb; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700; white-space: nowrap;">NPI 研发</span>
-                                    <div class="metric-icon" style="width: 44px; height: 44px; border-radius: 10px; background: rgba(59, 130, 246, 0.15); color: #2563eb;">
+                            <div class="metric-card" onclick="switchTab('plm-panel')" style="cursor: pointer; padding: 24px 22px; min-height: 135px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex-shrink: 0;">
+                                    <span style="font-size: 0.68rem; color: #2563eb; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">NPI 研发</span>
+                                    <div class="metric-icon" style="width: 46px; height: 46px; border-radius: 10px; background: rgba(59, 130, 246, 0.15); color: #2563eb;">
                                         <i data-lucide="file-text"></i>
                                     </div>
                                 </div>
-                                <div class="metric-info" style="flex: 1; min-width: 0;">
-                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">立项与开发中</h4>
-                                    <div class="metric-value" id="metric-developing" style="font-size: 1.7rem; font-weight: 800; color: #0f172a; margin: 2px 0 6px 0; line-height: 1.1;">--</div>
-                                    <div style="font-size: 0.71rem; color: #475569; border-top: 1px dashed #e2e8f0; padding-top: 6px; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📌 重点项目：<strong style="color:#1e293b; font-weight:700;">HF-PTS-12 (G3)</strong></div>
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">⏱️ 研发按期：<strong style="color:#10b981; font-weight:700;">100% 按节点推进</strong></div>
+                                <div class="metric-info" style="flex: 1;">
+                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0;">立项与开发中</h4>
+                                    <div class="metric-value" id="metric-developing" style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 2px 0 8px 0; line-height: 1.1;">--</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>📌 主攻项目</span><strong style="color:#1e293b; font-weight:700;">HF-PTS-12</strong></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>⏱️ 研发阶段 (按期率)</span><strong style="color:#10b981; font-weight:700;">G3 阶段 (100%)</strong></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="metric-card" onclick="switchTab('ems-panel')" style="cursor: pointer; padding: 18px 18px; min-height: 112px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0;">
-                                    <span style="font-size: 0.68rem; color: #059669; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700; white-space: nowrap;">EMS 台账</span>
-                                    <div class="metric-icon" style="width: 44px; height: 44px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #059669;">
+                            <div class="metric-card" onclick="switchTab('ems-panel')" style="cursor: pointer; padding: 24px 22px; min-height: 135px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex-shrink: 0;">
+                                    <span style="font-size: 0.68rem; color: #059669; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">EMS 台账</span>
+                                    <div class="metric-icon" style="width: 46px; height: 46px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #059669;">
                                         <i data-lucide="cpu"></i>
                                     </div>
                                 </div>
-                                <div class="metric-info" style="flex: 1; min-width: 0;">
-                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">关键设备开发</h4>
-                                    <div class="metric-value" id="metric-equipments" style="font-size: 1.7rem; font-weight: 800; color: #0f172a; margin: 2px 0 6px 0; line-height: 1.1;">--</div>
-                                    <div style="font-size: 0.71rem; color: #475569; border-top: 1px dashed #e2e8f0; padding-top: 6px; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">⚙️ 设备台账：<strong style="color:#1e293b; font-weight:700;">4台调试 / 12台稳产</strong></div>
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📊 综合效率：<strong style="color:#059669; font-weight:700;">OEE 94.6% 达标</strong></div>
+                                <div class="metric-info" style="flex: 1;">
+                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0;">关键设备开发</h4>
+                                    <div class="metric-value" id="metric-equipments" style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 2px 0 8px 0; line-height: 1.1;">--</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>⚙️ 中试调试 / 稳产</span><strong style="color:#1e293b; font-weight:700;">4 台 / 12 台</strong></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>📊 关键设备 OEE</span><strong style="color:#059669; font-weight:700;">94.6%</strong></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="metric-card" onclick="switchTab('ecn-panel')" style="cursor: pointer; padding: 18px 18px; min-height: 112px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0;">
-                                    <span style="font-size: 0.68rem; color: #d97706; background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700; white-space: nowrap;">工程变更</span>
-                                    <div class="metric-icon" style="width: 44px; height: 44px; border-radius: 10px; background: rgba(245, 158, 11, 0.15); color: #d97706;">
+                            <div class="metric-card" onclick="switchTab('ecn-panel')" style="cursor: pointer; padding: 24px 22px; min-height: 135px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex-shrink: 0;">
+                                    <span style="font-size: 0.68rem; color: #d97706; background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">工程变更</span>
+                                    <div class="metric-icon" style="width: 46px; height: 46px; border-radius: 10px; background: rgba(245, 158, 11, 0.15); color: #d97706;">
                                         <i data-lucide="git-commit"></i>
                                     </div>
                                 </div>
-                                <div class="metric-info" style="flex: 1; min-width: 0;">
-                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">进行中设变 (ECN)</h4>
-                                    <div class="metric-value" id="metric-ecns" style="font-size: 1.7rem; font-weight: 800; color: #0f172a; margin: 2px 0 6px 0; line-height: 1.1;">--</div>
-                                    <div style="font-size: 0.71rem; color: #475569; border-top: 1px dashed #e2e8f0; padding-top: 6px; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📝 待审设变：<strong style="color:#d97706; font-weight:700;">ECN-004 (粗化槽)</strong></div>
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">⏳ 处置时效：<strong style="color:#2563eb; font-weight:700;">平均 2.4 天闭环</strong></div>
+                                <div class="metric-info" style="flex: 1;">
+                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0;">进行中设变 (ECN)</h4>
+                                    <div class="metric-value" id="metric-ecns" style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 2px 0 8px 0; line-height: 1.1;">--</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>📝 待评审工程变更</span><strong style="color:#d97706; font-weight:700;">ECN-004</strong></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>⏳ 变更平均闭环时效</span><strong style="color:#2563eb; font-weight:700;">2.4 天</strong></div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="metric-card" onclick="switchTab('pdca-panel')" style="cursor: pointer; padding: 18px 18px; min-height: 112px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
-                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px; flex-shrink: 0;">
-                                    <span style="font-size: 0.68rem; color: #7c3aed; background: rgba(139, 92, 246, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700; white-space: nowrap;">5M1E 质量</span>
-                                    <div class="metric-icon" style="width: 44px; height: 44px; border-radius: 10px; background: rgba(139, 92, 246, 0.15); color: #7c3aed;">
+                            <div class="metric-card" onclick="switchTab('pdca-panel')" style="cursor: pointer; padding: 24px 22px; min-height: 135px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex-shrink: 0;">
+                                    <span style="font-size: 0.68rem; color: #7c3aed; background: rgba(139, 92, 246, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">5M1E 质量</span>
+                                    <div class="metric-icon" style="width: 46px; height: 46px; border-radius: 10px; background: rgba(139, 92, 246, 0.15); color: #7c3aed;">
                                         <i data-lucide="repeat"></i>
                                     </div>
                                 </div>
-                                <div class="metric-info" style="flex: 1; min-width: 0;">
-                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">PDCA 持续改善</h4>
-                                    <div class="metric-value" id="metric-pdca" style="font-size: 1.7rem; font-weight: 800; color: #0f172a; margin: 2px 0 6px 0; line-height: 1.1;">--</div>
-                                    <div style="font-size: 0.71rem; color: #475569; border-top: 1px dashed #e2e8f0; padding-top: 6px; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🔍 5M1E 归因：<strong style="color:#7c3aed; font-weight:700;">法 (40%) / 机 (25%)</strong></div>
-                                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🛡️ 防错闭环：<strong style="color:#10b981; font-weight:700;">98.5% 根因控频</strong></div>
+                                <div class="metric-info" style="flex: 1;">
+                                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #334155; margin: 0;">PDCA 持续改善</h4>
+                                    <div class="metric-value" id="metric-pdca" style="font-size: 1.75rem; font-weight: 800; color: #0f172a; margin: 2px 0 8px 0; line-height: 1.1;">--</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>🔍 5M1E 重点归因</span><strong style="color:#7c3aed; font-weight:700;">法 (40%) / 机 (25%)</strong></div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;"><span>🛡️ 根因防错闭环率</span><strong style="color:#10b981; font-weight:700;">98.5%</strong></div>
                                     </div>
                                 </div>
                             </div>
