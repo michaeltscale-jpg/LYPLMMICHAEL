@@ -872,9 +872,10 @@ function renderNpiSubpanel() {
                 { code: "Initial_DFMEA_Report.pdf",        label: "初始 DFMEA 风险评估" }
             ],
             gate3: [
-                { code: "DVT_Routing_Card.xlsx",    label: "中试工艺路线卡" },
-                { code: "Drum_Deviation_Study.pdf", label: "阴极辊偏离分析" },
-                { code: "DVT_Pilot_Lot_Report.pdf", label: "中试首批报告" }
+                { code: "DVT_Routing_Card.xlsx",        label: "中试工艺路线卡" },
+                { code: "DVT_SOP_Standard_Spec.pdf",    label: "中试 SOP 指导书 (试行)" },
+                { code: "Drum_Deviation_Study.pdf",     label: "阴极辊偏离分析" },
+                { code: "DVT_Pilot_Lot_Report.pdf",     label: "中试首批报告" }
             ],
             gate4: [
                 { code: "PVT_Industrial_Spec.pdf",         label: "量产 SOP 作指书" },
@@ -7795,6 +7796,18 @@ const DMS_TEMPLATES_SPEC = {
         ],
         checklist: ["中试试产品全检测试单", "高频Df测试仪器导出数据", "客户实验室样品送检确认函"]
     },
+    "DVT_SOP_Standard_Spec.pdf": {
+        name: "中试标准作业指导书(试行SOP)",
+        description: "规范中试车间溶铜、溅镀、生箔电解、表处及防氧化全工段试行操作规程与安全管控。",
+        fields: [
+            { key: "适用工段与作业人员", val: "适用于中试生产线（溶铜工段、磁控溅镀室、生箔机组、表处钝化槽）车间操作人员" },
+            { key: "溶铜电解开机规程", val: "先启动风机与酸雾回收，开启电解液循环泵，待流速稳定在 450L/min 后方可通电" },
+            { key: "生箔放卷与跳动防错", val: "检查阴极钛辊跳动量 (<= 0.03mm) ，设定走箔张力为 220N，保持极距 8.0±0.2mm" },
+            { key: "表处添加剂与防氧化", val: "按 2.8wt% 比例自动补充硅烷偶联剂及钝化液，保证烘干箱热风风速 18m/s" },
+            { key: "安全防护与应急处理", val: "必须佩戴防酸碱手套与护目镜；如遇电解液泄漏，立即按下紧急停止按钮并启动中和系统" }
+        ],
+        checklist: ["中试车间试操培训记录", "设备安全防错(Poka-yoke)检查表", "关键工艺参数控制卡(CPK)"]
+    },
     // G4
     "PVT_Industrial_Spec.pdf": {
         name: "生箔及表处量产标准作业指导书(SOP)",
@@ -8218,6 +8231,7 @@ function renderDmsDeliverablesTable(product) {
         { phase: "G2 配方阶段", stage: "生箔工段", code: "Grain_SEM_Analysis.pdf" },
         
         { phase: "G3 中试阶段", stage: "溅镀工段", code: "DVT_Routing_Card.xlsx" },
+        { phase: "G3 中试阶段", stage: "工段作业", code: "DVT_SOP_Standard_Spec.pdf" },
         { phase: "G3 中试阶段", stage: "生箔工段", code: "Drum_Deviation_Study.pdf" },
         { phase: "G3 中试阶段", stage: "生箔/表处", code: "DVT_Pilot_Lot_Report.pdf" },
         
