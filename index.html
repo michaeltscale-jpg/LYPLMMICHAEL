@@ -3512,17 +3512,17 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
-    <!-- ===== CPK 过程能力与 5M1E 根因详细数据透视表弹窗 ===== -->
+    <!-- ===== PDCA 5M1E 异常原因详细列表透视弹窗 ===== -->
     <div class="modal-overlay" id="modal-cpk-detail-data">
-        <div class="modal-content" style="max-width: 920px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
+        <div class="modal-content" style="max-width: 960px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
             <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(37, 99, 235, 0.25); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(96, 165, 250, 0.4);">
-                        <i data-lucide="line-chart" style="width: 20px; height: 20px; color: #60a5fa;"></i>
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(139, 92, 246, 0.25); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(167, 139, 250, 0.4);">
+                        <i data-lucide="pie-chart" style="width: 20px; height: 20px; color: #c084fc;"></i>
                     </div>
                     <div>
-                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;">核心产品品质 CPK 过程能力与 5M1E 详细数据透视表</h3>
-                        <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 500;">高频铜箔 Batch-01 ~ Batch-06 实测物性指标、过程能力指数及 5M1E 归因明细</span>
+                        <h3 style="margin: 0; font-size: 1.15rem; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;">PDCA 5M1E 异常原因详细列表</h3>
+                        <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 500;">人、机、料、法、环 5 大维度质量异常排查、跟进与防错标准化措施</span>
                     </div>
                 </div>
                 <button class="modal-close" onclick="closeModal('modal-cpk-detail-data')" style="color: #cbd5e1; font-size: 1.6rem; background: none; border: none; cursor: pointer;">&times;</button>
@@ -3530,112 +3530,7 @@ requests.post(url, json=payload)</code></pre>
             
             <div class="modal-body" style="padding: 20px 24px; max-height: 72vh; overflow-y: auto; background: #fafafa;">
                 
-                <!-- 关键 KPI 指标概览栏 -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">最新 CPK 指数</div>
-                        <div style="font-size: 1.35rem; font-weight: 800; color: #2563eb; margin-top: 2px;">1.58</div>
-                        <div style="font-size: 0.68rem; color: #10b981; font-weight: 700;">▲ 达标 (管控上限 1.33)</div>
-                    </div>
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">剥离强度均值 μ</div>
-                        <div style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-top: 2px;">0.82 <span style="font-size: 0.75rem; font-weight: 500;">N/mm</span></div>
-                        <div style="font-size: 0.68rem; color: #64748b;">标准规格 ≥ 0.75 N/mm</div>
-                    </div>
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">粗糙度 Rz 均值</div>
-                        <div style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-top: 2px;">0.78 <span style="font-size: 0.75rem; font-weight: 500;">μm</span></div>
-                        <div style="font-size: 0.68rem; color: #64748b;">标准规格 ≤ 0.85 μm</div>
-                    </div>
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">综合全检合格率</div>
-                        <div style="font-size: 1.35rem; font-weight: 800; color: #10b981; margin-top: 2px;">99.3%</div>
-                        <div style="font-size: 0.68rem; color: #10b981; font-weight: 700;">无重大出厂质量退货</div>
-                    </div>
-                </div>
-
-                <!-- 1. CPK 批次明细数据表 -->
-                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h4 style="margin: 0; font-size: 0.95rem; color: #0f172a; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="table" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                            近 6 批次关键物性测定与过程能力 (CPK) 原始明细
-                        </h4>
-                        <span style="font-size: 0.72rem; color: #64748b; font-weight: 500;">采样工段: 生箔/表面处理 3# 槽 (样本量 N=30/批)</span>
-                    </div>
-
-                    <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.82rem; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                        <thead>
-                            <tr style="background: #f1f5f9; color: #334155; text-align: left; font-weight: 700;">
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">批次编号</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">检测日期</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">剥离强度 (N/mm)</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">粗糙度 Rz (μm)</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">标准差 σ</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">CPK 指数</th>
-                                <th style="padding: 10px 12px; border-bottom: 2px solid #cbd5e1;">状态判定</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #1e293b;">Batch-01</td>
-                                <td style="padding: 9px 12px; color: #64748b;">2026-06-05</td>
-                                <td style="padding: 9px 12px;">0.72</td>
-                                <td style="padding: 9px 12px;">0.95</td>
-                                <td style="padding: 9px 12px;">0.058</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #ef4444;">1.02</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-danger">能力不足 (需防错)</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #1e293b;">Batch-02</td>
-                                <td style="padding: 9px 12px; color: #64748b;">2026-06-12</td>
-                                <td style="padding: 9px 12px;">0.76</td>
-                                <td style="padding: 9px 12px;">0.88</td>
-                                <td style="padding: 9px 12px;">0.051</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #f59e0b;">1.15</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-warning">微幅波动</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #1e293b;">Batch-03</td>
-                                <td style="padding: 9px 12px; color: #64748b;">2026-06-20</td>
-                                <td style="padding: 9px 12px;">0.71</td>
-                                <td style="padding: 9px 12px;">0.92</td>
-                                <td style="padding: 9px 12px;">0.046</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #f59e0b;">1.28</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-warning">接近上限</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #1e293b;">Batch-04</td>
-                                <td style="padding: 9px 12px; color: #64748b;">2026-06-28</td>
-                                <td style="padding: 9px 12px;">0.78</td>
-                                <td style="padding: 9px 12px;">0.82</td>
-                                <td style="padding: 9px 12px;">0.042</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #2563eb;">1.33</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-blue">达到标准上限</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #1e293b;">Batch-05</td>
-                                <td style="padding: 9px 12px; color: #64748b;">2026-07-06</td>
-                                <td style="padding: 9px 12px;">0.75</td>
-                                <td style="padding: 9px 12px;">0.85</td>
-                                <td style="padding: 9px 12px;">0.038</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #10b981;">1.45</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-green">能力优秀</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #e2e8f0; background: #f0fdf4;">
-                                <td style="padding: 9px 12px; font-weight: 700; color: #15803d;">Batch-06 (中试)</td>
-                                <td style="padding: 9px 12px; color: #166534;">2026-07-15</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #15803d;">0.82</td>
-                                <td style="padding: 9px 12px; font-weight: 700; color: #15803d;">0.78</td>
-                                <td style="padding: 9px 12px; color: #166534;">0.032</td>
-                                <td style="padding: 9px 12px; font-weight: 800; color: #16a34a;">1.58</td>
-                                <td style="padding: 9px 12px;"><span class="badge badge-green" style="background:#16a34a; color:#fff;">最佳中试状态</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 2. 5M1E 归因分类与个别异常明细列表 -->
+                <!-- 5M1E 归因分类与个别异常原因详细列表 -->
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                         <h4 style="margin: 0; font-size: 0.95rem; color: #0f172a; font-weight: 700; display: flex; align-items: center; gap: 6px;">

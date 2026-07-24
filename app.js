@@ -13151,25 +13151,20 @@ window.openCpkDetailDataModal = function(initialCategory = '全部') {
 };
 
 window.exportCpkDetailDataToCsv = function() {
-    const csvHeader = "批次编号,检测日期,剥离强度 (N/mm),粗糙度 Rz (μm),标准差 σ,CPK 指数,状态判定\n";
-    const rows = [
-        "Batch-01,2026-06-05,0.72,0.95,0.058,1.02,能力不足 (需防错)",
-        "Batch-02,2026-06-12,0.76,0.88,0.051,1.15,微幅波动",
-        "Batch-03,2026-06-20,0.71,0.92,0.046,1.28,接近上限",
-        "Batch-04,2026-06-28,0.78,0.82,0.042,1.33,达到标准上限",
-        "Batch-05,2026-07-06,0.75,0.85,0.038,1.45,能力优秀",
-        "Batch-06 (中试),2026-07-15,0.82,0.78,0.032,1.58,最佳中试状态"
-    ];
+    const csvHeader = "改善单号,5M1E归因,异常主题与根因描述,影响分析,关联目标/设备,责任人,防错对策与标准化措施,闭环状态\n";
+    const rows = (window.pdca5mExceptionList || []).map(item => 
+        `"${item.id}","${item.category}","${item.title.replace(/"/g, '""')}","${item.impact.replace(/"/g, '""')}","${item.target}","${item.owner}","${item.action.replace(/"/g, '""')}","${item.status}"`
+    );
     
     const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + csvHeader + rows.join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "GHZ_PLM_CPK_Quality_Detailed_Data.csv");
+    link.setAttribute("download", "GHZ_PLM_PDCA_5M1E_Exception_Cause_List.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("CPK 与 5M1E 详细数据表导出成功！", "success");
+    showToast("5M1E 异常原因详细列表导出成功！", "success");
 };
 
 // ================= MANUAL DETAIL POPUP LOGIC =================
