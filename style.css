@@ -2654,30 +2654,35 @@ textarea.is-maximized {
     box-shadow: 0 0 12px rgba(37, 99, 235, 0.35) !important;
 }
 
-/* DMS G1-G5 门禁筛选标签 */
+/* DMS G1-G5 门禁筛选标签 - 超强高对比独立凸显版 */
 .dms-gate-tab-btn {
-    padding: 4px 10px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.06);
-    color: #cbd5e1;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    border: 1px solid #94a3b8 !important;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1) !important;
 }
 
 .dms-gate-tab-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.3);
+    background: #dbeafe !important;
+    color: #1d4ed8 !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2) !important;
 }
 
 .dms-gate-tab-btn.active {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45) !important;
 }
 
 
