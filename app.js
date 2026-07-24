@@ -926,57 +926,13 @@ function renderNpiSubpanel() {
                 </div>`;
         }
 
-        if (g.key === "gate1") {
-            if (gateData.status === "RUNNING") {
-                footerHtml = `<button class="btn-primary" style="font-size: 0.75rem; padding: 6px; width: 100%;" onclick="submitDingTalkApproval(${product.id}, 'PRODUCT')"><i data-lucide="send" style="width: 12px; height: 12px;"></i> 发起立项审批</button>`;
-            } else if (gateData.status === "APPROVING") {
-                footerHtml = `<button class="btn-secondary" style="font-size: 0.75rem; padding: 6px; width: 100%; border-color: var(--color-warning); color: var(--color-warning);" onclick="switchTab('dingtalk-panel')"><i data-lucide="clock" style="width: 12px; height: 12px;"></i> 去审批调试台</button>`;
-            } else {
-                footerHtml = `<button class="btn-secondary" style="font-size: 0.75rem; padding: 6px; width: 100%;" onclick="openG1DocsModal()"><i data-lucide="file-text" style="width: 12px; height: 12px;"></i> 查看 / 编辑立项文件</button>`;
-            }
-        } 
-        
-        else if (g.key === "gate2") {
-            if (gateData.status === "RUNNING") {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--color-warning); text-align: center; width: 100%;"><i data-lucide="refresh-cw" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"></i> ECN 设变审批中...</span>`;
-            } else if (gateData.status !== "LOCKED") {
-                footerHtml = `
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%;">
-                        <button class="btn-secondary" style="font-size: 0.7rem; padding: 6px;" onclick="switchPlmSubTab('bom')"><i data-lucide="eye" style="width: 11px; height: 11px;"></i> BOM</button>
-                        <button class="btn-primary" style="font-size: 0.7rem; padding: 6px;" onclick="openEcnModalWithProduct(${product.id})"><i data-lucide="git-pull-request" style="width: 11px; height: 11px;"></i> 设变</button>
-                    </div>
-                `;
-            } else {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--text-muted); text-align: center; width: 100%;">配方尚未定型</span>`;
-            }
-        } 
-        
-        else if (g.key === "gate3") {
-            if (gateData.status === "RUNNING") {
-                footerHtml = `<button class="btn-primary" style="font-size: 0.75rem; padding: 6px; width: 100%;" onclick="jumpAndOpenRoutingLog()"><i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i> 去录入中试参数</button>`;
-            } else if (gateData.status !== "LOCKED") {
-                footerHtml = `<button class="btn-secondary" style="font-size: 0.75rem; padding: 6px; width: 100%;" onclick="switchPlmSubTab('routing')"><i data-lucide="eye" style="width: 12px; height: 12px;"></i> 查看工艺中试</button>`;
-            } else {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--text-muted); text-align: center; width: 100%;">工艺尚未开启</span>`;
-            }
-        } 
-        
-        else if (g.key === "gate4") {
-            if (gateData.status !== "LOCKED") {
-                footerHtml = `<button class="btn-primary" style="font-size: 0.75rem; padding: 6px; width: 100%;" onclick="openQualityTestModal()"><i data-lucide="beaker" style="width: 12px; height: 12px;"></i> 录入品质数据</button>`;
-            } else {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--text-muted); text-align: center; width: 100%;">试产品质未开启</span>`;
-            }
-        } 
-        
-        else if (g.key === "gate5") {
-            if (gateData.status === "COMPLETED") {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--color-success); font-weight: bold; text-align: center; width: 100%;"><i data-lucide="check-circle" style="width: 12px; height: 12px; vertical-align: middle;"></i> 已成功导入量产</span>`;
-            } else if (gateData.status === "RUNNING") {
-                footerHtml = `<button class="btn-primary" style="font-size: 0.75rem; padding: 6px; width: 100%; background: linear-gradient(135deg, var(--color-success), #059669);" onclick="submitImportProduction(${product.id})"><i data-lucide="rocket" style="width: 12px; height: 12px;"></i> 申请导入量产</button>`;
-            } else {
-                footerHtml = `<span style="font-size: 0.75rem; color: var(--text-muted); text-align: center; width: 100%;">量产送样未就绪</span>`;
-            }
+        // 统一 5 大 Gate 卡片最下方按钮为 "发起评审流程"
+        if (gateData.status === "COMPLETED") {
+            footerHtml = `<button class="btn-secondary" style="font-size: 0.75rem; padding: 6.5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px; color: #047857; border-color: #a7f3d0; background: #ecfdf5;" onclick="submitDingTalkApproval(${product.id}, 'PRODUCT')"><i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> 发起评审流程 (已通过)</button>`;
+        } else if (gateData.status === "APPROVING") {
+            footerHtml = `<button class="btn-secondary" style="font-size: 0.75rem; padding: 6.5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px; border-color: var(--color-warning); color: var(--color-warning);" onclick="switchTab('dingtalk-panel')"><i data-lucide="clock" style="width: 12px; height: 12px;"></i> 发起评审流程 (审批中...)</button>`;
+        } else {
+            footerHtml = `<button class="btn-primary" style="font-size: 0.75rem; padding: 6.5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px;" onclick="submitDingTalkApproval(${product.id}, 'PRODUCT')"><i data-lucide="send" style="width: 12px; height: 12px;"></i> 发起评审流程</button>`;
         }
 
         card.innerHTML = `
