@@ -1489,6 +1489,11 @@ window.jumpAndOpenRoutingLog = function() {
         initiatorInput.value = product.creator || "赵立功";
     }
 
+    const purposeInput = document.getElementById("g3-pdca-purpose");
+    if (purposeInput && !purposeInput.value) {
+        purposeInput.value = `验证高频低损耗生箔添加剂配方窗口及对开折弯寿命稳定性。`;
+    }
+
     const problemDescInput = document.getElementById("g3-pdca-problem-desc");
     if (problemDescInput && !problemDescInput.value) {
         problemDescInput.value = `[DVT 中试验证] ${product.name || '高频铜箔'} 试制过程中针对高频折弯性能与双面结晶对称度开展中试实验与参数摸索。`;
@@ -1549,6 +1554,7 @@ window.submitG3RoutingPdca = function() {
     const severity = document.getElementById("g3-pdca-severity").value;
     const productModel = document.getElementById("g3-pdca-product-model").value;
     const matCode = document.getElementById("g3-pdca-material-code") ? document.getElementById("g3-pdca-material-code").value : "MAT-CU-001";
+    const purpose = document.getElementById("g3-pdca-purpose") ? document.getElementById("g3-pdca-purpose").value.trim() : "";
     const problemDesc = document.getElementById("g3-pdca-problem-desc").value.trim();
     const targetGoal = document.getElementById("g3-pdca-target-goal").value.trim();
 
@@ -1558,7 +1564,7 @@ window.submitG3RoutingPdca = function() {
     const additiveFlow = document.getElementById("g3-routing-additive-flow").value;
 
     const combinedTitle = `[DVT 中试工单] ${productModel} 试制与 5W2H 改善目标`;
-    const fullProblemDesc = `${problemDesc}\n\n【中试工艺与物料联动记录】\n- 关联 MQC 原材料: ${matCode}\n- 电解电流密度: ${currentDensity} A/dm²\n- 槽液温度: ${temp} °C\n- 极距跳动偏差: ${drumTolerance} mm\n- 添加剂流量: ${additiveFlow} mL/h`;
+    const fullProblemDesc = `【试验目的】: ${purpose}\n\n【品质问题与背景陈述 (5W2H)】:\n${problemDesc}\n\n【中试工艺与物料联动记录】\n- 关联 MQC 原材料: ${matCode}\n- 电解电流密度: ${currentDensity} A/dm²\n- 槽液温度: ${temp} °C\n- 极距跳动偏差: ${drumTolerance} mm\n- 添加剂流量: ${additiveFlow} mL/h`;
     const fullImprovePlan = `【试制期望达成目标 (TARGET)】\n${targetGoal}\n\n【开单来源】: ${source} | 【严重度】: ${severity} | 【立项人】: ${initiator}`;
 
     // 1. 发起/写入 PDCA 改善单记录
