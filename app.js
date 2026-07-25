@@ -866,6 +866,7 @@ function renderNpiSubpanel() {
             ],
             gate2: [
                 { code: "Formulation_BOM_V1.0.xlsx",      label: "配方 BOM V1.0" },
+                { code: "EBOM_Engineering_BOM.xlsx",       label: "E BOM" },
                 { code: "Electrolyte_Chemistry_Spec.pdf", label: "电解液化学规范" },
                 { code: "Grain_SEM_Analysis.pdf",         label: "金相晶粒分析" },
                 { code: "EVT_Sample_Test_Report.pdf",     label: "EVT 样品物性全检报告" },
@@ -873,12 +874,14 @@ function renderNpiSubpanel() {
             ],
             gate3: [
                 { code: "DVT_Routing_Card.xlsx",        label: "中试工艺路线卡" },
+                { code: "MBOM_Manufacturing_BOM.xlsx",  label: "M BOM" },
                 { code: "DVT_SOP_Standard_Spec.pdf",    label: "中试 SOP 指导书 (试行)" },
                 { code: "Drum_Deviation_Study.pdf",     label: "阴极辊偏离分析" },
                 { code: "DVT_Pilot_Lot_Report.pdf",     label: "中试首批报告" }
             ],
             gate4: [
                 { code: "PVT_Industrial_Spec.pdf",         label: "量产 SOP 作指书" },
+                { code: "CMOM_Manufacturing_Operations.pdf", label: "C MOM" },
                 { code: "PVT_Coating_Thickness_Spec.pdf",  label: "PVT 良率分析" },
                 { code: "Customer_DVT_Feedback.pdf",       label: "客户审核反馈" }
             ],
@@ -897,7 +900,10 @@ function renderNpiSubpanel() {
             "Technical_Agreement_TDS.pdf": !!(_g1docs.tds_doc     && (_g1docs.tds_doc.doc_no           || _g1docs.tds_doc.rz)),
             "Feasibility_Benchmark.pdf":   !!(_g1docs.feasibility && (_g1docs.feasibility.tech         || _g1docs.feasibility.conclusion)),
             "Formulation_BOM_V1.0.xlsx":   !!(product.bom),
-            "DVT_Routing_Card.xlsx":       !!(product.routing_list && product.routing_list.length > 0)
+            "EBOM_Engineering_BOM.xlsx":   !!(product.bom),
+            "DVT_Routing_Card.xlsx":       !!(product.routing_list && product.routing_list.length > 0),
+            "MBOM_Manufacturing_BOM.xlsx":  !!(product.routing_list && product.routing_list.length > 0),
+            "CMOM_Manufacturing_Operations.pdf": !!(product.quality_tests && product.quality_tests.length > 0)
         };
         const _gateDocs = GATE_DOCS_MAP[g.key] || [];
         if (_gateDocs.length) {
@@ -8201,6 +8207,30 @@ window.getDynamicDmsTemplate = function(fileCode, product) {
                 { key: "ERP主数据物料归档", val: "产品代号 DBJ-AI-H10 ERP编码冻结，标准工艺路线卡转入正式量产主路由" },
                 { key: "量产一次良率目标", val: "设定量产阶段出厂综合良率指标设定在 ≥ 95.0%" }
             ];
+        } else if (fileCode === "EBOM_Engineering_BOM.xlsx") {
+            spec.name = "E BOM 工程设计物料清单 (EBOM)";
+            spec.description = "基于研发立项规格固化的工程设计 BOM (EBOM)，定义高频高导电极材料、生箔原辅料及工程设计替代规则。";
+            spec.fields = [
+                { key: "工程设计物料构成 (EBOM)", val: "高纯阴极铜线 (99.99%)、电子级高纯硫酸、生箔改性添加剂 (GEL/HEC/SPS)、特种硅烷" },
+                { key: "工程替代规则与选型", val: "主选硅烷偶联剂 SIL-201 ；工程备选硅烷 SIL-303 (满足 260℃ 无铅回流焊耐热要求)" },
+                { key: "工程版本与变更基线", val: "EBOM Rev 1.0 (受控签发，作为 M BOM 制造清单派生的基础工程设计文档)" }
+            ];
+        } else if (fileCode === "MBOM_Manufacturing_BOM.xlsx") {
+            spec.name = "M BOM 制造工艺物料清单 (MBOM)";
+            spec.description = "结合中试机台工艺路线与车间耗损算力派生的制造物料清单 (MBOM)，指导车间实际投料与领料套件。";
+            spec.fields = [
+                { key: "车间制造投料清单 (MBOM)", val: "溶铜电解槽铜线套件 1000kg/批 ；硫酸电解液循环补充套件 450L/min ；粗化槽添加剂" },
+                { key: "制造损耗率与套件定额", val: "溶铜损耗率 0.8% ；生箔引头裁切损耗 1.5% ；表处清洗液损耗 0.5%" },
+                { key: "MES / ERP 接口联动", val: "与车间 MES 系统发料接口实时绑定，做中试批次投产物料扣减与倒冲(Backflush)逻辑" }
+            ];
+        } else if (fileCode === "CMOM_Manufacturing_Operations.pdf") {
+            spec.name = "C MOM 试产协同制造运营执行报告 (CMOM)";
+            spec.description = "PVT 试产阶段协同制造运营系统 (MOM) 生产计划排程、设备 OEE 效率、工序品质及协同制造看板执行汇总。";
+            spec.fields = [
+                { key: "试产制造排程 (APS/MOM)", val: "PVT 批次试产派工完成率 100% ，实际过站拉通时间 48 小时 (预估 52 小时)" },
+                { key: "设备综合效率 OEE", val: "生箔机组 OEE 88.5% ；表处机组 OEE 91.2% ；设备微中断故障率 ≤ 0.3%" },
+                { key: "协同制造品质与异常防错", val: "在制品 (WIP) 品质追溯码 100% 绑定，在线自动检测异常触发停机防错 0 漏检" }
+            ];
         } else if (fileCode === "FMEA_Risk_Registry.xlsx") {
             spec.name = "对称电解失效及双向抗弯疲劳控制";
             spec.description = "识别双晶电解生箔、对称表处及挠性高频折弯失效模式与纠正预防措施。";
@@ -8285,22 +8315,25 @@ function renderDmsDeliverablesTable(product) {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    // 15个标准交付文档 (关联真实生产工序)
+    // 18个标准交付文档 (关联真实生产工序)
     const docs = [
         { phase: "G1 立项阶段", stage: "立项规划", code: "NPI_Project_Proposal.pdf" },
         { phase: "G1 立项阶段", stage: "设计标准", code: "Technical_Agreement_TDS.pdf" },
         { phase: "G1 立项阶段", stage: "立项规划", code: "Feasibility_Benchmark.pdf" },
         
-        { phase: "G2 配方阶段", stage: "溅镀工段", code: "Formulation_BOM_V1.0.xlsx" },
+        { phase: "G2 配方阶段", stage: "设计/工程", code: "Formulation_BOM_V1.0.xlsx" },
+        { phase: "G2 配方阶段", stage: "工程设计", code: "EBOM_Engineering_BOM.xlsx" },
         { phase: "G2 配方阶段", stage: "溅镀工段", code: "Electrolyte_Chemistry_Spec.pdf" },
         { phase: "G2 配方阶段", stage: "生箔工段", code: "Grain_SEM_Analysis.pdf" },
         
         { phase: "G3 中试阶段", stage: "溅镀工段", code: "DVT_Routing_Card.xlsx" },
+        { phase: "G3 中试阶段", stage: "制造/车间", code: "MBOM_Manufacturing_BOM.xlsx" },
         { phase: "G3 中试阶段", stage: "工段作业", code: "DVT_SOP_Standard_Spec.pdf" },
         { phase: "G3 中试阶段", stage: "生箔工段", code: "Drum_Deviation_Study.pdf" },
         { phase: "G3 中试阶段", stage: "生箔/表处", code: "DVT_Pilot_Lot_Report.pdf" },
         
         { phase: "G4 试产阶段", stage: "PA后处理", code: "PVT_Industrial_Spec.pdf" },
+        { phase: "G4 试产阶段", stage: "试产/MOM", code: "CMOM_Manufacturing_Operations.pdf" },
         { phase: "G4 试产阶段", stage: "PB涂布", code: "PVT_Coating_Thickness_Spec.pdf" },
         { phase: "G4 试产阶段", stage: "品质质检", code: "Customer_DVT_Feedback.pdf" },
         
