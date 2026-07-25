@@ -1032,7 +1032,7 @@ textarea.form-control {
     background: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1071,12 +1071,12 @@ textarea.form-control {
 .npi-gate-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 8px;
+    align-items: center;
+    margin-bottom: 4px;
 }
 
 .npi-gate-index {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: bold;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -1088,10 +1088,10 @@ textarea.form-control {
 .npi-gate-card.failed .npi-gate-index { color: var(--color-danger); }
 
 .npi-gate-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
-    margin-top: 4px;
-    margin-bottom: 8px;
+    margin-top: 2px;
+    margin-bottom: 4px;
     color: #0f172a;
     letter-spacing: -0.3px;
     white-space: nowrap;
@@ -1104,9 +1104,9 @@ textarea.form-control {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.35;
 }
 
 .npi-gate-data-box {
