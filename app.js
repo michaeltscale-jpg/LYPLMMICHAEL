@@ -5921,7 +5921,7 @@ window.fetchEquipmentsAndRender = async function() {
         
         // 更新卡片部门徽章
         const stageDeps = {
-            "stage1_plan": "设备立项中",
+            "stage1_plan": "使用部门",
             "stage2_scheme": "工程部门",
             "stage3_bidding": "采购部门",
             "stage4_make": "工程部门",
