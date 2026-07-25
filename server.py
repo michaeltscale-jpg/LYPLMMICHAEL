@@ -777,6 +777,16 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_xiaohe_ai_assistant(data)
             return
 
+        # 演示测试数据一键重置 API
+        if path == "/api/admin/reset_demo_db":
+            try:
+                import init_db
+                init_db.init_db()
+                self.send_json({"status": "success", "message": "演示测试数据库已成功一键重置归零，所有默认产品及模版均已恢复！"})
+            except Exception as e:
+                self.send_json({"error": f"数据库重置失败: {str(e)}"}, 500)
+            return
+
         # 默认只读访客拒绝所有写操作
         if user_role == 'Viewer':
             self.send_json({"error": "权限不足：当前角色【只读访客】无权进行任何写操作，请在右上角切换身份。"}, 403)

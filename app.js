@@ -1544,6 +1544,28 @@ window.triggerRoutingModuleLink = function() {
     showToast(`跨模块联动：已切换至中试工艺路线卡 (Routing) 维度。`, "info");
 };
 
+window.resetDemoDatabase = function() {
+    if (!confirm("确定要将演示测试数据库一键重置归零吗？此操作将恢复所有初始模版与示范产品。")) {
+        return;
+    }
+    showToast("正在重置演示测试数据库，请稍候...", "info");
+    fetch("/api/admin/reset_demo_db", { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                showToast(data.message, "success");
+                setTimeout(() => {
+                    window.location.reload();
+                }, 800);
+            } else {
+                showToast("重置失败: " + (data.error || "未知错误"), "error");
+            }
+        })
+        .catch(err => {
+            showToast("请求失败: " + err.message, "error");
+        });
+};
+
 window.submitG3RoutingPdca = function() {
     const product = state.activeProduct;
     if (!product) return;
