@@ -7023,111 +7023,11 @@ window.saveNewEquipment = async function() {
         } else {
             showToast(id ? "编辑设备申请表成功" : "新增设备申请表提交成功！", "success");
             closeModal("modal-equipment");
-            fetchEquipments();
+            if (window.fetchEquipments) window.fetchEquipments();
+            if (window.fetchEquipmentsAndRender) window.fetchEquipmentsAndRender();
         }
     } catch (err) {
         showToast("保存失败: " + err.message, "error");
-    }
-};
-    
-    // 根据所属工段分配默认监控参数
-    let defaultParams = {};
-    if (stage === "溅镀工段") {
-        defaultParams = {"真空度(Pa)": 0.0002, "工作气压(Pa)": 0.35, "溅镀功率(kW)": 12.0, "溅镀电压(V)": 380};
-    } else if (stage === "电镀工段") {
-        defaultParams = {
-            "生产速度(m/min)": 0.24,
-            "纯水PH值": 7.0,
-            "纯水电导率(μs/cm)": 1.5,
-            "硫酸铜浓度(g/L)": 130.0,
-            "H2SO4浓度(g/L)": 130.0,
-            "氯离子浓度(ppm)": 70.0,
-            "RF-23 B浓度(ml/L)": 2.0,
-            "RF-23 C浓度(ml/L)": 20.0,
-            "RF-23 L浓度(ml/L)": 10.0,
-            "铜镀液温度(℃)": 23.0,
-            "XL分子浓度(ml/L)": 700.0,
-            "抗氧化液PH值": 6.0,
-            "抗氧化液温度(℃)": 20.0,
-            "过抗氧化液时间(s)": 15.0,
-            "过滤泵压力(Kgf/cm²)": 0.8,
-            "水洗槽温度(℃)": 30.0,
-            "烘箱温度(℃)": 70.0
-        };
-    } else if (stage === "PA后处理") {
-        defaultParams = {"真空度(Pa)": 0.0003, "工作气压(Pa)": 0.30, "处理功率(kW)": 15.0};
-    } else if (stage === "PB涂布") {
-        defaultParams = {"收卷张力(N)": 220, "分切速度(m/min)": 150};
-    } else if (stage === "脱膜工段") {
-        defaultParams = {
-            "速度(m/min)": 5.0,
-            "放卷张力(Kg)": 7.0,
-            "收卷左张力(Kg)": 0.0,
-            "收卷右张力(Kg)": 6.0,
-            "切边左张力(Kg)": 0.1,
-            "切边右张力(Kg)": 0.1
-        };
-    }
-    
-    // 初始化日志
-    defaultParams._maintenance_logs = [{
-        time: formatEmsTime(new Date()),
-        text: "设备建档成功，初始化参数与全生命周期进度。",
-        operator: state.currentUserDisplayName || "管理员"
-    }];
-    
-    const role = state.currentUserRole || 'Viewer';
-    const dispName = state.currentUserDisplayName || '访客';
-    
-    try {
-        const payload = {
-            id: id ? parseInt(id) : null,
-            device_code: code,
-            device_name: name,
-            stage_name: stage,
-            using_unit: usingUnit || null,
-            oee: oee,
-            next_maintenance: maint || null
-        };
-        if (!id) {
-            // 新增设备时，默认全部里程碑状态设为未开始或进行中
-            const p_new_initiation = {
-                "stage1_plan": { "title": "立项", "status": "进行中", "start_date": new Date().toISOString().substring(0, 10), "end_date": "", "owner": "设备组", "remark": "启动设备立项流程", "input_files": ["项目启动意向书.docx", "前期可行性研究报告.pdf"] },
-                "stage2_scheme": { "title": "拟定技术方案", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
-                "stage3_bidding": { "title": "请购发包", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
-                "stage4_make": { "title": "制作中", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
-                "stage5_install": { "title": "安装调试中", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" },
-                "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": "", "end_date": "", "owner": "", "remark": "" }
-            };
-            payload.project_plan_json = JSON.stringify(p_new_initiation);
-            payload.parameters_json = JSON.stringify(defaultParams);
-            payload.status = "导入中";
-        }
-        
-        const res = await fetch("/api/equipments/save", {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "X-User-Role": role,
-                "X-User-Name": encodeURIComponent(dispName)
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const data = await res.json();
-        if (data.error) {
-            showToast(data.error, "error");
-        } else {
-            showToast(id ? "编辑设备信息成功" : "新增设备成功", "success");
-            closeModal("modal-equipment");
-            await window.fetchEquipmentsAndRender();
-            if (!id && data.id) {
-                window.selectEquipment(data.id);
-            }
-        }
-    } catch (e) {
-        console.error(e);
-        showToast("接口保存请求失败", "error");
     }
 };
 
