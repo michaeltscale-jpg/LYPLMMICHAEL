@@ -6851,20 +6851,54 @@ window.resetEmsStageWorkbench = function() {
     }
 };
 
+window.autoGenerateEmsSchedule = function() {
+    const today = new Date();
+    const fmt = d => d.toISOString().substring(0, 10);
+    const addDays = (d, days) => { const n = new Date(d); n.setDate(n.getDate() + days); return n; };
+
+    const g1Start = today;
+    const g1End = addDays(g1Start, 7);
+    const g2Start = addDays(g1End, 1);
+    const g2End = addDays(g2Start, 10);
+    const g3Start = addDays(g2End, 1);
+    const g3End = addDays(g3Start, 15);
+    const g4Start = addDays(g3End, 1);
+    const g4End = addDays(g4Start, 30);
+    const g5Start = addDays(g4End, 1);
+    const g5End = addDays(g5Start, 15);
+    const g6Start = addDays(g5End, 1);
+    const g6End = addDays(g6Start, 10);
+
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    setVal("eq-plan-g1-start", fmt(g1Start)); setVal("eq-plan-g1-end", fmt(g1End));
+    setVal("eq-plan-g2-start", fmt(g2Start)); setVal("eq-plan-g2-end", fmt(g2End));
+    setVal("eq-plan-g3-start", fmt(g3Start)); setVal("eq-plan-g3-end", fmt(g3End));
+    setVal("eq-plan-g4-start", fmt(g4Start)); setVal("eq-plan-g4-end", fmt(g4End));
+    setVal("eq-plan-g5-start", fmt(g5Start)); setVal("eq-plan-g5-end", fmt(g5End));
+    setVal("eq-plan-g6-start", fmt(g6Start)); setVal("eq-plan-g6-end", fmt(g6End));
+};
+
 window.openNewEquipmentModal = function() {
     if (!checkPermission(["Admin", "Equipment Engineer", "Process Engineer"], "新增设备")) return;
     
     const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
     
-    setTxt("equipment-modal-title", "新增关键设备");
+    setTxt("equipment-modal-title", "新增设备申请表");
     setVal("equipment-edit-id", "");
     setVal("equipment-edit-code", "");
     setVal("equipment-edit-name", "");
     setVal("equipment-edit-stage", "生产设备");
     setVal("equipment-edit-using-unit", "");
+    setVal("equipment-edit-purpose", "");
+    setVal("equipment-edit-reason", "");
+    setVal("equipment-edit-budget", "");
+    setVal("equipment-edit-benefits", "");
+    setVal("equipment-edit-required-date", "");
     setVal("equipment-edit-oee", "85.0");
     setVal("equipment-edit-maint", "");
+
+    autoGenerateEmsSchedule();
     
     openModal("modal-equipment");
 };
@@ -6881,14 +6915,34 @@ window.editEquipment = function(id) {
     const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
     const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
 
-    setTxt("equipment-modal-title", "编辑设备基本信息");
+    const params = eq.parameters || {};
+    const plan = eq.project_plan || {};
+
+    setTxt("equipment-modal-title", "编辑设备申请表");
     setVal("equipment-edit-id", eq.id);
     setVal("equipment-edit-code", eq.device_code);
     setVal("equipment-edit-name", eq.device_name);
     setVal("equipment-edit-stage", eq.stage_name);
     setVal("equipment-edit-using-unit", eq.using_unit || "");
+    setVal("equipment-edit-purpose", params.device_purpose || "");
+    setVal("equipment-edit-reason", params.proposal_reason || "");
+    setVal("equipment-edit-budget", params.estimated_budget || "");
+    setVal("equipment-edit-benefits", params.expected_benefits || "");
+    setVal("equipment-edit-required-date", params.required_date || "");
     setVal("equipment-edit-oee", eq.oee || "85.0");
     setVal("equipment-edit-maint", eq.next_maintenance || "");
+
+    // 回填 G1 ~ G6 排期
+    const stages = ["g1", "g2", "g3", "g4", "g5", "g6"];
+    const stageMapKeys = {
+        "g1": "stage1_plan", "g2": "stage2_scheme", "g3": "stage3_bidding",
+        "g4": "stage4_make", "g5": "stage5_install", "g6": "stage6_accept"
+    };
+    stages.forEach(sk => {
+        const pObj = plan[stageMapKeys[sk]] || {};
+        setVal(`eq-plan-${sk}-start`, pObj.start_date || "");
+        setVal(`eq-plan-${sk}-end`, pObj.end_date || pObj.plan_end_date || "");
+    });
     
     openModal("modal-equipment");
 };
@@ -6900,6 +6954,11 @@ window.saveNewEquipment = async function() {
     const name = getVal("equipment-edit-name");
     const stage = getVal("equipment-edit-stage", "生产设备");
     const usingUnit = getVal("equipment-edit-using-unit");
+    const purpose = getVal("equipment-edit-purpose");
+    const reason = getVal("equipment-edit-reason");
+    const budget = getVal("equipment-edit-budget");
+    const benefits = getVal("equipment-edit-benefits");
+    const reqDate = getVal("equipment-edit-required-date");
     const oee = parseFloat(getVal("equipment-edit-oee", "85.0") || "85.0");
     const maint = getVal("equipment-edit-maint");
     
@@ -6907,6 +6966,69 @@ window.saveNewEquipment = async function() {
         showToast("设备代号与名称不能为空！", "error");
         return;
     }
+
+    const eq = id ? state.equipments.find(e => e.id === parseInt(id)) : null;
+    const existingParams = eq ? (eq.parameters || {}) : {};
+
+    const updatedParams = {
+        ...existingParams,
+        device_purpose: purpose,
+        proposal_reason: reason,
+        estimated_budget: budget,
+        expected_benefits: benefits,
+        required_date: reqDate
+    };
+
+    const p_new_initiation = {
+        "stage1_plan": { "title": "设备立项中", "status": "进行中", "start_date": getVal("eq-plan-g1-start"), "end_date": getVal("eq-plan-g1-end"), "owner": "设备组", "remark": "启动设备立项流程", "input_files": ["项目启动意向书.docx", "前期可行性研究报告.pdf"] },
+        "stage2_scheme": { "title": "拟定技术方案", "status": "未开始", "start_date": getVal("eq-plan-g2-start"), "end_date": getVal("eq-plan-g2-end"), "owner": "工程部门", "remark": "" },
+        "stage3_bidding": { "title": "请购发包中", "status": "未开始", "start_date": getVal("eq-plan-g3-start"), "end_date": getVal("eq-plan-g3-end"), "owner": "采购部门", "remark": "" },
+        "stage4_make": { "title": "设备制作中", "status": "未开始", "start_date": getVal("eq-plan-g4-start"), "end_date": getVal("eq-plan-g4-end"), "owner": "工程部门", "remark": "" },
+        "stage5_install": { "title": "安装调试中", "status": "未开始", "start_date": getVal("eq-plan-g5-start"), "end_date": getVal("eq-plan-g5-end"), "owner": "工程部门", "remark": "" },
+        "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": getVal("eq-plan-g6-start"), "end_date": getVal("eq-plan-g6-end"), "owner": "使用部门", "remark": "" }
+    };
+
+    const role = state.currentUserRole || 'Viewer';
+    const dispName = state.currentUserDisplayName || '访客';
+    
+    try {
+        const payload = {
+            id: id ? parseInt(id) : null,
+            device_code: code,
+            device_name: name,
+            stage_name: stage,
+            using_unit: usingUnit || null,
+            oee: oee,
+            next_maintenance: maint || null,
+            parameters_json: JSON.stringify(updatedParams),
+            project_plan_json: JSON.stringify(p_new_initiation)
+        };
+        if (!id) {
+            payload.status = "导入中";
+        }
+        
+        const res = await fetch("/api/equipments/save", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "X-User-Role": role,
+                "X-User-Name": encodeURIComponent(dispName)
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        if (data.error) {
+            showToast(data.error, "error");
+        } else {
+            showToast(id ? "编辑设备申请表成功" : "新增设备申请表提交成功！", "success");
+            closeModal("modal-equipment");
+            fetchEquipments();
+        }
+    } catch (err) {
+        showToast("保存失败: " + err.message, "error");
+    }
+};
     
     // 根据所属工段分配默认监控参数
     let defaultParams = {};

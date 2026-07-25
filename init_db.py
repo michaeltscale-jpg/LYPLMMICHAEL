@@ -66,7 +66,7 @@ def make_default_equipment_project_plan(active_stage_idx=6):
         end_date = (base + timedelta(days=end_offset)).strftime("%Y-%m-%d")
         
         stage_inputs = {
-            "stage1_plan": ["项目启动意向书.docx", "前期可行性研究报告.pdf"],
+            "stage1_plan": ["新增设备申请表.docx", "设备立项可行性报告.pdf", "成本预算与效益评估.xlsx"],
             "stage2_scheme": ["设备设计任务书.pdf", "工艺性能指标书.xlsx"],
             "stage3_bidding": ["技术方案评审意见书.docx", "采购请购申请表.xlsx"],
             "stage4_make": ["中标通知书.pdf", "采购合同与技术协议.pdf"],
@@ -325,41 +325,49 @@ def init_database(force_reset=False):
     p_g6_inprogress = make_default_equipment_project_plan(5) # G6进行中
     p_g6_completed = make_default_equipment_project_plan(6) # G6已完成
     
+    default_param_json = json.dumps({
+        "device_purpose": "用于高频5G铜箔中试扩产与阴极辊高精度电镀",
+        "proposal_reason": "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。",
+        "estimated_budget": "180.0",
+        "expected_benefits": "预计提升中试产能30%，降低跳动废损15%，年增加产值300万元。",
+        "required_date": (datetime.now() + timedelta(days=45)).strftime("%Y-%m-%d")
+    }, ensure_ascii=False)
+
     # 插入初始设备数据 (各阶段均有 3 个或以上设备)
     cursor.executemany("""
     INSERT INTO equipments (device_code, device_name, stage_name, status, oee, next_maintenance, parameters_json, project_plan_json, operator, using_unit)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, [
         # G1. 立项 (3个)
-        ("EQ-SC-01", "1#极速生箔机", "生产设备", "导入中", 0.0, None, '{}', p_g1, "生箔设备组", None),
-        ("EQ-CW-02", "2#纯水分配泵", "厂务设备", "导入中", 0.0, None, '{}', p_g1, "动力机电组", None),
-        ("EQ-JC-02", "自动光学缺陷检测仪", "检测设备", "导入中", 0.0, None, '{}', p_g1, "品质检验组", None),
+        ("EQ-SC-01", "1#极速生箔机", "生产设备", "导入中", 0.0, None, default_param_json, p_g1, "生箔设备组", "生产一车间"),
+        ("EQ-CW-02", "2#纯水分配泵", "厂务设备", "导入中", 0.0, None, default_param_json, p_g1, "动力机电组", "动力厂务部"),
+        ("EQ-JC-02", "自动光学缺陷检测仪", "检测设备", "导入中", 0.0, None, default_param_json, p_g1, "品质检验组", "质检中心"),
 
         # G2. 拟定技术方案 (3个)
-        ("EQ-SC-02", "2#高精密磁控溅镀线", "生产设备", "导入中", 0.0, None, '{}', p_g2, "表处设备组", None),
-        ("EQ-CW-03", "3#酸性尾气吸收塔", "厂务设备", "导入中", 0.0, None, '{}', p_g2, "动力机电组", None),
-        ("EQ-AGV-02", "2#重载堆垛AGV", "仓储搬运设备", "导入中", 0.0, None, '{}', p_g2, "仓储物流组", None),
+        ("EQ-SC-02", "2#高精密磁控溅镀线", "生产设备", "导入中", 0.0, None, default_param_json, p_g2, "表处设备组", "生产二车间"),
+        ("EQ-CW-03", "3#酸性尾气吸收塔", "厂务设备", "导入中", 0.0, None, default_param_json, p_g2, "动力机电组", "环保厂务部"),
+        ("EQ-AGV-02", "2#重载堆垛AGV", "仓储搬运设备", "导入中", 0.0, None, default_param_json, p_g2, "仓储物流组", "仓储物流部"),
 
         # G3. 请购发包 (3个)
-        ("EQ-SC-03", "1#宽幅高精度涂布机", "生产设备", "导入中", 0.0, None, '{}', p_g3, "涂布设备组", None),
-        ("EQ-CW-04", "4#冷冻机组", "厂务设备", "导入中", 0.0, None, '{}', p_g3, "动力机电组", None),
-        ("EQ-JC-03", "激光测厚仪A", "检测设备", "导入中", 0.0, None, '{}', p_g3, "品质检验组", None),
+        ("EQ-SC-03", "1#宽幅高精度涂布机", "生产设备", "导入中", 0.0, None, default_param_json, p_g3, "涂布设备组", "生产三车间"),
+        ("EQ-CW-04", "4#冷冻机组", "厂务设备", "导入中", 0.0, None, default_param_json, p_g3, "动力机电组", "动力厂务部"),
+        ("EQ-JC-03", "激光测厚仪A", "检测设备", "导入中", 0.0, None, default_param_json, p_g3, "品质检验组", "质检中心"),
 
         # G4. 制作中 (3个)
-        ("EQ-SC-04", "1#精密贴膜机", "生产设备", "导入中", 0.0, None, '{}', p_g4, "贴膜设备组", None),
-        ("EQ-CW-05", "纯水除盐吸附柱", "厂务设备", "导入中", 0.0, None, '{}', p_g4, "动力机电组", None),
-        ("EQ-AGV-03", "原料自动立体仓叉车", "仓储搬运设备", "导入中", 0.0, None, '{}', p_g4, "仓储物流组", None),
+        ("EQ-SC-04", "1#精密贴膜机", "生产设备", "导入中", 0.0, None, default_param_json, p_g4, "贴膜设备组", "生产二车间"),
+        ("EQ-CW-05", "纯水除盐吸附柱", "厂务设备", "导入中", 0.0, None, default_param_json, p_g4, "动力机电组", "动力厂务部"),
+        ("EQ-AGV-03", "原料自动立体仓叉车", "仓储搬运设备", "导入中", 0.0, None, default_param_json, p_g4, "仓储物流组", "仓储物流部"),
 
         # G5. 安装调试中 (3个)
-        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "生产设备", "导入中", 0.0, None, '{}', p_g5, "生箔设备组", None),
-        ("EQ-CW-06", "车间除湿净化空调系统", "厂务设备", "导入中", 0.0, None, '{}', p_g5, "动力机电组", None),
-        ("EQ-JC-04", "拉力试验检测仪", "检测设备", "导入中", 0.0, None, '{}', p_g5, "品质检验组", None),
+        ("EQ-生箔-03", "3#生箔机及阴极辊(项目导入中)", "生产设备", "导入中", 0.0, None, default_param_json, p_g5, "生箔设备组", "生产一车间"),
+        ("EQ-CW-06", "车间除湿净化空调系统", "厂务设备", "导入中", 0.0, None, default_param_json, p_g5, "动力机电组", "动力厂务部"),
+        ("EQ-JC-04", "拉力试验检测仪", "检测设备", "导入中", 0.0, None, default_param_json, p_g5, "品质检验组", "质检中心"),
 
         # G6. 验收交付使用与运行中 (4个)
-        ("EQ-SC-06", "1#高速分切收卷机", "生产设备", "导入中", 0.0, None, '{}', p_g6_inprogress, "收卷设备组", None),
-        ("EQ-CW-01", "1#超纯水处理机", "厂务设备", "运行中", 95.0, "2026-09-01", '{}', p_g6_completed, "动力机电组", "动力厂务部"),
-        ("EQ-JC-01", "高精度在线测厚仪", "检测设备", "运行中", 98.0, "2026-09-15", '{}', p_g6_completed, "品质检验组", "质检中心"),
-        ("EQ-AGV-01", "1#自动AGV搬运车", "仓储搬运设备", "运行中", 96.5, "2026-10-01", '{}', p_g6_completed, "仓储物流组", "仓储物流部")
+        ("EQ-SC-06", "1#高速分切收卷机", "生产设备", "导入中", 0.0, None, default_param_json, p_g6_inprogress, "收卷设备组", "生产四车间"),
+        ("EQ-CW-01", "1#超纯水处理机", "厂务设备", "运行中", 95.0, "2026-09-01", default_param_json, p_g6_completed, "动力机电组", "动力厂务部"),
+        ("EQ-JC-01", "高精度在线测厚仪", "检测设备", "运行中", 98.0, "2026-09-15", default_param_json, p_g6_completed, "品质检验组", "质检中心"),
+        ("EQ-AGV-01", "1#自动AGV搬运车", "仓储搬运设备", "运行中", 96.5, "2026-10-01", default_param_json, p_g6_completed, "仓储物流组", "仓储物流部")
     ])
 
     # 导入仿真模拟数据
@@ -404,7 +412,6 @@ def init_database(force_reset=False):
     p6_plan = make_default_project_plan(p6_time, "王小虎")
 
     # 2. 将厚度型号信息以 JSON 数组形式存入各产品大类行的 thickness_details_json 字段中
-    import json
     
     raw_thicknesses = [
         # product_id, spec_thickness, target_roughness, target_peel, target_df, target_tensile, target_elongation, status, npi_project_plan
@@ -826,8 +833,8 @@ def init_database(force_reset=False):
 
     for row in default_pdcas:
         cursor.execute("""
-            INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, improve_plan, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO pdca_records (code, title, product_id, thickness, factor_5m1e, stage, status, problem_desc, root_cause, action_plan, verify_result, owner, target_date, ecn_id, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, row)
 
     conn.commit()

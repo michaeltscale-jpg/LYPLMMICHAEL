@@ -309,6 +309,37 @@
                     <span id="workbench-stage-status-badge" class="ems-node-badge" style="font-size: 0.65rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">--</span>
                 </div>
 
+                <!-- 设备立项申请书核心内容卡片 (设备立项申请书) -->
+                <div id="workbench-proposal-summary-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; margin-bottom: 10px;">
+                        <div style="font-size: 0.8rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-check-2" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                            <span>📜 设备立项申请书 (核心评估指标)</span>
+                        </div>
+                        <span style="font-size: 0.65rem; background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">G1 立项评审归档件</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem; margin-bottom: 10px;">
+                        <div><strong style="color: #475569;">设备用途：</strong><span id="detail-prop-purpose" style="color: #1e293b; font-weight: 600;">--</span></div>
+                        <div><strong style="color: #475569;">需求日期：</strong><span id="detail-prop-reqdate" style="color: #2563eb; font-weight: 700;">--</span></div>
+                        <div><strong style="color: #475569;">预估金额：</strong><span id="detail-prop-budget" style="color: #059669; font-weight: 800; font-size: 0.78rem;">--</span></div>
+                        <div><strong style="color: #475569;">使用单位：</strong><span id="detail-prop-unit" style="color: #1e293b; font-weight: 600;">--</span></div>
+                    </div>
+                    <div style="font-size: 0.72rem; margin-bottom: 6px; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        <div style="color: #475569; font-weight: 700; margin-bottom: 2px;">📌 立项理由：</div>
+                        <div id="detail-prop-reason" style="color: #334155; line-height: 1.5;">--</div>
+                    </div>
+                    <div style="font-size: 0.72rem; margin-bottom: 10px; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        <div style="color: #047857; font-weight: 700; margin-bottom: 2px;">📈 预期带来效益：</div>
+                        <div id="detail-prop-benefits" style="color: #334155; line-height: 1.5;">--</div>
+                    </div>
+                    <div style="font-size: 0.72rem; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                        <div style="color: #1e3a8a; font-weight: 700; margin-bottom: 6px;">📅 全生命周期 6 大阶段计划开始与完成日期：</div>
+                        <div id="detail-prop-schedule-table" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 0.68rem;">
+                            <!-- 由 JS 动态渲染 G1~G6 节点日期 -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 输入文件管理 (专属) -->
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
@@ -726,6 +757,42 @@
             document.getElementById("edit-stage-start").value = item.start_date || "";
             document.getElementById("edit-stage-end").value = item.end_date || "";
             document.getElementById("edit-stage-remark").value = item.remark || "";
+
+            // Populate 立项申请书卡片
+            const params = eq.parameters || {};
+            document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
+            document.getElementById("detail-prop-reqdate").innerText = params.required_date || "--";
+            document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : "180.0 万元";
+            document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
+            document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
+            document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
+
+            // Render 6大阶段排期节点表
+            const schedContainer = document.getElementById("detail-prop-schedule-table");
+            if (schedContainer) {
+                schedContainer.innerHTML = "";
+                const stageNamesMap = {
+                    "stage1_plan": "1. 设备立项中",
+                    "stage2_scheme": "2. 拟定技术方案",
+                    "stage3_bidding": "3. 请购发包中",
+                    "stage4_make": "4. 设备制作中",
+                    "stage5_install": "5. 安装调试中",
+                    "stage6_accept": "6. 验收交付使用"
+                };
+                Object.keys(stageNamesMap).forEach(sk => {
+                    const stObj = plan[sk] || {};
+                    const sDate = stObj.start_date || "--";
+                    const eDate = stObj.end_date || stObj.plan_end_date || "--";
+                    const isCur = sk === stageKey;
+                    const itemDiv = document.createElement("div");
+                    itemDiv.style.cssText = `background: ${isCur ? '#eff6ff' : '#f8fafc'}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${isCur ? '#3b82f6' : '#e2e8f0'};`;
+                    itemDiv.innerHTML = `
+                        <div style="font-weight: 700; color: ${isCur ? '#1d4ed8' : '#334155'}; font-size: 0.65rem;">${stageNamesMap[sk]}</div>
+                        <div style="color: #64748b; font-size: 0.62rem;">${sDate} ~ ${eDate}</div>
+                    `;
+                    schedContainer.appendChild(itemDiv);
+                });
+            }
 
             // Render input files
             const inputsList = document.getElementById("workbench-inputs-list");
