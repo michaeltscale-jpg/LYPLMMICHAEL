@@ -277,10 +277,73 @@ body {
     transition: var(--transition-smooth);
 }
 
-.btn-secondary:hover, .btn-secondary.active {
+.btn-secondary:hover {
     background-color: #f1f5f9;
     color: var(--text-primary);
     border-color: var(--color-primary);
+}
+
+/* 增强：激活状态下的二级/导航标签按钮凸显（极具视感与高对比度） */
+.btn-secondary.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+.btn-secondary.active i,
+.btn-secondary.active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+}
+
+/* 子导航标签栏 (.sub-tabs-nav) 专用突出样式 */
+.sub-tabs-nav {
+    display: flex;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-top: 6px;
+}
+
+.sub-tabs-nav .btn-secondary,
+.sub-tabs-nav button {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.sub-tabs-nav .btn-secondary:hover,
+.sub-tabs-nav button:hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+}
+
+.sub-tabs-nav .btn-secondary.active,
+.sub-tabs-nav button.active {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border: 1.5px solid #1d4ed8 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35), 0 2px 4px rgba(37, 99, 235, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+.sub-tabs-nav .btn-secondary.active i,
+.sub-tabs-nav button.active i,
+.sub-tabs-nav .btn-secondary.active svg,
+.sub-tabs-nav button.active svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
 }
 
 /* Content Body Area */
