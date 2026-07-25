@@ -1462,15 +1462,107 @@ window.submitNpiSaveBom = function() {
     });
 };
 
-// 辅助方法：快捷跳转到工艺工段录入参数
+// 辅助方法：快捷跳转到中试工单与 PDCA 试验参数录入模态框
 window.jumpAndOpenRoutingLog = function() {
-    switchPlmSubTab('routing');
-    const stages = getStagesForProduct(state.activeProduct.category);
-    const activeIndex = getStatusActiveIndex(state.activeProduct.status, state.activeProduct.category);
-    const activeStageName = stages[activeIndex];
-    if (activeStageName) {
-        // 偏差录入功能已移除
+    const product = state.activeProduct || (state.products && state.products[0]);
+    if (!product) {
+        showToast("请先选择活动产品", "warning");
+        return;
     }
+
+    // 填充立项基础信息
+    const modelInput = document.getElementById("g3-pdca-product-model");
+    if (modelInput) {
+        const catName = product.category || product.name || '高频铜箔';
+        modelInput.value = `${catName} (${state.activeThickness || product.spec_thickness || 12}μm)`;
+    }
+
+    const timeInput = document.getElementById("g3-pdca-created-at");
+    if (timeInput) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        timeInput.value = now.toISOString().slice(0, 16);
+    }
+
+    const initiatorInput = document.getElementById("g3-pdca-initiator");
+    if (initiatorInput && !initiatorInput.value) {
+        initiatorInput.value = product.creator || "赵立功";
+    }
+
+    const problemDescInput = document.getElementById("g3-pdca-problem-desc");
+    if (problemDescInput && !problemDescInput.value) {
+        problemDescInput.value = `[DVT 中试验证] ${product.name || '高频铜箔'} 试制过程中针对高频折弯性能与双面结晶对称度开展中试实验与参数摸索。`;
+    }
+
+    const targetGoalInput = document.getElementById("g3-pdca-target-goal");
+    if (targetGoalInput && !targetGoalInput.value) {
+        targetGoalInput.value = `MIT 折弯对开寿命 ≥ 2500 次，180℃ 高温延伸率 ≥ 4.5%，双面粗糙度 Rz 极差 ≤ 0.05μm。`;
+    }
+
+    openModal("modal-g3-routing-pdca");
+};
+
+window.submitG3RoutingPdca = function() {
+    const product = state.activeProduct;
+    if (!product) return;
+
+    const initiator = document.getElementById("g3-pdca-initiator").value.trim();
+    const createdAt = document.getElementById("g3-pdca-created-at").value;
+    const source = document.getElementById("g3-pdca-source").value;
+    const severity = document.getElementById("g3-pdca-severity").value;
+    const productModel = document.getElementById("g3-pdca-product-model").value;
+    const problemDesc = document.getElementById("g3-pdca-problem-desc").value.trim();
+    const targetGoal = document.getElementById("g3-pdca-target-goal").value.trim();
+
+    const currentDensity = document.getElementById("g3-routing-current-density").value;
+    const temp = document.getElementById("g3-routing-temp").value;
+    const drumTolerance = document.getElementById("g3-routing-drum-tolerance").value;
+    const additiveFlow = document.getElementById("g3-routing-additive-flow").value;
+
+    const combinedTitle = `[DVT 中试工单] ${productModel} 试制与 5W2H 改善目标`;
+    const fullProblemDesc = `${problemDesc}\n\n【中试工艺参数记录】\n- 电解电流密度: ${currentDensity} A/dm²\n- 槽液温度: ${temp} °C\n- 极距跳动偏差: ${drumTolerance} mm\n- 添加剂流量: ${additiveFlow} mL/h`;
+    const fullImprovePlan = `【试制期望达成目标 (TARGET)】\n${targetGoal}\n\n【开单来源】: ${source} | 【严重度】: ${severity} | 【立项人】: ${initiator}`;
+
+    // 1. 发起/写入 PDCA 改善单记录
+    fetch("/api/pdca/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            code: `PDCA-DVT-${Date.now().toString().slice(-4)}`,
+            title: combinedTitle,
+            product_id: product.id,
+            thickness: state.activeThickness || product.spec_thickness || 12,
+            factor_5m1e: "法",
+            stage: "Plan",
+            status: "进行中",
+            problem_desc: fullProblemDesc,
+            improve_plan: fullImprovePlan,
+            owner: initiator || "赵立功",
+            target_date: createdAt ? createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        // 2. 同时更新 Gate 3 排期与完成状态
+        fetch(`/api/products/${product.id}/save_npi_plan`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                gate_key: "gate3",
+                start_date: createdAt ? createdAt.slice(0, 10) : new Date().toISOString().slice(0, 10),
+                plan_end_date: new Date(Date.now() + 7*86400000).toISOString().slice(0, 10),
+                owner: initiator || "赵立功",
+                updater: initiator || "赵立功"
+            })
+        }).then(() => {
+            showToast("中试工艺参数与 PDCA 试验工单保存成功！已同步关联至改善控制台。", "success");
+            closeModal("modal-g3-routing-pdca");
+            loadProductDetails(product.id, state.activeThickness);
+        });
+    })
+    .catch(err => {
+        showToast("提交失败: " + err.message, "error");
+    });
 };
 
 // 辅助方法：快捷打开质量测试录入弹窗

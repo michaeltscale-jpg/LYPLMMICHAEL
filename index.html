@@ -2872,6 +2872,114 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
+    <!-- 7.5 Modal: G3 试验工单与中试参数录入 (PDCA 联动) -->
+    <div class="modal-overlay" id="modal-g3-routing-pdca">
+        <div class="modal-box" style="width: 740px; max-height: 88vh; overflow-y: auto; padding: 20px;">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="margin:0; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="clipboard-edit" style="color: var(--color-primary);"></i> 试验工单录入与改善反馈 (PDCA)
+                </h3>
+                <button class="modal-close" onclick="closeModal('modal-g3-routing-pdca')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <form id="form-g3-routing-pdca" onsubmit="event.preventDefault(); submitG3RoutingPdca();">
+                    
+                    <!-- 区块 1：立项与问题描述 -->
+                    <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px;">
+                        <h4 style="margin: 0 0 12px 0; font-size: 0.9rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-text" style="width: 15px; height: 15px;"></i> 立项与问题描述
+                        </h4>
+                        
+                        <!-- 行 1：立项人 & 立项时间 -->
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">立项人</label>
+                                <input type="text" id="g3-pdca-initiator" class="form-control" style="font-size: 0.82rem; height: 32px;" value="赵立功" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">立项时间</label>
+                                <input type="datetime-local" id="g3-pdca-created-at" class="form-control" style="font-size: 0.82rem; height: 32px;" required>
+                            </div>
+                        </div>
+
+                        <!-- 行 2：立项触发来源 & 异常发生频次/严重度 -->
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">立项触发来源</label>
+                                <select id="g3-pdca-source" class="form-control" style="font-size: 0.82rem; height: 32px;">
+                                    <option value="中试试验">中试试验 / DVT 验证</option>
+                                    <option value="客户客诉">客户客诉 / 试样反馈</option>
+                                    <option value="品质异常">品质异常 / 试产缺陷</option>
+                                    <option value="研发改善">研发改善 / 工艺优化</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">异常发生频次 / 严重度</label>
+                                <select id="g3-pdca-severity" class="form-control" style="font-size: 0.82rem; height: 32px;">
+                                    <option value="🟡 中度风险 (Moderate)">🟡 中度风险 (Moderate)</option>
+                                    <option value="🔴 高度风险 (High Critical)">🔴 高度风险 (High Critical)</option>
+                                    <option value="🟢 低度风险 (Low)">🟢 低度风险 (Low)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 行 3：涉及产品系列/型号 -->
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">涉及产品系列 / 型号</label>
+                            <input type="text" id="g3-pdca-product-model" class="form-control" style="font-size: 0.82rem; height: 32px; background: rgba(255,255,255,0.05);" readonly>
+                        </div>
+
+                        <!-- 行 4：品质问题详细陈述 (5W2H 描述) -->
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">品质问题详细陈述 (5W2H 描述)</label>
+                            <textarea id="g3-pdca-problem-desc" class="form-control" rows="3" style="font-size: 0.8rem;" placeholder="描述谁(Who)、何时(When)、何地(Where)、什么现象(What)、为何发生(Why)、如何改善(How)、影响数量(How much)..." required></textarea>
+                        </div>
+
+                        <!-- 行 5：试制期望达成目标 (TARGET) -->
+                        <div class="form-group">
+                            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">试制期望达成目标 (TARGET)</label>
+                            <textarea id="g3-pdca-target-goal" class="form-control" rows="2" style="font-size: 0.8rem;" placeholder="如：MIT 对开折弯寿命 ≥ 2500 次，双面粗糙度 Rz 极差 ≤ 0.05μm，180℃ 延伸率 ≥ 4.5%..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 区块 2：中试机台工艺控制参数 -->
+                    <div style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 14px 16px;">
+                        <h4 style="margin: 0 0 12px 0; font-size: 0.9rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="sliders" style="width: 15px; height: 15px;"></i> 中试机台控制与实测参数 (Routing Control)
+                        </h4>
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">溶铜电解电流密度 (A/dm²)</label>
+                                <input type="number" step="0.1" id="g3-routing-current-density" class="form-control" style="font-size: 0.82rem; height: 32px;" value="65.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">电解槽温度控制 (°C)</label>
+                                <input type="number" step="0.1" id="g3-routing-temp" class="form-control" style="font-size: 0.82rem; height: 32px;" value="60.0" required>
+                            </div>
+                        </div>
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">阴极辊极距偏差 (mm)</label>
+                                <input type="number" step="0.01" id="g3-routing-drum-tolerance" class="form-control" style="font-size: 0.82rem; height: 32px;" value="0.02" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; display: block;">添加剂安培小时补充流量 (mL/h)</label>
+                                <input type="number" step="1" id="g3-routing-additive-flow" class="form-control" style="font-size: 0.82rem; height: 32px;" value="450" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" class="btn-secondary" onclick="closeModal('modal-g3-routing-pdca')">取消</button>
+                        <button type="submit" class="btn-primary" style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> 保存中试参数并开具 PDCA 试验工单
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- 8. Modal: NPI Gate 4 - Quality Control History -->
     <div class="modal-overlay" id="modal-npi-quality-detail">
         <div class="modal-box" style="width: 700px; max-height: 80vh; overflow-y: auto;">
