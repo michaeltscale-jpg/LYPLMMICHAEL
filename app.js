@@ -6854,14 +6854,17 @@ window.resetEmsStageWorkbench = function() {
 window.openNewEquipmentModal = function() {
     if (!checkPermission(["Admin", "Equipment Engineer", "Process Engineer"], "新增设备")) return;
     
-    document.getElementById("equipment-modal-title").innerText = "新增关键设备";
-    document.getElementById("equipment-edit-id").value = "";
-    document.getElementById("equipment-edit-code").value = "";
-    document.getElementById("equipment-edit-name").value = "";
-    document.getElementById("equipment-edit-stage").value = "生产设备";
-    document.getElementById("equipment-edit-using-unit").value = "";
-    document.getElementById("equipment-edit-oee").value = "85.0";
-    document.getElementById("equipment-edit-maint").value = "";
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+    
+    setTxt("equipment-modal-title", "新增关键设备");
+    setVal("equipment-edit-id", "");
+    setVal("equipment-edit-code", "");
+    setVal("equipment-edit-name", "");
+    setVal("equipment-edit-stage", "生产设备");
+    setVal("equipment-edit-using-unit", "");
+    setVal("equipment-edit-oee", "85.0");
+    setVal("equipment-edit-maint", "");
     
     openModal("modal-equipment");
 };
@@ -6875,26 +6878,30 @@ window.editEquipment = function(id) {
     const eq = state.equipments.find(e => e.id === id);
     if (!eq) return;
     
-    document.getElementById("equipment-modal-title").innerText = "编辑设备基本信息";
-    document.getElementById("equipment-edit-id").value = eq.id;
-    document.getElementById("equipment-edit-code").value = eq.device_code;
-    document.getElementById("equipment-edit-name").value = eq.device_name;
-    document.getElementById("equipment-edit-stage").value = eq.stage_name;
-    document.getElementById("equipment-edit-using-unit").value = eq.using_unit || "";
-    document.getElementById("equipment-edit-oee").value = eq.oee || "85.0";
-    document.getElementById("equipment-edit-maint").value = eq.next_maintenance || "";
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+
+    setTxt("equipment-modal-title", "编辑设备基本信息");
+    setVal("equipment-edit-id", eq.id);
+    setVal("equipment-edit-code", eq.device_code);
+    setVal("equipment-edit-name", eq.device_name);
+    setVal("equipment-edit-stage", eq.stage_name);
+    setVal("equipment-edit-using-unit", eq.using_unit || "");
+    setVal("equipment-edit-oee", eq.oee || "85.0");
+    setVal("equipment-edit-maint", eq.next_maintenance || "");
     
     openModal("modal-equipment");
 };
 
 window.saveNewEquipment = async function() {
-    const id = document.getElementById("equipment-edit-id").value;
-    const code = document.getElementById("equipment-edit-code").value.trim();
-    const name = document.getElementById("equipment-edit-name").value.trim();
-    const stage = document.getElementById("equipment-edit-stage").value;
-    const usingUnit = document.getElementById("equipment-edit-using-unit").value.trim();
-    const oee = parseFloat(document.getElementById("equipment-edit-oee").value || "85.0");
-    const maint = document.getElementById("equipment-edit-maint").value;
+    const getVal = (id, def = "") => { const el = document.getElementById(id); return el ? el.value.trim() : def; };
+    const id = getVal("equipment-edit-id");
+    const code = getVal("equipment-edit-code");
+    const name = getVal("equipment-edit-name");
+    const stage = getVal("equipment-edit-stage", "生产设备");
+    const usingUnit = getVal("equipment-edit-using-unit");
+    const oee = parseFloat(getVal("equipment-edit-oee", "85.0") || "85.0");
+    const maint = getVal("equipment-edit-maint");
     
     if (!code || !name) {
         showToast("设备代号与名称不能为空！", "error");
