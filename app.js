@@ -818,7 +818,7 @@ function renderNpiSubpanel() {
         { key: "gate1", num: "G1", label: "立项与目标" },
         { key: "gate2", num: "G2", label: "配方定型（EVT）" },
         { key: "gate3", num: "G3", label: "中试工艺（DVT）" },
-        { key: "gate4", num: "G4", label: "试产品质（PVT）" },
+        { key: "gate4", num: "G4", label: "试产/良率（PVT）" },
         { key: "gate5", num: "G5", label: "量产导入（PPAP）" }
     ];
 
@@ -5045,7 +5045,7 @@ function renderDashboardCharts(products) {
         state.charts.npiDuration = new Chart(ctxNpi, {
             type: 'bar',
             data: {
-                labels: ['G1 立项与目标', 'G2 配方定型', 'G3 中试工艺', 'G4 试产品质', 'G5 量产导入'],
+                labels: ['G1 立项与目标', 'G2 配方定型', 'G3 中试工艺', 'G4 试产/良率', 'G5 量产导入'],
                 datasets: [{
                     label: '平均耗时 (天)',
                     data: avgDurations,
