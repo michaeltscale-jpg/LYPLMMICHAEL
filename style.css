@@ -1032,7 +1032,8 @@ textarea.form-control {
     background: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 14px 12px;
+    min-height: 410px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

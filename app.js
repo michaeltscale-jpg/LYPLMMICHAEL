@@ -841,16 +841,16 @@ function renderNpiSubpanel() {
 
         // 统一渲染项目排期与负责人参数展示
         bodyHtml = `
-            <div class="npi-gate-data-box" style="margin-top: 6px; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px;">
-                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.72rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 2px;">
+            <div class="npi-gate-data-box" style="margin-top: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px;">
+                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.75rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 3px;">
                     <span class="npi-gate-data-label" style="color: var(--text-secondary);">开始日期</span>
                     <span class="npi-gate-data-value" style="font-weight: 500; color: var(--text-primary);">${gateData.data.start_date || "-"}</span>
                 </div>
-                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.72rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 2px;">
+                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.75rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 3px;">
                     <span class="npi-gate-data-label" style="color: var(--text-secondary);">计划完成</span>
                     <span class="npi-gate-data-value" style="font-weight: 500; color: var(--text-primary);">${gateData.data.plan_end_date || "-"}</span>
                 </div>
-                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.72rem; padding-bottom: 1px;">
+                <div class="npi-gate-data-item" style="display: flex; justify-content: space-between; font-size: 0.75rem; padding-bottom: 2px;">
                     <span class="npi-gate-data-label" style="color: var(--text-secondary);">负责人</span>
                     <span class="npi-gate-data-value" style="color: var(--color-primary); font-weight: 600;">${gateData.data.owner || "-"}</span>
                 </div>
@@ -907,23 +907,23 @@ function renderNpiSubpanel() {
                 const color  = pub ? '#10b981' : 'var(--text-muted)';
                 const weight = pub ? '600' : '400';
                 return `<div onclick="jumpToDmsDoc('${doc.code}')" style="
-                            display:flex;align-items:center;gap:4px;cursor:pointer;
-                            padding:2px 5px;border-radius:4px;
+                            display:flex;align-items:center;gap:5px;cursor:pointer;
+                            padding:3.5px 6px;border-radius:5px;
                             background:rgba(0,0,0,0.02);transition:background .12s;"
                         onmouseenter="this.style.background='rgba(0,0,0,0.05)'"
                         onmouseleave="this.style.background='rgba(0,0,0,0.02)'">
-                            <span style="font-size:0.72rem;">${icon}</span>
-                            <span style="font-size:0.7rem;color:${color};font-weight:${weight};flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.label}</span>
-                            <span style="font-size:0.6rem;color:var(--text-muted);">→ DMS</span>
+                            <span style="font-size:0.75rem;">${icon}</span>
+                            <span style="font-size:0.72rem;color:${color};font-weight:${weight};flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.label}</span>
+                            <span style="font-size:0.62rem;color:var(--text-muted);">→ DMS</span>
                         </div>`;
             }).join('');
             bodyHtml += `
-                <div style="margin-top:6px;padding-top:4px;border-top:1px dashed var(--border-color);">
-                    <div style="font-size:0.62rem;font-weight:700;color:var(--text-muted);
-                                text-transform:uppercase;letter-spacing:0.03em;margin-bottom:3px;">
+                <div style="margin-top:10px;padding-top:6px;border-top:1px dashed var(--border-color);">
+                    <div style="font-size:0.65rem;font-weight:700;color:var(--text-muted);
+                                text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">
                         📁 本阶段输出文档
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:2px;">${docsRows}</div>
+                    <div style="display:flex;flex-direction:column;gap:3px;">${docsRows}</div>
                 </div>`;
         }
 
