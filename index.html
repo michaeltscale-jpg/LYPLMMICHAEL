@@ -985,48 +985,48 @@
                     <!-- ================= PANEL 2.4: EMS 设备开发管控台 ================= -->
                     <div class="tab-panel" id="ems-panel">
                         <!-- MQC/EMS 风格标准顶部 Bar -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: var(--bg-card); padding: 16px 20px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: var(--bg-card); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                                <div style="width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
                                     ⚙️
                                 </div>
                                 <div>
-                                    <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                                    <h2 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
                                         设备开发管控台 (EMS)
                                     </h2>
-                                    <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: var(--text-secondary);">
+                                    <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: var(--text-secondary);">
                                         对标标杆制造业精细化管控范式，实现设备 G1~G6 全生命周期里程碑推进。
                                     </p>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="position: relative;">
-                                    <input type="text" id="ems-search" placeholder="搜索设备代码 / 名称 / 供应商..." oninput="window.fetchEmsData && window.fetchEmsData()" style="padding: 8px 12px 8px 32px; font-size: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 230px;">
+                                    <input type="text" id="ems-search" placeholder="搜索设备代码 / 名称 / 供应商..." oninput="window.fetchEmsData && window.fetchEmsData()" style="padding: 7px 12px 7px 32px; font-size: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 230px;">
                                     <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-secondary);"></i>
                                 </div>
-                                <button class="btn-primary" onclick="openNewEquipmentModal()" style="font-size: 0.8rem; padding: 8px 16px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                                <button class="btn-primary" onclick="openNewEquipmentModal()" style="font-size: 0.8rem; padding: 7px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 新增关键设备
                                 </button>
                             </div>
                         </div>
 
                         <!-- 3 Tab 视角切换导航栏 -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; padding-bottom: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 8px; padding-bottom: 2px;">
                             <div style="display: flex; gap: 8px;">
-                                <button class="tab-btn active" id="ems-tab-btn-kanban" onclick="switchEmsTab('kanban')" style="padding: 8px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
+                                <button class="tab-btn active" id="ems-tab-btn-kanban" onclick="switchEmsTab('kanban')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
                                     <i data-lucide="layout-grid" style="width: 15px; height: 15px;"></i> G1~G6 阶段管道看板
                                 </button>
-                                <button class="tab-btn" id="ems-tab-btn-devices" onclick="switchEmsTab('devices')" style="padding: 8px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                <button class="tab-btn" id="ems-tab-btn-devices" onclick="switchEmsTab('devices')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
                                     <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> 转固设备台账
                                 </button>
-                                <button class="tab-btn" id="ems-tab-btn-risk" onclick="switchEmsTab('risk')" style="padding: 8px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                <button class="tab-btn" id="ems-tab-btn-risk" onclick="switchEmsTab('risk')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
                                     <i data-lucide="alert-triangle" style="width: 15px; height: 15px;"></i> 设备供应商风险
                                 </button>
                             </div>
 
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">设备分类:</span>
-                                <select id="ems-category-filter" onchange="window.fetchEmsData && window.fetchEmsData()" style="padding: 5px 12px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
+                                <select id="ems-category-filter" onchange="window.fetchEmsData && window.fetchEmsData()" style="padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
                                     <option value="">全部大类</option>
                                     <option value="生产设备">生产设备</option>
                                     <option value="厂务设备">厂务设备</option>
@@ -1038,7 +1038,7 @@
 
                         <!-- ================= 视角 1: G1~G6 6 大阶段管道看板 ================= -->
                         <div id="ems-panel-kanban" style="display: block;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
                                     🚀 设备开发 6 大阶段管道推进线
                                 </span>
