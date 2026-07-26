@@ -889,6 +889,12 @@
             document.getElementById("edit-stage-end").value = item.end_date || "";
             document.getElementById("edit-stage-remark").value = item.remark || "";
 
+            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
+            const propCard = document.getElementById("workbench-proposal-summary-card");
+            if (propCard) {
+                propCard.style.display = (stageKey === "stage1_plan") ? "block" : "none";
+            }
+
             // Populate 立项申请书卡片
             const params = eq.parameters || {};
             document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
