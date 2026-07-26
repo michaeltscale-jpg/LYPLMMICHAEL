@@ -387,55 +387,6 @@
                     </div>
                 </div>
 
-                <!-- 3. ⏱️ 阶段进度与节点管控 -->
-                <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: #6b21a8; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #d8b4fe; padding-bottom: 6px;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="timer" style="width: 15px; height: 15px; color: #9333ea;"></i>
-                            <span>⏱️ 阶段进度与节点管控</span>
-                        </span>
-                        <span id="workbench-progress-status-tag" style="font-size: 0.62rem; background: #f3e8ff; color: #7e22ce; padding: 2px 8px; border-radius: 4px; font-weight: 700;">进度符合预期</span>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.72rem; color: #334155;">
-                        <div><strong style="color: #581c87;">目标里程碑要求：</strong><span id="workbench-progress-node">--</span></div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #ffffff; padding: 6px 10px; border-radius: 6px; border: 1px solid #f3e8ff;">
-                            <div><span style="color: #64748b;">计划时间：</span><span id="workbench-progress-plan-dates" style="font-weight: 600; color: #1e293b;">--</span></div>
-                            <div><span style="color: #64748b;">延期预警：</span><span id="workbench-progress-warning" style="font-weight: 700; color: #059669;">无延期风险</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. 💰 阶段成本控制与预算监控 -->
-                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-                    <div style="font-size: 0.78rem; font-weight: 700; color: #14532d; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #86efac; padding-bottom: 6px;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="badge-dollar-sign" style="width: 15px; height: 15px; color: #16a34a;"></i>
-                            <span>💰 阶段成本控制与预算监控</span>
-                        </span>
-                        <span id="workbench-cost-variance-tag" style="font-size: 0.62rem; background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: 700;">预算范围内</span>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 6px; font-size: 0.72rem; color: #14532d;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #ffffff; padding: 6px 10px; border-radius: 6px; border: 1px solid #dcfce7;">
-                            <div><span style="color: #64748b;">阶段目标预算：</span><strong id="workbench-cost-budget" style="color: #16a34a;">--</strong></div>
-                            <div><span style="color: #64748b;">实际累计花费：</span><strong id="workbench-cost-actual" style="color: #0284c7;">--</strong></div>
-                        </div>
-                        <div style="background: #ffffff; padding: 6px 10px; border-radius: 6px; border: 1px solid #dcfce7;">
-                            <span style="color: #166534; font-weight: 700;">📌 成本管控要点：</span>
-                            <span id="workbench-cost-control-point" style="color: #334155;">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 本阶段专业作业管控要求 -->
-                <div style="background: rgba(99, 102, 241, 0.04); border: 1px solid rgba(99, 102, 241, 0.12); border-radius: 8px; padding: 14px;">
-                    <div style="font-size: 0.76rem; font-weight: 700; color: #4f46e5; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; border-bottom: 1px dashed rgba(79, 70, 229, 0.15); padding-bottom: 6px;">
-                        <i data-lucide="check-square" style="width: 14px; height: 14px; color: #4f46e5;"></i>
-                        <span>📋 本阶段专业作业管控要求</span>
-                    </div>
-                    <ul id="workbench-control-standards-list" style="margin: 0; padding-left: 0; list-style: none; font-size: 0.72rem; color: #334155; line-height: 1.6; display: flex; flex-direction: column; gap: 6px;">
-                        <!-- JS 动态渲染 -->
-                    </ul>
-                </div>
             </div>
 
             <!-- 右侧：属性表单与流程控制 -->
