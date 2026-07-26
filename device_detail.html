@@ -341,8 +341,8 @@
                     <span id="workbench-stage-status-badge" class="ems-node-badge" style="font-size: 0.65rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">--</span>
                 </div>
 
-                <!-- 设备立项申请书核心内容卡片 (设备立项申请书) -->
-                <div id="workbench-proposal-summary-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+                <!-- 设备立项申请书核心内容卡片 (仅在 G1 阶段展示) -->
+                <div id="workbench-proposal-summary-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px; display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; margin-bottom: 10px;">
                         <div style="font-size: 0.8rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
                             <i data-lucide="file-check-2" style="width: 16px; height: 16px; color: #2563eb;"></i>
@@ -948,10 +948,16 @@
             document.getElementById("edit-stage-end").value = item.end_date || "";
             document.getElementById("edit-stage-remark").value = item.remark || "";
 
-            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
+            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去该卡片
             const propCard = document.getElementById("workbench-proposal-summary-card");
+            const isG1Stage = (
+                stageKey === "stage1_plan" || 
+                stageKey === "stage1" || 
+                (stageKey && stageKey.toLowerCase() === "g1_plan") || 
+                (stageKey && stageKey.toLowerCase() === "g1")
+            );
             if (propCard) {
-                propCard.style.display = (stageKey === "stage1_plan") ? "block" : "none";
+                propCard.style.display = isG1Stage ? "block" : "none";
             }
 
             // Populate 立项申请书卡片
