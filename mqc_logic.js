@@ -923,3 +923,10 @@ window.deleteMqcSupplier = function(id) {
         showToast("删除供应商失败", "error");
     });
 };
+
+// 初始化自动拉取与渲染
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { window.fetchMqcData && window.fetchMqcData(); });
+} else {
+    setTimeout(() => { window.fetchMqcData && window.fetchMqcData(); }, 100);
+}

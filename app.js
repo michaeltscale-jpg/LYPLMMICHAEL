@@ -9414,7 +9414,11 @@ window.fetchMqcData = function() {
         state.mqcMaterials = materials;
         state.mqcSuppliers = suppliers;
         
-        renderMqcMaterials();
+        if (window.renderMqcAll) {
+            window.renderMqcAll();
+        } else {
+            renderMqcMaterials();
+        }
         if (state.mqcActiveTab === 'risk') {
             renderMqcSupplierRisk();
         }
