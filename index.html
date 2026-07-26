@@ -4514,52 +4514,6 @@ requests.post(url, json=payload)</code></pre>
                         <label>需求日期</label>
                         <input type="date" id="equipment-edit-required-date" class="form-control">
                     </div>
-                    <div class="form-group" style="grid-column: 1/-1;">
-                        <label>预期带来效益</label>
-                        <textarea id="equipment-edit-benefits" class="form-control" rows="2" placeholder="预期的经济与技术效益，如：预计提升中试产能30%，降低跳动废损15%，年增加产值300万元..."></textarea>
-                    </div>
-                </div>
-
-                <!-- 块三：6 大阶段全周期计划排期 -->
-                <div style="font-weight: 700; font-size: 0.85rem; color: #1e3a8a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="calendar" style="width: 15px; height: 15px; color: #2563eb;"></i> 3. 全生命周期 6 大阶段计划排期
-                    </span>
-                    <button type="button" class="btn-secondary" onclick="autoGenerateEmsSchedule()" style="font-size: 0.7rem; padding: 2px 8px; cursor: pointer;">
-                        <i data-lucide="wand-2" style="width: 12px; height: 12px;"></i> 智能生成默认排期
-                    </button>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">1. 设备立项中</span>
-                        <input type="date" id="eq-plan-g1-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g1-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">2. 拟定技术方案</span>
-                        <input type="date" id="eq-plan-g2-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g2-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">3. 请购发包中</span>
-                        <input type="date" id="eq-plan-g3-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g3-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">4. 设备制作中</span>
-                        <input type="date" id="eq-plan-g4-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g4-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">5. 安装调试中</span>
-                        <input type="date" id="eq-plan-g5-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g5-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
-                    <div style="display:grid; grid-template-columns: 140px 1fr 1fr; gap:10px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">6. 验收交付使用</span>
-                        <input type="date" id="eq-plan-g6-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                        <input type="date" id="eq-plan-g6-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
-                    </div>
                 </div>
 
                 <div class="form-group" style="display: none;">

@@ -6979,13 +6979,24 @@ window.saveNewEquipment = async function() {
         required_date: reqDate
     };
 
+    const now = new Date();
+    const fmt = d => d.toISOString().substring(0, 10);
+    const addD = (d, days) => { const n = new Date(d); n.setDate(n.getDate() + days); return n; };
+
+    const g1S = fmt(now), g1E = fmt(addD(now, 7));
+    const g2S = fmt(addD(g1E, 1)), g2E = fmt(addD(g2S, 10));
+    const g3S = fmt(addD(g2E, 1)), g3E = fmt(addD(g3S, 15));
+    const g4S = fmt(addD(g3E, 1)), g4E = fmt(addD(g4S, 30));
+    const g5S = fmt(addD(g4E, 1)), g5E = fmt(addD(g5S, 15));
+    const g6S = fmt(addD(g5E, 1)), g6E = fmt(addD(g6S, 10));
+
     const p_new_initiation = {
-        "stage1_plan": { "title": "设备立项中", "status": "进行中", "start_date": getVal("eq-plan-g1-start"), "end_date": getVal("eq-plan-g1-end"), "owner": "设备组", "remark": "启动设备立项流程", "input_files": ["项目启动意向书.docx", "前期可行性研究报告.pdf"] },
-        "stage2_scheme": { "title": "拟定技术方案", "status": "未开始", "start_date": getVal("eq-plan-g2-start"), "end_date": getVal("eq-plan-g2-end"), "owner": "工程部门", "remark": "" },
-        "stage3_bidding": { "title": "请购发包中", "status": "未开始", "start_date": getVal("eq-plan-g3-start"), "end_date": getVal("eq-plan-g3-end"), "owner": "采购部门", "remark": "" },
-        "stage4_make": { "title": "设备制作中", "status": "未开始", "start_date": getVal("eq-plan-g4-start"), "end_date": getVal("eq-plan-g4-end"), "owner": "工程部门", "remark": "" },
-        "stage5_install": { "title": "安装调试中", "status": "未开始", "start_date": getVal("eq-plan-g5-start"), "end_date": getVal("eq-plan-g5-end"), "owner": "工程部门", "remark": "" },
-        "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": getVal("eq-plan-g6-start"), "end_date": getVal("eq-plan-g6-end"), "owner": "使用部门", "remark": "" }
+        "stage1_plan": { "title": "设备立项中", "status": "进行中", "start_date": getVal("eq-plan-g1-start", g1S), "end_date": getVal("eq-plan-g1-end", g1E), "owner": "设备组", "remark": "启动设备立项流程", "input_files": ["项目启动意向书.docx", "前期可行性研究报告.pdf"] },
+        "stage2_scheme": { "title": "拟定技术方案", "status": "未开始", "start_date": getVal("eq-plan-g2-start", g2S), "end_date": getVal("eq-plan-g2-end", g2E), "owner": "工程部门", "remark": "" },
+        "stage3_bidding": { "title": "请购发包中", "status": "未开始", "start_date": getVal("eq-plan-g3-start", g3S), "end_date": getVal("eq-plan-g3-end", g3E), "owner": "采购部门", "remark": "" },
+        "stage4_make": { "title": "设备制作中", "status": "未开始", "start_date": getVal("eq-plan-g4-start", g4S), "end_date": getVal("eq-plan-g4-end", g4E), "owner": "工程部门", "remark": "" },
+        "stage5_install": { "title": "安装调试中", "status": "未开始", "start_date": getVal("eq-plan-g5-start", g5S), "end_date": getVal("eq-plan-g5-end", g5E), "owner": "工程部门", "remark": "" },
+        "stage6_accept": { "title": "验收交付使用", "status": "未开始", "start_date": getVal("eq-plan-g6-start", g6S), "end_date": getVal("eq-plan-g6-end", g6E), "owner": "使用部门", "remark": "" }
     };
 
     const role = state.currentUserRole || 'Viewer';
