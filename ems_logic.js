@@ -184,11 +184,13 @@ window.renderEmsKanban = function() {
 
                 html += `
                     <div onclick="openEmsDetailView(${eq.id})" style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid ${st.color}; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.04);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)';">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                        <div style="margin-bottom: 4px;">
                             <h5 style="margin: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;">${eq.name || '未命名设备'}</h5>
-                            <span style="font-size: 0.62rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; white-space: nowrap; margin-left: 4px;">${catText}</span>
                         </div>
-                        <div style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600; margin-bottom: 8px;">${eq.code || 'EQ-000'}</div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600;">${eq.code || 'EQ-000'}</span>
+                            <span style="font-size: 0.62rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; white-space: nowrap;">${catText}</span>
+                        </div>
                         
                         <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px;">
                             <div>供应商: <span style="color: var(--text-primary); font-weight: 500;">${vendorText}</span></div>

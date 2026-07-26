@@ -126,12 +126,13 @@ window.renderMqcKanban = function() {
                          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';"
                          onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)';">
                         
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+                        <div style="margin-bottom: 4px;">
                             <span style="font-weight:700; font-size:0.85rem; color:#0f172a; line-height:1.3;">${m.mat_name}</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                            <span style="font-family:monospace; font-size:0.72rem; color:#64748b;">${m.mat_code}</span>
                             <span class="badge" style="font-size:0.65rem; background:rgba(15,23,42,0.06); color:#475569; padding:1px 5px;">${m.mat_category || '通用'}</span>
                         </div>
-                        
-                        <div style="font-family:monospace; font-size:0.72rem; color:#64748b; margin-bottom:8px;">${m.mat_code}</div>
 
                         <div style="font-size:0.75rem; color:#475569; display:flex; flex-direction:column; gap:3px;">
                             <div style="display:flex; justify-content:space-between;">
