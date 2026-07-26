@@ -163,8 +163,7 @@ window.renderEmsKanban = function() {
                 </div>
             `;
         } else {
-                const eqName = eq.device_name || eq.name || '未命名设备';
-                const eqCode = eq.device_code || eq.code || 'EQ-000';
+            stageEquips.forEach(eq => {
                 const vendorText = eq.vendor || eq.supplier || "暂未指定";
                 const ownerText = eq.owner || eq.responsible || "工程部";
                 const catText = eq.category || "生产设备";
@@ -174,8 +173,8 @@ window.renderEmsKanban = function() {
                 if (eq.project_plan_json) {
                     try {
                         const planObj = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json) : eq.project_plan_json;
-                        if (planObj[st.key] && (planObj[st.key].plan_end_date || planObj[st.key].end_date)) {
-                            reqDate = planObj[st.key].plan_end_date || planObj[st.key].end_date;
+                        if (planObj[st.key] && planObj[st.key].plan_end_date) {
+                            reqDate = planObj[st.key].plan_end_date;
                         }
                     } catch(e) {}
                 }
@@ -186,10 +185,10 @@ window.renderEmsKanban = function() {
                 html += `
                     <div onclick="openEmsDetailView(${eq.id})" style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid ${st.color}; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.04);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)';">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                            <h5 style="margin: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;">${eqName}</h5>
+                            <h5 style="margin: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;">${eq.name || '未命名设备'}</h5>
                             <span style="font-size: 0.62rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; white-space: nowrap; margin-left: 4px;">${catText}</span>
                         </div>
-                        <div style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600; margin-bottom: 8px;">${eqCode}</div>
+                        <div style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600; margin-bottom: 8px;">${eq.code || 'EQ-000'}</div>
                         
                         <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px;">
                             <div>供应商: <span style="color: var(--text-primary); font-weight: 500;">${vendorText}</span></div>
@@ -197,8 +196,7 @@ window.renderEmsKanban = function() {
                             <div>状态: <span style="color: #2563eb; font-weight: 700;">${eq.status || '测试中'}</span></div>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
-                            <span>需求完成: ${reqDate}</span>
+                        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
                             <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
                                 深度视角 &rarr;
                             </span>

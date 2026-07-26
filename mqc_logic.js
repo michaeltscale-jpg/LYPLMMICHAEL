@@ -148,9 +148,8 @@ window.renderMqcKanban = function() {
                             </div>
                         </div>
 
-                        <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #f1f5f9; display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:#94a3b8;">
-                            <span>需求完成: ${m.apply_date || '进行中'}</span>
-                            <span style="color:var(--color-primary); font-weight:600; display:flex; align-items:center; gap:2px;">
+                        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
+                            <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
                                 深度视角 &rarr;
                             </span>
                         </div>
