@@ -289,8 +289,13 @@ window.openMqcMaterialModal = function(id) {
     }
     
     // 初始化下拉框选项（绑定 PLM 全局用户列表）
-    populateUserSelect('mqc-mat-apply-by', '');
-    populateUserSelect('mqc-mat-conclusion-by', '');
+    if (window.setUserSelectSafe) {
+        setUserSelectSafe('mqc-mat-apply-by', state.currentUserDisplayName || "陈品质");
+        setUserSelectSafe('mqc-mat-conclusion-by', "王经理");
+    } else {
+        populateUserSelect('mqc-mat-apply-by', '');
+        populateUserSelect('mqc-mat-conclusion-by', '');
+    }
     
     // 重置所有输入框边框高亮
     ['mqc-mat-code', 'mqc-mat-name', 'mqc-mat-apply-by'].forEach(id => {
@@ -299,40 +304,44 @@ window.openMqcMaterialModal = function(id) {
     });
 
     if (id === null) {
-        document.getElementById("mqc-material-modal-title").innerText = "新增物料承认记录";
+        document.getElementById("mqc-material-modal-title").innerHTML = `<i data-lucide="package-check" style="width:20px;height:20px;color:#ffffff;"></i> 新增物料承认记录`;
         document.getElementById("mqc-mat-id").value = "";
         document.getElementById("mqc-mat-code").value = "";
         document.getElementById("mqc-mat-code").disabled = false;
         document.getElementById("mqc-mat-name").value = "";
         document.getElementById("mqc-mat-spec").value = "";
-        document.getElementById("mqc-mat-category").value = "铜球";
+        document.getElementById("mqc-mat-category").value = "氧化铜粉";
+        document.getElementById("mqc-mat-supplier-name").value = "";
         document.getElementById("mqc-mat-apply-date").value = new Date().toISOString().split('T')[0];
-        document.getElementById("mqc-mat-apply-by").value = state.currentUserId || "";
+        if (window.setUserSelectSafe) {
+            setUserSelectSafe('mqc-mat-apply-by', state.currentUserDisplayName || "陈品质");
+            setUserSelectSafe('mqc-mat-conclusion-by', "王经理");
+        }
         document.getElementById("mqc-mat-status").value = "需求提出";
-        document.getElementById("mqc-mat-test-start").value = "";
-        document.getElementById("mqc-mat-test-end").value = "";
-        document.getElementById("mqc-mat-conclusion").value = "";
-        document.getElementById("mqc-mat-conclusion-by").value = "";
-        document.getElementById("mqc-mat-conclusion-date").value = "";
-        document.getElementById("mqc-mat-test-result").value = "";
         document.getElementById("mqc-mat-remark").value = "";
         
         // 新增时无法管理供应商，必须先保存物料
         document.getElementById("mqc-mat-add-supplier-btn").style.display = "none";
         
         openModal("modal-mqc-material");
+        if (window.lucide) lucide.createIcons();
     } else {
         const m = state.mqcMaterials.find(x => x.id === id);
         if (!m) return;
         
-        document.getElementById("mqc-material-modal-title").innerText = "编辑物料承认记录";
+        document.getElementById("mqc-material-modal-title").innerHTML = `<i data-lucide="package-check" style="width:20px;height:20px;color:#ffffff;"></i> 编辑物料承认记录`;
         document.getElementById("mqc-mat-id").value = m.id;
         document.getElementById("mqc-mat-code").value = m.mat_code || "";
         document.getElementById("mqc-mat-code").disabled = true; // 编码不可修改
         document.getElementById("mqc-mat-name").value = m.mat_name || "";
         document.getElementById("mqc-mat-spec").value = m.mat_spec || "";
-        document.getElementById("mqc-mat-category").value = m.mat_category || "铜球";
+        document.getElementById("mqc-mat-category").value = m.mat_category || "氧化铜粉";
+        document.getElementById("mqc-mat-supplier-name").value = m.supplier_name || m.supplier || "";
         document.getElementById("mqc-mat-apply-date").value = m.apply_date || "";
+        if (window.setUserSelectSafe) {
+            setUserSelectSafe('mqc-mat-apply-by', m.apply_by || state.currentUserDisplayName || "陈品质");
+            setUserSelectSafe('mqc-mat-conclusion-by', m.conclusion_by || "王经理");
+        }
         document.getElementById("mqc-mat-apply-by").value = m.apply_by || "";
         document.getElementById("mqc-mat-status").value = m.status || "需求提出";
         document.getElementById("mqc-mat-test-start").value = m.test_start || "";

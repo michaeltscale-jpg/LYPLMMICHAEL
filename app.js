@@ -9795,6 +9795,11 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-tds-doc-preview-link").style.display = "none";
         document.getElementById("mqc-tds-doc-preview-link").href = "#";
 
+        if (window.setUserSelectSafe) {
+            setUserSelectSafe('mqc-mat-apply-by', state.currentUserDisplayName || "陈品质");
+            setUserSelectSafe('mqc-mat-conclusion-by', "王经理");
+        }
+
         document.getElementById("mqc-mat-status").value = "需求提出";
         document.getElementById("mqc-mat-test-start").value = "";
         document.getElementById("mqc-mat-test-end").value = "";
@@ -9814,11 +9819,12 @@ window.openMqcMaterialModal = function(id) {
         if (ecnBtnNew) ecnBtnNew.style.display = "none";
         
         openModal("modal-mqc-material");
+        if (window.lucide) lucide.createIcons();
     } else {
         const m = state.mqcMaterials.find(x => x.id === id);
         if (!m) return;
         
-        document.getElementById("mqc-material-modal-title").innerText = "编辑物料承认记录";
+        document.getElementById("mqc-material-modal-title").innerHTML = `<i data-lucide="package-check" style="width:20px;height:20px;color:#ffffff;"></i> 编辑物料承认记录`;
         document.getElementById("mqc-mat-id").value = m.id;
         document.getElementById("mqc-mat-code").value = m.mat_code || "";
         document.getElementById("mqc-mat-code").disabled = true; // 编码不可修改
@@ -9827,6 +9833,10 @@ window.openMqcMaterialModal = function(id) {
         document.getElementById("mqc-mat-category").value = m.mat_category || "氧化铜粉";
         document.getElementById("mqc-mat-supplier-name").value = m.supplier_name || ""; // 回显供应商名称
         document.getElementById("mqc-mat-apply-date").value = m.apply_date || "";
+        if (window.setUserSelectSafe) {
+            setUserSelectSafe('mqc-mat-apply-by', m.apply_by || state.currentUserDisplayName || "陈品质");
+            setUserSelectSafe('mqc-mat-conclusion-by', m.conclusion_by || "王经理");
+        }
         document.getElementById("mqc-mat-apply-by").value = m.apply_by || ""; // 赋值承认书文件名
         // 回显文件上传控件状态
         const certFileLabel = document.getElementById("mqc-cert-file-label");
@@ -10017,13 +10027,25 @@ window.saveMqcMaterial = function() {
     const tds_doc = document.getElementById("mqc-mat-tds-doc").value.trim();
     const supplier_name = document.getElementById("mqc-mat-supplier-name").value.trim();
     
-    // 校验必填项
-    let hasErr = false;
-    if (!mat_code) { document.getElementById("mqc-mat-code").style.borderColor = "#ef4444"; hasErr = true; }
-    if (!mat_name) { document.getElementById("mqc-mat-name").style.borderColor = "#ef4444"; hasErr = true; }
-    
-    if (hasErr) {
-        showToast("请填写必填项（高亮红框部分）", "error");
+    // 校验必填项 (Fail-Fast 早期拦截规则)
+    let firstErrEl = null;
+    ['mqc-mat-code', 'mqc-mat-name'].forEach(fieldId => {
+        const el = document.getElementById(fieldId);
+        if (el) {
+            if (!el.value.trim()) {
+                el.style.borderColor = "#ef4444";
+                el.style.boxShadow = "0 0 0 3px rgba(239, 68, 68, 0.2)";
+                if (!firstErrEl) firstErrEl = el;
+            } else {
+                el.style.borderColor = "";
+                el.style.boxShadow = "";
+            }
+        }
+    });
+
+    if (firstErrEl) {
+        firstErrEl.focus();
+        showToast("请填写物料编码与物料名称必填项（高亮红框）", "error");
         return;
     }
     

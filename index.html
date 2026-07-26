@@ -3433,131 +3433,175 @@ requests.post(url, json=payload)</code></pre>
                 <input type="hidden" id="perms-user-id">
                 <div style="margin-bottom: 12px; font-weight: 700; font-size: 0.9rem; color: #1e293b; display: flex; align-items: center; gap: 6px;">
                     <span>当前编辑用户：</span>
-                    <span id="perms-user-display" style="color: var(--color-primary);">--</span>
-                </div>
+                    <span id="perms-user    <!-- 新增 / 编辑物料承认记录高颜值 Modal 弹窗 -->
+    <div class="modal-overlay" id="modal-mqc-material">
+        <div class="modal-content" style="max-width: 780px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="mqc-material-modal-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="package-check" style="width: 20px; height: 20px;"></i> 新增物料承认记录
+                </h3>
+                <button class="modal-close" onclick="closeModal('modal-mqc-material')" style="color: #ffffff; font-size: 1.6rem; background: none; border: none; cursor: pointer; opacity: 0.9; line-height: 1;">&times;</button>
+            </div>
+            
+            <div class="modal-body" style="overflow-y: auto; max-height: 75vh; padding: 20px; background: #f8fafc;">
+                <input type="hidden" id="mqc-mat-id">
                 
-                <!-- Main Modules & Stages Permissions Table -->
-                <div style="margin-bottom: 20px; max-height: 50vh; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 6px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid #cbd5e1; color: #475569; font-weight: 700; background: #edf2f7;">
-                                <th style="text-align: left; padding: 8px 10px;">功能模块 / 生产工段</th>
-                                <th style="text-align: center; padding: 8px 10px; width: 70px;">查看</th>
-                                <th style="text-align: center; padding: 8px 10px; width: 70px;">编辑</th>
-                                <th style="text-align: center; padding: 8px 10px; width: 70px;">删除</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- 主功能模块 -->
-                            <tr style="background: rgba(99, 102, 241, 0.06); font-weight: bold; color: var(--color-primary);">
-                                <td colspan="4" style="padding: 6px 10px; border-bottom: 1px solid #e2e8f0;">📂 系统主模块权限</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">产品驾驶舱</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dashboard_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">新品开发控制台</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_product_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">物料承认 (MQC)</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_mqc_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">设备开发 (EMS)</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ems_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">文管中心 (DMS)</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dms_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">工程设变 (ECN)</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_ecn_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">研发受控任务</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_task_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">用户权限管理</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_users_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">钉钉协同配置</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-module_dingtalk_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            
-                            <!-- 生产工段工艺 -->
-                            <tr style="background: rgba(16, 185, 129, 0.06); font-weight: bold; color: var(--color-success);">
-                                <td colspan="4" style="padding: 6px 10px; border-bottom: 1px solid #e2e8f0;">🏭 生产工段工艺权限</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">立项</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_init_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">溅镀工段</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_sputter_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">电镀工段</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_electro_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">PA后处理</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pa_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">PB涂布</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_pb_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">脱膜工段</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_peel_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">测试验证</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_test_delete" style="width:14px; height:14px;"></td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 6px 10px; font-weight: 600;">量产送样</td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_view" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_edit" style="width:14px; height:14px;"></td>
-                                <td style="text-align: center; padding: 6px 10px;"><input type="checkbox" id="perm-stage_mass_delete" style="width:14px; height:14px;"></td>
+                <!-- 1. 📌 物料与供应商基础信息 -->
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
+                        <i data-lucide="box" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <span>一、物料与供应商基础信息</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料编码 <span style="color: #ef4444;">*</span></label>
+                            <input type="text" class="form-control" id="mqc-mat-code" placeholder="如: MAT-CU-BALL-001" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料名称 <span style="color: #ef4444;">*</span></label>
+                            <input type="text" class="form-control" id="mqc-mat-name" placeholder="如: 高纯电解铜球" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料类别</label>
+                            <select class="form-control" id="mqc-mat-category" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;">
+                                <option value="氧化铜粉">氧化铜粉</option>
+                                <option value="铜球">铜球</option>
+                                <option value="基材">基材</option>
+                                <option value="靶材">靶材</option>
+                                <option value="药水">药水</option>
+                                <option value="辅料">辅料</option>
+                                <option value="包材">包材</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">规格型号与纯度</label>
+                            <input type="text" class="form-control" id="mqc-mat-spec" placeholder="如: 纯度≥99.99%, 粒径10-30mm" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div style="grid-column: span 2;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">供应商全称</label>
+                            <input type="text" class="form-control" id="mqc-mat-supplier-name" placeholder="如: 江西铜业股份有限公司" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 👤 承认申请与责任主体 -->
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
+                        <i data-lucide="user-check" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <span>二、承认申请与责任主体</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">承认日期</label>
+                            <input type="date" class="form-control" id="mqc-mat-apply-date" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">申请责任人 <span style="color: #ef4444;">*</span></label>
+                            <select id="mqc-mat-apply-by" class="user-select-dropdown form-control" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;"></select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">品质审核人</label>
+                            <select id="mqc-mat-conclusion-by" class="user-select-dropdown form-control" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 📎 承认书与品质检测资料包 -->
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
+                        <i data-lucide="file-check" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <span>三、物料承认书与检测报告附件</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <!-- 承认书 (PDF) -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📄 规范承认书 (PDF 格式)</label>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="mqc-cert-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #2563eb; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
+                                    📎 选择 PDF
+                                </label>
+                                <input type="file" id="mqc-cert-file-input" accept=".pdf" style="display:none;" onchange="handleCertFileSelect(this)">
+                                <span id="mqc-cert-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
+                                <a id="mqc-cert-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#2563eb; font-weight:700;">预览</a>
+                            </div>
+                        </div>
+                        <!-- 测试记录 -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📊 样品测试记录 / 数据日志</label>
+                            <input type="hidden" id="mqc-mat-test-record">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="mqc-test-record-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #0284c7; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
+                                    📎 上传测试记录
+                                </label>
+                                <input type="file" id="mqc-test-record-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-test-record', 'mqc-test-record-file-label', 'mqc-test-record-preview-link')">
+                                <span id="mqc-test-record-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
+                                <a id="mqc-test-record-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#0284c7; font-weight:700;">预览</a>
+                            </div>
+                        </div>
+                        <!-- 测试报告 -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">🔬 检测报告 (SGS / RoHS / 试验结论)</label>
+                            <input type="hidden" id="mqc-mat-test-report">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="mqc-test-report-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #059669; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
+                                    📎 上传检测报告
+                                </label>
+                                <input type="file" id="mqc-test-report-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-test-report', 'mqc-test-report-file-label', 'mqc-test-report-preview-link')">
+                                <span id="mqc-test-report-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
+                                <a id="mqc-test-report-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#059669; font-weight:700;">预览</a>
+                            </div>
+                        </div>
+                        <!-- TDS 技术规范表 -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📘 TDS 技术规格书 / 物性参数表</label>
+                            <input type="hidden" id="mqc-mat-tds-doc">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="mqc-tds-doc-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #4f46e5; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
+                                    📎 上传 TDS
+                                </label>
+                                <input type="file" id="mqc-tds-doc-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-tds-doc', 'mqc-tds-doc-file-label', 'mqc-tds-doc-preview-link')">
+                                <span id="mqc-tds-doc-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
+                                <a id="mqc-tds-doc-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#4f46e5; font-weight:700;">预览</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 📝 送样说明与品质注意要点 -->
+                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="file-text" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <span>四、送样说明与品质注意要点</span>
+                    </div>
+                    <textarea class="form-control" id="mqc-mat-remark" rows="3" placeholder="详细说明物料用途、送样检验重点及品质防呆风险要点..." style="width: 100%; min-height: 85px; font-size: 0.82rem; padding: 8px 10px; border-radius: 6px; line-height: 1.55; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+            </div>
+
+            <!-- 隐藏存留兼容字段 -->
+            <div style="display:none;">
+                <input type="text" id="mqc-mat-status" value="需求提出">
+                <input type="date" id="mqc-mat-test-start">
+                <input type="date" id="mqc-mat-test-end">
+                <input type="text" id="mqc-mat-conclusion">
+                <input type="date" id="mqc-mat-conclusion-date">
+                <textarea id="mqc-mat-test-result"></textarea>
+                <input type="hidden" id="mqc-mat-supplier-doc">
+            </div>
+
+            <div class="modal-footer" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-secondary" id="mqc-mat-add-supplier-btn" onclick="openMqcSupplierModal(null)" style="font-size:0.8rem; height: 34px; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                        <i data-lucide="truck" style="width:14px;height:14px;"></i> 管理供应商
+                    </button>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-secondary" onclick="closeModal('modal-mqc-material')" style="height: 34px; padding: 6px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 6px;">取消</button>
+                    <button class="btn-primary" onclick="saveMqcMaterial()" style="height: 34px; padding: 6px 16px; font-size: 0.82rem; font-weight: 700; border-radius: 6px; background: #2563eb; color: #ffffff; border: none; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">保存提交</button>
+                </div>
+            </div>
+        </div>
+    </div>" style="width:14px; height:14px;"></td>
                             </tr>
                         </tbody>
                     </table>
