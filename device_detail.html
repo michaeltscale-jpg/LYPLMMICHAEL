@@ -368,58 +368,58 @@
                 </div>
 
                 <!-- 设备开发立项申请表 (仅 G1 阶段呈现) -->
-                <div id="workbench-proposal-summary-card" style="display: none; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
+                <div id="workbench-proposal-summary-card" style="display: none; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
                     <!-- 表单头部标题 -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 6px; margin-bottom: 8px;">
-                        <div style="font-size: 0.8rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="clipboard-signature" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; margin-bottom: 10px;">
+                        <div style="font-size: 0.95rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="clipboard-signature" style="width: 18px; height: 18px; color: #2563eb;"></i>
                             <span>📋 设备开发立项申请表 (Equipment Proposal Form)</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-size: 0.62rem; background: #dbeafe; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-weight: 700;">G1 立项评审归档件</span>
-                            <button onclick="openEditProposalModal()" class="btn-primary" style="font-size: 0.62rem; padding: 2px 8px; height: auto;">
-                                <i data-lucide="edit-3" style="width: 10px; height: 10px;"></i> 编辑申请表
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.72rem; background: #dbeafe; color: #1d4ed8; padding: 3px 8px; border-radius: 4px; font-weight: 700;">G1 立项评审归档件</span>
+                            <button onclick="openEditProposalModal()" class="btn-primary" style="font-size: 0.72rem; padding: 3px 10px; height: auto;">
+                                <i data-lucide="edit-3" style="width: 12px; height: 12px;"></i> 编辑申请表
                             </button>
                         </div>
                     </div>
 
                     <!-- 1. 设备基础资料面板 -->
-                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px;">
-                        <div style="color: #1e3a8a; font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-                            <i data-lucide="database" style="width: 12px; height: 12px; color: #2563eb;"></i>
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;">
+                        <div style="color: #1e3a8a; font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="database" style="width: 14px; height: 14px; color: #2563eb;"></i>
                             <span>一、设备基础资料</span>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: 0.68rem; margin-bottom: 6px;">
-                            <div><strong style="color: #64748b;">设备名称：</strong><span id="detail-prop-name" style="color: #0f172a; font-weight: 700;">--</span></div>
-                            <div><strong style="color: #64748b;">设备编码：</strong><span id="detail-prop-code" style="color: #2563eb; font-weight: 700; font-family: monospace;">--</span></div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 0.78rem; margin-bottom: 8px;">
+                            <div><strong style="color: #64748b;">设备名称：</strong><span id="detail-prop-name" style="color: #0f172a; font-weight: 700; font-size: 0.82rem;">--</span></div>
+                            <div><strong style="color: #64748b;">设备编码：</strong><span id="detail-prop-code" style="color: #2563eb; font-weight: 700; font-family: monospace; font-size: 0.82rem;">--</span></div>
                             <div><strong style="color: #64748b;">设备类别：</strong><span id="detail-prop-category" style="color: #0f172a; font-weight: 600;">--</span></div>
                             <div><strong style="color: #64748b;">使用单位：</strong><span id="detail-prop-unit" style="color: #0f172a; font-weight: 600;">--</span></div>
-                            <div><strong style="color: #64748b;">预估预算：</strong><span id="detail-prop-budget" style="color: #059669; font-weight: 800; font-size: 0.72rem;">--</span></div>
+                            <div><strong style="color: #64748b;">预估预算：</strong><span id="detail-prop-budget" style="color: #059669; font-weight: 800; font-size: 0.85rem;">--</span></div>
                             <div><strong style="color: #64748b;">需求日期：</strong><span id="detail-prop-reqdate" style="color: #2563eb; font-weight: 700;">--</span></div>
                             <div><strong style="color: #64748b;">设备用途：</strong><span id="detail-prop-purpose" style="color: #334155; font-weight: 600;">--</span></div>
                             <div><strong style="color: #64748b;">立项责任人：</strong><span id="detail-prop-owner" style="color: #1d4ed8; font-weight: 700;">--</span></div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.68rem;">
-                            <div style="background: #f8fafc; padding: 6px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                                <div style="color: #475569; font-weight: 700; margin-bottom: 1px;">📌 立项理由：</div>
-                                <div id="detail-prop-reason" style="color: #334155; line-height: 1.4;">--</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.76rem;">
+                            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                <div style="color: #475569; font-weight: 800; font-size: 0.8rem; margin-bottom: 2px;">📌 立项理由：</div>
+                                <div id="detail-prop-reason" style="color: #334155; line-height: 1.5;">--</div>
                             </div>
-                            <div style="background: #f8fafc; padding: 6px 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                                <div style="color: #047857; font-weight: 700; margin-bottom: 1px;">📈 预期带来效益：</div>
-                                <div id="detail-prop-benefits" style="color: #334155; line-height: 1.4;">--</div>
+                            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                <div style="color: #047857; font-weight: 800; font-size: 0.8rem; margin-bottom: 2px;">📈 预期带来效益：</div>
+                                <div id="detail-prop-benefits" style="color: #334155; line-height: 1.5;">--</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- 2. G1-G6 阶段周期、开始时间与预计结束时间表 (立项规划基线：未执行状态) -->
-                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px;">
-                        <div style="color: #1e3a8a; font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <i data-lucide="calendar-range" style="width: 12px; height: 12px; color: #2563eb;"></i>
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px;">
+                        <div style="color: #1e3a8a; font-size: 0.82rem; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="calendar-range" style="width: 14px; height: 14px; color: #2563eb;"></i>
                                 <span>二、全生命周期 G1-G6 阶段排期规划 (初始规划基线)</span>
                             </span>
-                            <span style="font-size: 0.6rem; color: #64748b; font-weight: 600; background: #f1f5f9; padding: 1px 6px; border-radius: 3px;">📌 属于立项拟定计划 (未执行)</span>
+                            <span style="font-size: 0.68rem; color: #475569; font-weight: 700; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; border: 1px solid #cbd5e1;">📌 属于立项拟定计划 (未执行)</span>
                         </div>
                         <div id="detail-prop-schedule-table" style="width: 100%; overflow-x: auto;">
                             <!-- 由 JS 动态渲染 G1~G6 节点周期、开始与预计结束时间表格 -->
@@ -429,13 +429,13 @@
 
                 <!-- 1. 📥 本阶段主题输入资料 -->
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px; margin-bottom: 6px;">
-                        <div style="font-size: 0.74rem; font-weight: 700; color: #1e3a8b; display: flex; align-items: center; gap: 5px;">
-                            <i data-lucide="folder-open" style="width: 14px; height: 14px; color: #2563eb;"></i>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8b; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="folder-open" style="width: 16px; height: 16px; color: #2563eb;"></i>
                             <span>📥 本阶段主题输入资料 (Inputs)</span>
                         </div>
-                        <button onclick="openEmsInputFilesModal()" class="btn-primary" style="font-size: 0.62rem; padding: 2px 7px; height: auto;">
-                            <i data-lucide="plus-circle" style="width: 10px; height: 10px;"></i>录入资料
+                        <button onclick="openEmsInputFilesModal()" class="btn-primary" style="font-size: 0.72rem; padding: 3px 10px; height: auto;">
+                            <i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i>录入资料
                         </button>
                     </div>
                     <div id="workbench-inputs-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
@@ -445,12 +445,12 @@
 
                 <!-- 2. 📤 本阶段主题输出交付件 -->
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px; margin-bottom: 6px;">
-                        <div style="font-size: 0.74rem; font-weight: 700; color: #047857; display: flex; align-items: center; gap: 5px;">
-                            <i data-lucide="file-check" style="width: 14px; height: 14px; color: #059669;"></i>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #047857; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-check" style="width: 16px; height: 16px; color: #059669;"></i>
                             <span>📤 本阶段主题输出交付件 (Deliverables)</span>
                         </div>
-                        <span style="font-size: 0.62rem; color: #64748b;" id="workbench-deliverables-count">4 项标准成果</span>
+                        <span style="font-size: 0.72rem; color: #475569; font-weight: 700;" id="workbench-deliverables-count">4 项标准成果</span>
                     </div>
                     <div id="workbench-deliverables-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
                         <!-- JS 动态渲染 4 项标准交付成果件 -->
@@ -1041,15 +1041,15 @@
                         };
 
                         let tableHtml = `
-                            <table style="width:100%; border-collapse:collapse; font-size:0.68rem; background:#ffffff; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
+                            <table style="width:100%; border-collapse:collapse; font-size:0.78rem; background:#ffffff; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
                                 <thead>
-                                    <tr style="background:#f1f5f9; color:#334155; text-align:left; border-bottom:1px solid #cbd5e1;">
-                                        <th style="padding:6px 8px;">阶段代码与名称</th>
-                                        <th style="padding:6px 8px;">阶段负责人</th>
-                                        <th style="padding:6px 8px;">开始时间</th>
-                                        <th style="padding:6px 8px; text-align:center;">工作日 (天)</th>
-                                        <th style="padding:6px 8px;">计划结束时间</th>
-                                        <th style="padding:6px 8px; text-align:center;">节点状态</th>
+                                    <tr style="background:#f1f5f9; color:#1e293b; text-align:left; border-bottom:1px solid #cbd5e1; font-weight:700;">
+                                        <th style="padding:8px 10px; font-size:0.78rem;">阶段代码与名称</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem;">阶段负责人</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem;">开始时间</th>
+                                        <th style="padding:8px 10px; text-align:center; font-size:0.78rem;">工作日 (天)</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem;">计划结束时间</th>
+                                        <th style="padding:8px 10px; text-align:center; font-size:0.78rem;">节点状态</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1077,31 +1077,31 @@
                             // 立项申请表内的排期均属于可在线直接编辑的计划基线 (Planned)
                             tableHtml += `
                                 <tr style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
-                                    <td style="padding:4px 6px; font-weight:700; color:#1e293b;">${info.title}</td>
-                                    <td style="padding:4px 6px;">
+                                    <td style="padding:6px 10px; font-weight:700; color:#1e293b; font-size:0.78rem;">${info.title}</td>
+                                    <td style="padding:6px 10px;">
                                         <input type="text" value="${stObj.owner || ''}" 
                                                placeholder="阶段负责人" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
-                                               style="width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; font-weight: 600; color: #2563eb; background: #ffffff;">
+                                               style="width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
                                     </td>
-                                    <td style="padding:4px 6px;">
+                                    <td style="padding:6px 10px;">
                                         <input type="date" value="${sDate}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'start_date', this.value)" 
-                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; color: #334155; background: #ffffff; width: 112px;">
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 126px;">
                                     </td>
-                                    <td style="padding:4px 6px; text-align:center; white-space:nowrap;">
+                                    <td style="padding:6px 10px; text-align:center; white-space:nowrap;">
                                         <input type="number" min="1" value="${numericDays}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'duration', this.value)" 
-                                               style="width: 44px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 2px; font-size: 0.65rem; font-weight: 700; color: #475569; background: #ffffff;">
-                                        <span style="font-size:0.62rem; color:#64748b;">天</span>
+                                               style="width: 48px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 2px; font-size: 0.8rem; font-weight: 700; color: #475569; background: #ffffff;">
+                                        <span style="font-size:0.72rem; color:#64748b; font-weight:600;">天</span>
                                     </td>
-                                    <td style="padding:4px 6px;">
+                                    <td style="padding:6px 10px;">
                                         <input type="date" value="${eDate}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'end_date', this.value)" 
-                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; color: #334155; background: #ffffff; width: 112px;">
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 126px;">
                                     </td>
-                                    <td style="padding:4px 6px; text-align:center;">
-                                        <span style="font-size:0.6rem; padding:2px 7px; border-radius:4px; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">计划中</span>
+                                    <td style="padding:6px 10px; text-align:center;">
+                                        <span style="font-size:0.72rem; padding:3px 8px; border-radius:4px; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">计划中</span>
                                     </td>
                                 </tr>
                             `;
