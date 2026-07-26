@@ -1730,7 +1730,34 @@
                     })
                 });
 
-                showToast("数据保存更新成功！", "success");
+                // 若 G6 验收交付使用标记为已完成，自动同步将设备主状态标记为 "运行中" (已转固入库资产)
+                const isG6AcceptDone = plan.stage6_accept && (plan.stage6_accept.status === "已完成" || plan.stage6_accept.status === "结案");
+                if (isG6AcceptDone && eq.status !== "运行中") {
+                    eq.status = "运行中";
+                    await fetch("/api/equipments/save", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-User-Role": state.currentUserRole,
+                            "X-User-Name": encodeURIComponent(state.currentUserDisplayName)
+                        },
+                        body: JSON.stringify({
+                            id: eqId,
+                            device_code: eq.device_code,
+                            device_name: eq.device_name,
+                            stage_name: eq.stage_name,
+                            using_unit: eq.using_unit || null,
+                            status: "运行中",
+                            oee: eq.oee || 85.0,
+                            next_maintenance: eq.next_maintenance || null,
+                            parameters_json: JSON.stringify(params),
+                            project_plan_json: JSON.stringify(plan)
+                        })
+                    });
+                    showToast("🎉 设备已成功完成 G6 验收交付使用！该设备已转固并正式转移至《验收后设备明细列表》", "success");
+                } else {
+                    showToast("数据保存更新成功！", "success");
+                }
                 
                 // Refresh local data state
                 await loadEquipmentData();
