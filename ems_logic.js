@@ -164,8 +164,10 @@ window.renderEmsKanban = function() {
             `;
         } else {
             stageEquips.forEach(eq => {
+                const eqCode = eq.code || eq.device_code || ('EQ-' + String(eq.id).padStart(3, '0'));
+                const eqName = eq.name || eq.device_name || ('设备-' + eq.id);
                 const vendorText = eq.vendor || eq.supplier || "暂未指定";
-                const ownerText = eq.owner || eq.responsible || "工程部";
+                const ownerText = eq.owner || eq.responsible || eq.operator || "工程部";
                 const catText = eq.category || "生产设备";
                 
                 // 需求日期解析
@@ -185,10 +187,10 @@ window.renderEmsKanban = function() {
                 html += `
                     <div onclick="openEmsDetailView(${eq.id})" style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid ${st.color}; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.04);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)';">
                         <div style="margin-bottom: 4px;">
-                            <h5 style="margin: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;">${eq.name || '未命名设备'}</h5>
+                            <h5 style="margin: 0; font-size: 0.84rem; font-weight: 700; color: var(--text-primary); line-height: 1.3;">${eqName}</h5>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <span style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600;">${eq.code || 'EQ-000'}</span>
+                            <span style="font-family: monospace; font-size: 0.7rem; color: var(--color-primary); font-weight: 600;">${eqCode}</span>
                             <span style="font-size: 0.62rem; font-weight: 700; background: #f1f5f9; color: #475569; padding: 1px 6px; border-radius: 4px; white-space: nowrap;">${catText}</span>
                         </div>
                         
