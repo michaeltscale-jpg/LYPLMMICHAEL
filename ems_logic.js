@@ -193,7 +193,6 @@ window.renderEmsKanban = function() {
                         <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 8px;">
                             <div>供应商: <span style="color: var(--text-primary); font-weight: 500;">${vendorText}</span></div>
                             <div>责任人: <span style="color: var(--text-primary); font-weight: 500;">${ownerText}</span></div>
-                            <div>状态: <span style="color: #2563eb; font-weight: 700;">${eq.status || '测试中'}</span></div>
                         </div>
 
                         <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">

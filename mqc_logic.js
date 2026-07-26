@@ -142,10 +142,6 @@ window.renderMqcKanban = function() {
                                 <span style="color:#94a3b8;">责任人:</span>
                                 <span>${m.apply_by || '张研发'}</span>
                             </div>
-                            <div style="display:flex; justify-content:space-between;">
-                                <span style="color:#94a3b8;">状态:</span>
-                                <span style="color:${stg.color}; font-weight:600;">${m.status || '正常推进'}</span>
-                            </div>
                         </div>
 
                         <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
