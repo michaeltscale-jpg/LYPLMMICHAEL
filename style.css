@@ -2067,8 +2067,14 @@ textarea.form-control {
     background: rgba(37, 99, 235, 0.01);
 }
 
-.ems-filter-card.completed {
-    border-top-color: var(--color-success);
+.ems-filter-card.completed, .ems-stage-card.completed {
+    border-top-color: var(--color-success) !important;
+    background: #e2e8f0 !important;
+    opacity: 0.8;
+}
+
+.ems-filter-card.completed div, .ems-stage-card.completed div {
+    color: #64748b !important;
 }
 
 .ems-filter-card.running {

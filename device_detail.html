@@ -135,15 +135,41 @@
         }
 
         .timeline-card.completed {
-            border-top-color: #10b981;
+            border-top-color: #10b981 !important;
+            background: #e2e8f0 !important;
+            border-color: #cbd5e1;
+            opacity: 0.78;
+        }
+
+        .timeline-card.completed:hover {
+            opacity: 1;
+            background: #cbd5e1 !important;
+        }
+
+        .timeline-card.completed div {
+            color: #64748b !important;
+        }
+
+        .timeline-card.completed.active-card {
+            opacity: 1;
+            border: 2px solid var(--color-primary) !important;
+            border-top: 4px solid #10b981 !important;
+            background: rgba(16, 185, 129, 0.1) !important;
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+        }
+
+        .timeline-card.completed.active-card div {
+            color: #0f172a !important;
         }
 
         .timeline-card.inprogress {
             border-top-color: #3b82f6;
+            background: #ffffff;
         }
 
         .timeline-card.notstarted {
             border-top-color: #64748b;
+            background: #ffffff;
         }
 
         /* Detail workspace styling */
