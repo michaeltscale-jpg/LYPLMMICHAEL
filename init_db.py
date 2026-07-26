@@ -660,6 +660,7 @@ def init_database(force_reset=False):
 
     # ================= 导入实际工艺开发中试日志 (development_logs) =================
     # PTS-12 调试日志
+
     cursor.execute("""
     INSERT INTO development_logs (product_id, spec_thickness, stage, device_name, device_code, parameters, operator, remarks, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -841,6 +842,25 @@ def init_database(force_reset=False):
             test_result TEXT
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS ems_suppliers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            device_code TEXT NOT NULL,
+            supplier_name TEXT,
+            supplier_tier TEXT DEFAULT '一供',
+            contact TEXT,
+            phone TEXT,
+            risk_level TEXT DEFAULT '中',
+            risk_note TEXT,
+            approved_date TEXT,
+            status TEXT DEFAULT '正常',
+            approval_status TEXT DEFAULT '已验证',
+            apply_by TEXT,
+            test_start TEXT,
+            test_end TEXT,
+            test_result TEXT
+        )
+    ''')
 
     # 生成各阶段进度的计划 JSON
     mqc_p_m1 = make_default_mqc_project_plan(0) # M1进行中
@@ -957,6 +977,21 @@ def init_database(force_reset=False):
     for row in mqc_suppliers_data:
         cursor.execute("""
             INSERT INTO mqc_suppliers (mat_code, supplier_name, supplier_tier, contact, phone, risk_level, risk_note, approved_date, status, approval_status, apply_by, test_start, test_end, test_result)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, row)
+
+    # 插入默认设备供应商与驻厂监造风险数据
+    ems_suppliers_data = [
+        ("EQ-PRD-001", "西安泰金新能科技股份有限公司", "一供", "张总工", "138-0000-8888", "低", "阴极辊全球顶级供应商，结构加工与镜面研磨工艺极佳", "2026-06-15", "活跃", "已验证", "李建国", "2026-05-01", "2026-06-10", "现场 FAT 预验收通过，钛辊平整度Ra<0.01um"),
+        ("EQ-PRD-001", "贵州航天新力科技有限公司", "二供", "陈经理", "139-1111-9999", "中", "二供备选，辊体加工周期较长", "2026-06-20", "活跃", "已验证", "张小贤", "2026-05-15", "2026-06-18", "物理参数及耐压测试合格"),
+        ("EQ-PRD-002", "保定市天威保胜电气有限公司", "一供", "刘经理", "136-2222-3333", "低", "大功率整流开关电源专业厂家，波纹系数控制在 0.1% 强", "2026-06-18", "活跃", "已验证", "张小贤", "2026-05-10", "2026-06-15", "高载运行72小时稳定无故障"),
+        ("EQ-PRD-003", "苏州能达制药设备有限公司", "一供", "周业务", "137-3333-4444", "低", "钛材槽体焊接及循环流场仿真经验丰富", "2026-06-25", "活跃", "已验证", "李建国", "2026-06-01", "2026-06-20", "探伤测试与防腐钝化100%合格"),
+        ("EQ-UTIL-001", "杭州杭州湾水处理设备有限公司", "一供", "钱经理", "135-4444-5555", "低", "纯水电导率稳定在 0.055uS/cm 超纯水级别", "2026-07-01", "活跃", "已验证", "王强", "2026-06-10", "2026-06-28", "SAT 现场水质检测完全达标"),
+        ("EQ-LOG-001", "无锡中科微至智能制造", "一供", "孙工", "133-5555-6666", "低", "自动化AGV搬运与WMS软件系统无缝对接", "2026-07-10", "活跃", "已验证", "赵立功", "2026-06-20", "2026-07-08", "AGV 调度碰撞率 0，定位精度 ±1mm")
+    ]
+    for row in ems_suppliers_data:
+        cursor.execute("""
+            INSERT INTO ems_suppliers (device_code, supplier_name, supplier_tier, contact, phone, risk_level, risk_note, approved_date, status, approval_status, apply_by, test_start, test_end, test_result)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, row)
 

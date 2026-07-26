@@ -703,6 +703,15 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 rows = [dict(r) for r in cursor.fetchall()]
                 self.send_json(rows)
 
+            elif path == "/api/ems/suppliers":
+                device_code = query_params.get('device_code', [None])[0]
+                if device_code:
+                    cursor.execute("SELECT * FROM ems_suppliers WHERE device_code=? ORDER BY supplier_tier", (device_code,))
+                else:
+                    cursor.execute("SELECT * FROM ems_suppliers ORDER BY device_code, supplier_tier")
+                rows = [dict(r) for r in cursor.fetchall()]
+                self.send_json(rows)
+
             # ---- 受控任务管控 GET ----
             elif path == "/api/tasks":
                 q_params = query_params
@@ -2640,6 +2649,38 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not rid:
                     self.send_json({'error': 'Missing id'}, 400); return
                 cursor.execute("DELETE FROM mqc_suppliers WHERE id=?", (rid,))
+                conn.commit()
+                self.send_json({'ok': True})
+
+            elif path == "/api/ems/suppliers/save":
+                rid = data.get('id')
+                fields = []
+                vals = []
+                for k in ['device_code', 'supplier_name', 'supplier_tier', 'contact', 'phone', 'risk_level', 'risk_note', 'approved_date', 'status', 'approval_status', 'apply_by', 'test_start', 'test_end', 'test_result']:
+                    if k in data:
+                        fields.append(f"{k}=?")
+                        vals.append(data[k])
+                if rid:
+                    vals.append(rid)
+                    set_clause = ', '.join(fields)
+                    cursor.execute(f"UPDATE ems_suppliers SET {set_clause} WHERE id=?", vals)
+                else:
+                    fields = [k for k in ['device_code', 'supplier_name', 'supplier_tier', 'contact', 'phone', 'risk_level', 'risk_note', 'approved_date', 'status', 'approval_status', 'apply_by', 'test_start', 'test_end', 'test_result'] if k in data]
+                    vals = [data[k] for k in fields]
+                    placeholders = ', '.join(['?'] * len(fields))
+                    col_clause = ', '.join(fields)
+                    cursor.execute(
+                        f"INSERT INTO ems_suppliers ({col_clause}) VALUES ({placeholders})",
+                        vals
+                    )
+                conn.commit()
+                self.send_json({'ok': True, 'id': rid or cursor.lastrowid})
+
+            elif path == "/api/ems/suppliers/delete":
+                rid = data.get('id')
+                if not rid:
+                    self.send_json({'error': 'Missing id'}, 400); return
+                cursor.execute("DELETE FROM ems_suppliers WHERE id=?", (rid,))
                 conn.commit()
                 self.send_json({'ok': True})
 

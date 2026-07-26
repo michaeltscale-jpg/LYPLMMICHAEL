@@ -720,7 +720,8 @@ function switchTab(tabId) {
     } else if (tabId === 'dashboard-panel') {
         fetchDashboardData();
     } else if (tabId === 'ems-panel') {
-        if (window.fetchEmsData) window.fetchEmsData(); else fetchEquipmentsAndRender();
+        if (window.fetchEmsData) window.fetchEmsData();
+        else fetchEquipmentsAndRender();
     } else if (tabId === 'ecn-panel') {
         fetchEcns();
     } else if (tabId === 'dingtalk-panel') {
