@@ -606,7 +606,7 @@
                 </div>
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">1. 设备立项中</span>
+                        <span style="font-weight:700; color:#1e293b;">1. 设备立项</span>
                         <input type="text" id="prop-edit-g1-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g1-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g1-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
@@ -618,19 +618,19 @@
                         <input type="date" id="prop-edit-g2-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">3. 请购发包中</span>
+                        <span style="font-weight:700; color:#1e293b;">3. 请购发包</span>
                         <input type="text" id="prop-edit-g3-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g3-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g3-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">4. 设备制作中</span>
+                        <span style="font-weight:700; color:#1e293b;">4. 设备制作</span>
                         <input type="text" id="prop-edit-g4-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g4-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g4-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
-                        <span style="font-weight:700; color:#1e293b;">5. 安装调试中</span>
+                        <span style="font-weight:700; color:#1e293b;">5. 安装调试</span>
                         <input type="text" id="prop-edit-g5-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g5-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g5-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
@@ -1037,11 +1037,11 @@
                     const schedContainer = document.getElementById("detail-prop-schedule-table");
                     if (schedContainer) {
                         const stageNamesMap = {
-                            "stage1_plan": { code: "G1_PLAN", title: "1. 设备立项中", defaultDays: 7 },
+                            "stage1_plan": { code: "G1_PLAN", title: "1. 设备立项", defaultDays: 7 },
                             "stage2_scheme": { code: "G2_SCHEME", title: "2. 拟定技术方案", defaultDays: 10 },
-                            "stage3_bidding": { code: "G3_BIDDING", title: "3. 请购发包中", defaultDays: 15 },
-                            "stage4_make": { code: "G4_MAKE", title: "4. 设备制作中", defaultDays: 30 },
-                            "stage5_install": { code: "G5_INSTALL", title: "5. 安装调试中", defaultDays: 15 },
+                            "stage3_bidding": { code: "G3_BIDDING", title: "3. 请购发包", defaultDays: 15 },
+                            "stage4_make": { code: "G4_MAKE", title: "4. 设备制作", defaultDays: 30 },
+                            "stage5_install": { code: "G5_INSTALL", title: "5. 安装调试", defaultDays: 15 },
                             "stage6_accept": { code: "G6_ACCEPT", title: "6. 验收交付使用", defaultDays: 10 }
                         };
 
@@ -1637,8 +1637,8 @@
             let plan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : (eq.project_plan || eq.project_plan_json || {});
             if (!plan[sk]) {
                 const defaultTitles = {
-                    "stage1_plan": "设备立项中", "stage2_scheme": "拟定技术方案", "stage3_bidding": "请购发包中",
-                    "stage4_make": "设备制作中", "stage5_install": "安装调试中", "stage6_accept": "验收交付使用"
+                    "stage1_plan": "设备立项", "stage2_scheme": "拟定技术方案", "stage3_bidding": "请购发包",
+                    "stage4_make": "设备制作", "stage5_install": "安装调试", "stage6_accept": "验收交付使用"
                 };
                 plan[sk] = {
                     title: defaultTitles[sk] || sk,
@@ -1784,8 +1784,8 @@
                 "g4": "stage4_make", "g5": "stage5_install", "g6": "stage6_accept"
             };
             const defaultTitles = {
-                "stage1_plan": "设备立项中", "stage2_scheme": "拟定技术方案", "stage3_bidding": "请购发包中",
-                "stage4_make": "设备制作中", "stage5_install": "安装调试中", "stage6_accept": "验收交付使用"
+                "stage1_plan": "设备立项", "stage2_scheme": "拟定技术方案", "stage3_bidding": "请购发包",
+                "stage4_make": "设备制作", "stage5_install": "安装调试", "stage6_accept": "验收交付使用"
             };
 
             stages.forEach(sk => {
