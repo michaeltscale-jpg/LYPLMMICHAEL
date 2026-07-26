@@ -341,8 +341,8 @@
                     <span id="workbench-stage-status-badge" class="ems-node-badge" style="font-size: 0.65rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">--</span>
                 </div>
 
-                <!-- 设备立项申请书核心内容卡片 (仅在 G1 阶段展示) -->
-                <div id="workbench-proposal-summary-card" style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px; display: none;">
+                <!-- 设备立项申请书核心内容卡片 (仅 G1 阶段呈现) -->
+                <div id="workbench-proposal-summary-card" style="display: none; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; margin-bottom: 10px;">
                         <div style="font-size: 0.8rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
                             <i data-lucide="file-check-2" style="width: 16px; height: 16px; color: #2563eb;"></i>
@@ -948,65 +948,63 @@
             document.getElementById("edit-stage-end").value = item.end_date || "";
             document.getElementById("edit-stage-remark").value = item.remark || "";
 
-            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去该卡片
+            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
             const propCard = document.getElementById("workbench-proposal-summary-card");
-            const isG1Stage = (
-                stageKey === "stage1_plan" || 
-                stageKey === "stage1" || 
-                (stageKey && stageKey.toLowerCase() === "g1_plan") || 
-                (stageKey && stageKey.toLowerCase() === "g1")
-            );
             if (propCard) {
-                propCard.style.display = isG1Stage ? "block" : "none";
-            }
+                if (stageKey === "stage1_plan") {
+                    propCard.style.display = "block";
 
-            // Populate 立项申请书卡片
-            const params = eq.parameters || {};
-            document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
-            document.getElementById("detail-prop-reqdate").innerText = params.required_date || "--";
-            document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : "180.0 万元";
-            document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
-            document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
-            document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
+                    // Populate 立项申请书卡片
+                    let params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : (eq.parameters || eq.parameters_json || {});
+                    document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
+                    document.getElementById("detail-prop-reqdate").innerText = params.required_date || "--";
+                    document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : "180.0 万元";
+                    document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
+                    document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
+                    document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
 
-            // Render 6大阶段排期节点表
-            const schedContainer = document.getElementById("detail-prop-schedule-table");
-            if (schedContainer) {
-                schedContainer.innerHTML = "";
-                const stageNamesMap = {
-                    "stage1_plan": "1. 设备立项中",
-                    "stage2_scheme": "2. 拟定技术方案",
-                    "stage3_bidding": "3. 请购发包中",
-                    "stage4_make": "4. 设备制作中",
-                    "stage5_install": "5. 安装调试中",
-                    "stage6_accept": "6. 验收交付使用"
-                };
-                Object.keys(stageNamesMap).forEach(sk => {
-                    const stObj = plan[sk] || {};
-                    const sDate = stObj.start_date || "--";
-                    const eDate = stObj.end_date || stObj.plan_end_date || "--";
-                    const isCur = sk === stageKey;
-                    const ov = checkIsOverdue(stObj);
+                    // Render 6大阶段排期节点表
+                    const schedContainer = document.getElementById("detail-prop-schedule-table");
+                    if (schedContainer) {
+                        schedContainer.innerHTML = "";
+                        const stageNamesMap = {
+                            "stage1_plan": "1. 设备立项中",
+                            "stage2_scheme": "2. 拟定技术方案",
+                            "stage3_bidding": "3. 请购发包中",
+                            "stage4_make": "4. 设备制作中",
+                            "stage5_install": "5. 安装调试中",
+                            "stage6_accept": "6. 验收交付使用"
+                        };
+                        Object.keys(stageNamesMap).forEach(sk => {
+                            const stObj = plan[sk] || {};
+                            const sDate = stObj.start_date || "--";
+                            const eDate = stObj.end_date || stObj.plan_end_date || "--";
+                            const isCur = sk === stageKey;
+                            const ov = checkIsOverdue(stObj);
 
-                    const endDateColor = ov.isOverdue ? '#dc2626' : (isCur ? '#1d4ed8' : '#64748b');
-                    const endDateFont = ov.isOverdue ? 'font-weight: 800;' : '';
-                    const ovBadge = ov.isOverdue ? `<span style="color:#dc2626; font-weight:800; font-size:0.58rem; margin-left:2px;">⚠️已逾期</span>` : '';
+                            const endDateColor = ov.isOverdue ? '#dc2626' : (isCur ? '#1d4ed8' : '#64748b');
+                            const endDateFont = ov.isOverdue ? 'font-weight: 800;' : '';
+                            const ovBadge = ov.isOverdue ? `<span style="color:#dc2626; font-weight:800; font-size:0.58rem; margin-left:2px;">⚠️已逾期</span>` : '';
 
-                    const itemDiv = document.createElement("div");
-                    itemDiv.style.cssText = `background: ${ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#f8fafc')}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${ov.isOverdue ? '#fca5a5' : (isCur ? '#3b82f6' : '#e2e8f0')};`;
-                    itemDiv.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-weight: 700; color: ${ov.isOverdue ? '#b91c1c' : (isCur ? '#1d4ed8' : '#334155')}; font-size: 0.65rem;">${stageNamesMap[sk]}</span>
-                            <span style="color: #2563eb; font-size: 0.6rem; font-weight: 600;">👤 ${stObj.owner || '--'}</span>
-                        </div>
-                        <div style="font-size: 0.62rem; margin-top: 2px;">
-                            <span style="color:#64748b;">${sDate} ~ </span>
-                            <span style="color:${endDateColor}; ${endDateFont}">计划完成: ${eDate}</span>
-                            ${ovBadge}
-                        </div>
-                    `;
-                    schedContainer.appendChild(itemDiv);
-                });
+                            const itemDiv = document.createElement("div");
+                            itemDiv.style.cssText = `background: ${ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#f8fafc')}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${ov.isOverdue ? '#fca5a5' : (isCur ? '#3b82f6' : '#e2e8f0')};`;
+                            itemDiv.innerHTML = `
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="font-weight: 700; color: ${ov.isOverdue ? '#b91c1c' : (isCur ? '#1d4ed8' : '#334155')}; font-size: 0.65rem;">${stageNamesMap[sk]}</span>
+                                    <span style="color: #2563eb; font-size: 0.6rem; font-weight: 600;">👤 ${stObj.owner || '--'}</span>
+                                </div>
+                                <div style="font-size: 0.62rem; margin-top: 2px;">
+                                    <span style="color:#64748b;">${sDate} ~ </span>
+                                    <span style="color:${endDateColor}; ${endDateFont}">计划完成: ${eDate}</span>
+                                    ${ovBadge}
+                                </div>
+                            `;
+                            schedContainer.appendChild(itemDiv);
+                        });
+                    }
+                } else {
+                    propCard.style.display = "none";
+                }
             }
 
             // Render input files (Inputs)
