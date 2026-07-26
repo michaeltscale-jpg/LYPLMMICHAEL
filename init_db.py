@@ -365,7 +365,44 @@ def init_database(force_reset=False):
         "proposal_reason": "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。",
         "estimated_budget": "180.0",
         "expected_benefits": "预计提升中试产能30%，降低跳动废损15%，年增加产值300万元。",
-        "required_date": (datetime.now() + timedelta(days=45)).strftime("%Y-%m-%d")
+        "required_date": (datetime.now() + timedelta(days=45)).strftime("%Y-%m-%d"),
+        "followup_logs": [
+            {
+                "id": 101,
+                "date": "2026-06-08",
+                "stage_tag": "G1 立项评审",
+                "follower": "赵工 (设备责任人)",
+                "content": "已完成《新增设备开发立项申请表》会审，厂房动力动能接口经评估具备扩产接入条件。"
+            },
+            {
+                "id": 102,
+                "date": "2026-06-16",
+                "stage_tag": "G2 拟定方案",
+                "follower": "工艺组",
+                "content": "完成《设备技术方案规格书(TDS)》与关键零部件国产化替代清单编制，跨部门会签 100% 通过。"
+            },
+            {
+                "id": 103,
+                "date": "2026-06-25",
+                "stage_tag": "G3 请购发包",
+                "follower": "采购委",
+                "content": "设备采购招标评审完成，已锁定拟中标供应商并完成商务合同与发包技术协议的打板签署。"
+            },
+            {
+                "id": 104,
+                "date": "2026-07-08",
+                "stage_tag": "G4 设备制作",
+                "follower": "制造部 (监造组)",
+                "content": "前往供应商工厂进行驻厂监造打卡，阴极辊电镀抛光与主轴装配精度复核无误，出厂 FAT 预验收通过。"
+            },
+            {
+                "id": 105,
+                "date": "2026-07-20",
+                "stage_tag": "G5 安装调试",
+                "follower": "现场工程组",
+                "content": "机台已吊装定位完毕，水电气二次配管配电接入完成，冷态点动与试车作业自检 (SAT) 合格。"
+            }
+        ]
     }, ensure_ascii=False)
 
     # 插入初始设备数据 (各阶段均有 3 个或以上设备)

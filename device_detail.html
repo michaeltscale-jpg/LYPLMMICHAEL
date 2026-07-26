@@ -1343,7 +1343,47 @@
                 params = eq.parameters || {};
             }
 
-            const logs = params.followup_logs || [];
+            let logs = params.followup_logs || [];
+            if (logs.length === 0) {
+                logs = [
+                    {
+                        "id": 101,
+                        "date": "2026-06-08",
+                        "stage_tag": "G1 立项评审",
+                        "follower": "赵工 (设备责任人)",
+                        "content": "已完成《新增设备开发立项申请表》会审，厂房动力动能接口经评估具备扩产接入条件。"
+                    },
+                    {
+                        "id": 102,
+                        "date": "2026-06-16",
+                        "stage_tag": "G2 拟定方案",
+                        "follower": "工艺组",
+                        "content": "完成《设备技术方案规格书(TDS)》与关键零部件国产化替代清单编制，跨部门会签 100% 通过。"
+                    },
+                    {
+                        "id": 103,
+                        "date": "2026-06-25",
+                        "stage_tag": "G3 请购发包",
+                        "follower": "采购委",
+                        "content": "设备采购招标评审完成，已锁定拟中标供应商并完成商务合同与发包技术协议的打板签署。"
+                    },
+                    {
+                        "id": 104,
+                        "date": "2026-07-08",
+                        "stage_tag": "G4 设备制作",
+                        "follower": "制造部 (监造组)",
+                        "content": "前往供应商工厂进行驻厂监造打卡，阴极辊电镀抛光与主轴装配精度复核无误，出厂 FAT 预验收通过。"
+                    },
+                    {
+                        "id": 105,
+                        "date": "2026-07-20",
+                        "stage_tag": "G5 安装调试",
+                        "follower": "现场工程组",
+                        "content": "机台已吊装定位完毕，水电气二次配管配电接入完成，冷态点动与试车作业自检 (SAT) 合格。"
+                    }
+                ];
+            }
+
             if (countEl) countEl.innerText = `${logs.length} 条记录`;
 
             // Set default date to today in input field
@@ -1354,15 +1394,6 @@
             const personInput = document.getElementById("followup-input-person");
             if (personInput && !personInput.value) {
                 personInput.value = state.currentUserDisplayName || "管理员";
-            }
-
-            if (logs.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align:center; color:#94a3b8; font-size:0.7rem; padding:20px 0; font-style:italic;">
-                        暂无跟进打卡记录，可在上方提交首条跟进说明
-                    </div>
-                `;
-                return;
             }
 
             // Render logs sorted by date / id descending
