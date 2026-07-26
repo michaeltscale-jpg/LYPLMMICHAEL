@@ -493,22 +493,22 @@
                             <input type="date" id="followup-input-date" class="stage-form-control" style="font-size: 0.7rem; padding: 4px 6px;">
                         </div>
                         <div>
-                            <label style="font-size: 0.65rem; color: #64748b; font-weight: 600;">跟进阶段</label>
-                            <select id="followup-input-tag" class="stage-form-control" style="font-size: 0.7rem; padding: 4px 6px;">
-                                <option value="G1 立项评审">G1 立项评审</option>
-                                <option value="G2 拟定方案">G2 拟定方案</option>
-                                <option value="G3 请购发包">G3 请购发包</option>
-                                <option value="G4 设备制作">G4 设备制作</option>
-                                <option value="G5 安装调试">G5 安装调试</option>
-                                <option value="G6 验收交付">G6 验收交付</option>
-                                <option value="综合跟进">综合跟进</option>
-                            </select>
+                            <label style="font-size: 0.65rem; color: #64748b; font-weight: 600;">跟进人</label>
+                            <input type="text" id="followup-input-person" list="users-datalist" class="stage-form-control" placeholder="责任人姓名" style="font-size: 0.7rem; padding: 4px 6px;">
+                            <datalist id="users-datalist"></datalist>
                         </div>
                     </div>
                     <div style="margin-bottom: 6px;">
-                        <label style="font-size: 0.65rem; color: #64748b; font-weight: 600;">跟进责任人</label>
-                        <input type="text" id="followup-input-person" list="users-datalist" class="stage-form-control" placeholder="责任人姓名" style="font-size: 0.7rem; padding: 4px 6px;">
-                        <datalist id="users-datalist"></datalist>
+                        <label style="font-size: 0.65rem; color: #64748b; font-weight: 600;">跟进阶段</label>
+                        <select id="followup-input-tag" class="stage-form-control" style="font-size: 0.7rem; padding: 4px 6px;">
+                            <option value="G1 立项评审">G1 立项评审</option>
+                            <option value="G2 拟定方案">G2 拟定方案</option>
+                            <option value="G3 请购发包">G3 请购发包</option>
+                            <option value="G4 设备制作">G4 设备制作</option>
+                            <option value="G5 安装调试">G5 安装调试</option>
+                            <option value="G6 验收交付">G6 验收交付</option>
+                            <option value="综合跟进">综合跟进</option>
+                        </select>
                     </div>
                     <div style="margin-bottom: 8px;">
                         <label style="font-size: 0.65rem; color: #64748b; font-weight: 600;">跟进内容与事项说明</label>
