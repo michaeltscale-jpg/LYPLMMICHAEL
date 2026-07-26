@@ -389,62 +389,51 @@
 
             </div>
 
-            <!-- 右侧：属性表单与流程控制 -->
-            <div class="workspace-panel control-panel">
-                <h4 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #334155; text-transform: uppercase;">📝 阶段管理属性</h4>
+            <!-- 右侧：设备全生命周期跟进记录 -->
+            <div class="workspace-panel control-panel" style="min-width: 360px;">
+                <h4 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #334155; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="message-square-text" style="width: 15px; height: 15px; color: #2563eb;"></i>
+                        <span>💬 设备全生命周期跟进记录</span>
+                    </span>
+                    <span style="font-size: 0.62rem; background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-weight: 700;" id="followup-total-count">0 条日志</span>
+                </h4>
                 
                 <!-- 隐藏的阶段主键 -->
                 <input type="hidden" id="edit-stage-key">
 
-                <div class="stage-form-group">
-                    <label>本里程碑负责人</label>
-                    <input type="text" id="edit-stage-owner" list="users-datalist" class="stage-form-control" placeholder="输入或选择负责人，如：张工 (设备立项组)">
-                    <datalist id="users-datalist"></datalist>
-                </div>
-
-                <div class="stage-form-group">
-                    <label>阶段状态</label>
-                    <select id="edit-stage-status" class="stage-form-control" onchange="onEmsStageStatusSelectChange()">
-                        <option value="未开始">未开始</option>
-                        <option value="进行中">进行中</option>
-                        <option value="审批中" disabled>审批中 (发起审批后自动变更为此状态)</option>
-                        <option value="已完成" disabled>已完成 (须审批通过后系统自动完结)</option>
-                    </select>
-                </div>
-
-                <div class="stage-form-group">
-                    <label>实际开始日期</label>
-                    <input type="date" id="edit-stage-start" class="stage-form-control">
-                </div>
-
-                <div class="stage-form-group">
-                    <label>计划/实际完成日期</label>
-                    <input type="date" id="edit-stage-end" class="stage-form-control">
-                </div>
-
-                <div class="stage-form-group">
-                    <label>阶段交付物与备注说明</label>
-                    <textarea id="edit-stage-remark" class="stage-form-control" rows="3" placeholder="录入阶段成果进展或异常说明..."></textarea>
-                </div>
-
-                <div style="display: flex; gap: 8px; margin-top: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 16px;">
-                    <button class="btn-primary" onclick="saveEquipmentStageProgress()" style="flex: 1; font-size: 0.74rem; padding: 8px; justify-content: center;">
-                        <i data-lucide="save" style="width: 14px; height: 14px;"></i> 保存修改
-                    </button>
-                    <button class="btn-secondary" onclick="resetEmsStageWorkbench()" style="font-size: 0.74rem; padding: 8px;">
-                        重置
-                    </button>
-                </div>
-
-                <!-- 钉钉审批联动 -->
-                <div id="workbench-dingtalk-block" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 14px; display: none; flex-direction: column; gap: 10px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://img.alicdn.com/tfs/TB1n162qZUrBKNjSZPxXXXw1XXa-1024-1024.png" style="width: 18px; height: 18px;" alt="DingTalk">
-                        <span style="font-size: 0.7rem; color: #475569; font-weight: 600;" id="workbench-dingtalk-status">可发起钉钉里程碑联合评审</span>
+                <!-- 快捷添加跟进记录表单 -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 0.72rem; font-weight: 700; color: #1e293b;">📝 录入新跟进打卡</span>
+                        <span style="font-size: 0.65rem; color: #2563eb; font-weight: 700;" id="followup-current-stage-tag">G1 立项评审</span>
                     </div>
-                    <button class="btn-primary" id="btn-launch-dingtalk" onclick="launchEmsStageDingtalkApproval()" style="width: 100%; font-size: 0.74rem; padding: 8px; justify-content: center; height: auto;">
-                        <i data-lucide="send" style="width: 14px; height: 14px;"></i> 发起钉钉审批
+                    <textarea id="followup-input-content" class="stage-form-control" rows="3" style="font-size: 0.72rem; margin-bottom: 8px;" placeholder="记录设备推进细节、现场调试状况、供应商沟通或异常打卡..."></textarea>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="followup-input-person" class="stage-form-control" style="font-size: 0.7rem; padding: 4px 6px; flex: 1;" placeholder="跟进人 (如: 张工)">
+                        <button class="btn-primary" onclick="submitEmsFollowupLog()" style="font-size: 0.7rem; padding: 4px 10px; height: auto;">
+                            <i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i> 提交日志
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 钉钉审批快捷触发器 -->
+                <div id="workbench-dingtalk-block" style="background: #eff6ff; border: 1px dashed #93c5fd; border-radius: 8px; padding: 10px; margin-top: 10px; display: none; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <img src="https://img.alicdn.com/tfs/TB1n162qZUrBKNjSZPxXXXw1XXa-1024-1024.png" style="width: 16px; height: 16px;" alt="DingTalk">
+                        <span style="font-size: 0.68rem; color: #1e40af; font-weight: 600;" id="workbench-dingtalk-status">可发起里程碑联合评审</span>
+                    </div>
+                    <button class="btn-primary" id="btn-launch-dingtalk" onclick="launchEmsStageDingtalkApproval()" style="width: 100%; font-size: 0.7rem; padding: 4px 8px; justify-content: center; height: auto;">
+                        <i data-lucide="send" style="width: 12px; height: 12px;"></i> 发起钉钉审批并推进
                     </button>
+                </div>
+
+                <!-- 时间轴跟进日志列表 -->
+                <div style="margin-top: 12px; border-top: 1px solid #cbd5e1; padding-top: 10px;">
+                    <div style="font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 8px;">🕒 项目跟进履历时间轴</div>
+                    <div id="followup-logs-timeline" style="display: flex; flex-direction: column; gap: 8px; max-height: 480px; overflow-y: auto; padding-right: 4px;">
+                        <!-- JS 动态渲染 -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1188,8 +1177,132 @@
                 });
             }
 
+            // Update stage tag for follow-up log form
+            const stageTagEl = document.getElementById("followup-current-stage-tag");
+            if (stageTagEl) {
+                stageTagEl.innerText = `${stageKey.toUpperCase().replace('STAGE', 'G')} ${item.title}`;
+            }
+
+            // Render equipment follow-up logs timeline
+            renderEmsFollowupLogs();
+
             if (window.lucide) {
                 lucide.createIcons();
+            }
+        }
+
+        // Render Equipment Follow-up Logs timeline in right column
+        function renderEmsFollowupLogs() {
+            const eq = state.equipment;
+            if (!eq) return;
+
+            let params = {};
+            try {
+                params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : (eq.parameters || eq.parameters_json || {});
+            } catch (e) {
+                params = {};
+            }
+
+            const logs = params.followup_logs || params._maintenance_logs || [];
+            const container = document.getElementById("followup-logs-timeline");
+            const countEl = document.getElementById("followup-total-count");
+            
+            if (countEl) countEl.innerText = `${logs.length} 条日志`;
+            if (!container) return;
+            container.innerHTML = "";
+
+            if (logs.length === 0) {
+                container.innerHTML = `<div style="color: #94a3b8; font-size: 0.7rem; text-align: center; padding: 20px 0; font-style: italic;">暂无跟进打卡日志，请在上方提交新记录...</div>`;
+                return;
+            }
+
+            // Sort newest on top
+            const sortedLogs = [...logs].reverse();
+            sortedLogs.forEach(log => {
+                const timeStr = log.date || log.time || log.created_at || "--";
+                const personStr = log.follower || log.operator || state.currentUserDisplayName || "管理员";
+                const stageStr = log.stage_tag || "跟进打卡";
+                const contentStr = log.content || log.text || "";
+
+                const itemEl = document.createElement("div");
+                itemEl.style.cssText = "background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 10px; font-size: 0.7rem; border-left: 3.5px solid #2563eb; box-shadow: 0 1px 3px rgba(0,0,0,0.04);";
+                itemEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="user" style="width: 12px; height: 12px; color: #2563eb;"></i> ${personStr}
+                        </span>
+                        <span style="font-size: 0.62rem; background: #eff6ff; color: #1d4ed8; padding: 1px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #bfdbfe;">${stageStr}</span>
+                    </div>
+                    <div style="color: #334155; line-height: 1.5; margin-bottom: 4px; word-break: break-all; font-weight: 500;">${contentStr}</div>
+                    <div style="font-size: 0.6rem; color: #94a3b8; text-align: right;">${timeStr}</div>
+                `;
+                container.appendChild(itemEl);
+            });
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        // Submit new Follow-up log entry
+        async function submitEmsFollowupLog() {
+            const eq = state.equipment;
+            if (!eq) return;
+
+            const contentInput = document.getElementById("followup-input-content");
+            const personInput = document.getElementById("followup-input-person");
+            const content = contentInput ? contentInput.value.trim() : "";
+            const person = (personInput && personInput.value.trim()) ? personInput.value.trim() : (state.currentUserDisplayName || "管理员");
+
+            if (!content) {
+                showToast("跟进打卡内容不能为空！", "error");
+                return;
+            }
+
+            const stageKey = state.activeStageKey || "stage1_plan";
+            const stageTitle = getEmsStageDefaultTitle(stageKey);
+            const dateStr = formatEmsTime(new Date());
+
+            let params = {};
+            try {
+                params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : (eq.parameters || eq.parameters_json || {});
+            } catch (e) {
+                params = {};
+            }
+
+            if (!params.followup_logs) params.followup_logs = [];
+
+            const newLog = {
+                id: Date.now(),
+                date: dateStr,
+                follower: person,
+                stage_tag: `G${stageKey.replace('stage', '')} ${stageTitle}`,
+                content: content,
+                created_at: dateStr
+            };
+
+            params.followup_logs.push(newLog);
+            eq.parameters = params;
+
+            try {
+                await fetch("/api/equipments/parameters", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-User-Role": state.currentUserRole,
+                        "X-User-Name": encodeURIComponent(state.currentUserDisplayName)
+                    },
+                    body: JSON.stringify({
+                        id: eq.id,
+                        parameters_json: JSON.stringify(params)
+                    })
+                });
+                showToast("🎉 跟进打卡日志记录成功！", "success");
+                if (contentInput) contentInput.value = "";
+                renderEmsFollowupLogs();
+            } catch (e) {
+                console.error(e);
+                showToast("提交日志通信失败", "error");
             }
         }
 
