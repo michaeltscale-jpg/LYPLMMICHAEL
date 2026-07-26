@@ -514,35 +514,23 @@
                         <i data-lucide="plus-circle" style="width: 15px; height: 15px; color: #059669;"></i>
                         <span>新增设备跟进打卡</span>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                         <div>
-                            <label style="font-size: 0.76rem; color: #475569; font-weight: 700;">跟进日期</label>
-                            <input type="date" id="followup-input-date" class="stage-form-control" style="font-size: 0.78rem; padding: 5px 8px;">
+                            <label style="font-size: 0.78rem; color: #475569; font-weight: 700; margin-bottom: 3px; display: block;">跟进日期</label>
+                            <input type="date" id="followup-input-date" class="stage-form-control" style="font-size: 0.8rem; padding: 6px 10px; height: 34px; box-sizing: border-box;">
                         </div>
                         <div>
-                            <label style="font-size: 0.76rem; color: #475569; font-weight: 700;">跟进人</label>
-                            <input type="text" id="followup-input-person" list="users-datalist" class="stage-form-control" placeholder="责任人姓名" style="font-size: 0.78rem; padding: 5px 8px;">
+                            <label style="font-size: 0.78rem; color: #475569; font-weight: 700; margin-bottom: 3px; display: block;">跟进人</label>
+                            <input type="text" id="followup-input-person" list="users-datalist" class="stage-form-control" placeholder="从用户清单选择" style="font-size: 0.8rem; padding: 6px 10px; height: 34px; box-sizing: border-box;">
                             <datalist id="users-datalist"></datalist>
                         </div>
                     </div>
-                    <div style="margin-bottom: 8px;">
-                        <label style="font-size: 0.76rem; color: #475569; font-weight: 700;">跟进阶段</label>
-                        <select id="followup-input-tag" class="stage-form-control" style="font-size: 0.78rem; padding: 5px 8px;">
-                            <option value="G1 立项评审">G1 立项评审</option>
-                            <option value="G2 拟定方案">G2 拟定方案</option>
-                            <option value="G3 请购发包">G3 请购发包</option>
-                            <option value="G4 设备制作">G4 设备制作</option>
-                            <option value="G5 安装调试">G5 安装调试</option>
-                            <option value="G6 验收交付">G6 验收交付</option>
-                            <option value="综合跟进">综合跟进</option>
-                        </select>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 0.78rem; color: #475569; font-weight: 700; margin-bottom: 4px; display: block;">跟进内容与事项说明</label>
+                        <textarea id="followup-input-content" class="stage-form-control" rows="5" placeholder="录入阶段推进打卡事项、问题或指示要点..." style="font-size: 0.85rem; padding: 10px 12px; line-height: 1.6; min-height: 120px; width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <label style="font-size: 0.76rem; color: #475569; font-weight: 700;">跟进内容与事项说明</label>
-                        <textarea id="followup-input-content" class="stage-form-control" rows="2" placeholder="录入阶段推进打卡事项、问题或指示要点..." style="font-size: 0.78rem; padding: 6px 8px; line-height: 1.4;"></textarea>
-                    </div>
-                    <button class="btn-primary" onclick="addEmsFollowupLog()" style="width: 100%; font-size: 0.8rem; padding: 7px; justify-content: center; font-weight: 700;">
-                        <i data-lucide="check-circle-2" style="width: 14px; height: 14px;"></i> 提交跟进打卡
+                    <button class="btn-primary" onclick="addEmsFollowupLog()" style="width: 100%; font-size: 0.85rem; padding: 9px; justify-content: center; font-weight: 700;">
+                        <i data-lucide="check-circle-2" style="width: 15px; height: 15px;"></i> 提交跟进打卡
                     </button>
                 </div>
 
@@ -1513,7 +1501,11 @@
             if (!eq) return;
 
             const date = document.getElementById("followup-input-date").value || formatEmsTime(new Date()).substring(0, 10);
-            const tag = document.getElementById("followup-input-tag").value;
+            const stageTagMap = {
+                "stage1_plan": "G1 设备立项", "stage2_scheme": "G2 拟定方案", "stage3_bidding": "G3 请购发包",
+                "stage4_make": "G4 设备制作", "stage5_install": "G5 安装调试", "stage6_accept": "G6 验收交付"
+            };
+            const tag = stageTagMap[state.activeStageKey] || "综合跟进";
             const person = document.getElementById("followup-input-person").value.trim() || state.currentUserDisplayName || "管理员";
             const content = document.getElementById("followup-input-content").value.trim();
 
