@@ -844,22 +844,28 @@
             state.plmUsers = Array.from(new Set([...usersList, ...defaultPLMUsers]));
         };
 
-        // 安全填充渲染原生 <select class="user-select-dropdown"> 选项并选中
+        // 安全填充渲染原生 <select class="user-select-dropdown"> 选项并选中 (彻底排除部门组织词汇)
         window.setUserSelectSafe = function(idOrEl, currentVal) {
             const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
             if (!el) return;
 
-            const list = state.plmUsers || ["张工", "李工", "王经理", "刘工", "陈工", "赵经理", "孙工", "周工", "钱主管", "管理员", "张建国", "李秀英", "王伟", "刘强"];
-            const cleanVal = (currentVal || "").replace(/[\(（].*?[\)）]/g, "").trim();
-            
-            let html = "";
-            if (!cleanVal) {
-                html += `<option value="" selected>-- 请选择人员 --</option>`;
-            } else if (!list.includes(cleanVal)) {
-                html += `<option value="${cleanVal}" selected>${cleanVal}</option>`;
+            const isOrgTerm = (str) => {
+                if (!str) return true;
+                const s = str.trim();
+                return s.endsWith("组") || s.endsWith("部门") || s.endsWith("部") || s.endsWith("委") || s.endsWith("科") || s.includes("中心") || s === "未知";
+            };
+
+            const defaultList = ["张工", "李工", "王经理", "刘工", "陈工", "赵经理", "孙工", "周工", "钱主管", "管理员", "张建国", "李秀英", "王伟", "刘强"];
+            const rawList = (state.plmUsers && state.plmUsers.length > 0) ? state.plmUsers : defaultList;
+            const validUsers = Array.from(new Set(rawList.filter(u => u && !isOrgTerm(u))));
+
+            let cleanVal = (currentVal || "").replace(/[\(（].*?[\)）]/g, "").trim();
+            if (isOrgTerm(cleanVal)) {
+                cleanVal = validUsers[0] || "张工";
             }
 
-            list.forEach(name => {
+            let html = "";
+            validUsers.forEach(name => {
                 const isSel = (name === cleanVal) ? "selected" : "";
                 html += `<option value="${name}" ${isSel}>${name}</option>`;
             });
