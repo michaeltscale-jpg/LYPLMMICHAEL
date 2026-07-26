@@ -44,14 +44,50 @@ def make_default_project_plan(created_time, creator):
 
 def make_default_equipment_project_plan(active_stage_idx=6):
     stages = [
-        ("stage1_plan", "立项", "赵工", -50, -45, "设备设计任务书与大纲.pdf", "/docs/eq_design_draft.pdf"),
-        ("stage2_scheme", "拟定技术方案", "工艺组", -44, -38, "设备技术方案评审意见.pdf", "/docs/eq_technical_scheme.pdf"),
-        ("stage3_bidding", "请购发包", "采购委", -37, -30, "发包技术协议与中标通知.pdf", "/docs/eq_bidding_contract.pdf"),
-        ("stage4_make", "制作中", "制造部", -29, -15, "设备制作进度与出厂检核表.pdf", "/docs/eq_make_log.pdf"),
-        ("stage5_install", "安装调试中", "现场工程组", -14, 5, "安装调试规范与自检报告.pdf", "/docs/eq_install_log.pdf"),
-        ("stage6_accept", "验收交付使用", "项目部", 6, 12, "竣工验收签收单与合格证.pdf", "/docs/eq_acceptance_sheet.pdf")
+        ("stage1_plan", "立项", "设备组", -50, -45, "《设备立项可行性评估报告》.pdf", "/docs/eq_g1_deliverable.pdf"),
+        ("stage2_scheme", "拟定技术方案", "工程部门", -44, -38, "《设备技术方案规格书(正式稿)》.pdf", "/docs/eq_g2_deliverable.pdf"),
+        ("stage3_bidding", "请购发包中", "采购部门", -37, -30, "《设备采购合同与发包技术协议》.pdf", "/docs/eq_g3_deliverable.pdf"),
+        ("stage4_make", "设备制作中", "工程部门", -29, -15, "《设备出厂预验收检验核对表(FAT)》.pdf", "/docs/eq_g4_deliverable.pdf"),
+        ("stage5_install", "安装调试中", "工程部门", -14, 5, "《设备二次工程与安装自检报告(SAT)》.pdf", "/docs/eq_g5_deliverable.pdf"),
+        ("stage6_accept", "验收交付使用", "使用部门", 6, 12, "《设备竣工综合验收签收单(正式结案)》.pdf", "/docs/eq_g6_deliverable.pdf")
     ]
     
+    stage_inputs = {
+        "stage1_plan": ["《新增设备申请表》.docx", "《生产/工艺扩产需求意向书》.pdf", "《厂房动能与场地现状评估》.xlsx"],
+        "stage2_scheme": ["《设备设计大纲与技术要求》.pdf", "《设备安全与环保 SOP 标准规程》.docx", "《关键零部件与国产化替代清单》.xlsx"],
+        "stage3_bidding": ["《设备技术方案规格书(签章版)》.pdf", "《采购请购申请单(PR)》.xlsx", "《合格供应商名录(AVL)》.pdf"],
+        "stage4_make": ["《设备采购合同与发包技术协议》.pdf", "《供应商制作排期甘特图》.xlsx", "《外购件进厂检验标准》.pdf"],
+        "stage5_install": ["《设备出厂预验收检验核对表(FAT)》.pdf", "《二次配管配电工程施工图》.dwg", "《安装调试安全作业指导书》.docx"],
+        "stage6_accept": ["《单机/联动试运转记录表》.xlsx", "《CPK/OEE 72小时连续稳定性测试原始数据》.xlsx", "《设备维护保养 SOP 与易损件清单》.pdf"]
+    }
+
+    stage_deliverables = {
+        "stage1_plan": ["《设备立项可行性评估报告》.pdf", "《设备初估成本与投资预算表》.xlsx", "《设备开发一级计划排期表》.pdf"],
+        "stage2_scheme": ["《设备技术方案规格书(正式稿)》.pdf", "《机械3D/2D精密装配图纸与IO分配表》.zip", "《目标成本分解表》.xlsx"],
+        "stage3_bidding": ["《供应商技术与商务评标比选表》.xlsx", "《设备采购合同与发包技术协议》.pdf", "《采购发包实际成本与预算对比表》.xlsx"],
+        "stage4_make": ["《设备制作监造与周进度跟踪月报》.pdf", "《设备出厂预验收检验核对表(FAT)》.pdf", "《出厂合格证与机械电气随机资料包》.zip"],
+        "stage5_install": ["《设备二次工程与安装自检报告(SAT)》.pdf", "《单机/联动空载及负载试运转记录表》.xlsx", "《安装调试阶段累计支出账单》.xlsx"],
+        "stage6_accept": ["《设备竣工综合验收签收单(正式结案)》.pdf", "《设备全生命周期实际决算与预算对比表》.xlsx", "《设备转固资产移交单与固定资产编号卡》.pdf"]
+    }
+
+    progress_controls = {
+        "stage1_plan": {"target_days": 7, "node": "需求定义与会审周期 ≤ 7 天；立项审批闭环", "status_text": "进度符合预期 (周期7天)"},
+        "stage2_scheme": {"target_days": 10, "node": "方案设计与会审周期 ≤ 10 天；跨部门会签率 100%", "status_text": "进度符合预期 (周期10天)"},
+        "stage3_bidding": {"target_days": 15, "node": "请购-招标-定标周期 ≤ 15 天；预警未定标风险", "status_text": "进度符合预期 (周期15天)"},
+        "stage4_make": {"target_days": 30, "node": "监造周节点打卡；预警制造延期超 5 天风险", "status_text": "制作打卡正常 (周期30天)"},
+        "stage5_install": {"target_days": 15, "node": "安装调试周期 ≤ 15 天；Punch List 闭环率 100%", "status_text": "安装调试中 (周期15天)"},
+        "stage6_accept": {"target_days": 10, "node": "72 小时连续试运行达标；档案归档率 100%", "status_text": "72h测试闭环 (周期10天)"}
+    }
+
+    cost_controls = {
+        "stage1_plan": {"budget": "180.0 万元", "actual": "0.0 万元", "control": "初始预算上限核算；评估投资回收期 ROI ≤ 24 个月"},
+        "stage2_scheme": {"budget": "180.0 万元", "actual": "0.0 万元", "control": "实行限额设计 (Target Costing)，严禁过配导致的成本超支"},
+        "stage3_bidding": {"budget": "180.0 万元", "actual": "172.5 万元", "control": "商务谈判降本 (目标降本 ≥ 5%)；优化付款比例 (3:3:3:1)"},
+        "stage4_make": {"budget": "172.5 万元", "actual": "172.5 万元", "control": "制作阶段设计变更管控，变更单须经成本审批，禁止现场随意增项"},
+        "stage5_install": {"budget": "178.0 万元", "actual": "176.8 万元", "control": "严格控制试车水电气配给与铜箔试产废料损耗成本"},
+        "stage6_accept": {"budget": "178.0 万元", "actual": "176.8 万元", "control": "最终成本决算审计 (实际花费 vs 初始预算差异分析，尾款触发)"}
+    }
+
     plan = {}
     base = datetime.now()
     
@@ -65,14 +101,6 @@ def make_default_equipment_project_plan(active_stage_idx=6):
         start_date = (base + timedelta(days=start_offset)).strftime("%Y-%m-%d")
         end_date = (base + timedelta(days=end_offset)).strftime("%Y-%m-%d")
         
-        stage_inputs = {
-            "stage1_plan": ["新增设备申请表.docx", "设备立项可行性报告.pdf", "成本预算与效益评估.xlsx"],
-            "stage2_scheme": ["设备设计任务书.pdf", "工艺性能指标书.xlsx"],
-            "stage3_bidding": ["技术方案评审意见书.docx", "采购请购申请表.xlsx"],
-            "stage4_make": ["中标通知书.pdf", "采购合同与技术协议.pdf"],
-            "stage5_install": ["出厂合格证.pdf", "设备动能供给规范.docx"],
-            "stage6_accept": ["安装自检自测报告.pdf", "设备单机试运转记录.xlsx"]
-        }
         plan[s_key] = {
             "title": s_title,
             "status": s_status,
@@ -82,7 +110,10 @@ def make_default_equipment_project_plan(active_stage_idx=6):
             "remark": f"{s_title}阶段正常进展" if s_status != "未开始" else "",
             "attachment_name": att_name if s_status != "未开始" else "",
             "attachment_url": att_url if s_status != "未开始" else "",
-            "input_files": stage_inputs[s_key] if s_status != "未开始" else []
+            "input_files": stage_inputs[s_key],
+            "deliverable_files": stage_deliverables[s_key],
+            "progress_control": progress_controls[s_key],
+            "cost_control": cost_controls[s_key]
         }
     return json.dumps(plan, ensure_ascii=False)
 
