@@ -468,11 +468,16 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
                         <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8b; display: flex; align-items: center; gap: 6px;">
                             <i data-lucide="folder-open" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="folder-open" style="width: 16px; height: 16px; color: #2563eb;"></i>
                             <span>📥 本阶段主题输入资料 (Inputs)</span>
                         </div>
-                        <button onclick="openEmsInputFilesModal()" class="btn-primary" style="font-size: 0.72rem; padding: 3px 10px; height: auto;">
-                            <i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i>录入资料
-                        </button>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size: 0.72rem; color: #475569; font-weight: 700;" id="workbench-inputs-count">已就绪 0 项</span>
+                            <button onclick="openEmsInputFilesModal()" class="btn-primary" style="font-size: 0.72rem; padding: 3px 10px; height: auto;">
+                                <i data-lucide="plus-circle" style="width: 12px; height: 12px;"></i>录入资料
+                            </button>
+                        </div>
                     </div>
                     <div id="workbench-inputs-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
                         <!-- JS 动态渲染 -->
@@ -1208,20 +1213,47 @@
             if (inputsList) {
                 inputsList.innerHTML = "";
                 const files = (item.input_files && item.input_files.length > 0) ? item.input_files : (defaultInputsMap[stageKey] || []);
+                const inputStatusMap = item.input_status_map || {};
+                let inputDoneCount = 0;
+
                 if (files.length === 0) {
                     inputsList.innerHTML = `<span style="color: var(--text-muted); font-style: italic; font-size: 0.65rem;">暂无输入文件</span>`;
                 } else {
-                    files.forEach(file => {
+                    files.forEach((file, idx) => {
+                        const isDone = inputStatusMap.hasOwnProperty(file) ? !!inputStatusMap[file] : (idx < 2);
+                        if (isDone) inputDoneCount++;
+
                         const itemEl = document.createElement("div");
-                        itemEl.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:4px 8px; border-radius:4px; border:1px solid #e2e8f0; font-size:0.68rem;";
+                        itemEl.style.cssText = isDone 
+                            ? "display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:6px 10px; border-radius:6px; border:1px solid #bbf7d0; font-size:0.75rem;"
+                            : "display:flex; justify-content:space-between; align-items:center; background:#fffbeb; padding:6px 10px; border-radius:6px; border:1px solid #fef08a; font-size:0.75rem;";
+
+                        const badgeHtml = isDone
+                            ? `<span style="background:#dcfce7; color:#166534; padding:2px 7px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid #86efac; display:inline-flex; align-items:center; gap:3px;">✅ 已输入</span>`
+                            : `<span style="background:#fef3c7; color:#b45309; padding:2px 7px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid #fde047; display:inline-flex; align-items:center; gap:3px;">⏳ 未输入</span>`;
+
+                        const iconColor = isDone ? "#16a34a" : "#d97706";
+
                         itemEl.innerHTML = `
-                            <span style="display:flex; align-items:center; gap:6px; color:#1e293b; font-weight:500;">
-                                <i data-lucide="file-input" style="width: 12px; height: 12px; color: #2563eb;"></i> ${file}
-                            </span>
-                            <button onclick="showToast('正在预览输入资料: ${file}', 'info')" class="dms-action-btn" style="font-size:0.6rem; padding:1px 6px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">预览</button>
+                            <div style="display:flex; align-items:center; gap:8px; color:#0f172a; font-weight:600;">
+                                <i data-lucide="${isDone ? 'check-circle-2' : 'alert-circle'}" style="width: 14px; height: 14px; color: ${iconColor};"></i>
+                                <span>${file}</span>
+                                ${badgeHtml}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <button onclick="toggleEmsInputFileStatus('${file}')" style="font-size:0.65rem; padding:2px 8px; border-radius:4px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer; font-weight:600;">
+                                    ${isDone ? '标记未输入' : '标记已输入'}
+                                </button>
+                                <button onclick="showToast('正在预览输入资料: ${file}', 'info')" class="dms-action-btn" style="font-size:0.65rem; padding:2px 8px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">预览</button>
+                            </div>
                         `;
                         inputsList.appendChild(itemEl);
                     });
+                }
+
+                const inputsCountEl = document.getElementById("workbench-inputs-count");
+                if (inputsCountEl) {
+                    inputsCountEl.innerHTML = `<span style="color:${inputDoneCount === files.length ? '#16a34a' : '#d97706'}; font-weight:800;">已就绪 ${inputDoneCount}/${files.length} 项</span>`;
                 }
             }
 
@@ -1239,24 +1271,48 @@
             };
 
             const delivFiles = (item.deliverable_files && item.deliverable_files.length > 0) ? item.deliverable_files : (defaultDeliverablesMap[stageKey] || []);
-            if (deliverablesCountEl) deliverablesCountEl.innerText = `${delivFiles.length} 项标准成果`;
+            const delivStatusMap = item.deliverable_status_map || {};
+            let delivDoneCount = 0;
 
             if (deliverablesList) {
                 deliverablesList.innerHTML = "";
                 if (delivFiles.length === 0) {
                     deliverablesList.innerHTML = `<span style="color: #94a3b8; font-style: italic; font-size: 0.65rem;">暂无输出交付件</span>`;
                 } else {
-                    delivFiles.forEach(df => {
+                    delivFiles.forEach((df, idx) => {
+                        const isDone = delivStatusMap.hasOwnProperty(df) ? !!delivStatusMap[df] : (idx < 2);
+                        if (isDone) delivDoneCount++;
+
                         const itemEl = document.createElement("div");
-                        itemEl.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#ffffff; padding:4px 8px; border-radius:4px; border:1px solid #e2e8f0; font-size:0.68rem;";
+                        itemEl.style.cssText = isDone
+                            ? "display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:6px 10px; border-radius:6px; border:1px solid #bbf7d0; font-size:0.75rem;"
+                            : "display:flex; justify-content:space-between; align-items:center; background:#fff7ed; padding:6px 10px; border-radius:6px; border:1px solid #ffedd5; font-size:0.75rem;";
+
+                        const badgeHtml = isDone
+                            ? `<span style="background:#dcfce7; color:#15803d; padding:2px 7px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid #86efac; display:inline-flex; align-items:center; gap:3px;">✅ 已输出</span>`
+                            : `<span style="background:#ffedd5; color:#c2410c; padding:2px 7px; border-radius:4px; font-weight:700; font-size:0.68rem; border:1px solid #fed7aa; display:inline-flex; align-items:center; gap:3px;">⚠️ 未输出</span>`;
+
+                        const iconColor = isDone ? "#16a34a" : "#ea580c";
+
                         itemEl.innerHTML = `
-                            <span style="display:flex; align-items:center; gap:6px; color:#1e293b; font-weight:600;">
-                                <i data-lucide="file-check-2" style="width: 12px; height: 12px; color: #059669;"></i> ${df}
-                            </span>
-                            <button onclick="showToast('正在预览交付成果件: ${df}', 'info')" class="dms-action-btn" style="font-size:0.6rem; padding:1px 6px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0;">预览成果</button>
+                            <div style="display:flex; align-items:center; gap:8px; color:#0f172a; font-weight:600;">
+                                <i data-lucide="${isDone ? 'file-check-2' : 'file-warning'}" style="width: 14px; height: 14px; color: ${iconColor};"></i>
+                                <span>${df}</span>
+                                ${badgeHtml}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <button onclick="toggleEmsDeliverableFileStatus('${df}')" style="font-size:0.65rem; padding:2px 8px; border-radius:4px; border:1px solid #cbd5e1; background:#ffffff; color:#334155; cursor:pointer; font-weight:600;">
+                                    ${isDone ? '标记未输出' : '标记已输出'}
+                                </button>
+                                <button onclick="showToast('正在预览交付成果件: ${df}', 'info')" class="dms-action-btn" style="font-size:0.65rem; padding:2px 8px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0;">预览成果</button>
+                            </div>
                         `;
                         deliverablesList.appendChild(itemEl);
                     });
+                }
+
+                if (deliverablesCountEl) {
+                    deliverablesCountEl.innerHTML = `<span style="color:${delivDoneCount === delivFiles.length ? '#15803d' : '#c2410c'}; font-weight:800;">已交付 ${delivDoneCount}/${delivFiles.length} 项</span>`;
                 }
             }
 
@@ -1710,6 +1766,66 @@
                 showToast("更新数据异常", "error");
             }
         }
+
+        // 切换输入文件【已输入 / 未输入】判别状态
+        window.toggleEmsInputFileStatus = async function(fileName) {
+            const eq = state.equipment;
+            if (!eq) return;
+            const stageKey = state.activeStageKey || "stage1_plan";
+            let plan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : (eq.project_plan || eq.project_plan_json || {});
+            
+            if (!plan[stageKey]) plan[stageKey] = {};
+            if (!plan[stageKey].input_status_map) plan[stageKey].input_status_map = {};
+            
+            const defaultInputsMap = {
+                "stage1_plan": ["《新增设备开发立项申请表》.docx", "《生产/工艺扩产需求意向书》.pdf", "《厂房动能与场地现状评估报告》.xlsx", "《设备开发ROI与投资回收期分析表》.xlsx"],
+                "stage2_scheme": ["《设备设计大纲与技术要求(TDS规格)》.pdf", "《设备安全与环保 SOP 标准规程》.docx", "《关键零部件与国产化替代清单》.xlsx", "《电气/PLC控制系统硬件选型表》.xlsx"],
+                "stage3_bidding": ["《设备技术方案规格书(签章版)》.pdf", "《设备采购请购申请单(PR单)》.xlsx", "《合格设备供应商名录(AVL库)》.pdf", "《设备采购发包商务条款与保密协议》.docx"],
+                "stage4_make": ["《设备采购商务合同与发包技术协议》.pdf", "《供应商设备制作排期甘特图(每周更新)》.xlsx", "《核心零部件进厂检验与材质证明》.pdf", "《设备出厂前FAT预验收检查表》.xlsx"],
+                "stage5_install": ["《设备出厂预验收检验合格报告(FAT)》.pdf", "《二次配管配电与厂房施工对接图》.dwg", "《现场安装调试安全作业指导书(JSA)》.docx", "《冷态/热态单机与联动点动试车规程》.pdf"],
+                "stage6_accept": ["《单机/联动试运转72小时连续日志》.xlsx", "《CPK/OEE 72小时连续稳定性测试原始数据》.xlsx", "《设备维护保养 SOP 与易损件备件清单》.pdf", "《操作人员/维修人员培训签到表与考核成绩》.pdf"]
+            };
+            const defaultFiles = (plan[stageKey].input_files && plan[stageKey].input_files.length > 0) ? plan[stageKey].input_files : (defaultInputsMap[stageKey] || []);
+            const fileIdx = defaultFiles.indexOf(fileName);
+            const curState = plan[stageKey].input_status_map.hasOwnProperty(fileName) 
+                ? !!plan[stageKey].input_status_map[fileName] 
+                : (fileIdx >= 0 ? fileIdx < 2 : false);
+
+            plan[stageKey].input_status_map[fileName] = !curState;
+
+            const nextText = !curState ? "✅ 已输入" : "⏳ 未输入";
+            await saveEmsProjectPlanDirectly(eq.id, plan, `将 G${stageKey.replace('stage', '')} 输入文件 [${fileName}] 标记为 ${nextText}`);
+        };
+
+        // 切换输出交付件【已输出 / 未输出】判别状态
+        window.toggleEmsDeliverableFileStatus = async function(fileName) {
+            const eq = state.equipment;
+            if (!eq) return;
+            const stageKey = state.activeStageKey || "stage1_plan";
+            let plan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : (eq.project_plan || eq.project_plan_json || {});
+            
+            if (!plan[stageKey]) plan[stageKey] = {};
+            if (!plan[stageKey].deliverable_status_map) plan[stageKey].deliverable_status_map = {};
+            
+            const defaultDeliverablesMap = {
+                "stage1_plan": ["《设备立项可行性评估报告(最终签署版)》.pdf", "《设备初估成本与投资预算表》.xlsx", "《设备开发全生命周期一级排期计划》.pdf", "《设备开发项目组组建与分工表》.xlsx"],
+                "stage2_scheme": ["《设备技术方案规格书(正式签章版)》.pdf", "《设备机械3D精密装配图纸与2D施工图包》.zip", "《电气原理图与PLC控制逻辑说明书》.pdf", "《设备目标成本分解与BOM明细表》.xlsx"],
+                "stage3_bidding": ["《供应商技术与商务评标综合比选表》.xlsx", "《设备采购商务合同与发包技术协议》.pdf", "《采购发包实际成本与目标成本对比表》.xlsx", "《供应商现场制造与审计评估报告》.pdf"],
+                "stage4_make": ["《设备制作监造与周进度跟踪报告》.pdf", "《设备出厂预验收检验合格报告(FAT)》.pdf", "《出厂合格证与机械电气随机技术资料包》.zip", "《设备运输吊装与入厂定位方案》.pdf"],
+                "stage5_install": ["《单机/联动72小时试运转测试日志》.xlsx", "《设备二次工程与现场安装自检确认单(SAT)》.pdf", "《现场安装调试问题(Punch List)整改追踪表》.xlsx", "《安装调试阶段累计支出账单与核算表》.xlsx"],
+                "stage6_accept": ["《设备终验合格签署单(SAT正式结案)》.pdf", "《设备转固资产移交确认卡与编号》.pdf", "《设备全生命周期实际决算与初始预算对比表》.xlsx", "《设备完整履历归档案卷总目录》.pdf"]
+            };
+            const defaultFiles = (plan[stageKey].deliverable_files && plan[stageKey].deliverable_files.length > 0) ? plan[stageKey].deliverable_files : (defaultDeliverablesMap[stageKey] || []);
+            const fileIdx = defaultFiles.indexOf(fileName);
+            const curState = plan[stageKey].deliverable_status_map.hasOwnProperty(fileName) 
+                ? !!plan[stageKey].deliverable_status_map[fileName] 
+                : (fileIdx >= 0 ? fileIdx < 2 : false);
+
+            plan[stageKey].deliverable_status_map[fileName] = !curState;
+
+            const nextText = !curState ? "✅ 已输出" : "⚠️ 未输出";
+            await saveEmsProjectPlanDirectly(eq.id, plan, `将 G${stageKey.replace('stage', '')} 交付成果件 [${fileName}] 标记为 ${nextText}`);
+        };
 
         window.updateEmsProposalBaseInfo = async function(field, value) {
             const eq = state.equipment;
