@@ -341,38 +341,59 @@
                     <span id="workbench-stage-status-badge" class="ems-node-badge" style="font-size: 0.65rem; padding: 4px 10px; border-radius: 12px; font-weight: 700;">--</span>
                 </div>
 
-                <!-- 设备立项申请书核心内容卡片 (仅 G1 阶段呈现) -->
-                <div id="workbench-proposal-summary-card" style="display: none; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; margin-bottom: 10px;">
-                        <div style="font-size: 0.8rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
-                            <i data-lucide="file-check-2" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                            <span>📜 设备立项申请书 (核心评估指标)</span>
+                <!-- 设备开发立项申请表 (仅 G1 阶段呈现) -->
+                <div id="workbench-proposal-summary-card" style="display: none; background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); border: 1.5px solid #93c5fd; border-radius: 10px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);">
+                    <!-- 表单头部标题 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 12px;">
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="clipboard-signature" style="width: 18px; height: 18px; color: #2563eb;"></i>
+                            <span>📋 设备开发立项申请表 (Equipment Proposal Form)</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 0.65rem; background: #dbeafe; color: #1d4ed8; padding: 2px 8px; border-radius: 4px; font-weight: 700;">G1 立项评审归档件</span>
-                            <button onclick="openEditProposalModal()" class="btn-primary" style="font-size: 0.65rem; padding: 3px 8px; height: auto;">
-                                <i data-lucide="edit-3" style="width: 11px; height: 11px;"></i> 编辑申请书
+                            <button onclick="openEditProposalModal()" class="btn-primary" style="font-size: 0.65rem; padding: 3px 10px; height: auto;">
+                                <i data-lucide="edit-3" style="width: 11px; height: 11px;"></i> 编辑申请表
                             </button>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.72rem; margin-bottom: 10px;">
-                        <div><strong style="color: #475569;">设备用途：</strong><span id="detail-prop-purpose" style="color: #1e293b; font-weight: 600;">--</span></div>
-                        <div><strong style="color: #475569;">需求日期：</strong><span id="detail-prop-reqdate" style="color: #2563eb; font-weight: 700;">--</span></div>
-                        <div><strong style="color: #475569;">预估金额：</strong><span id="detail-prop-budget" style="color: #059669; font-weight: 800; font-size: 0.78rem;">--</span></div>
-                        <div><strong style="color: #475569;">使用单位：</strong><span id="detail-prop-unit" style="color: #1e293b; font-weight: 600;">--</span></div>
+
+                    <!-- 1. 设备基础资料面板 -->
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+                        <div style="color: #1e3a8a; font-size: 0.74rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="database" style="width: 14px; height: 14px; color: #2563eb;"></i>
+                            <span>一、设备基础资料</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 0.72rem; margin-bottom: 10px;">
+                            <div><strong style="color: #64748b;">设备名称：</strong><span id="detail-prop-name" style="color: #0f172a; font-weight: 700;">--</span></div>
+                            <div><strong style="color: #64748b;">设备编码：</strong><span id="detail-prop-code" style="color: #2563eb; font-weight: 700; font-family: monospace;">--</span></div>
+                            <div><strong style="color: #64748b;">设备类别：</strong><span id="detail-prop-category" style="color: #0f172a; font-weight: 600;">--</span></div>
+                            <div><strong style="color: #64748b;">使用单位：</strong><span id="detail-prop-unit" style="color: #0f172a; font-weight: 600;">--</span></div>
+                            <div><strong style="color: #64748b;">预估预算：</strong><span id="detail-prop-budget" style="color: #059669; font-weight: 800; font-size: 0.78rem;">--</span></div>
+                            <div><strong style="color: #64748b;">需求日期：</strong><span id="detail-prop-reqdate" style="color: #2563eb; font-weight: 700;">--</span></div>
+                            <div><strong style="color: #64748b;">设备用途：</strong><span id="detail-prop-purpose" style="color: #334155; font-weight: 600;">--</span></div>
+                            <div><strong style="color: #64748b;">立项责任人：</strong><span id="detail-prop-owner" style="color: #1d4ed8; font-weight: 700;">--</span></div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.72rem;">
+                            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <div style="color: #475569; font-weight: 700; margin-bottom: 2px;">📌 立项理由：</div>
+                                <div id="detail-prop-reason" style="color: #334155; line-height: 1.5;">--</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 8px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                                <div style="color: #047857; font-weight: 700; margin-bottom: 2px;">📈 预期带来效益：</div>
+                                <div id="detail-prop-benefits" style="color: #334155; line-height: 1.5;">--</div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="font-size: 0.72rem; margin-bottom: 6px; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                        <div style="color: #475569; font-weight: 700; margin-bottom: 2px;">📌 立项理由：</div>
-                        <div id="detail-prop-reason" style="color: #334155; line-height: 1.5;">--</div>
-                    </div>
-                    <div style="font-size: 0.72rem; margin-bottom: 10px; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                        <div style="color: #047857; font-weight: 700; margin-bottom: 2px;">📈 预期带来效益：</div>
-                        <div id="detail-prop-benefits" style="color: #334155; line-height: 1.5;">--</div>
-                    </div>
-                    <div style="font-size: 0.72rem; background: #ffffff; padding: 8px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                        <div style="color: #1e3a8a; font-weight: 700; margin-bottom: 6px;">📅 全生命周期 6 大阶段计划开始与完成日期：</div>
-                        <div id="detail-prop-schedule-table" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; font-size: 0.68rem;">
-                            <!-- 由 JS 动态渲染 G1~G6 节点日期 -->
+
+                    <!-- 2. G1-G6 阶段周期、开始时间与预计结束时间表 -->
+                    <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px;">
+                        <div style="color: #1e3a8a; font-size: 0.74rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+                            <i data-lucide="calendar-range" style="width: 14px; height: 14px; color: #2563eb;"></i>
+                            <span>二、全生命周期 G1-G6 阶段排期规划 (周期 / 开始时间 / 预计结束时间)</span>
+                        </div>
+                        <div id="detail-prop-schedule-table" style="width: 100%; overflow-x: auto;">
+                            <!-- 由 JS 动态渲染 G1~G6 节点周期、开始与预计结束时间表格 -->
                         </div>
                     </div>
                 </div>
@@ -954,53 +975,91 @@
                 if (stageKey === "stage1_plan") {
                     propCard.style.display = "block";
 
-                    // Populate 立项申请书卡片
+                    // Populate 设备基础资料
                     let params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : (eq.parameters || eq.parameters_json || {});
-                    document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
-                    document.getElementById("detail-prop-reqdate").innerText = params.required_date || "--";
-                    document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : "180.0 万元";
-                    document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
-                    document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
-                    document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
+                    if (document.getElementById("detail-prop-name")) document.getElementById("detail-prop-name").innerText = eq.device_name || "--";
+                    if (document.getElementById("detail-prop-code")) document.getElementById("detail-prop-code").innerText = eq.device_code || "--";
+                    if (document.getElementById("detail-prop-category")) document.getElementById("detail-prop-category").innerText = eq.stage_name || eq.category || "设备工程";
+                    if (document.getElementById("detail-prop-unit")) document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
+                    if (document.getElementById("detail-prop-budget")) document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : (eq.estimated_budget ? `${eq.estimated_budget} 万元` : "180.0 万元");
+                    if (document.getElementById("detail-prop-reqdate")) document.getElementById("detail-prop-reqdate").innerText = params.required_date || eq.required_date || "--";
+                    if (document.getElementById("detail-prop-purpose")) document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
+                    if (document.getElementById("detail-prop-owner")) document.getElementById("detail-prop-owner").innerText = (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "设备组";
+                    if (document.getElementById("detail-prop-reason")) document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
+                    if (document.getElementById("detail-prop-benefits")) document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
 
-                    // Render 6大阶段排期节点表
+                    // Render G1~G6 阶段排期规划表 (周期，开始时间，预计结束时间)
                     const schedContainer = document.getElementById("detail-prop-schedule-table");
                     if (schedContainer) {
-                        schedContainer.innerHTML = "";
                         const stageNamesMap = {
-                            "stage1_plan": "1. 设备立项中",
-                            "stage2_scheme": "2. 拟定技术方案",
-                            "stage3_bidding": "3. 请购发包中",
-                            "stage4_make": "4. 设备制作中",
-                            "stage5_install": "5. 安装调试中",
-                            "stage6_accept": "6. 验收交付使用"
+                            "stage1_plan": { code: "G1_PLAN", title: "1. 设备立项中", defaultDays: 7 },
+                            "stage2_scheme": { code: "G2_SCHEME", title: "2. 拟定技术方案", defaultDays: 10 },
+                            "stage3_bidding": { code: "G3_BIDDING", title: "3. 请购发包中", defaultDays: 15 },
+                            "stage4_make": { code: "G4_MAKE", title: "4. 设备制作中", defaultDays: 30 },
+                            "stage5_install": { code: "G5_INSTALL", title: "5. 安装调试中", defaultDays: 15 },
+                            "stage6_accept": { code: "G6_ACCEPT", title: "6. 验收交付使用", defaultDays: 10 }
                         };
+
+                        let tableHtml = `
+                            <table style="width:100%; border-collapse:collapse; font-size:0.68rem; background:#ffffff; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
+                                <thead>
+                                    <tr style="background:#f1f5f9; color:#334155; text-align:left; border-bottom:1px solid #cbd5e1;">
+                                        <th style="padding:6px 8px;">阶段代码与名称</th>
+                                        <th style="padding:6px 8px;">阶段负责人</th>
+                                        <th style="padding:6px 8px; text-align:center;">计划周期</th>
+                                        <th style="padding:6px 8px;">开始时间</th>
+                                        <th style="padding:6px 8px;">预计结束时间</th>
+                                        <th style="padding:6px 8px; text-align:center;">节点状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
                         Object.keys(stageNamesMap).forEach(sk => {
+                            const info = stageNamesMap[sk];
                             const stObj = plan[sk] || {};
                             const sDate = stObj.start_date || "--";
                             const eDate = stObj.end_date || stObj.plan_end_date || "--";
                             const isCur = sk === stageKey;
                             const ov = checkIsOverdue(stObj);
 
-                            const endDateColor = ov.isOverdue ? '#dc2626' : (isCur ? '#1d4ed8' : '#64748b');
-                            const endDateFont = ov.isOverdue ? 'font-weight: 800;' : '';
-                            const ovBadge = ov.isOverdue ? `<span style="color:#dc2626; font-weight:800; font-size:0.58rem; margin-left:2px;">⚠️已逾期</span>` : '';
+                            // 计算天数
+                            let durationText = `${info.defaultDays} 天`;
+                            if (stObj.start_date && (stObj.end_date || stObj.plan_end_date)) {
+                                try {
+                                    const s = new Date(stObj.start_date);
+                                    const e = new Date(stObj.end_date || stObj.plan_end_date);
+                                    if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
+                                        const diffDays = Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1;
+                                        if (diffDays > 0) durationText = `${diffDays} 天`;
+                                    }
+                                } catch(err) {}
+                            }
 
-                            const itemDiv = document.createElement("div");
-                            itemDiv.style.cssText = `background: ${ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#f8fafc')}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${ov.isOverdue ? '#fca5a5' : (isCur ? '#3b82f6' : '#e2e8f0')};`;
-                            itemDiv.innerHTML = `
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span style="font-weight: 700; color: ${ov.isOverdue ? '#b91c1c' : (isCur ? '#1d4ed8' : '#334155')}; font-size: 0.65rem;">${stageNamesMap[sk]}</span>
-                                    <span style="color: #2563eb; font-size: 0.6rem; font-weight: 600;">👤 ${stObj.owner || '--'}</span>
-                                </div>
-                                <div style="font-size: 0.62rem; margin-top: 2px;">
-                                    <span style="color:#64748b;">${sDate} ~ </span>
-                                    <span style="color:${endDateColor}; ${endDateFont}">计划完成: ${eDate}</span>
-                                    ${ovBadge}
-                                </div>
+                            const statusStyle = stObj.status === "已完成" 
+                                ? "background:#d1fae5; color:#065f46;"
+                                : (stObj.status === "进行中" ? "background:#dbeafe; color:#1e40af;" : "background:#f1f5f9; color:#64748b;");
+
+                            const rowBg = ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#ffffff');
+
+                            tableHtml += `
+                                <tr style="background:${rowBg}; border-bottom:1px solid #e2e8f0;">
+                                    <td style="padding:6px 8px; font-weight:700; color:#1e293b;">${info.title}</td>
+                                    <td style="padding:6px 8px; color:#2563eb; font-weight:600;">👤 ${stObj.owner || '--'}</td>
+                                    <td style="padding:6px 8px; text-align:center; font-weight:700; color:#475569;">${durationText}</td>
+                                    <td style="padding:6px 8px; color:#334155;">${sDate}</td>
+                                    <td style="padding:6px 8px; color:${ov.isOverdue ? '#dc2626' : '#334155'}; font-weight:${ov.isOverdue ? '800' : '400'};">
+                                        ${eDate} ${ov.isOverdue ? '<span style="font-size:0.58rem; color:#dc2626;">⚠️已逾期</span>' : ''}
+                                    </td>
+                                    <td style="padding:6px 8px; text-align:center;">
+                                        <span style="font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:700; ${statusStyle}">${stObj.status || '未开始'}</span>
+                                    </td>
+                                </tr>
                             `;
-                            schedContainer.appendChild(itemDiv);
                         });
+
+                        tableHtml += `</tbody></table>`;
+                        schedContainer.innerHTML = tableHtml;
                     }
                 } else {
                     propCard.style.display = "none";
