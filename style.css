@@ -2837,9 +2837,129 @@ textarea.is-maximized {
     background: #dc2626;
 }
 
+/* ========================================================
+   视窗缩小/窄屏响应式自适应与防挤压优化 (Responsive Narrow Viewport)
+   ======================================================== */
 
+/* 保证表格容器具备横向滚动能力，防止单元格被挤压变形 */
+.table-wrapper, .table-container, .ems-table-wrap, .dms-table-container, .panel-table-wrap, .table-responsive {
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
 
+.table-wrapper table, .table-container table, .ems-table-wrap table, .dms-table-container table, table.data-table {
+    min-width: 680px;
+}
 
+/* 弹窗在窄屏下的宽度自适应 */
+.modal-box, .modal-content {
+    max-width: 92vw !important;
+    max-height: 90vh !important;
+    overflow-y: auto;
+}
 
+/* 6大里程碑与阶段卡片容器：窄屏下自动开启横向平滑滚动，防止卡片被压缩成竖条 */
+.ems-milestone-grid, .ems-stage-cards-container, .stage-cards-container {
+    overflow-x: auto !important;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+}
 
+/* 视窗宽度 <= 1200px 时 */
+@media (max-width: 1200px) {
+    .ems-milestone-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(150px, 1fr)) !important;
+    }
+    
+    .ems-stage-cards-container {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(150px, 1fr)) !important;
+    }
+}
 
+/* 视窗宽度 <= 992px 窄屏适配 */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 72px !important;
+        transition: width 0.25s ease;
+    }
+    
+    .brand {
+        padding: 16px 8px !important;
+        justify-content: center !important;
+    }
+    
+    .brand-name, 
+    .menu-section, 
+    .filter-wrap, 
+    #sidebar-products-quick-panel,
+    .sidebar-product-list {
+        display: none !important;
+    }
+    
+    .menu-item {
+        justify-content: center !important;
+        padding: 12px 8px !important;
+        font-size: 0.78rem !important;
+        text-align: center;
+        flex-direction: column;
+        gap: 4px !important;
+    }
+    
+    .menu-item i {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .top-header {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        padding: 10px 14px !important;
+        gap: 10px !important;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .ems-stage-cards-container, .ems-milestone-grid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 12px !important;
+    }
+    
+    .ems-stage-card, .ems-milestone-node {
+        min-width: 160px !important;
+        flex: 0 0 160px !important;
+        scroll-snap-align: start;
+    }
+}
+
+/* 视窗宽度 <= 640px 超窄屏适配 */
+@media (max-width: 640px) {
+    .main-content {
+        padding: 10px !important;
+    }
+    
+    .metrics-grid-five, .metrics-grid-four, .metrics-grid-three {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .top-header {
+        padding: 8px 10px !important;
+    }
+    
+    .header-title h2 {
+        font-size: 1.05rem !important;
+    }
+    
+    .ems-stage-card, .ems-milestone-node {
+        min-width: 145px !important;
+        flex: 0 0 145px !important;
+    }
+}
