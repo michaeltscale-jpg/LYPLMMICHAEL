@@ -953,23 +953,28 @@
                 remark: ""
             };
 
-            // Populate forms
-            document.getElementById("edit-stage-key").value = stageKey;
-            document.getElementById("workbench-stage-title").innerText = `${stageKey.toUpperCase().replace('STAGE', 'G')}. ${item.title}`;
-            document.getElementById("workbench-stage-status-badge").innerText = item.status;
+            // Populate forms with safety checks
+            const setValSafe = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ""; };
+            const setTextSafe = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v || ""; };
+
+            setValSafe("edit-stage-key", stageKey);
+            setTextSafe("workbench-stage-title", `${stageKey.toUpperCase().replace('STAGE', 'G')}. ${item.title}`);
+            setTextSafe("workbench-stage-status-badge", item.status);
 
             const badge = document.getElementById("workbench-stage-status-badge");
-            const statusColors = {
-                "已完成": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
-                "进行中": { color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
-                "未开始": { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" }
-            };
-            const sc = statusColors[item.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
-            badge.style.background = sc.bg;
-            badge.style.color = sc.color;
-            badge.style.border = `1px solid ${sc.color}20`;
+            if (badge) {
+                const statusColors = {
+                    "已完成": { color: "#10b981", bg: "rgba(16,185,129,0.15)" },
+                    "进行中": { color: "#3b82f6", bg: "rgba(59,130,246,0.15)" },
+                    "未开始": { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" }
+                };
+                const sc = statusColors[item.status] || { color: "#94a3b8", bg: "rgba(148,163,184,0.15)" };
+                badge.style.background = sc.bg;
+                badge.style.color = sc.color;
+                badge.style.border = `1px solid ${sc.color}20`;
+            }
 
-            document.getElementById("edit-stage-owner").value = item.owner || "";
+            setValSafe("edit-stage-owner", item.owner || "");
             
             // Setup status dropdown dynamically
             const statusSelect = document.getElementById("edit-stage-status");
@@ -991,30 +996,32 @@
                 }
             }
 
-            document.getElementById("edit-stage-start").value = item.start_date || "";
-            document.getElementById("edit-stage-end").value = item.end_date || "";
-            document.getElementById("edit-stage-remark").value = item.remark || "";
+            setValSafe("edit-stage-start", item.start_date || "");
+            setValSafe("edit-stage-end", item.end_date || "");
+            setValSafe("edit-stage-remark", item.remark || "");
 
-            // 立项申请书卡片仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
+            // 立项申请表仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
             const propCard = document.getElementById("workbench-proposal-summary-card");
+            const isG1 = (stageKey === "stage1_plan" || stageKey === "stage1" || stageKey === "g1" || stageKey === "g1_plan");
+
             if (propCard) {
-                if (stageKey === "stage1_plan") {
+                if (isG1) {
                     propCard.style.display = "block";
 
                     // Populate 设备基础资料
                     let params = typeof eq.parameters_json === 'string' ? JSON.parse(eq.parameters_json || '{}') : (eq.parameters || eq.parameters_json || {});
-                    if (document.getElementById("detail-prop-name")) document.getElementById("detail-prop-name").innerText = eq.device_name || "--";
-                    if (document.getElementById("detail-prop-code")) document.getElementById("detail-prop-code").innerText = eq.device_code || "--";
-                    if (document.getElementById("detail-prop-category")) document.getElementById("detail-prop-category").innerText = eq.stage_name || eq.category || "设备工程";
-                    if (document.getElementById("detail-prop-unit")) document.getElementById("detail-prop-unit").innerText = eq.using_unit || "生产一车间";
-                    if (document.getElementById("detail-prop-budget")) document.getElementById("detail-prop-budget").innerText = params.estimated_budget ? `${params.estimated_budget} 万元` : (eq.estimated_budget ? `${eq.estimated_budget} 万元` : "180.0 万元");
-                    if (document.getElementById("detail-prop-reqdate")) document.getElementById("detail-prop-reqdate").innerText = params.required_date || eq.required_date || "--";
-                    if (document.getElementById("detail-prop-purpose")) document.getElementById("detail-prop-purpose").innerText = params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀";
-                    if (document.getElementById("detail-prop-owner")) document.getElementById("detail-prop-owner").innerText = (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "设备组";
-                    if (document.getElementById("detail-prop-reason")) document.getElementById("detail-prop-reason").innerText = params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。";
-                    if (document.getElementById("detail-prop-benefits")) document.getElementById("detail-prop-benefits").innerText = params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。";
+                    setTextSafe("detail-prop-name", eq.device_name || "--");
+                    setTextSafe("detail-prop-code", eq.device_code || "--");
+                    setTextSafe("detail-prop-category", eq.stage_name || eq.category || "设备工程");
+                    setTextSafe("detail-prop-unit", eq.using_unit || "生产一车间");
+                    setTextSafe("detail-prop-budget", params.estimated_budget ? `${params.estimated_budget} 万元` : (eq.estimated_budget ? `${eq.estimated_budget} 万元` : "180.0 万元"));
+                    setTextSafe("detail-prop-reqdate", params.required_date || eq.required_date || "--");
+                    setTextSafe("detail-prop-purpose", params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀");
+                    setTextSafe("detail-prop-owner", (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "设备组");
+                    setTextSafe("detail-prop-reason", params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。");
+                    setTextSafe("detail-prop-benefits", params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。");
 
-                    // Render G1~G6 阶段排期规划表 (周期，开始时间，预计结束时间)
+                    // Render G1~G6 阶段排期规划表 (开始时间 / 工作日 / 计划结束时间)
                     const schedContainer = document.getElementById("detail-prop-schedule-table");
                     if (schedContainer) {
                         const stageNamesMap = {
@@ -1032,9 +1039,9 @@
                                     <tr style="background:#f1f5f9; color:#334155; text-align:left; border-bottom:1px solid #cbd5e1;">
                                         <th style="padding:6px 8px;">阶段代码与名称</th>
                                         <th style="padding:6px 8px;">阶段负责人</th>
-                                        <th style="padding:6px 8px; text-align:center;">计划周期</th>
                                         <th style="padding:6px 8px;">开始时间</th>
-                                        <th style="padding:6px 8px;">预计结束时间</th>
+                                        <th style="padding:6px 8px; text-align:center;">工作日 (天)</th>
+                                        <th style="padding:6px 8px;">计划结束时间</th>
                                         <th style="padding:6px 8px; text-align:center;">节点状态</th>
                                     </tr>
                                 </thead>
@@ -1072,8 +1079,8 @@
                                 <tr style="background:${rowBg}; border-bottom:1px solid #e2e8f0;">
                                     <td style="padding:6px 8px; font-weight:700; color:#1e293b;">${info.title}</td>
                                     <td style="padding:6px 8px; color:#2563eb; font-weight:600;">👤 ${stObj.owner || '--'}</td>
-                                    <td style="padding:6px 8px; text-align:center; font-weight:700; color:#475569;">${durationText}</td>
                                     <td style="padding:6px 8px; color:#334155;">${sDate}</td>
+                                    <td style="padding:6px 8px; text-align:center; font-weight:700; color:#475569;">${durationText}</td>
                                     <td style="padding:6px 8px; color:${ov.isOverdue ? '#dc2626' : '#334155'}; font-weight:${ov.isOverdue ? '800' : '400'};">
                                         ${eDate} ${ov.isOverdue ? '<span style="font-size:0.58rem; color:#dc2626;">⚠️已逾期</span>' : ''}
                                     </td>
