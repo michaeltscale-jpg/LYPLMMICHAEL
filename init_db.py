@@ -121,6 +121,81 @@ def make_default_equipment_project_plan(active_stage_idx=6):
         }
     return json.dumps(plan, ensure_ascii=False)
 
+def make_default_mqc_project_plan(active_stage_idx=6):
+    stages = [
+        ("stage1_req", "物料需求与立项", "张研发", -45, -40, "《物料承认可行性评估报告》.pdf", "/docs/mqc_m1_deliverable.pdf"),
+        ("stage2_sample", "送样与样品初验", "陈品质", -39, -32, "《物料样品实验室全性能检测报告(IQC)》.pdf", "/docs/mqc_m2_deliverable.pdf"),
+        ("stage3_trial", "中试与小批量验证", "王工艺", -31, -21, "《物料中试上线小产验证报告》.pdf", "/docs/mqc_m3_deliverable.pdf"),
+        ("stage4_mass", "大批量量产验证", "钱质量", -20, -5, "《物料大批量量产稳定性评估报告(72h)》.pdf", "/docs/mqc_m4_deliverable.pdf"),
+        ("stage5_audit", "现场稽核与双通道", "李采购", -4, 6, "《供应商现场质量稽核评估报告(QSA/QPA)》.pdf", "/docs/mqc_m5_deliverable.pdf"),
+        ("stage6_release", "正式承认签发与归档", "傅总监", 7, 12, "《物料正式承认书(Approval Sheet 最终签章版)》.pdf", "/docs/mqc_m6_deliverable.pdf")
+    ]
+    
+    stage_inputs = {
+        "stage1_req": ["《新增物料承认申请表》.docx", "《物料技术规格书 TDS 草案》.pdf", "《供应商资质及 AVL 报备表》.xlsx", "《物料替代成本与降本收益评估》.xlsx"],
+        "stage2_sample": ["《供应商原厂 COA 检验报告》.pdf", "《实验室样品签收与拆封记录》.docx", "《实验室物料检测 SOP 指导书》.pdf", "《基准对比对照样品检测数据》.xlsx"],
+        "stage3_trial": ["《小批量试产工单与配方通知单》.pdf", "《中试机台工艺控制基准表(Routing)》.xlsx", "《试产防错与关键参数监控清单》.docx", "《物料添加与在线反应注意事项》.pdf"],
+        "stage4_mass": ["《72小时连续量产验证方案》.pdf", "《大批量试产物料追溯与批号日志》.xlsx", "《在线检测与成品全检抽样计划》.pdf", "《异常快速响应与退货预警机制》.docx"],
+        "stage5_audit": ["《供应商现场稽核 CheckList 检查表》.xlsx", "《供应商 IATF16949 / ISO9001 体系证书》.pdf", "《供应商关键原材料溯源及变动报备》.pdf", "《供应商产能与应急备货承诺书》.docx"],
+        "stage6_release": ["《物料全生命周期承认履历案卷》.pdf", "《研发-品质-供应商三方会签草案》.docx", "《BOM 关联性与物料编码字典》.xlsx", "《TDS 技术规格书正式发布申请》.pdf"]
+    }
+
+    stage_deliverables = {
+        "stage1_req": ["《物料承认可行性评估报告(签署版)》.pdf", "《物料技术 Specs 标准与大纲》.pdf", "《第一批样品送样需求与规范单》.docx", "《物料承认项目组组建与分工表》.xlsx"],
+        "stage2_sample": ["《物料样品实验室全性能检测报告(IQC)》.pdf", "《COA 对比实测数据差异分析表》.xlsx", "《样品初验合格判定与下一步试产建议书》.pdf", "《物料红外光谱与微观结构对比图谱》.zip"],
+        "stage3_trial": ["《物料中试上线小批量验证报告》.pdf", "《试产成品铜箔剥离/粗糙度全检记录》.xlsx", "《试产阶段异常与 Punch List 整改追踪表》.xlsx", "《中试阶段工艺参数调整优化记录》.pdf"],
+        "stage4_mass": ["《物料大批量量产稳定性评估报告(72h)》.pdf", "《CPK 过程能力指数分析表 (CPK≥1.33)》.xlsx", "《连续 5 批次质量一致性对比分析》.pdf", "《大批量试产成品良率与损耗统计表》.xlsx"],
+        "stage5_audit": ["《供应商现场质量稽核评估报告(QSA/QPA)》.pdf", "《物料双通道(一供/二供)风险分配方案》.pdf", "《供应商现场缺陷整改(CAR)闭环表》.xlsx", "《供应商产能与质量保障协议》.pdf"],
+        "stage6_release": ["《物料正式承认书(Approval Sheet 最终签章版)》.pdf", "《TDS 正式技术规格书 (T1.0)》.pdf", "《BOM 合格物料归档移交卡》.pdf", "《物料全生命周期归档案卷总目录》.pdf"]
+    }
+
+    progress_controls = {
+        "stage1_req": {"target_days": 5, "node": "需求定义与会审周期 ≤ 5 天；TDS 规格初审与 AVL 准入评估 100%", "status_text": "立项需求会审正常 (周期5天)"},
+        "stage2_sample": {"target_days": 7, "node": "样品到厂与 IQC 初验周期 ≤ 7 天；物理/化学指标 100% 达标", "status_text": "实验室全检合格 (周期7天)"},
+        "stage3_trial": {"target_days": 10, "node": "小批量试产周期 ≤ 10 天；试产一次合格率 (FTY) ≥ 95%", "status_text": "中试小批量闭环 (周期10天)"},
+        "stage4_mass": {"target_days": 15, "node": "72h 连续量产验证；过程能力 CPK ≥ 1.33，无批次间异常", "status_text": "量产 CPK 达标 (周期15天)"},
+        "stage5_audit": {"target_days": 10, "node": "现场 QSA/QPA 稽核完成；至少建立双通道 (一供+二供) 或风险报备", "status_text": "供应商稽核合格 (周期10天)"},
+        "stage6_release": {"target_days": 5, "node": "承认书三方签署闭环；正式发布 TDS T1.0，转入合格物料库解锁 BOM", "status_text": "承认签发闭环 (周期5天)"}
+    }
+
+    cost_controls = {
+        "stage1_req": {"budget": "50.0 万元", "actual": "0.0 万元", "control": "估算年采购用量与预估金额；评估国产化替代降本目标 ≥ 10%"},
+        "stage2_sample": {"budget": "50.0 万元", "actual": "0.2 万元", "control": "控制送样样品检测耗材支出；原厂 COA 真实性验证"},
+        "stage3_trial": {"budget": "50.0 万元", "actual": "3.5 万元", "control": "监控中试试车损耗与废箔产生率，严禁超出额定损耗指标"},
+        "stage4_mass": {"budget": "45.0 万元", "actual": "42.0 万元", "control": "72h 连续大批量物料采购结算；严格评估批次间质量波动成本"},
+        "stage5_audit": {"budget": "45.0 万元", "actual": "42.0 万元", "control": "采购商务谈判与一供/二供采购份额梯度定价策略"},
+        "stage6_release": {"budget": "45.0 万元", "actual": "42.0 万元", "control": "物料全生命周期决算审计；BOM 配方成本锁定与收益归档"}
+    }
+
+    plan = {}
+    base = datetime.now()
+    
+    for idx, (s_key, s_title, s_owner, start_offset, end_offset, att_name, att_url) in enumerate(stages):
+        s_status = "已完成"
+        if idx == active_stage_idx:
+            s_status = "进行中"
+        elif idx > active_stage_idx:
+            s_status = "未开始"
+            
+        start_date = (base + timedelta(days=start_offset)).strftime("%Y-%m-%d")
+        end_date = (base + timedelta(days=end_offset)).strftime("%Y-%m-%d")
+        
+        plan[s_key] = {
+            "title": s_title,
+            "status": s_status,
+            "start_date": start_date,
+            "end_date": end_date,
+            "owner": s_owner,
+            "remark": f"{s_title}阶段正常推进" if s_status != "未开始" else "",
+            "attachment_name": att_name if s_status != "未开始" else "",
+            "attachment_url": att_url if s_status != "未开始" else "",
+            "input_files": stage_inputs[s_key],
+            "deliverable_files": stage_deliverables[s_key],
+            "progress_control": progress_controls[s_key],
+            "cost_control": cost_controls[s_key]
+        }
+    return json.dumps(plan, ensure_ascii=False)
+
 def init_database(force_reset=False):
     if os.path.exists(DB_PATH):
         if not force_reset:
@@ -732,6 +807,9 @@ def init_database(force_reset=False):
             apply_by TEXT,
             supplier_name TEXT,
             status TEXT DEFAULT '需求提出',
+            stage_name VARCHAR(50) DEFAULT 'M1 物料立项需求',
+            parameters_json TEXT DEFAULT '{}',
+            project_plan_json TEXT DEFAULT '{}',
             test_start TEXT,
             test_end TEXT,
             test_result TEXT,
@@ -764,20 +842,70 @@ def init_database(force_reset=False):
         )
     ''')
 
+    # 生成各阶段进度的计划 JSON
+    mqc_p_m1 = make_default_mqc_project_plan(0) # M1进行中
+    mqc_p_m2 = make_default_mqc_project_plan(1) # M2进行中
+    mqc_p_m3 = make_default_mqc_project_plan(2) # M3进行中
+    mqc_p_m4 = make_default_mqc_project_plan(3) # M4进行中
+    mqc_p_m5 = make_default_mqc_project_plan(4) # M5进行中
+    mqc_p_m6_completed = make_default_mqc_project_plan(6) # M6已完成
+
+    default_mqc_param_json = json.dumps({
+        "material_purpose": "用于高频5G铜箔及极薄生箔添加剂/辅料替代与质量升级",
+        "proposal_reason": "现有供应商主料波动较大，需引进高纯度合格物料以保障高频铜箔粗糙度与剥离强度稳定性。",
+        "estimated_budget": "50.0",
+        "expected_benefits": "预计降低原料采购成本12%，提高生箔表面均匀性20%，提升耐热剥离强度15%。",
+        "required_date": (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
+        "technical_specs": "纯度 ≥ 99.99%, 灰分 ≤ 0.01%, 极化度 -150mV ~ -180mV",
+        "using_unit": "极薄生箔事业部 / 质检中心",
+        "followup_logs": [
+            {
+                "id": 201,
+                "date": "2026-07-02",
+                "stage_tag": "M1 物料立项需求",
+                "follower": "张研发 (物料责任人)",
+                "content": "已完成《新增物料承认申请表》会审，已与实验室确定 TDS 测试指标与小试评估大纲。"
+            },
+            {
+                "id": 202,
+                "date": "2026-07-08",
+                "stage_tag": "M2 送样与初验",
+                "follower": "陈品质 (IQC组)",
+                "content": "供应商第一批 5kg 样品到厂，实验室全性能检测合格，COA 指标与实测一致率 100%。"
+            },
+            {
+                "id": 203,
+                "date": "2026-07-16",
+                "stage_tag": "M3 中试与小批量",
+                "follower": "王工艺",
+                "content": "完成中试线 3# 槽位上线小批量试产，试产成品铜箔物性检测符合 TDS 要求，FTY 达到 98.2%。"
+            },
+            {
+                "id": 204,
+                "date": "2026-07-22",
+                "stage_tag": "M4 量产验证",
+                "follower": "钱质量",
+                "content": "连续 72h 大批量稳定化试产测试完成，计算 CPK = 1.48 ≥ 1.33，批次间无异常波动。"
+            }
+        ]
+    }, ensure_ascii=False)
+
     # 插入默认物料承认数据
     mqc_materials_data = [
-        ("MAT-CU-001", "高纯铜线", "99.99%级", "氧化铜粉", "2026-07-01", "MAT-CU-001_承认书.pdf", "承认通过", "2026-07-02", "2026-07-05", "纯度及导电率检测合格。", "通过", "傅总监", "2026-07-05", "BOM 主要材料导入", now.isoformat()),
-        ("MAT-ACID-001", "电子级硫酸", "98%浓度", "辅料", "2026-07-01", "MAT-ACID-001_承认书.pdf", "承认通过", "2026-07-02", "2026-07-04", "杂质及浓度符合标准。", "通过", "傅总监", "2026-07-04", "BOM 主要材料导入", now.isoformat()),
-        ("AD-GEL-01", "特种明胶骨胶", "生箔添加剂", "添加剂", "2026-07-05", "AD-GEL-01_承认书.pdf", "承认通过", "2026-07-06", "2026-07-08", "拉伸性能及溶解度测试合格。", "通过", "傅总监", "2026-07-09", "规格已更新为生箔添加剂", now.isoformat()),
-        ("AD-HEC-01", "羟乙基纤维素", "生箔添加剂", "添加剂", "2026-07-05", "AD-HEC-01_承认书.pdf", "承认通过", "2026-07-06", "2026-07-08", "灰分及分子量测试合格。", "通过", "傅总监", "2026-07-09", "BOM 主要材料导入", now.isoformat()),
-        ("AD-SPS-01", "活性硫整平剂", "生箔添加剂", "添加剂", "2026-07-05", "AD-SPS-01_承认书.pdf", "承认通过", "2026-07-06", "2026-07-08", "电化学测试及极化度合格。", "通过", "傅总监", "2026-07-09", "BOM 主要材料导入", now.isoformat()),
-        ("MAT-SILANE-203", "常规硅烷偶联剂", "常规硅烷-201", "添加剂", "2026-06-15", "MAT-SILANE-203_承认书.pdf", "承认通过", "2026-06-18", "2026-06-25", "附着力与阻抗一致性合格。", "通过", "傅总监", "2026-06-26", "规格已更新为常规硅烷-201", now.isoformat()),
-        ("MAT-CU-BALL-001", "高纯铜球 (阴极铜级)", "直径25mm, 纯度>=99.995%", "氧化铜粉", "2026-07-01", "张经理", "样品到达", "2026-07-02", "", "纯度及氧含量已测，溶解度指标测试中。", "", "", "", "一供、二供样品平行送测", now.isoformat())
+        ("MAT-CU-001", "高纯铜线", "99.99%级", "氧化铜粉", "2026-07-01", "张经理", "江西铜业", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-07-02", "2026-07-05", "纯度及导电率检测合格。", "通过", "傅总监", "2026-07-05", "BOM 主要材料导入", now.isoformat()),
+        ("MAT-ACID-001", "电子级硫酸", "98%浓度", "辅料", "2026-07-01", "张经理", "巨化股份", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-07-02", "2026-07-04", "杂质及浓度符合标准。", "通过", "傅总监", "2026-07-04", "BOM 主要材料导入", now.isoformat()),
+        ("AD-GEL-01", "特种明胶骨胶", "生箔添加剂", "添加剂", "2026-07-05", "李建国", "罗赛洛明胶", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-07-06", "2026-07-08", "拉伸性能及溶解度测试合格。", "通过", "傅总监", "2026-07-09", "规格已更新为生箔添加剂", now.isoformat()),
+        ("AD-HEC-01", "羟乙基纤维素", "生箔添加剂", "添加剂", "2026-07-05", "李建国", "阿克苏诺贝尔", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-07-06", "2026-07-08", "灰分及分子量测试合格。", "通过", "傅总监", "2026-07-09", "BOM 主要材料导入", now.isoformat()),
+        ("AD-SPS-01", "活性硫整平剂", "生箔添加剂", "添加剂", "2026-07-05", "李建国", "奥斯佳材料", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-07-06", "2026-07-08", "电化学测试及极化度合格。", "通过", "傅总监", "2026-07-09", "BOM 主要材料导入", now.isoformat()),
+        ("MAT-SILANE-203", "常规硅烷偶联剂", "常规硅烷-201", "添加剂", "2026-06-15", "王工艺", "陶氏化学", "承认通过", "M6 正式承认签发与归档", default_mqc_param_json, mqc_p_m6_completed, "2026-06-18", "2026-06-25", "附着力与阻抗一致性合格。", "通过", "傅总监", "2026-06-26", "规格已更新为常规硅烷-201", now.isoformat()),
+        ("MAT-CU-BALL-001", "高纯铜球 (阴极铜级)", "直径25mm, 纯度>=99.995%", "氧化铜粉", "2026-07-01", "张研发", "云南铜业", "测试中", "M2 送样与样品初验", default_mqc_param_json, mqc_p_m2, "2026-07-02", "", "纯度及氧含量已测，实验室全性能对比测试中。", "", "", "", "一供、二供样品平行送测", now.isoformat()),
+        ("MAT-ADD-HYD-02", "高选择性极化添加剂", "高频超粗化专用", "添加剂", "2026-07-10", "陈品质", "巴斯夫(BASF)", "中试中", "M3 中试与小批量验证", default_mqc_param_json, mqc_p_m3, "2026-07-12", "", "完成实验室初验，正于中试3号线小批量试产。", "", "", "", "重点优化高频粗糙度", now.isoformat()),
+        ("MAT-SURF-ACT-05", "超顺滑表面活性剂", "电子级99.5%", "添加剂", "2026-07-15", "李采购", "科莱恩化学", "审核中", "M5 现场稽核与双通道", default_mqc_param_json, mqc_p_m5, "2026-07-16", "", "量产72h CPK验证通过，安排现场QSA/QPA稽核。", "", "", "", "建立二供渠道评估", now.isoformat())
     ]
     for row in mqc_materials_data:
         cursor.execute("""
-            INSERT INTO mqc_materials (mat_code, mat_name, mat_spec, mat_category, apply_date, apply_by, status, test_start, test_end, test_result, conclusion, conclusion_by, conclusion_date, remark, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO mqc_materials (mat_code, mat_name, mat_spec, mat_category, apply_date, apply_by, supplier_name, status, stage_name, parameters_json, project_plan_json, test_start, test_end, test_result, conclusion, conclusion_by, conclusion_date, remark, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, row)
 
     # 为已承认的物料承认记录灌入配套已通过的钉钉流程日志

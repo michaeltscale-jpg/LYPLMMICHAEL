@@ -682,6 +682,18 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 rows = [dict(r) for r in cursor.fetchall()]
                 self.send_json(rows)
 
+            elif path == "/api/mqc/material/detail":
+                mat_id = query_params.get('id', [None])[0]
+                if mat_id:
+                    cursor.execute("SELECT * FROM mqc_materials WHERE id=?", (mat_id,))
+                    row = cursor.fetchone()
+                    if row:
+                        self.send_json(dict(row))
+                    else:
+                        self.send_json({"error": "物料承认记录未找到"}, status=404)
+                else:
+                    self.send_json({"error": "缺少 id 参数"}, status=400)
+
             elif path == "/api/mqc/suppliers":
                 mat_code = query_params.get('mat_code', [None])[0]
                 if mat_code:
@@ -2457,9 +2469,29 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 data['status'] = status
                 now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                # 若为新建物料，初始化 project_plan_json 及 parameters_json
+                if not rid:
+                    if not data.get('project_plan_json'):
+                        from init_db import make_default_mqc_project_plan
+                        data['project_plan_json'] = make_default_mqc_project_plan(0)
+                    if not data.get('stage_name'):
+                        data['stage_name'] = 'M1 物料立项需求'
+                    if not data.get('parameters_json'):
+                        data['parameters_json'] = json.dumps({
+                            "material_purpose": data.get('material_purpose', ''),
+                            "proposal_reason": data.get('proposal_reason', ''),
+                            "estimated_budget": data.get('estimated_budget', ''),
+                            "expected_benefits": data.get('expected_benefits', ''),
+                            "required_date": data.get('required_date', ''),
+                            "technical_specs": data.get('technical_specs', ''),
+                            "using_unit": data.get('using_unit', ''),
+                            "followup_logs": []
+                        }, ensure_ascii=False)
+
                 fields = [
                     'mat_code','mat_name','mat_spec','mat_category','supplier_name',
-                    'apply_date','apply_by','status',
+                    'apply_date','apply_by','status','stage_name','parameters_json','project_plan_json',
                     'test_start','test_end','test_result',
                     'conclusion','conclusion_by','conclusion_date','remark',
                     'test_record','test_report','supplier_doc','tds_doc'
@@ -2478,6 +2510,65 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 new_id = rid or cursor.lastrowid
                 self.send_json({'ok': True, 'id': new_id, 'mat_id': None if rid else new_id})
+
+            elif path == "/api/mqc/materials/project_plan":
+                mat_id = data.get('id')
+                plan_json = data.get('project_plan_json')
+                stage_name = data.get('stage_name')
+                if not mat_id or not plan_json:
+                    self.send_json({'error': '缺少 id 或 project_plan_json'}, 400); return
+                
+                if stage_name:
+                    cursor.execute("UPDATE mqc_materials SET project_plan_json=?, stage_name=? WHERE id=?", (plan_json, stage_name, mat_id))
+                else:
+                    cursor.execute("UPDATE mqc_materials SET project_plan_json=? WHERE id=?", (plan_json, mat_id))
+                conn.commit()
+                self.send_json({'ok': True})
+
+            elif path == "/api/mqc/materials/parameters":
+                mat_id = data.get('id')
+                params_json = data.get('parameters_json')
+                if not mat_id:
+                    self.send_json({'error': '缺少 id'}, 400); return
+                
+                updates = []
+                values = []
+                if params_json is not None:
+                    updates.append("parameters_json=?")
+                    values.append(params_json if isinstance(params_json, str) else json.dumps(params_json, ensure_ascii=False))
+                
+                for f in ['mat_name', 'mat_code', 'mat_category', 'mat_spec', 'supplier_name', 'apply_by', 'remark']:
+                    if f in data:
+                        updates.append(f"{f}=?")
+                        values.append(data[f])
+                
+                if updates:
+                    values.append(mat_id)
+                    cursor.execute(f"UPDATE mqc_materials SET {', '.join(updates)} WHERE id=?", values)
+                    conn.commit()
+                self.send_json({'ok': True})
+
+            elif path == "/api/mqc/materials/status":
+                mat_id = data.get('id')
+                status = data.get('status')
+                stage_name = data.get('stage_name')
+                if not mat_id:
+                    self.send_json({'error': '缺少 id'}, 400); return
+                
+                updates = []
+                values = []
+                if status:
+                    updates.append("status=?")
+                    values.append(status)
+                if stage_name:
+                    updates.append("stage_name=?")
+                    values.append(stage_name)
+                
+                if updates:
+                    values.append(mat_id)
+                    cursor.execute(f"UPDATE mqc_materials SET {', '.join(updates)} WHERE id=?", values)
+                    conn.commit()
+                self.send_json({'ok': True})
 
             elif path == "/api/mqc/materials/submit_dingtalk":
                 mat_id   = data.get('mat_id')
@@ -3020,7 +3111,7 @@ def init_mqc_tables():
         )
     ''')
     
-    # 动态迁移 mqc_materials 专属文件列
+    # 动态迁移 mqc_materials 专属文件与管道列
     c.execute("PRAGMA table_info(mqc_materials)")
     m_cols = [col[1] for col in c.fetchall()]
     if "supplier_name" not in m_cols:
@@ -3033,6 +3124,12 @@ def init_mqc_tables():
         c.execute("ALTER TABLE mqc_materials ADD COLUMN supplier_doc TEXT")
     if "tds_doc" not in m_cols:
         c.execute("ALTER TABLE mqc_materials ADD COLUMN tds_doc TEXT")
+    if "stage_name" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN stage_name VARCHAR(50) DEFAULT 'M1 物料立项需求'")
+    if "parameters_json" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN parameters_json TEXT DEFAULT '{}'")
+    if "project_plan_json" not in m_cols:
+        c.execute("ALTER TABLE mqc_materials ADD COLUMN project_plan_json TEXT DEFAULT '{}'")
 
     # 动态迁移 mqc_suppliers 专属承认与测试信息字段
     c.execute("PRAGMA table_info(mqc_suppliers)")

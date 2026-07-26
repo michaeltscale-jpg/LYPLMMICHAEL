@@ -1330,69 +1330,100 @@
                             <!-- 顶部操作栏 -->
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
                                 <div>
-                                    <h2 style="font-size:1.3rem; color:var(--color-primary);">物料承认管控 (MQC)</h2>
+                                    <h2 style="font-size:1.3rem; color:var(--color-primary); display:flex; align-items:center; gap:8px;">
+                                        <i data-lucide="layers" style="width:22px;height:22px;color:var(--color-primary);"></i>
+                                        物料承认管控台 (MQC)
+                                    </h2>
+                                    <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:4px;">
+                                        对标设备开发精细化管控范式，实现物料 M1~M6 全生命周期里程碑推进、质量合规与双通道风险管控。
+                                    </p>
                                 </div>
-                                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                    <input type="text" id="mqc-search" class="form-control" placeholder="🔍 搜索物料编码 / 名称..." style="width:200px; font-size:0.8rem;" oninput="renderMqcMaterials()">
-                                    <button class="btn-primary" onclick="openMqcMaterialModal(null)" style="font-size:0.8rem;">
-                                        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i> 新增物料承认
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <input type="text" id="mqc-search" class="form-control" placeholder="🔍 搜索物料编码 / 名称 / 供应商..." style="width:220px; font-size:0.8rem;" oninput="fetchMqcData()">
+                                    <button class="btn-primary" onclick="openMqcCreateModal()" style="font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+                                        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i> 新增物料承认申请
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Tab 切换 -->
+                            <!-- Tab 切换栏与过滤器 -->
                             <div style="display:flex; gap:16px; border-bottom:2px solid var(--border-color); margin-bottom:20px; align-items:center; flex-wrap:wrap; padding-bottom:4px;">
                                 <div style="display:flex; gap:0; margin-bottom:-2px;">
-                                    <button id="mqc-tab-btn-materials" onclick="switchMqcTab('materials')"
+                                    <button id="mqc-tab-btn-kanban" onclick="switchMqcTab('kanban')"
                                         style="padding:8px 20px; background:none; border:none; border-bottom:2px solid var(--color-primary); color:var(--color-primary); font-weight:600; font-size:0.85rem; cursor:pointer;">
-                                        <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i> 物料承认台帐
+                                        <i data-lucide="layout-grid" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> M1~M6 阶段管道看板
                                     </button>
-                                    <button id="mqc-tab-btn-in-progress" onclick="switchMqcTab('in-progress')"
+                                    <button id="mqc-tab-btn-materials" onclick="switchMqcTab('materials')"
                                         style="padding:8px 20px; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-secondary); font-weight:600; font-size:0.85rem; cursor:pointer;">
-                                        <i data-lucide="clock" style="width:14px;height:14px;"></i> 承认中物料
+                                        <i data-lucide="shield-check" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> 承认合格物料台帐
                                     </button>
                                     <button id="mqc-tab-btn-risk" onclick="switchMqcTab('risk')"
                                         style="padding:8px 20px; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-secondary); font-weight:600; font-size:0.85rem; cursor:pointer;">
-                                        <i data-lucide="shield-alert" style="width:14px;height:14px;"></i> 供应商风险看板
+                                        <i data-lucide="shield-alert" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> 供应商双通道与风险
                                     </button>
                                 </div>
-                                <div style="margin-left:auto; display:flex; align-items:center; gap:6px; margin-bottom:4px;">
-                                    <span style="font-size:0.8rem; color:var(--text-secondary);">物料类别:</span>
-                                    <select id="mqc-category-filter" class="form-control" style="width:130px; height:28px; padding:2px 6px; font-size:0.8rem;" onchange="renderMqcMaterials(); renderMqcSupplierRisk();">
-                                        <option value="">全部类别</option>
+                                <div style="margin-left:auto; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                    <span style="font-size:0.8rem; color:var(--text-secondary);">物料大类:</span>
+                                    <select id="mqc-category-filter" class="form-control" style="width:140px; height:30px; padding:2px 8px; font-size:0.8rem;" onchange="renderMqcAll();">
+                                        <option value="">全部大类</option>
                                         <option value="氧化铜粉">氧化铜粉</option>
+                                        <option value="添加剂">添加剂</option>
+                                        <option value="辅料">辅料</option>
                                         <option value="基材">基材</option>
                                         <option value="靶材">靶材</option>
                                         <option value="药水">药水</option>
-                                        <option value="辅料">辅料</option>
                                         <option value="包材">包材</option>
                                         <option value="其他">其他</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- Tab 1: 物料承认台帐 -->
-                            <div id="mqc-panel-materials">
+                            <!-- Tab 1: M1~M6 阶段管道看板 View -->
+                            <div id="mqc-panel-kanban">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main);">
+                                        🚀 物料承认 6 大阶段管道推进线
+                                    </span>
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">
+                                        点击任意物料卡片可一键进入“物料项目深度管控视角”
+                                    </span>
+                                </div>
+                                <!-- 6 列管道看板网格容器 -->
+                                <div id="mqc-kanban-grid" style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:12px; margin-bottom:24px; min-height:220px;">
+                                    <!-- 动态渲染 6 个阶段列 -->
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: 承认合格物料台帐 View -->
+                            <div id="mqc-panel-materials" style="display:none;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                                        <i data-lucide="check-circle-2" style="width:16px;height:16px;color:#10b981;"></i>
+                                        通过 M6 承认签发并入库的合格物料清单 (解锁 BOM 使用权限)
+                                    </span>
+                                </div>
                                 <div style="overflow-x:auto;">
-                                    <table class="custom-table" id="mqc-materials-table" style="min-width:900px;">
+                                    <table class="custom-table" id="mqc-materials-table" style="min-width:960px;">
                                         <thead>
                                             <tr>
                                                 <th>物料编码</th>
                                                 <th>物料名称 / 规格</th>
-                                                <th>类别</th>
-                                                <th style="min-width:320px;">供应商及承认情况</th>
-                                                <th style="width:110px;">风险提示</th>
+                                                <th>物料大类</th>
+                                                <th>主要供应商</th>
+                                                <th>当前阶段 / 承认状态</th>
+                                                <th>结论</th>
+                                                <th>供应商通道</th>
                                                 <th style="text-align:center;">操作</th>
                                             </tr>
                                         </thead>
                                         <tbody id="mqc-materials-tbody">
-                                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:40px;">正在加载...</td></tr>
+                                            <tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:40px;">正在加载物料承认台账...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
 
-                            <!-- Tab 2: 供应商风险看板 -->
+                            <!-- Tab 3: 供应商风险看板 View -->
                             <div id="mqc-panel-risk" style="display:none;">
                                 <div id="mqc-risk-board" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;">
                                     <div style="text-align:center; color:var(--text-muted); padding:60px; grid-column:1/-1;">正在加载供应商风险数据...</div>
@@ -3433,148 +3464,103 @@ requests.post(url, json=payload)</code></pre>
                 <input type="hidden" id="perms-user-id">
                 <div style="margin-bottom: 12px; font-weight: 700; font-size: 0.9rem; color: #1e293b; display: flex; align-items: center; gap: 6px;">
                     <span>当前编辑用户：</span>
-                    <span id="perms-user    <!-- 新增 / 编辑物料承认记录高颜值 Modal 弹窗 -->
+                    <span id="perms-user    <!-- ===== 参考新增设备开发模板：新增/编辑物料承认申请表 Modal 弹窗 ===== -->
     <div class="modal-overlay" id="modal-mqc-material">
-        <div class="modal-content" style="max-width: 780px; width: 95%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
-            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
-                <h3 id="mqc-material-modal-title" style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px;">
-                    <i data-lucide="package-check" style="width: 20px; height: 20px;"></i> 新增物料承认记录
+        <div class="modal-content" style="max-width: 680px; width: 92%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
+            <div class="modal-header" style="background: #ffffff; color: #0f172a; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="mqc-material-modal-title" style="margin: 0; font-size: 1.12rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="file-plus" style="width: 20px; height: 20px; color: #2563eb;"></i> 新增物料承认申请表
                 </h3>
-                <button class="modal-close" onclick="closeModal('modal-mqc-material')" style="color: #ffffff; font-size: 1.6rem; background: none; border: none; cursor: pointer; opacity: 0.9; line-height: 1;">&times;</button>
+                <button class="modal-close" onclick="closeModal('modal-mqc-material')" style="color: #64748b; font-size: 1.5rem; background: none; border: none; cursor: pointer; opacity: 0.9; line-height: 1;">&times;</button>
             </div>
             
-            <div class="modal-body" style="overflow-y: auto; max-height: 75vh; padding: 20px; background: #f8fafc;">
+            <div class="modal-body" style="overflow-y: auto; max-height: 76vh; padding: 20px; background: #ffffff;">
                 <input type="hidden" id="mqc-mat-id">
                 
-                <!-- 1. 📌 物料与供应商基础信息 -->
-                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
-                        <i data-lucide="box" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                        <span>一、物料与供应商基础信息</span>
+                <!-- 1. 物料基础资料 (2x2 网格) -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料代号 <span style="color: #ef4444;">*</span></label>
+                        <input type="text" class="form-control" id="mqc-mat-code" placeholder="如：MAT-CU-001" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料编码 <span style="color: #ef4444;">*</span></label>
-                            <input type="text" class="form-control" id="mqc-mat-code" placeholder="如: MAT-CU-BALL-001" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
-                        </div>
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料名称 <span style="color: #ef4444;">*</span></label>
-                            <input type="text" class="form-control" id="mqc-mat-name" placeholder="如: 高纯电解铜球" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
-                        </div>
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">物料类别</label>
-                            <select class="form-control" id="mqc-mat-category" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;">
-                                <option value="氧化铜粉">氧化铜粉</option>
-                                <option value="铜球">铜球</option>
-                                <option value="基材">基材</option>
-                                <option value="靶材">靶材</option>
-                                <option value="药水">药水</option>
-                                <option value="辅料">辅料</option>
-                                <option value="包材">包材</option>
-                                <option value="其他">其他</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">规格型号与纯度</label>
-                            <input type="text" class="form-control" id="mqc-mat-spec" placeholder="如: 纯度≥99.99%, 粒径10-30mm" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
-                        </div>
-                        <div style="grid-column: span 2;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">供应商全称</label>
-                            <input type="text" class="form-control" id="mqc-mat-supplier-name" placeholder="如: 江西铜业股份有限公司" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
-                        </div>
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料名称 <span style="color: #ef4444;">*</span></label>
+                        <input type="text" class="form-control" id="mqc-mat-name" placeholder="如：高纯电解铜线 / 特种明胶" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料种类 <span style="color: #ef4444;">*</span></label>
+                        <select class="form-control" id="mqc-mat-category" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%; cursor: pointer;">
+                            <option value="氧化铜粉">氧化铜粉</option>
+                            <option value="添加剂">添加剂</option>
+                            <option value="铜球">铜球</option>
+                            <option value="基材">基材</option>
+                            <option value="靶材">靶材</option>
+                            <option value="药水">药水</option>
+                            <option value="辅料">辅料</option>
+                            <option value="包材">包材</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">使用单位 / 工段</label>
+                        <input type="text" class="form-control" id="mqc-mat-supplier-name" placeholder="如：生箔一车间 / 质检中心" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
                     </div>
                 </div>
 
-                <!-- 2. 👤 承认申请与责任主体 -->
-                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
-                        <i data-lucide="user-check" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                        <span>二、承认申请与责任主体</span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">承认日期</label>
-                            <input type="date" class="form-control" id="mqc-mat-apply-date" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box;">
-                        </div>
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">申请责任人 <span style="color: #ef4444;">*</span></label>
-                            <select id="mqc-mat-apply-by" class="user-select-dropdown form-control" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;"></select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 4px; display: block;">品质审核人</label>
-                            <select id="mqc-mat-conclusion-by" class="user-select-dropdown form-control" style="font-size: 0.82rem; height: 34px; padding: 6px 10px; border-radius: 6px; box-sizing: border-box; cursor: pointer;"></select>
-                        </div>
-                    </div>
+                <!-- 📄 2. 物料立项书与评估说明 -->
+                <div style="font-weight: 800; font-size: 0.88rem; color: #1e3a8a; margin-bottom: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="file-text" style="width: 16px; height: 16px; color: #2563eb;"></i>
+                    <span>📄 2. 物料立项书与评估说明</span>
                 </div>
 
-                <!-- 3. 📎 承认书与品质检测资料包 -->
-                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px;">
-                        <i data-lucide="file-check" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                        <span>三、物料承认书与检测报告附件</span>
+                <div style="display: flex; flex-direction: column; gap: 14px;">
+                    <!-- 物料用途 -->
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料用途 / 应用场景</label>
+                        <input type="text" class="form-control" id="mqc-mat-spec" placeholder="如：用于高频5G铜箔极薄生箔配方与电镀整平" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                        <!-- 承认书 (PDF) -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📄 规范承认书 (PDF 格式)</label>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label for="mqc-cert-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #2563eb; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
-                                    📎 选择 PDF
-                                </label>
-                                <input type="file" id="mqc-cert-file-input" accept=".pdf" style="display:none;" onchange="handleCertFileSelect(this)">
-                                <span id="mqc-cert-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
-                                <a id="mqc-cert-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#2563eb; font-weight:700;">预览</a>
-                            </div>
-                        </div>
-                        <!-- 测试记录 -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📊 样品测试记录 / 数据日志</label>
-                            <input type="hidden" id="mqc-mat-test-record">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label for="mqc-test-record-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #0284c7; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
-                                    📎 上传测试记录
-                                </label>
-                                <input type="file" id="mqc-test-record-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-test-record', 'mqc-test-record-file-label', 'mqc-test-record-preview-link')">
-                                <span id="mqc-test-record-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
-                                <a id="mqc-test-record-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#0284c7; font-weight:700;">预览</a>
-                            </div>
-                        </div>
-                        <!-- 测试报告 -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">🔬 检测报告 (SGS / RoHS / 试验结论)</label>
-                            <input type="hidden" id="mqc-mat-test-report">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label for="mqc-test-report-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #059669; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
-                                    📎 上传检测报告
-                                </label>
-                                <input type="file" id="mqc-test-report-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-test-report', 'mqc-test-report-file-label', 'mqc-test-report-preview-link')">
-                                <span id="mqc-test-report-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
-                                <a id="mqc-test-report-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#059669; font-weight:700;">预览</a>
-                            </div>
-                        </div>
-                        <!-- TDS 技术规范表 -->
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
-                            <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📘 TDS 技术规格书 / 物性参数表</label>
-                            <input type="hidden" id="mqc-mat-tds-doc">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label for="mqc-tds-doc-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #4f46e5; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
-                                    📎 上传 TDS
-                                </label>
-                                <input type="file" id="mqc-tds-doc-file-input" accept=".pdf,.docx,.xlsx,.png,.jpg,.zip" style="display:none;" onchange="handleMqcFileSelect(this, 'mqc-mat-tds-doc', 'mqc-tds-doc-file-label', 'mqc-tds-doc-preview-link')">
-                                <span id="mqc-tds-doc-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
-                                <a id="mqc-tds-doc-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#4f46e5; font-weight:700;">预览</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- 4. 📝 送样说明与品质注意要点 -->
-                <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-                    <div style="font-size: 0.85rem; font-weight: 800; color: #1e3a8a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                        <i data-lucide="file-text" style="width: 16px; height: 16px; color: #2563eb;"></i>
-                        <span>四、送样说明与品质注意要点</span>
+                    <!-- 立项理由 -->
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">立项理由与替代说明</label>
+                        <textarea class="form-control" id="mqc-mat-remark" rows="3" placeholder="详细阐述立项背景与必要性，如：现存明胶添加剂在极薄5G铜箔中跳动较高，需新增高纯特种明胶配方..." style="width: 100%; min-height: 80px; font-size: 0.85rem; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; line-height: 1.55; box-sizing: border-box; resize: vertical;"></textarea>
                     </div>
-                    <textarea class="form-control" id="mqc-mat-remark" rows="3" placeholder="详细说明物料用途、送样检验重点及品质防呆风险要点..." style="width: 100%; min-height: 85px; font-size: 0.82rem; padding: 8px 10px; border-radius: 6px; line-height: 1.55; box-sizing: border-box; resize: vertical;"></textarea>
+
+                    <!-- 预估金额与需求日期 (2栏) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">预估金额 (万元)</label>
+                            <input type="number" step="0.1" class="form-control" placeholder="如: 120.0" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">需求日期</label>
+                            <input type="date" class="form-control" id="mqc-mat-apply-date" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
+                        </div>
+                    </div>
+
+                    <!-- 立项责任人与技术/品质负责人 (2栏) -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">立项责任人 <span style="color: #ef4444;">*</span></label>
+                            <select id="mqc-mat-apply-by" class="user-select-dropdown form-control" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%; cursor: pointer;"></select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">品质/技术负责人</label>
+                            <select id="mqc-mat-conclusion-by" class="user-select-dropdown form-control" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%; cursor: pointer;"></select>
+                        </div>
+                    </div>
+
+                    <!-- 承认书 (PDF) 快捷附件项 -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin-top: 4px;">
+                        <label style="font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px; display: block;">📄 物料规范承认书附件 (PDF 格式)</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label for="mqc-cert-file-input" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: #2563eb; color: #ffffff; border-radius: 4px; cursor: pointer; font-size: 0.76rem; font-weight: 700;">
+                                📎 选择 PDF
+                            </label>
+                            <input type="file" id="mqc-cert-file-input" accept=".pdf" style="display:none;" onchange="handleCertFileSelect(this)">
+                            <span id="mqc-cert-file-label" style="font-size: 0.76rem; color: #64748b; font-style: italic;">未上传</span>
+                            <a id="mqc-cert-preview-link" href="#" target="_blank" style="display:none; font-size:0.76rem; color:#2563eb; font-weight:700;">预览</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -3586,18 +3572,23 @@ requests.post(url, json=payload)</code></pre>
                 <input type="text" id="mqc-mat-conclusion">
                 <input type="date" id="mqc-mat-conclusion-date">
                 <textarea id="mqc-mat-test-result"></textarea>
+                <input type="hidden" id="mqc-mat-test-record">
+                <input type="hidden" id="mqc-mat-test-report">
                 <input type="hidden" id="mqc-mat-supplier-doc">
+                <input type="hidden" id="mqc-mat-tds-doc">
             </div>
 
-            <div class="modal-footer" style="padding: 12px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
+            <div class="modal-footer" style="padding: 14px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display:flex; gap:8px;">
-                    <button class="btn-secondary" id="mqc-mat-add-supplier-btn" onclick="openMqcSupplierModal(null)" style="font-size:0.8rem; height: 34px; padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                    <button class="btn-secondary" id="mqc-mat-add-supplier-btn" onclick="openMqcSupplierModal(null)" style="font-size:0.8rem; height: 36px; padding: 6px 14px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
                         <i data-lucide="truck" style="width:14px;height:14px;"></i> 管理供应商
                     </button>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-secondary" onclick="closeModal('modal-mqc-material')" style="height: 34px; padding: 6px 14px; font-size: 0.82rem; font-weight: 700; border-radius: 6px;">取消</button>
-                    <button class="btn-primary" onclick="saveMqcMaterial()" style="height: 34px; padding: 6px 16px; font-size: 0.82rem; font-weight: 700; border-radius: 6px; background: #2563eb; color: #ffffff; border: none; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">保存提交</button>
+                    <button class="btn-secondary" onclick="closeModal('modal-mqc-material')" style="height: 36px; padding: 6px 16px; font-size: 0.85rem; font-weight: 700; border-radius: 6px; border: 1px solid #cbd5e1; background: #ffffff; color: #475569;">取消</button>
+                    <button class="btn-primary" onclick="saveMqcMaterial()" style="height: 36px; padding: 6px 20px; font-size: 0.85rem; font-weight: 700; border-radius: 6px; background: #2563eb; color: #ffffff; border: none; box-shadow: 0 2px 5px rgba(37,99,235,0.25); display: inline-flex; align-items: center; gap: 6px;">
+                        <i data-lucide="check-circle-2" style="width: 15px; height: 15px;"></i> 提交立项申请表
+                    </button>
                 </div>
             </div>
         </div>
@@ -4579,6 +4570,137 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
     <!-- ===== END 设备弹窗 ===== -->
+
+    <!-- ===== 新增/编辑物料承认申请 弹窗 ===== -->
+    <div class="modal-overlay" id="modal-mqc-create" style="z-index: 1050;">
+        <div class="modal-box" style="max-width: 680px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3><i data-lucide="file-plus" style="color: #10b981;"></i> <span id="mqc-create-modal-title">新增物料承认申请表</span></h3>
+                <button class="modal-close" onclick="closeModal('modal-mqc-create')">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; padding: 18px 22px;">
+                <input type="hidden" id="mqc-create-id">
+
+                <!-- 块一：物料基本信息 -->
+                <div style="font-weight: 700; font-size: 0.85rem; color: #065f46; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="info" style="width: 15px; height: 15px; color: #10b981;"></i> 1. 物料基本信息
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 16px;">
+                    <div class="form-group">
+                        <label>物料代码 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <input type="text" id="mqc-create-code" class="form-control" placeholder="如: MAT-CU-BALL-002" required>
+                    </div>
+                    <div class="form-group">
+                        <label>物料名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <input type="text" id="mqc-create-name" class="form-control" placeholder="如: 高纯阴极铜球" required>
+                    </div>
+                    <div class="form-group">
+                        <label>物料大类 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <select id="mqc-create-category" class="form-control">
+                            <option value="氧化铜粉">氧化铜粉</option>
+                            <option value="添加剂">添加剂</option>
+                            <option value="辅料">辅料</option>
+                            <option value="基材">基材</option>
+                            <option value="靶材">靶材</option>
+                            <option value="药水">药水</option>
+                            <option value="包材">包材</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>主要供应商 / 厂家</label>
+                        <input type="text" id="mqc-create-supplier" class="form-control" placeholder="如: 江西铜业 / 巴斯夫">
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>规格型号 / TDS 要求</label>
+                        <input type="text" id="mqc-create-spec" class="form-control" placeholder="如: 直径25mm, 纯度>=99.995%, 电子级">
+                    </div>
+                </div>
+
+                <!-- 块二：立项书与评估说明 -->
+                <div style="font-weight: 700; font-size: 0.85rem; color: #065f46; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="file-text" style="width: 15px; height: 15px; color: #10b981;"></i> 2. 承认立项书与评估说明
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 16px;">
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>物料用途</label>
+                        <input type="text" id="mqc-create-purpose" class="form-control" placeholder="如: 用于高频5G铜箔及极薄生箔添加剂/辅料替代与质量升级">
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label>承认理由与必要性</label>
+                        <textarea id="mqc-create-reason" class="form-control" rows="2" placeholder="详细阐述承认背景与必要性，如：现料波幅较大，需引进高纯度合格物料以保障高频铜箔粗糙度..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>预估年采购金额 (万元)</label>
+                        <input type="number" id="mqc-create-budget" class="form-control" placeholder="如: 50.0" step="0.1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>需求完成日期</label>
+                        <input type="date" id="mqc-create-required-date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>申请责任人</label>
+                        <select id="mqc-create-apply-by" class="form-control">
+                            <option value="张研发">张研发</option>
+                            <option value="陈品质">陈品质</option>
+                            <option value="李建国">李建国</option>
+                            <option value="王工艺">王工艺</option>
+                            <option value="李采购">李采购</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>使用部门 / 事业部</label>
+                        <input type="text" id="mqc-create-using-unit" class="form-control" placeholder="如: 极薄生箔事业部 / 质检中心" value="极薄生箔事业部 / 质检中心">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('modal-mqc-create')">取消</button>
+                <button class="btn-primary" onclick="submitMqcCreate()"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> 提交立项申请表</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 物料项目深度管控视角 全屏大 Modal ===== -->
+    <div class="modal-overlay" id="modal-mqc-detail" style="z-index: 1060; backdrop-filter: blur(8px);">
+        <div class="modal-box" style="width: 95vw; max-width: 1400px; height: 92vh; max-height: 92vh; display: flex; flex-direction: column; padding: 0; background: #f8fafc; overflow: hidden; border-radius: 12px;">
+            
+            <!-- 头部顶栏 Navigation & Status -->
+            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <span style="background: rgba(16,185,129,0.2); color: #34d399; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(52,211,153,0.3);">
+                        物料承认 M1~M6 深度管控视角
+                    </span>
+                    <div>
+                        <h2 id="mqc-detail-title-name" style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 0;">--</h2>
+                        <div style="font-size: 0.75rem; color: #94a3b8; display: flex; gap: 12px; margin-top: 2px;">
+                            <span>编码: <strong id="mqc-detail-title-code" style="color: #cbd5e1;">--</strong></span>
+                            <span>大类: <strong id="mqc-detail-title-category" style="color: #cbd5e1;">--</strong></span>
+                            <span>供应商: <strong id="mqc-detail-title-supplier" style="color: #cbd5e1;">--</strong></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size:0.8rem; color:#94a3b8;">登录身份:</span>
+                    <select id="mqc-detail-role-select" class="form-control" style="background:#1e293b; color:#fff; border-color:#475569; height:32px; font-size:0.8rem;" onchange="window.currentMqcRole=this.value; renderMqcDetailView(state.currentMqcId);">
+                        <option value="Admin">超级管理员 (管理员)</option>
+                        <option value="RD">研发工程师 (RD)</option>
+                        <option value="QE">品质工程师 (QE)</option>
+                        <option value="PE">工艺工程师 (PE)</option>
+                        <option value="Pur">采购工程师 (Pur)</option>
+                    </select>
+                    <button class="btn-secondary" onclick="closeModal('modal-mqc-detail')" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff; height:32px; font-size:0.8rem; padding:0 14px;">
+                        <i data-lucide="x" style="width:14px;height:14px;"></i> 返回控制台
+                    </button>
+                </div>
+            </div>
+
+            <!-- 主体滚动渲染区域 -->
+            <div id="mqc-detail-body" style="flex: 1; overflow-y: auto; padding: 20px; box-sizing: border-box;">
+                <!-- 动态渲染 6 大阶段 Header 进度条、基础资料离焦保存、计划、Inputs/Deliverables、管控点以及跟进打卡卡片 -->
+            </div>
+        </div>
+    </div>
 
     <!-- ================= MODAL: EMS 阶段任务输入文件 ================= -->
     <div class="modal-overlay" id="modal-ems-stage-input-files" style="z-index: 1100;">
