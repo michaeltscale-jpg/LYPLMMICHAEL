@@ -398,7 +398,8 @@
 
                 <div class="stage-form-group">
                     <label>本里程碑负责人</label>
-                    <input type="text" id="edit-stage-owner" class="stage-form-control" placeholder="例如：设备组 / 工艺组">
+                    <input type="text" id="edit-stage-owner" list="users-datalist" class="stage-form-control" placeholder="输入或选择负责人，如：张工 (设备立项组)">
+                    <datalist id="users-datalist"></datalist>
                 </div>
 
                 <div class="stage-form-group">
@@ -672,7 +673,11 @@
             }
             state.activeEquipmentId = id;
 
-            await loadEquipmentData();
+            await Promise.all([
+                loadEquipmentData(),
+                loadUsersData()
+            ]);
+
             if (state.equipment) {
                 // Determine active stage from query param or default to active stage
                 const stageParam = urlParams.get('stage');
@@ -684,6 +689,26 @@
                 
                 renderPage();
             }
+        }
+
+        // Fetch users for datalist
+        async function loadUsersData() {
+            try {
+                const res = await fetch("/api/users");
+                if (res.ok) {
+                    const users = await res.json();
+                    state.usersList = users;
+                    const dl = document.getElementById("users-datalist");
+                    if (dl) {
+                        dl.innerHTML = "";
+                        users.forEach(u => {
+                            const opt = document.createElement("option");
+                            opt.value = `${u.display_name || u.name} (${u.role_name || u.role || '工程师'})`;
+                            dl.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (e) {}
         }
 
         // Load equipment from API
