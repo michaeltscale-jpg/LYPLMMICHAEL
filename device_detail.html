@@ -1046,14 +1046,14 @@
                         };
 
                         let tableHtml = `
-                            <table style="width:100%; border-collapse:collapse; font-size:0.78rem; background:#ffffff; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1;">
+                            <table style="width:100%; border-collapse:collapse; font-size:0.78rem; background:#ffffff; border-radius:6px; overflow:hidden; border:1px solid #cbd5e1; table-layout:fixed;">
                                 <thead>
                                     <tr style="background:#f1f5f9; color:#1e293b; text-align:left; border-bottom:1px solid #cbd5e1; font-weight:700;">
-                                        <th style="padding:8px 10px; font-size:0.78rem;">阶段代码与名称</th>
-                                        <th style="padding:8px 10px; font-size:0.78rem;">阶段负责人</th>
-                                        <th style="padding:8px 10px; font-size:0.78rem;">开始时间</th>
-                                        <th style="padding:8px 10px; text-align:center; font-size:0.78rem;">工作日 (天)</th>
-                                        <th style="padding:8px 10px; font-size:0.78rem;">计划结束时间</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem; width:32%;">阶段代码与名称</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem; width:110px;">阶段负责人</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem; width:138px;">开始时间</th>
+                                        <th style="padding:8px 10px; text-align:center; font-size:0.78rem; width:90px;">工作日 (天)</th>
+                                        <th style="padding:8px 10px; font-size:0.78rem; width:138px;">计划结束时间</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1085,25 +1085,25 @@
                                     <td style="padding:6px 10px; font-weight:700; color:#1e293b; font-size:0.78rem;">${info.title}</td>
                                     <td style="padding:6px 10px;">
                                         <input type="text" value="${cleanOwner}" 
-                                               placeholder="阶段负责人" 
+                                               placeholder="负责人" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
-                                               style="width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
+                                               style="width: 90px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
                                     </td>
                                     <td style="padding:6px 10px;">
                                         <input type="date" value="${sDate}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'start_date', this.value)" 
-                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 126px;">
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 122px;">
                                     </td>
                                     <td style="padding:6px 10px; text-align:center; white-space:nowrap;">
                                         <input type="number" min="1" value="${numericDays}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'duration', this.value)" 
-                                               style="width: 48px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 2px; font-size: 0.8rem; font-weight: 700; color: #475569; background: #ffffff;">
+                                               style="width: 44px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 2px; font-size: 0.8rem; font-weight: 700; color: #475569; background: #ffffff;">
                                         <span style="font-size:0.72rem; color:#64748b; font-weight:600;">天</span>
                                     </td>
                                     <td style="padding:6px 10px;">
                                         <input type="date" value="${eDate}" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'end_date', this.value)" 
-                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 126px;">
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; color: #334155; background: #ffffff; width: 122px;">
                                     </td>
                                 </tr>
                             `;
