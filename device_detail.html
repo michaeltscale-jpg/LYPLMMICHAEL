@@ -1058,31 +1058,49 @@
                         Object.keys(stageNamesMap).forEach(sk => {
                             const info = stageNamesMap[sk];
                             const stObj = plan[sk] || {};
-                            const sDate = stObj.start_date || "--";
-                            const eDate = stObj.end_date || stObj.plan_end_date || "--";
+                            const sDate = (stObj.start_date && stObj.start_date !== '--') ? stObj.start_date : "";
+                            const eDate = (stObj.end_date && stObj.end_date !== '--') ? stObj.end_date : ((stObj.plan_end_date && stObj.plan_end_date !== '--') ? stObj.plan_end_date : "");
 
                             // 计算天数
-                            let durationText = `${info.defaultDays} 天`;
+                            let numericDays = info.defaultDays;
                             if (stObj.start_date && (stObj.end_date || stObj.plan_end_date)) {
                                 try {
                                     const s = new Date(stObj.start_date);
                                     const e = new Date(stObj.end_date || stObj.plan_end_date);
                                     if (!isNaN(s.getTime()) && !isNaN(e.getTime())) {
                                         const diffDays = Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1;
-                                        if (diffDays > 0) durationText = `${diffDays} 天`;
+                                        if (diffDays > 0) numericDays = diffDays;
                                     }
                                 } catch(err) {}
                             }
 
-                            // 立项申请表内的排期均属于立项时拟定的未执行计划基线 (Planned)
+                            // 立项申请表内的排期均属于可在线直接编辑的计划基线 (Planned)
                             tableHtml += `
-                                <tr style="background:#ffffff; border-bottom:1px solid #e2e8f0;">
-                                    <td style="padding:6px 8px; font-weight:700; color:#1e293b;">${info.title}</td>
-                                    <td style="padding:6px 8px; color:#2563eb; font-weight:600;">👤 ${stObj.owner || '--'}</td>
-                                    <td style="padding:6px 8px; color:#334155;">${sDate}</td>
-                                    <td style="padding:6px 8px; text-align:center; font-weight:700; color:#475569;">${durationText}</td>
-                                    <td style="padding:6px 8px; color:#334155; font-weight:500;">${eDate}</td>
-                                    <td style="padding:6px 8px; text-align:center;">
+                                <tr style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
+                                    <td style="padding:4px 6px; font-weight:700; color:#1e293b;">${info.title}</td>
+                                    <td style="padding:4px 6px;">
+                                        <input type="text" value="${stObj.owner || ''}" 
+                                               placeholder="阶段负责人" 
+                                               onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
+                                               style="width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; font-weight: 600; color: #2563eb; background: #ffffff;">
+                                    </td>
+                                    <td style="padding:4px 6px;">
+                                        <input type="date" value="${sDate}" 
+                                               onchange="updateEmsProposalStageSchedule('${sk}', 'start_date', this.value)" 
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; color: #334155; background: #ffffff; width: 112px;">
+                                    </td>
+                                    <td style="padding:4px 6px; text-align:center; white-space:nowrap;">
+                                        <input type="number" min="1" value="${numericDays}" 
+                                               onchange="updateEmsProposalStageSchedule('${sk}', 'duration', this.value)" 
+                                               style="width: 44px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 2px; font-size: 0.65rem; font-weight: 700; color: #475569; background: #ffffff;">
+                                        <span style="font-size:0.62rem; color:#64748b;">天</span>
+                                    </td>
+                                    <td style="padding:4px 6px;">
+                                        <input type="date" value="${eDate}" 
+                                               onchange="updateEmsProposalStageSchedule('${sk}', 'end_date', this.value)" 
+                                               style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; font-size: 0.65rem; color: #334155; background: #ffffff; width: 112px;">
+                                    </td>
+                                    <td style="padding:4px 6px; text-align:center;">
                                         <span style="font-size:0.6rem; padding:2px 7px; border-radius:4px; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">计划中</span>
                                     </td>
                                 </tr>
@@ -1609,6 +1627,61 @@
                 showToast("更新数据异常", "error");
             }
         }
+
+        window.updateEmsProposalStageSchedule = async function(sk, field, value) {
+            const eq = state.equipment;
+            if (!eq) return;
+
+            let plan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : (eq.project_plan || eq.project_plan_json || {});
+            if (!plan[sk]) {
+                const defaultTitles = {
+                    "stage1_plan": "设备立项中", "stage2_scheme": "拟定技术方案", "stage3_bidding": "请购发包中",
+                    "stage4_make": "设备制作中", "stage5_install": "安装调试中", "stage6_accept": "验收交付使用"
+                };
+                plan[sk] = {
+                    title: defaultTitles[sk] || sk,
+                    status: "未开始",
+                    owner: "设备组",
+                    start_date: "",
+                    end_date: ""
+                };
+            }
+
+            const item = plan[sk];
+
+            if (field === 'owner') {
+                item.owner = value.trim();
+            } else if (field === 'start_date') {
+                item.start_date = value;
+                if (item.start_date && item.end_date) {
+                    const s = new Date(item.start_date);
+                    const e = new Date(item.end_date);
+                    if (e < s) {
+                        const newEnd = new Date(s);
+                        newEnd.setDate(newEnd.getDate() + 7);
+                        item.end_date = newEnd.toISOString().substring(0, 10);
+                    }
+                }
+            } else if (field === 'end_date') {
+                item.end_date = value;
+                if (item.start_date && item.end_date) {
+                    const s = new Date(item.start_date);
+                    const e = new Date(item.end_date);
+                    if (e < s) {
+                        item.start_date = value;
+                    }
+                }
+            } else if (field === 'duration') {
+                const days = parseInt(value, 10) || 7;
+                const sDateStr = item.start_date || new Date().toISOString().substring(0, 10);
+                item.start_date = sDateStr;
+                const s = new Date(sDateStr);
+                s.setDate(s.getDate() + (days - 1));
+                item.end_date = s.toISOString().substring(0, 10);
+            }
+
+            await saveEmsProjectPlanDirectly(eq.id, plan, `在线修改了 ${sk} 阶段的排期与责任人`);
+        };
 
         window.openEditProposalModal = function() {
             const eq = state.equipment;
