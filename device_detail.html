@@ -412,11 +412,14 @@
                         </div>
                     </div>
 
-                    <!-- 2. G1-G6 阶段周期、开始时间与预计结束时间表 -->
+                    <!-- 2. G1-G6 阶段周期、开始时间与预计结束时间表 (立项规划基线：未执行状态) -->
                     <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px;">
-                        <div style="color: #1e3a8a; font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-                            <i data-lucide="calendar-range" style="width: 12px; height: 12px; color: #2563eb;"></i>
-                            <span>二、全生命周期 G1-G6 阶段排期规划 (开始时间 / 工作日 / 预计结束时间)</span>
+                        <div style="color: #1e3a8a; font-size: 0.7rem; font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="calendar-range" style="width: 12px; height: 12px; color: #2563eb;"></i>
+                                <span>二、全生命周期 G1-G6 阶段排期规划 (初始规划基线)</span>
+                            </span>
+                            <span style="font-size: 0.6rem; color: #64748b; font-weight: 600; background: #f1f5f9; padding: 1px 6px; border-radius: 3px;">📌 属于立项拟定计划 (未执行)</span>
                         </div>
                         <div id="detail-prop-schedule-table" style="width: 100%; overflow-x: auto;">
                             <!-- 由 JS 动态渲染 G1~G6 节点周期、开始与预计结束时间表格 -->
@@ -1057,8 +1060,6 @@
                             const stObj = plan[sk] || {};
                             const sDate = stObj.start_date || "--";
                             const eDate = stObj.end_date || stObj.plan_end_date || "--";
-                            const isCur = sk === stageKey;
-                            const ov = checkIsOverdue(stObj);
 
                             // 计算天数
                             let durationText = `${info.defaultDays} 天`;
@@ -1073,23 +1074,16 @@
                                 } catch(err) {}
                             }
 
-                            const statusStyle = stObj.status === "已完成" 
-                                ? "background:#d1fae5; color:#065f46;"
-                                : (stObj.status === "进行中" ? "background:#dbeafe; color:#1e40af;" : "background:#f1f5f9; color:#64748b;");
-
-                            const rowBg = ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#ffffff');
-
+                            // 立项申请表内的排期均属于立项时拟定的未执行计划基线 (Planned)
                             tableHtml += `
-                                <tr style="background:${rowBg}; border-bottom:1px solid #e2e8f0;">
+                                <tr style="background:#ffffff; border-bottom:1px solid #e2e8f0;">
                                     <td style="padding:6px 8px; font-weight:700; color:#1e293b;">${info.title}</td>
                                     <td style="padding:6px 8px; color:#2563eb; font-weight:600;">👤 ${stObj.owner || '--'}</td>
                                     <td style="padding:6px 8px; color:#334155;">${sDate}</td>
                                     <td style="padding:6px 8px; text-align:center; font-weight:700; color:#475569;">${durationText}</td>
-                                    <td style="padding:6px 8px; color:${ov.isOverdue ? '#dc2626' : '#334155'}; font-weight:${ov.isOverdue ? '800' : '400'};">
-                                        ${eDate} ${ov.isOverdue ? '<span style="font-size:0.58rem; color:#dc2626;">⚠️已逾期</span>' : ''}
-                                    </td>
+                                    <td style="padding:6px 8px; color:#334155; font-weight:500;">${eDate}</td>
                                     <td style="padding:6px 8px; text-align:center;">
-                                        <span style="font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:700; ${statusStyle}">${stObj.status || '未开始'}</span>
+                                        <span style="font-size:0.6rem; padding:2px 7px; border-radius:4px; font-weight:700; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">计划中</span>
                                     </td>
                                 </tr>
                             `;
