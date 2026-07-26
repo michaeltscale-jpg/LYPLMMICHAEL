@@ -415,7 +415,7 @@
                             </div>
                             <div style="grid-column: span 2;">
                                 <strong style="color: #64748b;">立项责任人：</strong>
-                                <input type="text" id="detail-prop-owner-input" onchange="updateEmsProposalBaseInfo('owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: 110px; background:#ffffff;">
+                                <input type="text" id="detail-prop-owner-input" list="users-datalist" placeholder="从用户清单选择" onchange="updateEmsProposalBaseInfo('owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: 110px; background:#ffffff;">
                             </div>
                             <!-- 独占整行: 设备用途 -->
                             <div style="grid-column: 1 / -1; display: flex; align-items: center; background: #f8fafc; padding: 4px 8px; border-radius: 4px; border: 1px solid #e2e8f0; margin-top: 2px;">
@@ -608,7 +608,7 @@
                     </div>
                     <div class="form-group">
                         <label style="font-size:0.76rem; font-weight:700;">立项责任人</label>
-                        <input type="text" id="prop-edit-owner-main" class="form-control" style="font-size:0.75rem;">
+                        <input type="text" id="prop-edit-owner-main" list="users-datalist" placeholder="从用户清单选择" class="form-control" style="font-size:0.75rem;">
                     </div>
                     <div class="form-group" style="grid-column: 1/-1;">
                         <label style="font-size:0.76rem; font-weight:700;">设备用途</label>
@@ -635,37 +635,37 @@
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">1. 设备立项</span>
-                        <input type="text" id="prop-edit-g1-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g1-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g1-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g1-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">2. 拟定技术方案</span>
-                        <input type="text" id="prop-edit-g2-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g2-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g2-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g2-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">3. 请购发包</span>
-                        <input type="text" id="prop-edit-g3-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g3-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g3-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g3-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">4. 设备制作</span>
-                        <input type="text" id="prop-edit-g4-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g4-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g4-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g4-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">5. 安装调试</span>
-                        <input type="text" id="prop-edit-g5-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g5-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g5-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g5-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">6. 验收交付使用</span>
-                        <input type="text" id="prop-edit-g6-owner" class="form-control" placeholder="阶段负责人" style="font-size:0.72rem; padding:4px 6px;">
+                        <input type="text" id="prop-edit-g6-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g6-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g6-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
@@ -827,8 +827,41 @@
             } catch (e) {}
         }
 
+        // 全局动态装载系统用户清单 datalist
+        window.initSystemUsersDatalist = async function() {
+            let usersList = [];
+            try {
+                const res = await fetch("/api/users");
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) {
+                        usersList = data.map(u => u.display_name || u.name || u.username).filter(Boolean);
+                    }
+                }
+            } catch (e) {
+                console.warn("读取后端用户 API 失败，使用内置标准 PLM 用户名册", e);
+            }
+
+            // 默认名册兜底与融合（剔除重复，包含全部角色）
+            const defaultPLMUsers = ["张工", "李工", "王经理", "刘工", "陈工", "赵经理", "孙工", "周工", "钱主管", "管理员", "张建国", "李秀英", "王伟", "刘强"];
+            const combinedSet = new Set([...usersList, ...defaultPLMUsers]);
+            
+            // 渲染或更新全局 #users-datalist
+            let datalistEl = document.getElementById("users-datalist");
+            if (!datalistEl) {
+                datalistEl = document.createElement("datalist");
+                datalistEl.id = "users-datalist";
+                document.body.appendChild(datalistEl);
+            }
+            
+            datalistEl.innerHTML = Array.from(combinedSet)
+                .map(name => `<option value="${name}">${name}</option>`)
+                .join("");
+        };
+
         // Load equipment from API
         async function loadEquipmentData() {
+            initSystemUsersDatalist();
             try {
                 const res = await fetch("/api/equipments");
                 const equipments = await res.json();
@@ -1112,8 +1145,8 @@
                                 <tr style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
                                     <td style="padding:6px 10px; font-weight:700; color:#1e293b; font-size:0.78rem;">${info.title}</td>
                                     <td style="padding:6px 10px;">
-                                        <input type="text" value="${cleanOwner}" 
-                                               placeholder="负责人" 
+                                        <input type="text" list="users-datalist" value="${cleanOwner}" 
+                                               placeholder="选择负责人" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
                                                style="width: 90px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
                                     </td>
