@@ -551,28 +551,44 @@
             </div>
             <div class="modal-body" style="overflow-y: auto; padding: 18px 22px;">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 16px;">
-                    <div class="form-group" style="grid-column: 1/-1;">
-                        <label style="font-size:0.76rem; font-weight:700;">设备用途</label>
-                        <input type="text" id="prop-edit-purpose" class="form-control" style="font-size:0.75rem;">
+                    <div class="form-group">
+                        <label style="font-size:0.76rem; font-weight:700;">设备名称</label>
+                        <input type="text" id="prop-edit-name" class="form-control" style="font-size:0.75rem;">
                     </div>
                     <div class="form-group">
-                        <label style="font-size:0.76rem; font-weight:700;">预估金额 (万元)</label>
+                        <label style="font-size:0.76rem; font-weight:700;">设备编码</label>
+                        <input type="text" id="prop-edit-code" class="form-control" style="font-size:0.75rem;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:0.76rem; font-weight:700;">设备类别</label>
+                        <input type="text" id="prop-edit-category" class="form-control" style="font-size:0.75rem;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:0.76rem; font-weight:700;">使用单位</label>
+                        <input type="text" id="prop-edit-unit" class="form-control" style="font-size:0.75rem;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:0.76rem; font-weight:700;">预估预算 (万元)</label>
                         <input type="number" id="prop-edit-budget" class="form-control" step="0.1" style="font-size:0.75rem;">
                     </div>
                     <div class="form-group">
                         <label style="font-size:0.76rem; font-weight:700;">需求日期</label>
                         <input type="date" id="prop-edit-reqdate" class="form-control" style="font-size:0.75rem;">
                     </div>
-                    <div class="form-group" style="grid-column: 1/-1;">
-                        <label style="font-size:0.76rem; font-weight:700;">使用单位</label>
-                        <input type="text" id="prop-edit-unit" class="form-control" style="font-size:0.75rem;">
+                    <div class="form-group">
+                        <label style="font-size:0.76rem; font-weight:700;">立项责任人</label>
+                        <input type="text" id="prop-edit-owner-main" class="form-control" style="font-size:0.75rem;">
                     </div>
                     <div class="form-group" style="grid-column: 1/-1;">
-                        <label style="font-size:0.76rem; font-weight:700;">立项理由</label>
+                        <label style="font-size:0.76rem; font-weight:700;">设备用途</label>
+                        <input type="text" id="prop-edit-purpose" class="form-control" style="font-size:0.75rem;">
+                    </div>
+                    <div class="form-group" style="grid-column: 1/-1;">
+                        <label style="font-size:0.76rem; font-weight:700;">📌 立项理由</label>
                         <textarea id="prop-edit-reason" class="form-control" rows="2" style="font-size:0.75rem;"></textarea>
                     </div>
                     <div class="form-group" style="grid-column: 1/-1;">
-                        <label style="font-size:0.76rem; font-weight:700;">预期带来效益</label>
+                        <label style="font-size:0.76rem; font-weight:700;">📈 预期带来效益</label>
                         <textarea id="prop-edit-benefits" class="form-control" rows="2" style="font-size:0.75rem;"></textarea>
                     </div>
                 </div>
@@ -1607,10 +1623,14 @@
             const plan = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json || '{}') : (eq.project_plan || eq.project_plan_json || {});
 
             const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ""; };
-            setVal("prop-edit-purpose", params.device_purpose || "");
+            setVal("prop-edit-name", eq.device_name || "");
+            setVal("prop-edit-code", eq.device_code || "");
+            setVal("prop-edit-category", eq.stage_name || eq.category || "");
+            setVal("prop-edit-unit", eq.using_unit || "");
             setVal("prop-edit-budget", params.estimated_budget || "");
             setVal("prop-edit-reqdate", params.required_date || "");
-            setVal("prop-edit-unit", eq.using_unit || "");
+            setVal("prop-edit-owner-main", (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "");
+            setVal("prop-edit-purpose", params.device_purpose || "");
             setVal("prop-edit-reason", params.proposal_reason || "");
             setVal("prop-edit-benefits", params.expected_benefits || "");
 
@@ -1665,10 +1685,14 @@
             if (!eq) return;
 
             const getVal = id => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
-            const purpose = getVal("prop-edit-purpose");
+            const name = getVal("prop-edit-name");
+            const code = getVal("prop-edit-code");
+            const category = getVal("prop-edit-category");
+            const unit = getVal("prop-edit-unit");
             const budget = getVal("prop-edit-budget");
             const reqDate = getVal("prop-edit-reqdate");
-            const unit = getVal("prop-edit-unit");
+            const ownerMain = getVal("prop-edit-owner-main");
+            const purpose = getVal("prop-edit-purpose");
             const reason = getVal("prop-edit-reason");
             const benefits = getVal("prop-edit-benefits");
 
@@ -1694,15 +1718,20 @@
             stages.forEach(sk => {
                 const skKey = stageMapKeys[sk];
                 const oldObj = plan[skKey] || {};
+                const inputOwner = getVal(`prop-edit-${sk}-owner`);
                 plan[skKey] = {
                     ...oldObj,
                     title: oldObj.title || defaultTitles[skKey],
                     status: oldObj.status || "未开始",
-                    owner: getVal(`prop-edit-${sk}-owner`) || oldObj.owner || "未指定",
+                    owner: inputOwner || oldObj.owner || "未指定",
                     start_date: getVal(`prop-edit-${sk}-start`),
                     end_date: getVal(`prop-edit-${sk}-end`)
                 };
             });
+
+            if (ownerMain && plan["stage1_plan"]) {
+                plan["stage1_plan"].owner = ownerMain;
+            }
 
             try {
                 const res = await fetch("/api/equipments/save", {
@@ -1714,9 +1743,9 @@
                     },
                     body: JSON.stringify({
                         id: eq.id,
-                        device_code: eq.device_code,
-                        device_name: eq.device_name,
-                        stage_name: eq.stage_name,
+                        device_code: code || eq.device_code,
+                        device_name: name || eq.device_name,
+                        stage_name: category || eq.stage_name,
                         using_unit: unit || null,
                         oee: eq.oee || 85.0,
                         next_maintenance: eq.next_maintenance || null,
