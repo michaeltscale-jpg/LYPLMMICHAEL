@@ -984,200 +984,106 @@
 
                     <!-- ================= PANEL 2.4: EMS 设备开发 ================= -->
                     <div class="tab-panel" id="ems-panel">
-                        <div class="panel-header" style="display: none; justify-content: flex-end; align-items: center; margin-top: -12px; margin-bottom: -6px;">
-                            <div>
-                                <button class="btn-primary" onclick="openNewEquipmentModal()" style="font-size: 0.74rem; padding: 6px 14px; display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> 新增关键设备
-                                </button>
+                        <div class="glass-panel" style="border-color: rgba(59,130,246,0.25);">
+                            <!-- 顶部操作栏 -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                                <div>
+                                    <h2 style="font-size:1.3rem; color:#2563eb; display:flex; align-items:center; gap:8px;">
+                                        <i data-lucide="cpu" style="width:22px;height:22px;color:#2563eb;"></i>
+                                        设备开发管控台 (EMS)
+                                    </h2>
+                                    <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:4px;">
+                                        实现设备 G1~G6 立项、技术方案、请购发包、驻厂监造、安装调试到转固全生命周期里程碑精细化管控。
+                                    </p>
+                                </div>
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <input type="text" id="ems-search" class="form-control" placeholder="🔍 搜索设备代号 / 名称 / 使用单位..." style="width:220px; font-size:0.8rem;" oninput="fetchEmsData()">
+                                    <button class="btn-primary" onclick="openNewEquipmentModal()" style="font-size:0.8rem; display:flex; align-items:center; gap:6px; background:#2563eb;">
+                                        <i data-lucide="plus-circle" style="width:14px;height:14px;"></i> 新增关键设备申请
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- 设备开发 6 大里程碑阶段过滤看板 -->
-                        <div class="ems-stage-cards-container" id="ems-stage-cards-container" style="margin-bottom: 0px;">
-                            <!-- G1. 立项 -->
-                            <div class="ems-filter-card active-card" onclick="selectEmsStageFilter('stage1_plan')" id="ems-card-stage1_plan">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G1</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-inprogress" id="ems-card-status-stage1_plan">进行中</span>
+                            <!-- Tab 切换栏与过滤器 -->
+                            <div style="display:flex; gap:16px; border-bottom:2px solid var(--border-color); margin-bottom:20px; align-items:center; flex-wrap:wrap; padding-bottom:4px;">
+                                <div style="display:flex; gap:0; margin-bottom:-2px;">
+                                    <button id="ems-tab-btn-kanban" onclick="switchEmsTab('kanban')"
+                                        style="padding:8px 20px; background:none; border:none; border-bottom:2px solid #2563eb; color:#2563eb; font-weight:600; font-size:0.85rem; cursor:pointer;">
+                                        <i data-lucide="layout-grid" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> G1~G6 阶段管道看板
+                                    </button>
+                                    <button id="ems-tab-btn-devices" onclick="switchEmsTab('devices')"
+                                        style="padding:8px 20px; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-secondary); font-weight:600; font-size:0.85rem; cursor:pointer;">
+                                        <i data-lucide="shield-check" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> 验收转固设备台帐
+                                    </button>
+                                    <button id="ems-tab-btn-oee" onclick="switchEmsTab('oee')"
+                                        style="padding:8px 20px; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-secondary); font-weight:600; font-size:0.85rem; cursor:pointer;">
+                                        <i data-lucide="activity" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"></i> 设备 OEE 与维保预警
+                                    </button>
                                 </div>
-                                <h4 class="ems-filter-card-title">1. 设备立项中</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage1_plan" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage1_plan" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
-                                </div>
-                            </div>
-                            <!-- G2. 拟定技术方案 -->
-                            <div class="ems-filter-card" onclick="selectEmsStageFilter('stage2_scheme')" id="ems-card-stage2_scheme">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G2</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-notstarted" id="ems-card-status-stage2_scheme">未开启</span>
-                                </div>
-                                <h4 class="ems-filter-card-title">2. 拟定技术方案</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage2_scheme" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage2_scheme" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
+                                <div style="margin-left:auto; display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                    <span style="font-size:0.8rem; color:var(--text-secondary);">设备种类:</span>
+                                    <select id="ems-category-filter" class="form-control" style="width:150px; height:30px; padding:2px 8px; font-size:0.8rem;" onchange="renderEmsAll();">
+                                        <option value="">全部设备种类</option>
+                                        <option value="生产设备">生产设备</option>
+                                        <option value="厂务设备">厂务设备</option>
+                                        <option value="检测设备">检测设备</option>
+                                        <option value="仓储搬运设备">仓储搬运设备</option>
+                                    </select>
                                 </div>
                             </div>
-                            <!-- G3. 请购发包 -->
-                            <div class="ems-filter-card" onclick="selectEmsStageFilter('stage3_bidding')" id="ems-card-stage3_bidding">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G3</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-notstarted" id="ems-card-status-stage3_bidding">未开启</span>
-                                </div>
-                                <h4 class="ems-filter-card-title">3. 请购发包中</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage3_bidding" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage3_bidding" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
-                                </div>
-                            </div>
-                            <!-- G4. 制作中 -->
-                            <div class="ems-filter-card" onclick="selectEmsStageFilter('stage4_make')" id="ems-card-stage4_make">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G4</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-notstarted" id="ems-card-status-stage4_make">未开启</span>
-                                </div>
-                                <h4 class="ems-filter-card-title">4. 设备制作中</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage4_make" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage4_make" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
-                                </div>
-                            </div>
-                            <!-- G5. 安装调试中 -->
-                            <!-- G5. 安装调试中 -->
-                            <div class="ems-filter-card" onclick="selectEmsStageFilter('stage5_install')" id="ems-card-stage5_install">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G5</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-notstarted" id="ems-card-status-stage5_install">未开启</span>
-                                </div>
-                                <h4 class="ems-filter-card-title">5. 安装调试中</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage5_install" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage5_install" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
-                                </div>
-                            </div>
-                            <!-- G6. 验收交付使用 -->
-                            <div class="ems-filter-card" onclick="selectEmsStageFilter('stage6_accept')" id="ems-card-stage6_accept">
-                                <div class="ems-filter-card-header">
-                                    <span class="ems-filter-card-g">G6</span>
-                                    <span class="ems-stage-card-status-badge ems-stage-card-status-notstarted" id="ems-card-status-stage6_accept">未开启</span>
-                                </div>
-                                <h4 class="ems-filter-card-title">6. 验收交付使用</h4>
-                                <div class="ems-filter-card-body">
-                                     <div class="ems-filter-data-box" style="flex: 1; min-height: 100px; display: flex; flex-direction: column;">
-                                         <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 4px;">
-                                             <span>进行中项目</span>
-                                             <span id="ems-card-count-stage6_accept" style="color: #60a5fa;">-- 台</span>
-                                         </div>
-                                         <div id="ems-card-devices-stage6_accept" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; max-height: 105px; padding-right: 2px;">
-                                             <span style="color: #64748b; font-style: italic;">暂无</span>
-                                         </div>
-                                     </div>
-                                     
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- 上下排列布局：上方设备卡片列表，下方参数监控与维保 -->
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <!-- 左列：设备列表表格 -->
-                            <div class="glass-panel highlight-blue" style="padding: 18px;">
-                                <h3 style="margin: 0 0 14px; font-size: 0.88rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                                    <span style="display: flex; align-items: center; gap: 6px;">
-                                        <i data-lucide="list" style="width: 15px; height: 15px; color: var(--color-primary);"></i>
-                                        <span>验收后设备明细列表</span>
-                                        <span style="font-size: 0.68rem; color: #059669; font-weight: 700; background: #ecfdf5; padding: 2px 8px; border-radius: 4px; border: 1px solid #a7f3d0; margin-left: 6px;">🔒 仅展示 G6 验收交付使用后转固设备</span>
+                            <!-- Tab 1: G1~G6 阶段管道看板 View -->
+                            <div id="ems-panel-kanban">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main);">
+                                        🚀 设备开发 6 大里程碑阶段管道推进线
                                     </span>
-                                    <div style="display: flex; gap: 6px;" id="ems-category-tags-container">
-                                        <span class="ems-cat-tag active-tag" onclick="window.selectEmsCategoryFilter('全部')">全部</span>
-                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('生产设备')">生产设备</span>
-                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('厂务设备')">厂务设备</span>
-                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('检测设备')">检测设备</span>
-                                        <span class="ems-cat-tag" onclick="window.selectEmsCategoryFilter('仓储搬运设备')">仓储搬运设备</span>
-                                    </div>
-                                </h3>
-                                <div class="table-wrap">
-                                    <table class="custom-table" id="ems-device-table">
+                                    <span style="font-size:0.75rem; color:var(--text-muted);">
+                                        点击任意设备卡片可一键进入“设备项目深度管控视角”
+                                    </span>
+                                </div>
+                                <!-- 6 列管道看板网格容器 -->
+                                <div id="ems-kanban-grid" style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:12px; margin-bottom:24px; min-height:240px;">
+                                    <!-- 动态渲染 G1~G6 6 个阶段列 -->
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: 验收转固设备台帐 View -->
+                            <div id="ems-panel-devices" style="display:none;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                                        <i data-lucide="check-circle-2" style="width:16px;height:16px;color:#10b981;"></i>
+                                        通过 G6 竣工验收交付使用并完成资产转固的设备清单
+                                    </span>
+                                </div>
+                                <div style="overflow-x:auto;">
+                                    <table class="custom-table" id="ems-device-table" style="min-width:960px;">
                                         <thead>
                                             <tr>
                                                 <th>设备代号</th>
-                                                <th style="width: 160px;">设备名称</th>
+                                                <th>设备名称</th>
                                                 <th>设备种类</th>
                                                 <th>验收日期</th>
                                                 <th>使用单位</th>
-                                                <th>操作</th>
+                                                <th>综合效率 (OEE)</th>
+                                                <th style="text-align:center;">操作</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <!-- 动态渲染设备行 -->
+                                        <tbody id="ems-devices-tbody">
+                                            <tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:40px;">正在加载设备台账...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
 
-                            <!-- 右列：选中设备综合管理工作台（驾驶舱） -->
-                            <div style="display: flex; flex-direction: column; gap: 16px;">
-                                <div class="glass-panel highlight-blue" id="ems-monitor-panel" style="padding: 18px; display: none;">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px;">
-                                        <div>
-                                            <h4 style="margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--text-primary);" id="ems-mon-name">未选择设备</h4>
-                                            <span style="font-family: monospace; font-size: 0.68rem; color: var(--color-primary);" id="ems-mon-code">--</span>
-                                        </div>
-                                    </div>
-                                    <div id="ems-mon-content" style="display: none;">
-                                        <!-- 设备导入里程碑管理 -->
-                                        <div id="ems-subpanel-project" style="display: block;">
-                                            <h5 style="margin: 0 0 10px; font-size: 0.74rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase;">🏗️ 设备导入 6 大阶段里程碑管道线</h5>
-                                            
-                                            <!-- 里程碑网格卡片图 -->
-                                            <div class="ems-milestone-grid" id="ems-milestone-grid-container">
-                                                <!-- JS 动态渲染 6 大网格节点 -->
-                                            </div>
-                                            
-                                            <!-- 阶段详细内容工作台 -->
-                                            <div id="ems-stage-detail-workbench" style="padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px;">
-                                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 10px;">
-                                                    <h5 style="margin: 0; font-size: 0.76rem; font-weight: 700; color: #f1f5f9;">
-                                                        📍 阶段详情: <span id="ems-workbench-stage-title" style="color: #3b82f6;">--</span>
+                            <!-- Tab 3: 设备 OEE 与维保风险 View -->
+                            <div id="ems-panel-oee" style="display:none;">
+                                <div id="ems-oee-board" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;">
+                                    <div style="text-align:center; color:var(--text-muted); padding:60px; grid-column:1/-1;">正在加载设备 OEE 维保数据...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- end ems-panel -->
                                                     </h5>
                                                     <span class="ems-node-badge" id="ems-workbench-stage-status-badge" style="font-size: 0.62rem;">--</span>
                                                 </div>
@@ -3649,6 +3555,7 @@ requests.post(url, json=payload)</code></pre>
     <!-- JS Application -->
     <script src="app.js?v=20260725_sop_fix"></script>
     <script src="mqc_logic.js"></script>
+    <script src="ems_logic.js"></script>
 
     <!-- ===== MQC 物料承认编辑弹窗 ===== -->
     <div class="modal-overlay" id="modal-mqc-material">
@@ -4726,6 +4633,43 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-ems-stage-input-files')">取消</button>
                 <button class="btn-primary" onclick="saveEmsStageInputFiles()">保存</button>
+    <!-- ===== 设备项目深度管控视角 全屏大 Modal ===== -->
+    <div class="modal-overlay" id="modal-equipment-detail" style="z-index: 1060; backdrop-filter: blur(8px);">
+        <div class="modal-box" style="width: 95vw; max-width: 1400px; height: 92vh; max-height: 92vh; display: flex; flex-direction: column; padding: 0; background: #f8fafc; overflow: hidden; border-radius: 12px;">
+            
+            <!-- 头部顶栏 Navigation & Status -->
+            <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%); color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #3b82f6;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <span style="background: rgba(59,130,246,0.25); color: #60a5fa; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(96,165,250,0.3);">
+                        设备开发 G1~G6 深度管控视角
+                    </span>
+                    <div>
+                        <h2 id="eq-detail-title-name" style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 0;">--</h2>
+                        <div style="font-size: 0.75rem; color: #94a3b8; display: flex; gap: 12px; margin-top: 2px;">
+                            <span>设备代号: <strong id="eq-detail-title-code" style="color: #cbd5e1;">--</strong></span>
+                            <span>设备种类: <strong id="eq-detail-title-category" style="color: #cbd5e1;">--</strong></span>
+                            <span>使用单位: <strong id="eq-detail-title-dept" style="color: #cbd5e1;">--</strong></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size:0.8rem; color:#94a3b8;">登录身份:</span>
+                    <select id="eq-detail-role-select" class="form-control" style="background:#1e293b; color:#fff; border-color:#475569; height:32px; font-size:0.8rem;" onchange="window.currentEqRole=this.value; renderEquipmentDetailView(state.currentEqId);">
+                        <option value="Admin">超级管理员 (管理员)</option>
+                        <option value="PE">设备工程师 (PE)</option>
+                        <option value="RD">研发/使用人 (RD)</option>
+                        <option value="Pur">采购发包人 (Pur)</option>
+                        <option value="QA">质量工程人 (QA)</option>
+                    </select>
+                    <button class="btn-secondary" onclick="closeModal('modal-equipment-detail')" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); color:#fff; height:32px; font-size:0.8rem; padding:0 14px;">
+                        <i data-lucide="x" style="width:14px;height:14px;"></i> 返回控制台
+                    </button>
+                </div>
+            </div>
+
+            <!-- 主体滚动渲染区域 -->
+            <div id="modal-equipment-detail-body" style="flex: 1; overflow-y: auto; padding: 20px;">
+                <!-- 动态渲染 6 阶段 Timeline、基础资料离焦保存、Inputs/Deliverables 与跟进打卡 -->
             </div>
         </div>
     </div>
