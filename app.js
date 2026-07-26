@@ -7016,7 +7016,9 @@ window.saveNewEquipment = async function() {
             project_plan_json: JSON.stringify(p_new_initiation)
         };
         if (!id) {
-            payload.status = "导入中";
+            payload.status = "立项申请";
+            payload.current_stage = "stage1_plan";
+            payload.stage_name = "G1. 设备立项";
         }
         
         const res = await fetch("/api/equipments/save", {
@@ -7035,6 +7037,7 @@ window.saveNewEquipment = async function() {
         } else {
             showToast(id ? "编辑设备申请表成功" : "新增设备申请表提交成功！", "success");
             closeModal("modal-equipment");
+            if (window.fetchEmsData) window.fetchEmsData();
             if (window.fetchEquipments) window.fetchEquipments();
             if (window.fetchEquipmentsAndRender) window.fetchEquipmentsAndRender();
         }
