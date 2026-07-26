@@ -415,15 +415,15 @@
                             </div>
                             <div>
                                 <strong style="color: #64748b;">立项责任人：</strong>
-                                <input type="text" id="detail-prop-owner-input" list="users-datalist" placeholder="选择责任人" onchange="updateEmsProposalBaseInfo('owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box;">
+                                <select id="detail-prop-owner-input" onchange="updateEmsProposalBaseInfo('owner', this.value)" class="user-select-dropdown" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box; cursor:pointer;"></select>
                             </div>
                             <div>
                                 <strong style="color: #64748b;">项目协同人：</strong>
-                                <input type="text" id="detail-prop-collaborator-input" list="users-datalist" placeholder="选择协同人" onchange="updateEmsProposalBaseInfo('collaborator', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:600; color:#475569; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box;">
+                                <select id="detail-prop-collaborator-input" onchange="updateEmsProposalBaseInfo('collaborator', this.value)" class="user-select-dropdown" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:600; color:#475569; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box; cursor:pointer;"></select>
                             </div>
                             <div>
                                 <strong style="color: #64748b;">技术负责人：</strong>
-                                <input type="text" id="detail-prop-tech-owner-input" list="users-datalist" placeholder="选择技术负责人" onchange="updateEmsProposalBaseInfo('tech_owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:600; color:#0369a1; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box;">
+                                <select id="detail-prop-tech-owner-input" onchange="updateEmsProposalBaseInfo('tech_owner', this.value)" class="user-select-dropdown" style="border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; height:34px; font-size:0.78rem; font-weight:600; color:#0369a1; width: calc(100% - 95px); background:#ffffff; box-sizing:border-box; cursor:pointer;"></select>
                             </div>
                             <!-- 独占整行: 设备用途 -->
                             <div style="grid-column: 1 / -1; display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e1; margin-top: 2px;">
@@ -521,8 +521,7 @@
                         </div>
                         <div>
                             <label style="font-size: 0.78rem; color: #475569; font-weight: 700; margin-bottom: 3px; display: block;">跟进人</label>
-                            <input type="text" id="followup-input-person" list="users-datalist" class="stage-form-control" placeholder="从用户清单选择" style="font-size: 0.8rem; padding: 6px 10px; height: 34px; box-sizing: border-box;">
-                            <datalist id="users-datalist"></datalist>
+                            <select id="followup-input-person" class="user-select-dropdown stage-form-control" style="font-size: 0.8rem; padding: 6px 10px; height: 34px; box-sizing: border-box; cursor: pointer;"></select>
                         </div>
                     </div>
                     <div style="margin-bottom: 12px;">
@@ -604,7 +603,7 @@
                     </div>
                     <div class="form-group">
                         <label style="font-size:0.76rem; font-weight:700;">立项责任人</label>
-                        <input type="text" id="prop-edit-owner-main" list="users-datalist" placeholder="从用户清单选择" class="form-control" style="font-size:0.75rem;">
+                        <select id="prop-edit-owner-main" class="user-select-dropdown form-control" style="font-size:0.75rem; height:34px; cursor:pointer;"></select>
                     </div>
                     <div class="form-group" style="grid-column: 1/-1;">
                         <label style="font-size:0.76rem; font-weight:700;">设备用途</label>
@@ -631,37 +630,37 @@
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">1. 设备立项</span>
-                        <input type="text" id="prop-edit-g1-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g1-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g1-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g1-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">2. 拟定技术方案</span>
-                        <input type="text" id="prop-edit-g2-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g2-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g2-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g2-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">3. 请购发包</span>
-                        <input type="text" id="prop-edit-g3-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g3-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g3-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g3-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">4. 设备制作</span>
-                        <input type="text" id="prop-edit-g4-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g4-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g4-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g4-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">5. 安装调试</span>
-                        <input type="text" id="prop-edit-g5-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g5-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g5-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g5-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
                     <div style="display:grid; grid-template-columns: 125px 120px 1fr 1fr; gap:8px; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; font-size:0.75rem;">
                         <span style="font-weight:700; color:#1e293b;">6. 验收交付使用</span>
-                        <input type="text" id="prop-edit-g6-owner" list="users-datalist" class="form-control" placeholder="从用户清单选择" style="font-size:0.72rem; padding:4px 6px;">
+                        <select id="prop-edit-g6-owner" class="user-select-dropdown form-control" style="font-size:0.72rem; padding:4px 6px; height:30px; cursor:pointer;"></select>
                         <input type="date" id="prop-edit-g6-start" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                         <input type="date" id="prop-edit-g6-end" class="form-control" style="font-size:0.72rem; padding:4px 6px;">
                     </div>
@@ -823,7 +822,7 @@
             } catch (e) {}
         }
 
-        // 全局动态装载系统用户清单 datalist
+        // 全局动态装载系统用户清单
         window.initSystemUsersDatalist = async function() {
             let usersList = [];
             try {
@@ -838,26 +837,38 @@
                 console.warn("读取后端用户 API 失败，使用内置标准 PLM 用户名册", e);
             }
 
-            // 默认名册兜底与融合（剔除重复，包含全部角色）
+            // 默认名册兜底与融合（剔除重复，包含全部角色人名）
             const defaultPLMUsers = ["张工", "李工", "王经理", "刘工", "陈工", "赵经理", "孙工", "周工", "钱主管", "管理员", "张建国", "李秀英", "王伟", "刘强"];
-            const combinedSet = new Set([...usersList, ...defaultPLMUsers]);
+            state.plmUsers = Array.from(new Set([...usersList, ...defaultPLMUsers]));
+        };
+
+        // 安全填充渲染原生 <select class="user-select-dropdown"> 选项并选中
+        window.setUserSelectSafe = function(idOrEl, currentVal) {
+            const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+            if (!el) return;
+
+            const list = state.plmUsers || ["张工", "李工", "王经理", "刘工", "陈工", "赵经理", "孙工", "周工", "钱主管", "管理员", "张建国", "李秀英", "王伟", "刘强"];
+            const cleanVal = (currentVal || "").replace(/[\(（].*?[\)）]/g, "").trim();
             
-            // 渲染或更新全局 #users-datalist
-            let datalistEl = document.getElementById("users-datalist");
-            if (!datalistEl) {
-                datalistEl = document.createElement("datalist");
-                datalistEl.id = "users-datalist";
-                document.body.appendChild(datalistEl);
+            let html = "";
+            if (!cleanVal) {
+                html += `<option value="" selected>-- 请选择人员 --</option>`;
+            } else if (!list.includes(cleanVal)) {
+                html += `<option value="${cleanVal}" selected>${cleanVal}</option>`;
             }
-            
-            datalistEl.innerHTML = Array.from(combinedSet)
-                .map(name => `<option value="${name}">${name}</option>`)
-                .join("");
+
+            list.forEach(name => {
+                const isSel = (name === cleanVal) ? "selected" : "";
+                html += `<option value="${name}" ${isSel}>${name}</option>`;
+            });
+
+            el.innerHTML = html;
+            if (cleanVal) el.value = cleanVal;
         };
 
         // Load equipment from API
         async function loadEquipmentData() {
-            initSystemUsersDatalist();
+            await initSystemUsersDatalist();
             try {
                 const res = await fetch("/api/equipments");
                 const equipments = await res.json();
@@ -1086,9 +1097,9 @@
                     setValSafe("detail-prop-budget-input", params.estimated_budget || "180.0");
                     setValSafe("detail-prop-reqdate-input", params.required_date || "2026-09-09");
                     setValSafe("detail-prop-purpose-input", params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀");
-                    setValSafe("detail-prop-owner-input", getCleanOwnerName((plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "张工"));
-                    setValSafe("detail-prop-collaborator-input", getCleanOwnerName(params.collaborator || "李工"));
-                    setValSafe("detail-prop-tech-owner-input", getCleanOwnerName(params.tech_owner || "王经理"));
+                    setUserSelectSafe("detail-prop-owner-input", getCleanOwnerName((plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "张工"));
+                    setUserSelectSafe("detail-prop-collaborator-input", getCleanOwnerName(params.collaborator || "李工"));
+                    setUserSelectSafe("detail-prop-tech-owner-input", getCleanOwnerName(params.tech_owner || "王经理"));
                     setValSafe("detail-prop-reason-input", params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。");
                     setValSafe("detail-prop-benefits-input", params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。");
 
@@ -1143,10 +1154,11 @@
                                 <tr style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
                                     <td style="padding:6px 10px; font-weight:700; color:#1e293b; font-size:0.78rem;">${info.title}</td>
                                     <td style="padding:6px 10px;">
-                                        <input type="text" list="users-datalist" value="${cleanOwner}" 
-                                               placeholder="选择负责人" 
-                                               onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
-                                               style="width: 90px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
+                                        <select class="user-select-dropdown" 
+                                                onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
+                                                style="width: 95px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 4px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff; height: 30px; cursor: pointer;"
+                                                data-current-val="${cleanOwner}">
+                                        </select>
                                     </td>
                                     <td style="padding:6px 10px;">
                                         <input type="date" value="${sDate}" 
@@ -1170,6 +1182,12 @@
 
                         tableHtml += `</tbody></table>`;
                         schedContainer.innerHTML = tableHtml;
+
+                        // 填充渲染表格行内阶段负责人下拉菜单
+                        schedContainer.querySelectorAll("select.user-select-dropdown").forEach(sel => {
+                            const cur = sel.getAttribute("data-current-val");
+                            setUserSelectSafe(sel, cur);
+                        });
                     }
                 } else {
                     propCard.style.display = "none";
@@ -1471,8 +1489,8 @@
                 dateInput.value = formatEmsTime(new Date()).substring(0, 10);
             }
             const personInput = document.getElementById("followup-input-person");
-            if (personInput && !personInput.value) {
-                personInput.value = state.currentUserDisplayName || "管理员";
+            if (personInput) {
+                setUserSelectSafe(personInput, state.currentUserDisplayName || "管理员");
             }
 
             // Render logs sorted by date / id descending
@@ -1823,7 +1841,7 @@
             setVal("prop-edit-unit", eq.using_unit || "");
             setVal("prop-edit-budget", params.estimated_budget || "");
             setVal("prop-edit-reqdate", params.required_date || "");
-            setVal("prop-edit-owner-main", (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "");
+            setUserSelectSafe("prop-edit-owner-main", (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "张工");
             setVal("prop-edit-purpose", params.device_purpose || "");
             setVal("prop-edit-reason", params.proposal_reason || "");
             setVal("prop-edit-benefits", params.expected_benefits || "");
@@ -1843,7 +1861,7 @@
             }
             stages.forEach(sk => {
                 const pObj = plan[stageMapKeys[sk]] || {};
-                setVal(`prop-edit-${sk}-owner`, getCleanOwnerName(pObj.owner) || defaultOwners[sk] || "");
+                setUserSelectSafe(`prop-edit-${sk}-owner`, getCleanOwnerName(pObj.owner) || defaultOwners[sk] || "张工");
                 setVal(`prop-edit-${sk}-start`, pObj.start_date || "");
                 setVal(`prop-edit-${sk}-end`, pObj.end_date || pObj.plan_end_date || "");
             });
