@@ -101,6 +101,10 @@ def make_default_equipment_project_plan(active_stage_idx=6):
         start_date = (base + timedelta(days=start_offset)).strftime("%Y-%m-%d")
         end_date = (base + timedelta(days=end_offset)).strftime("%Y-%m-%d")
         
+        # Set overdue test case for active_stage_idx == 1 (stage2_scheme)
+        if active_stage_idx == 1 and idx == 1:
+            end_date = (base - timedelta(days=3)).strftime("%Y-%m-%d")
+        
         plan[s_key] = {
             "title": s_title,
             "status": s_status,

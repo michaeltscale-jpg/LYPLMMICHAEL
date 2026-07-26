@@ -797,6 +797,25 @@
             }
         }
 
+        // Check if stage is overdue
+        function checkIsOverdue(item) {
+            if (!item || !item.end_date) return { isOverdue: false, overdueDays: 0, text: "" };
+            if (item.status === "已完成") return { isOverdue: false, overdueDays: 0, text: "" };
+
+            const parts = item.end_date.split('-');
+            if (parts.length !== 3) return { isOverdue: false, overdueDays: 0, text: "" };
+            
+            const end = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23, 59, 59);
+            const today = new Date();
+            
+            if (today > end) {
+                const diffMs = today - end;
+                const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                return { isOverdue: true, overdueDays: diffDays, text: `(已逾期 ${diffDays} 天)` };
+            }
+            return { isOverdue: false, overdueDays: 0, text: "" };
+        }
+
         // Render the top timeline milestones grid
         function renderMilestonesGrid() {
             const container = document.getElementById("detail-milestone-grid");
@@ -814,11 +833,13 @@
                     end_date: ""
                 };
 
+                const overdue = checkIsOverdue(item);
                 const card = document.createElement("div");
                 card.className = `timeline-card ${k === state.activeStageKey ? 'active-card' : ''}`;
                 
                 // Add status class
                 if (item.status === "已完成") card.classList.add("completed");
+                else if (overdue.isOverdue) card.style.border = "1.5px solid #ef4444";
                 else if (item.status === "进行中" || item.status === "审批中") card.classList.add("inprogress");
                 else card.classList.add("notstarted");
 
@@ -829,17 +850,32 @@
 
                 // Determine badge style
                 let badgeClass = "ems-stage-card-status-notstarted";
-                if (item.status === "已完成") badgeClass = "ems-stage-card-status-completed";
-                else if (item.status === "进行中" || item.status === "审批中") badgeClass = "ems-stage-card-status-inprogress";
+                let badgeContent = item.status;
+                let badgeStyle = "font-size:0.55rem; padding:1px 5px; border-radius:3px;";
+
+                if (item.status === "已完成") {
+                    badgeClass = "ems-stage-card-status-completed";
+                } else if (overdue.isOverdue) {
+                    badgeContent = `已逾期 ${overdue.overdueDays}天`;
+                    badgeStyle = "font-size:0.55rem; padding:1px 5px; border-radius:3px; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; font-weight:700;";
+                } else if (item.status === "进行中" || item.status === "审批中") {
+                    badgeClass = "ems-stage-card-status-inprogress";
+                }
+
+                const endDateStr = item.end_date || '--';
+                const dateHtml = overdue.isOverdue 
+                    ? `<span style="color:#dc2626; font-weight:800; font-size:0.6rem; display:flex; align-items:center; gap:2px;"><i data-lucide="alert-triangle" style="width:10px;height:10px;"></i>计划完成: ${endDateStr}</span>`
+                    : `<span style="color:#64748b; font-size:0.6rem;">计划完成: ${endDateStr}</span>`;
 
                 card.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <span style="font-size:0.6rem; font-weight:700; color:var(--text-muted);">${k.toUpperCase().replace('STAGE', 'G')}</span>
-                        <span class="ems-stage-card-status-badge ${badgeClass}" style="font-size:0.55rem; padding:1px 4px;">${item.status}</span>
+                        <span class="${badgeClass}" style="${badgeStyle}">${badgeContent}</span>
                     </div>
-                    <div style="font-size:0.74rem; font-weight:700; color:var(--text-primary); margin:6px 0 2px;">${item.title}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.6rem; color:#94a3b8;">
-                        <span>负责人: ${item.owner || '--'}</span>
+                    <div style="font-size:0.74rem; font-weight:700; color:var(--text-primary); margin:4px 0 2px;">${item.title}</div>
+                    <div style="margin-bottom: 2px;">${dateHtml}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.58rem; color:#94a3b8;">
+                        <span>👤 ${item.owner || '--'}</span>
                     </div>
                 `;
 
@@ -928,14 +964,24 @@
                     const sDate = stObj.start_date || "--";
                     const eDate = stObj.end_date || stObj.plan_end_date || "--";
                     const isCur = sk === stageKey;
+                    const ov = checkIsOverdue(stObj);
+
+                    const endDateColor = ov.isOverdue ? '#dc2626' : (isCur ? '#1d4ed8' : '#64748b');
+                    const endDateFont = ov.isOverdue ? 'font-weight: 800;' : '';
+                    const ovBadge = ov.isOverdue ? `<span style="color:#dc2626; font-weight:800; font-size:0.58rem; margin-left:2px;">⚠️已逾期</span>` : '';
+
                     const itemDiv = document.createElement("div");
-                    itemDiv.style.cssText = `background: ${isCur ? '#eff6ff' : '#f8fafc'}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${isCur ? '#3b82f6' : '#e2e8f0'};`;
+                    itemDiv.style.cssText = `background: ${ov.isOverdue ? '#fef2f2' : (isCur ? '#eff6ff' : '#f8fafc')}; padding: 4px 6px; border-radius: 4px; border: 1px solid ${ov.isOverdue ? '#fca5a5' : (isCur ? '#3b82f6' : '#e2e8f0')};`;
                     itemDiv.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-weight: 700; color: ${isCur ? '#1d4ed8' : '#334155'}; font-size: 0.65rem;">${stageNamesMap[sk]}</span>
+                            <span style="font-weight: 700; color: ${ov.isOverdue ? '#b91c1c' : (isCur ? '#1d4ed8' : '#334155')}; font-size: 0.65rem;">${stageNamesMap[sk]}</span>
                             <span style="color: #2563eb; font-size: 0.6rem; font-weight: 600;">👤 ${stObj.owner || '--'}</span>
                         </div>
-                        <div style="color: #64748b; font-size: 0.62rem; margin-top: 2px;">${sDate} ~ ${eDate}</div>
+                        <div style="font-size: 0.62rem; margin-top: 2px;">
+                            <span style="color:#64748b;">${sDate} ~ </span>
+                            <span style="color:${endDateColor}; ${endDateFont}">计划完成: ${eDate}</span>
+                            ${ovBadge}
+                        </div>
                     `;
                     schedContainer.appendChild(itemDiv);
                 });
@@ -1017,12 +1063,34 @@
                 "stage6_accept": { node: "72 小时连续试运行达标；档案归档率 100%", status_text: "72h测试闭环 (周期10天)" }
             };
             const progObj = item.progress_control || defaultProgressMap[stageKey] || {};
+            const ovCur = checkIsOverdue(item);
+
             const elProgNode = document.getElementById("workbench-progress-node");
             const elProgDates = document.getElementById("workbench-progress-plan-dates");
+            const elProgWarning = document.getElementById("workbench-progress-warning");
             const elProgTag = document.getElementById("workbench-progress-status-tag");
+
             if (elProgNode) elProgNode.innerText = progObj.node || progObj.key_node || "--";
-            if (elProgDates) elProgDates.innerText = `${item.start_date || '--'} ~ ${item.end_date || '--'}`;
-            if (elProgTag) elProgTag.innerText = progObj.status_text || "进度符合预期";
+
+            if (ovCur.isOverdue) {
+                if (elProgDates) elProgDates.innerHTML = `<span style="color:#dc2626; font-weight:800;">计划完成: ${item.end_date} (已逾期 ${ovCur.overdueDays} 天)</span>`;
+                if (elProgWarning) elProgWarning.innerHTML = `<span style="color:#dc2626; font-weight:800;">⚠️ 已产生逾期风险！请尽快催办</span>`;
+                if (elProgTag) {
+                    elProgTag.innerText = `⚠️ 已逾期 ${ovCur.overdueDays} 天`;
+                    elProgTag.style.background = "#fee2e2";
+                    elProgTag.style.color = "#dc2626";
+                    elProgTag.style.border = "1px solid #fca5a5";
+                }
+            } else {
+                if (elProgDates) elProgDates.innerText = `${item.start_date || '--'} ~ 计划完成: ${item.end_date || '--'}`;
+                if (elProgWarning) elProgWarning.innerHTML = `<span style="color:#059669; font-weight:700;">无延期风险</span>`;
+                if (elProgTag) {
+                    elProgTag.innerText = progObj.status_text || "进度符合预期";
+                    elProgTag.style.background = "#f3e8ff";
+                    elProgTag.style.color = "#7e22ce";
+                    elProgTag.style.border = "none";
+                }
+            }
 
             // Render Cost Control Card
             const defaultCostMap = {
