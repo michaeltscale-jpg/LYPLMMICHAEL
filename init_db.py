@@ -44,12 +44,12 @@ def make_default_project_plan(created_time, creator):
 
 def make_default_equipment_project_plan(active_stage_idx=6):
     stages = [
-        ("stage1_plan", "立项", "张工 (设备立项负责人)", -50, -45, "《设备立项可行性评估报告》.pdf", "/docs/eq_g1_deliverable.pdf"),
-        ("stage2_scheme", "拟定技术方案", "李工 (工艺方案负责人)", -44, -38, "《设备技术方案规格书(正式稿)》.pdf", "/docs/eq_g2_deliverable.pdf"),
-        ("stage3_bidding", "请购发包中", "王经理 (采购商务负责人)", -37, -30, "《设备采购合同与发包技术协议》.pdf", "/docs/eq_g3_deliverable.pdf"),
-        ("stage4_make", "设备制作中", "刘工 (设备监造负责人)", -29, -15, "《设备出厂预验收检验核对表(FAT)》.pdf", "/docs/eq_g4_deliverable.pdf"),
-        ("stage5_install", "安装调试中", "陈工 (现场安装负责人)", -14, 5, "《设备二次工程与安装自检报告(SAT)》.pdf", "/docs/eq_g5_deliverable.pdf"),
-        ("stage6_accept", "验收交付使用", "赵经理 (生产验收负责人)", 6, 12, "《设备竣工综合验收签收单(正式结案)》.pdf", "/docs/eq_g6_deliverable.pdf")
+        ("stage1_plan", "立项", "张工", -50, -45, "《设备立项可行性评估报告》.pdf", "/docs/eq_g1_deliverable.pdf"),
+        ("stage2_scheme", "拟定技术方案", "李工", -44, -38, "《设备技术方案规格书(正式稿)》.pdf", "/docs/eq_g2_deliverable.pdf"),
+        ("stage3_bidding", "请购发包中", "王经理", -37, -30, "《设备采购合同与发包技术协议》.pdf", "/docs/eq_g3_deliverable.pdf"),
+        ("stage4_make", "设备制作中", "刘工", -29, -15, "《设备出厂预验收检验核对表(FAT)》.pdf", "/docs/eq_g4_deliverable.pdf"),
+        ("stage5_install", "安装调试中", "陈工", -14, 5, "《设备二次工程与安装自检报告(SAT)》.pdf", "/docs/eq_g5_deliverable.pdf"),
+        ("stage6_accept", "验收交付使用", "赵经理", 6, 12, "《设备竣工综合验收签收单(正式结案)》.pdf", "/docs/eq_g6_deliverable.pdf")
     ]
     
     stage_inputs = {

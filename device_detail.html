@@ -1024,7 +1024,12 @@
                     setTextSafe("detail-prop-budget", params.estimated_budget ? `${params.estimated_budget} 万元` : (eq.estimated_budget ? `${eq.estimated_budget} 万元` : "180.0 万元"));
                     setTextSafe("detail-prop-reqdate", params.required_date || eq.required_date || "--");
                     setTextSafe("detail-prop-purpose", params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀");
-                    setTextSafe("detail-prop-owner", (plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "设备组");
+                    function getCleanOwnerName(raw) {
+                        if (!raw) return "";
+                        return raw.replace(/[\(（].*?[\)）]/g, "").trim();
+                    }
+
+                    setTextSafe("detail-prop-owner", getCleanOwnerName((plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "张工"));
                     setTextSafe("detail-prop-reason", params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。");
                     setTextSafe("detail-prop-benefits", params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。");
 
@@ -1059,6 +1064,7 @@
                             const stObj = plan[sk] || {};
                             const sDate = (stObj.start_date && stObj.start_date !== '--') ? stObj.start_date : "";
                             const eDate = (stObj.end_date && stObj.end_date !== '--') ? stObj.end_date : ((stObj.plan_end_date && stObj.plan_end_date !== '--') ? stObj.plan_end_date : "");
+                            const cleanOwner = getCleanOwnerName(stObj.owner || "");
 
                             // 计算天数
                             let numericDays = info.defaultDays;
@@ -1078,7 +1084,7 @@
                                 <tr style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
                                     <td style="padding:6px 10px; font-weight:700; color:#1e293b; font-size:0.78rem;">${info.title}</td>
                                     <td style="padding:6px 10px;">
-                                        <input type="text" value="${stObj.owner || ''}" 
+                                        <input type="text" value="${cleanOwner}" 
                                                placeholder="阶段负责人" 
                                                onchange="updateEmsProposalStageSchedule('${sk}', 'owner', this.value)" 
                                                style="width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 6px; font-size: 0.78rem; font-weight: 600; color: #2563eb; background: #ffffff;">
@@ -1703,12 +1709,16 @@
                 "g4": "stage4_make", "g5": "stage5_install", "g6": "stage6_accept"
             };
             const defaultOwners = {
-                "g1": "张工 (设备立项组)", "g2": "李工 (工艺方案组)", "g3": "王经理 (采购商务组)",
-                "g4": "刘工 (设备监造组)", "g5": "陈工 (现场工程组)", "g6": "赵经理 (生产运营部)"
+                "g1": "张工", "g2": "李工", "g3": "王经理",
+                "g4": "刘工", "g5": "陈工", "g6": "赵经理"
             };
+            function getCleanOwnerName(raw) {
+                if (!raw) return "";
+                return raw.replace(/[\(（].*?[\)）]/g, "").trim();
+            }
             stages.forEach(sk => {
                 const pObj = plan[stageMapKeys[sk]] || {};
-                setVal(`prop-edit-${sk}-owner`, pObj.owner || defaultOwners[sk] || "");
+                setVal(`prop-edit-${sk}-owner`, getCleanOwnerName(pObj.owner) || defaultOwners[sk] || "");
                 setVal(`prop-edit-${sk}-start`, pObj.start_date || "");
                 setVal(`prop-edit-${sk}-end`, pObj.end_date || pObj.plan_end_date || "");
             });
