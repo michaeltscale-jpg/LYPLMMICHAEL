@@ -387,35 +387,43 @@
                             </span>
                             <span style="font-size: 0.65rem; color: #059669; font-weight: 700; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; border: 1px solid #a7f3d0;">✍️ 修改栏位离焦即自动保存</span>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 0.78rem; margin-bottom: 8px; align-items: center;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px; font-size: 0.78rem; margin-bottom: 10px; align-items: center;">
                             <div>
                                 <strong style="color: #64748b;">设备名称：</strong>
-                                <input type="text" id="detail-prop-name-input" onchange="updateEmsProposalBaseInfo('device_name', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.88rem; font-weight:800; color:#0f172a; width: 145px; background:#ffffff;">
+                                <input type="text" id="detail-prop-name-input" onchange="updateEmsProposalBaseInfo('device_name', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.88rem; font-weight:800; color:#0f172a; width: calc(100% - 85px); background:#ffffff;">
                             </div>
                             <div>
                                 <strong style="color: #64748b;">设备编码：</strong>
-                                <input type="text" id="detail-prop-code-input" onchange="updateEmsProposalBaseInfo('device_code', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:700; color:#2563eb; font-family:monospace; width: 125px; background:#ffffff;">
+                                <input type="text" id="detail-prop-code-input" onchange="updateEmsProposalBaseInfo('device_code', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:700; color:#2563eb; font-family:monospace; width: calc(100% - 85px); background:#ffffff;">
                             </div>
                             <div>
                                 <strong style="color: #64748b;">设备类别：</strong>
-                                <input type="text" id="detail-prop-category-input" onchange="updateEmsProposalBaseInfo('category', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:600; color:#0f172a; width: 110px; background:#ffffff;">
+                                <input type="text" id="detail-prop-category-input" onchange="updateEmsProposalBaseInfo('category', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:600; color:#0f172a; width: calc(100% - 85px); background:#ffffff;">
                             </div>
                             <div>
                                 <strong style="color: #64748b;">使用单位：</strong>
-                                <input type="text" id="detail-prop-unit-input" onchange="updateEmsProposalBaseInfo('using_unit', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:600; color:#0f172a; width: 110px; background:#ffffff;">
+                                <input type="text" id="detail-prop-unit-input" onchange="updateEmsProposalBaseInfo('using_unit', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:600; color:#0f172a; width: calc(100% - 85px); background:#ffffff;">
                             </div>
                             <div>
                                 <strong style="color: #64748b;">预估预算：</strong>
-                                <input type="number" step="0.1" id="detail-prop-budget-input" onchange="updateEmsProposalBaseInfo('estimated_budget', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.85rem; font-weight:800; color:#059669; width: 75px; background:#ffffff;">
+                                <input type="number" step="0.1" id="detail-prop-budget-input" onchange="updateEmsProposalBaseInfo('estimated_budget', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.85rem; font-weight:800; color:#059669; width: 90px; background:#ffffff;">
                                 <span style="font-weight:700; color:#059669; font-size:0.75rem;">万元</span>
                             </div>
                             <div>
                                 <strong style="color: #64748b;">需求日期：</strong>
-                                <input type="date" id="detail-prop-reqdate-input" onchange="updateEmsProposalBaseInfo('required_date', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:700; color:#2563eb; width: 125px; background:#ffffff;">
+                                <input type="date" id="detail-prop-reqdate-input" onchange="updateEmsProposalBaseInfo('required_date', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:700; color:#2563eb; width: calc(100% - 85px); background:#ffffff;">
                             </div>
-                            <div style="grid-column: span 2;">
+                            <div>
                                 <strong style="color: #64748b;">立项责任人：</strong>
-                                <input type="text" id="detail-prop-owner-input" list="users-datalist" placeholder="从用户清单选择" onchange="updateEmsProposalBaseInfo('owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:3px 6px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: 110px; background:#ffffff;">
+                                <input type="text" id="detail-prop-owner-input" list="users-datalist" placeholder="选择责任人" onchange="updateEmsProposalBaseInfo('owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:700; color:#1d4ed8; width: calc(100% - 95px); background:#ffffff;">
+                            </div>
+                            <div>
+                                <strong style="color: #64748b;">项目协同人：</strong>
+                                <input type="text" id="detail-prop-collaborator-input" list="users-datalist" placeholder="选择协同人" onchange="updateEmsProposalBaseInfo('collaborator', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:600; color:#475569; width: calc(100% - 95px); background:#ffffff;">
+                            </div>
+                            <div>
+                                <strong style="color: #64748b;">技术负责人：</strong>
+                                <input type="text" id="detail-prop-tech-owner-input" list="users-datalist" placeholder="选择技术负责人" onchange="updateEmsProposalBaseInfo('tech_owner', this.value)" style="border:1px solid #cbd5e1; border-radius:4px; padding:4px 8px; font-size:0.78rem; font-weight:600; color:#0369a1; width: calc(100% - 95px); background:#ffffff;">
                             </div>
                             <!-- 独占整行: 设备用途 -->
                             <div style="grid-column: 1 / -1; display: flex; align-items: center; background: #f8fafc; padding: 4px 8px; border-radius: 4px; border: 1px solid #e2e8f0; margin-top: 2px;">
@@ -1091,6 +1099,8 @@
                     setValSafe("detail-prop-reqdate-input", params.required_date || "2026-09-09");
                     setValSafe("detail-prop-purpose-input", params.device_purpose || "用于高频5G铜箔中试扩产与阴极辊高精度电镀");
                     setValSafe("detail-prop-owner-input", getCleanOwnerName((plan["stage1_plan"] && plan["stage1_plan"].owner) || eq.owner || "张工"));
+                    setValSafe("detail-prop-collaborator-input", getCleanOwnerName(params.collaborator || "李工"));
+                    setValSafe("detail-prop-tech-owner-input", getCleanOwnerName(params.tech_owner || "王经理"));
                     setValSafe("detail-prop-reason-input", params.proposal_reason || "现存生箔设备无法增加高频超粗化槽，需新装专用机台满足5G极薄铜箔中试要求。");
                     setValSafe("detail-prop-benefits-input", params.expected_benefits || "预计提升中试产能30%，降低跳动废损15%，年增加产值约300万元。");
 
@@ -1712,6 +1722,8 @@
             else if (field === 'device_purpose') params.device_purpose = value.trim();
             else if (field === 'proposal_reason') params.proposal_reason = value.trim();
             else if (field === 'expected_benefits') params.expected_benefits = value.trim();
+            else if (field === 'collaborator') params.collaborator = value.trim();
+            else if (field === 'tech_owner') params.tech_owner = value.trim();
             else if (field === 'owner') {
                 if (plan["stage1_plan"]) plan["stage1_plan"].owner = value.trim();
                 eq.owner = value.trim();
