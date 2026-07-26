@@ -679,11 +679,11 @@ function switchTab(tabId) {
 
     if (btnNewProj) {
         if (tabId === 'ems-panel') {
-            btnNewProj.style.display = "";
-            btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新增关键设备`;
+            btnNewProj.style.display = "inline-flex";
+            btnNewProj.innerHTML = `<i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 新增关键设备`;
         } else if (tabId === 'plm-panel') {
-            btnNewProj.style.display = "";
-            btnNewProj.innerHTML = `<i data-lucide="plus-circle"></i> 新品开发立项`;
+            btnNewProj.style.display = "inline-flex";
+            btnNewProj.innerHTML = `<i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 新品开发立项`;
         } else {
             btnNewProj.style.display = "none";
         }
