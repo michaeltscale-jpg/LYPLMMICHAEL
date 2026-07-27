@@ -465,6 +465,18 @@
 
 
 
+                <!-- 0. 📝 本阶段计划方案 (仅 G2-G6 阶段呈现) -->
+                <div id="workbench-stage-scheme-card" style="display: none; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;">
+                    <div style="color: #1e3a8a; font-size: 0.82rem; font-weight: 800; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="file-text" style="width: 15px; height: 15px; color: #2563eb;"></i>
+                            <span id="stage-scheme-card-title">📝 本阶段计划方案与实施说明</span>
+                        </span>
+                        <span style="font-size: 0.65rem; color: #059669; font-weight: 700; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; border: 1px solid #a7f3d0;">✍️ 修改后离焦自动保存</span>
+                    </div>
+                    <textarea id="workbench-stage-scheme-input" onchange="updateEmsStagePlanRemark(this.value)" rows="3" placeholder="录入本阶段的目标要点、实施计划与方案说明..." style="width: 100%; min-height: 75px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; font-size: 0.82rem; color: #334155; line-height: 1.55; background: #ffffff; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+
                 <!-- 1. 📥 本阶段主题输入资料 -->
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e1; padding-bottom: 6px; margin-bottom: 8px;">
@@ -1095,12 +1107,20 @@
                 "stage4_make": "G4 设备制作", "stage5_install": "G5 安装调试", "stage6_accept": "G6 验收交付使用"
             };
 
-            setTextSafe("stage-plan-card-title", `📄 ${stageTagMapName[stageKey] || stageKey} 阶段计划说明与实施规划要点`);
-            setValSafe("workbench-stage-remark-input", item.remark || defaultStageRemarks[stageKey] || "");
-
-            // 立项申请表仅在 G1 立项评审阶段呈现，切换至 G2-G6 隐去无关卡片
+            // 在 G2~G6 阶段呈现【本阶段计划方案】输入卡片，G1 阶段则呈现【设备立项申请表】
+            const schemeCard = document.getElementById("workbench-stage-scheme-card");
             const propCard = document.getElementById("workbench-proposal-summary-card");
             const isG1 = (stageKey === "stage1_plan" || stageKey === "stage1" || stageKey === "g1" || stageKey === "g1_plan");
+
+            if (schemeCard) {
+                if (!isG1) {
+                    schemeCard.style.display = "block";
+                    setTextSafe("stage-scheme-card-title", `📝 ${stageTagMapName[stageKey] || stageKey} 本阶段计划方案与实施说明`);
+                    setValSafe("workbench-stage-scheme-input", item.remark || defaultStageRemarks[stageKey] || "");
+                } else {
+                    schemeCard.style.display = "none";
+                }
+            }
 
             if (propCard) {
                 if (isG1) {
