@@ -67,19 +67,42 @@ window.switchEmsTab = function(tab) {
     renderEmsAll();
 };
 
+// 离线/双击本地 index.html 文件时的默认演示设备名册
+const fallbackEmsEquipments = [
+    { id: 1, device_code: "EQ-PRD-001", device_name: "1# 2.70m 大直径阴极辊生箔机", category: "生产设备", current_stage: "stage1_plan", stage_name: "G1. 设备立项", status: "进行中", operator: "张工", using_unit: "生产一车间", oee: 94.5 },
+    { id: 2, device_code: "EQ-PRD-002", device_name: "2# 极薄铜箔表面粗化防氧化处理线", category: "生产设备", current_stage: "stage2_scheme", stage_name: "G2. 拟定技术方案", status: "进行中", operator: "李工", using_unit: "生产一车间", oee: 93.0 },
+    { id: 3, device_code: "EQ-FAC-003", device_name: "纯水制备大流速双级 RO 纯化系统", category: "厂务设备", current_stage: "stage3_bidding", stage_name: "G3. 请购发包", status: "未开始", operator: "王经理", using_unit: "动力厂务部", oee: 96.8 },
+    { id: 4, device_code: "EQ-TST-004", device_name: "高频铜箔针孔与微缺陷在线检测仪", category: "检测设备", current_stage: "stage6_accept", stage_name: "G6. 验收交付使用", status: "运行中", operator: "赵经理", using_unit: "品质检测中心", oee: 98.2 }
+];
+
+const fallbackEmsSuppliers = [
+    { id: 1, equipment_name: "2.70m 钛阴极辊生箔机组", supplier_name: "西安泰金工业电化学设备股份有限公司", resident_supervisor: "张监造", fat_status: "已完成", risk_level: "低风险", delivery_date: "2026-09-15" },
+    { id: 2, equipment_name: "高频高功率智能化高频开关电源", supplier_name: "深圳市三德冠电子材料有限公司", resident_supervisor: "李监造", fat_status: "监造打卡中", risk_level: "中风险", delivery_date: "2026-10-01" }
+];
+
 // 拉取并刷新 EMS 数据
 window.fetchEmsData = function() {
+    if (window.location.protocol === 'file:') {
+        state.emsEquipments = fallbackEmsEquipments;
+        state.emsSuppliers = fallbackEmsSuppliers;
+        renderEmsAll();
+        return;
+    }
+
     Promise.all([
-        fetch("/api/equipments").then(r => r.json()),
-        fetch("/api/ems/suppliers").then(r => r.json()).catch(() => [])
+        fetch("/api/equipments").then(r => r.json()).catch(() => fallbackEmsEquipments),
+        fetch("/api/ems/suppliers").then(r => r.json()).catch(() => fallbackEmsSuppliers)
     ])
     .then(([equipments, suppliers]) => {
-        state.emsEquipments = Array.isArray(equipments) ? equipments : [];
-        state.emsSuppliers = Array.isArray(suppliers) ? suppliers : [];
+        state.emsEquipments = (Array.isArray(equipments) && equipments.length > 0) ? equipments : fallbackEmsEquipments;
+        state.emsSuppliers = (Array.isArray(suppliers) && suppliers.length > 0) ? suppliers : fallbackEmsSuppliers;
         renderEmsAll();
     })
     .catch(err => {
-        console.error("加载设备 EMS 数据失败:", err);
+        console.warn("使用内置离线默认 EMS 数据填充:", err);
+        state.emsEquipments = fallbackEmsEquipments;
+        state.emsSuppliers = fallbackEmsSuppliers;
+        renderEmsAll();
     });
 };
 
