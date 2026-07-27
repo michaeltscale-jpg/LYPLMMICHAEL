@@ -5935,7 +5935,7 @@ window.fetchEquipmentsAndRender = async function() {
                         link.title = `点击查看设备导入详情: ${eq.device_name}`;
                         link.onclick = (e) => {
                             e.stopPropagation();
-                            window.location.href = `/device_detail.html?id=${eq.id}`;
+                            window.location.href = `${window.__PLM_API_BASE__ || ''}/device_detail.html?id=${eq.id}`;
                         };
                         devicesBox.appendChild(link);
                     });
@@ -6006,7 +6006,7 @@ window.fetchEquipmentsAndRender = async function() {
                     
                     tr.innerHTML = `
                         <td style="font-weight: 700; font-family: monospace; color: var(--color-primary);">${eq.device_code}</td>
-                        <td style="font-weight: 600; color: var(--color-primary); text-decoration: underline; cursor: pointer; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="event.stopPropagation(); window.location.href='/device_detail.html?id=${eq.id}';" title="${eq.device_name}">${eq.device_name}</td>
+                        <td style="font-weight: 600; color: var(--color-primary); text-decoration: underline; cursor: pointer; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" onclick="event.stopPropagation(); window.location.href=(window.__PLM_API_BASE__||'')+'/device_detail.html?id=${eq.id}';" title="${eq.device_name}">${eq.device_name}</td>
                         <td>${eq.stage_name}</td>
                         <td>${acceptDate}</td>
                         <td>${usingUnit}</td>

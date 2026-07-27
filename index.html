@@ -3470,6 +3470,33 @@ requests.post(url, json=payload)</code></pre>
         <span id="toast-message">提示信息</span>
     </div>
 
+    <!-- JS: 全局 API 路径前缀自动适配器（支持 /ghz-plm 等 URL 前缀部署） -->
+    <script>
+    (function() {
+        // 自动检测当前页面路径中的前缀（如 /ghz-plm）
+        var pathParts = window.location.pathname.split('/');
+        var prefix = '';
+        // 如果路径中有非空的第一段且不是 .html 文件，则作为前缀
+        if (pathParts.length > 1 && pathParts[1] && pathParts[1].indexOf('.') === -1) {
+            prefix = '/' + pathParts[1];
+        }
+        window.__PLM_API_BASE__ = prefix;
+
+        // 拦截原生 fetch，自动为 /api/ 路径加上前缀
+        var _originalFetch = window.fetch;
+        window.fetch = function(input, init) {
+            if (typeof input === 'string' && input.startsWith('/api/') && prefix) {
+                input = prefix + input;
+            }
+            return _originalFetch.call(this, input, init);
+        };
+        
+        if (prefix) {
+            console.log('[PLM] 检测到 URL 前缀：' + prefix + '，API 路径自动适配已激活');
+        }
+    })();
+    </script>
+
     <!-- JS Application -->
     <script src="app.js?v=20260725_sop_fix"></script>
     <script src="mqc_logic.js"></script>

@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>设备导入项目详情 - 聚赫新材 PLM</title>
     <link rel="stylesheet" href="style.css">
+    <!-- 全局 API 路径前缀自动适配器 -->
+    <script>
+    (function() {
+        var pathParts = window.location.pathname.split('/');
+        var prefix = '';
+        if (pathParts.length > 1 && pathParts[1] && pathParts[1].indexOf('.') === -1 && pathParts[1] !== 'device_detail.html') {
+            prefix = '/' + pathParts[1];
+        }
+        window.__PLM_API_BASE__ = prefix;
+        var _originalFetch = window.fetch;
+        window.fetch = function(input, init) {
+            if (typeof input === 'string' && input.startsWith('/api/') && prefix) {
+                input = prefix + input;
+            }
+            return _originalFetch.call(this, input, init);
+        };
+    })();
+    </script>
     <!-- Lucide Icons -->
     <script src="vendor/lucide.min.js"></script>
     <style>
@@ -274,34 +292,34 @@
             </div>
 
             <div class="sidebar-menu">
-                <div class="menu-item" onclick="window.location.href='/?tab=dashboard-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=dashboard-panel'">
                     <i data-lucide="layout-dashboard"></i> PLM 驾驶舱
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=plm-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=plm-panel'">
                     <i data-lucide="layers"></i> 新品开发控制台
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=mqc-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=mqc-panel'">
                     <i data-lucide="package-check"></i> 物料承认 (MQC)
                 </div>
-                <div class="menu-item active" onclick="window.location.href='/?tab=ems-panel'">
+                <div class="menu-item active" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=ems-panel'">
                     <i data-lucide="cpu"></i> 设备开发 (EMS)
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=dms-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=dms-panel'">
                     <i data-lucide="folder-open"></i> 文管中心 (DMS)
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=ecn-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=ecn-panel'">
                     <i data-lucide="git-pull-request"></i> 工程设变 (ECN)
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=pdca-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=pdca-panel'">
                     <i data-lucide="repeat"></i> PDCA 质量改善
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=users-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=users-panel'">
                     <i data-lucide="users"></i> 用户权限管理
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=dingtalk-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=dingtalk-panel'">
                     <i data-lucide="settings-2"></i> 钉钉协同配置
                 </div>
-                <div class="menu-item" onclick="window.location.href='/?tab=manual-panel'">
+                <div class="menu-item" onclick="window.location.href=(window.__PLM_API_BASE__||'')+'/?tab=manual-panel'">
                     <i data-lucide="book-open"></i> PLM 使用手册
                 </div>
             </div>
