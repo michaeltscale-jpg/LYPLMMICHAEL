@@ -201,7 +201,7 @@ window.renderEmsKanban = function() {
 
                         <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
                             <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
-                                深度视角 &rarr;
+                                详细内容 &rarr;
                             </span>
                         </div>
                     </div>
