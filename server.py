@@ -23,6 +23,21 @@ try:
 except Exception:
     pass
 
+# 迁移：product_routing 添加 SOP/SIP 附件列
+try:
+    _conn_mig2 = sqlite3.connect(DB_PATH)
+    _cur = _conn_mig2.cursor()
+    _cur.execute("PRAGMA table_info(product_routing)")
+    _existing_cols = {row[1] for row in _cur.fetchall()}
+    if "sop_attachments" not in _existing_cols:
+        _cur.execute("ALTER TABLE product_routing ADD COLUMN sop_attachments TEXT DEFAULT '[]'")
+    if "sip_attachments" not in _existing_cols:
+        _cur.execute("ALTER TABLE product_routing ADD COLUMN sip_attachments TEXT DEFAULT '[]'")
+    _conn_mig2.commit()
+    _conn_mig2.close()
+except Exception:
+    pass
+
 class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
@@ -427,6 +442,14 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                         item['custom_params'] = json.loads(item.get('custom_params') or '[]')
                     except:
                         item['custom_params'] = []
+                    try:
+                        item['sop_attachments'] = json.loads(item.get('sop_attachments') or '[]')
+                    except:
+                        item['sop_attachments'] = []
+                    try:
+                        item['sip_attachments'] = json.loads(item.get('sip_attachments') or '[]')
+                    except:
+                        item['sip_attachments'] = []
                     all_routings.append(item)
                 
                 product['routing'] = [r for r in all_routings if r['status'] == '活动']
@@ -851,6 +874,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             required_roles = {"Admin", "Process Engineer", "R&D Engineer"}
         elif (path.endswith("/save_routing") or path.endswith("/update_routing_step")) and "/products/" in path:
             required_roles = {"Admin", "Process Engineer", "Equipment Engineer", "R&D Engineer"}
+        elif (path.endswith("/step_add_attachment") or path.endswith("/step_remove_attachment")) and "/products/" in path:
+            required_roles = {"Admin", "Process Engineer", "R&D Engineer"}
         elif path.endswith("/test") and "/products/" in path:
             required_roles = {"Admin", "Process Engineer", "Quality Engineer", "R&D Engineer"}
         elif path.endswith("/log") and "/products/" in path:
@@ -1880,6 +1905,92 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "step_id": step_id, 
                     "stage_name": stage_name,
                     "doc_type": doc_type
+                })
+
+            # 4.5.3 SOP/SIP 工段附件新增
+            elif path.endswith("/step_add_attachment") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+
+                step_id = data.get('step_id')
+                doc_type = (data.get('doc_type') or 'sop').lower()
+                attachment = data.get('attachment')  # { name, url, size, uploaded_at }
+
+                if not step_id or not attachment:
+                    self.send_json({"error": "step_id 和 attachment 为必填"}, 400)
+                    return
+
+                col_name = "sop_attachments" if doc_type == "sop" else "sip_attachments"
+
+                cursor.execute(f"SELECT id, stage_name, {col_name} FROM product_routing WHERE id = ? AND product_id = ?", (step_id, product_id))
+                step_row = cursor.fetchone()
+                if not step_row:
+                    self.send_json({"error": "Step not found"}, 404)
+                    return
+
+                existing = []
+                try:
+                    existing = json.loads(step_row[col_name] or '[]')
+                except:
+                    existing = []
+
+                existing.append(attachment)
+
+                cursor.execute(f"UPDATE product_routing SET {col_name} = ? WHERE id = ? AND product_id = ?",
+                               (json.dumps(existing), step_id, product_id))
+                conn.commit()
+
+                doc_label = "SOP" if doc_type == "sop" else "SIP"
+                self.send_json({
+                    "status": "success",
+                    "message": f"📎 已成功为【{step_row['stage_name']}】{doc_label} 添加附件「{attachment.get('name', '')}」",
+                    "attachments": existing
+                })
+
+            # 4.5.4 SOP/SIP 工段附件删除
+            elif path.endswith("/step_remove_attachment") and "/products/" in path:
+                try:
+                    product_id = int(path.split("/")[-2])
+                except ValueError:
+                    self.send_json({"error": "Invalid product ID"}, 400)
+                    return
+
+                step_id = data.get('step_id')
+                doc_type = (data.get('doc_type') or 'sop').lower()
+                file_url = data.get('file_url')
+
+                if not step_id or not file_url:
+                    self.send_json({"error": "step_id 和 file_url 为必填"}, 400)
+                    return
+
+                col_name = "sop_attachments" if doc_type == "sop" else "sip_attachments"
+
+                cursor.execute(f"SELECT id, stage_name, {col_name} FROM product_routing WHERE id = ? AND product_id = ?", (step_id, product_id))
+                step_row = cursor.fetchone()
+                if not step_row:
+                    self.send_json({"error": "Step not found"}, 404)
+                    return
+
+                existing = []
+                try:
+                    existing = json.loads(step_row[col_name] or '[]')
+                except:
+                    existing = []
+
+                existing = [a for a in existing if a.get('url') != file_url]
+
+                cursor.execute(f"UPDATE product_routing SET {col_name} = ? WHERE id = ? AND product_id = ?",
+                               (json.dumps(existing), step_id, product_id))
+                conn.commit()
+
+                doc_label = "SOP" if doc_type == "sop" else "SIP"
+                self.send_json({
+                    "status": "success",
+                    "message": f"🗑️ 已从【{step_row['stage_name']}】{doc_label} 移除附件",
+                    "attachments": existing
                 })
 
             # 4.6 TDS 微调保存（不升版）

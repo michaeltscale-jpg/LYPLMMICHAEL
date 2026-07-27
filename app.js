@@ -3238,9 +3238,55 @@ window.renderRoutingStepsForVersion = function(version) {
             `;
         }
 
-        // 每个工段的 SOP 与 SIP 独成一页，提供各自单独个别的保存控制
-        const sopId = `routing-step-sop-${r.id}`;
-        const sipId = `routing-step-sip-${r.id}`;
+        // 渲染附件列表 HTML 的辅助函数
+        const renderAttachList = (attachments, stepId, docType, isActive) => {
+            if ((!attachments || attachments.length === 0) && !isActive) return '';
+            
+            const fileIcon = (name) => {
+                const ext = (name || '').split('.').pop().toLowerCase();
+                if (['pdf'].includes(ext)) return '📕';
+                if (['doc','docx'].includes(ext)) return '📘';
+                if (['xls','xlsx','csv'].includes(ext)) return '📗';
+                if (['png','jpg','jpeg'].includes(ext)) return '🖼️';
+                if (['zip','rar'].includes(ext)) return '📦';
+                return '📄';
+            };
+
+            const formatSize = (bytes) => {
+                if (!bytes) return '';
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            };
+
+            let listHtml = '';
+            if (attachments && attachments.length > 0) {
+                listHtml = attachments.map(a => `
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.72rem;">
+                        <span>${fileIcon(a.name)}</span>
+                        <a href="${a.url}" target="_blank" download style="color: #2563eb; text-decoration: none; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${a.name}">${a.name}</a>
+                        <span style="color: #94a3b8; font-size: 0.65rem; flex-shrink: 0;">${formatSize(a.size)}</span>
+                        ${isActive ? `<button onclick="removeStepAttachment(${stepId}, '${docType}', '${a.url}')" style="border: none; background: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; padding: 0 2px; flex-shrink: 0;" title="移除此附件">✕</button>` : ''}
+                    </div>
+                `).join('');
+            }
+
+            return `
+                <div id="step-attach-${docType}-${stepId}" style="margin-top: 8px; display: flex; flex-direction: column; gap: 5px;">
+                    ${listHtml}
+                    ${isActive ? `
+                    <label style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border: 1.5px dashed ${docType === 'sop' ? '#93c5fd' : '#86efac'}; border-radius: 6px; cursor: pointer; font-size: 0.72rem; font-weight: 600; color: ${docType === 'sop' ? '#2563eb' : '#059669'}; background: ${docType === 'sop' ? '#eff6ff' : '#ecfdf5'}; transition: all 0.2s; align-self: flex-start;"
+                        onmouseover="this.style.background='${docType === 'sop' ? '#dbeafe' : '#d1fae5'}'" onmouseout="this.style.background='${docType === 'sop' ? '#eff6ff' : '#ecfdf5'}'">
+                        <i data-lucide="paperclip" style="width: 13px; height: 13px;"></i>
+                        上传附档 (PDF/Word/Excel/图片)
+                        <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.zip,.rar,.txt,.csv" onchange="uploadStepAttachment(this, ${r.id}, '${docType}')" style="display: none;" multiple>
+                    </label>` : ''}
+                </div>
+            `;
+        };
+
+        const sopAttachHtml = renderAttachList(r.sop_attachments, r.id, 'sop', r.status === '活动');
+        const sipAttachHtml = renderAttachList(r.sip_attachments, r.id, 'sip', r.status === '活动');
 
         const sopSipSection = `
             <div style="margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
@@ -3258,6 +3304,7 @@ window.renderRoutingStepsForVersion = function(version) {
                     </div>
                     <textarea id="${sopId}" class="form-control" placeholder="【${r.stage_name}】SOP 独立页：请输入该工段的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 190px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sop || ''}</textarea>
                     ${r.sop_image ? `<div style="margin-top: 8px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SOP 规范图形"></div>` : ''}
+                    ${sopAttachHtml}
                 </div>
 
                 <!-- SIP 独立成页控制卡片 -->
@@ -3274,6 +3321,7 @@ window.renderRoutingStepsForVersion = function(version) {
                     </div>
                     <textarea id="${sipId}" class="form-control" placeholder="【${r.stage_name}】SIP 独立页：请输入该工段的受控检验项目、规格公差与判定标准..." style="width: 100%; min-height: 190px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sip || ''}</textarea>
                     ${r.sip_image ? `<div style="margin-top: 8px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SIP 规范图形"></div>` : ''}
+                    ${sipAttachHtml}
                 </div>
             </div>
         `;
@@ -3373,6 +3421,120 @@ window.saveSingleStepSopSip = function(stepId, stageName) {
     })
     .catch(err => {
         showToast("网络连接异常，保存失败", "error");
+    });
+};
+
+// ===================== SOP/SIP 文件附件上传与管理 =====================
+/**
+ * 上传附件文件（支持多文件批量上传）
+ */
+window.uploadStepAttachment = function(inputEl, stepId, docType) {
+    if (!checkPermission(["Admin", "Process Engineer", "R&D Engineer"], "上传 SOP/SIP 附件")) return;
+
+    const product = state.activeProduct;
+    if (!product || !stepId) return;
+
+    const files = inputEl.files;
+    if (!files || files.length === 0) return;
+
+    const uploadOneFile = (file) => {
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('file', file, file.name);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(uploadResult => {
+                if (!uploadResult.success && !uploadResult.ok) {
+                    reject(new Error(uploadResult.error || '文件上传失败'));
+                    return;
+                }
+                // 将附件信息关联到工段
+                return fetch(`/api/products/${product.id}/step_add_attachment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        step_id: stepId,
+                        doc_type: docType,
+                        attachment: {
+                            name: uploadResult.original_name || file.name,
+                            url: uploadResult.url,
+                            size: file.size,
+                            uploaded_at: new Date().toISOString()
+                        }
+                    })
+                });
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    resolve(data);
+                } else {
+                    reject(new Error(data.error || '附件关联失败'));
+                }
+            })
+            .catch(reject);
+        });
+    };
+
+    // 逐个上传所有文件
+    const fileArray = Array.from(files);
+    let completed = 0;
+    const total = fileArray.length;
+
+    showToast(`⏳ 正在上传 ${total} 个附件...`, "info");
+
+    Promise.allSettled(fileArray.map(f => uploadOneFile(f)))
+        .then(results => {
+            const successes = results.filter(r => r.status === 'fulfilled').length;
+            const failures = results.filter(r => r.status === 'rejected').length;
+
+            if (successes > 0) {
+                const docLabel = docType === 'sop' ? 'SOP' : 'SIP';
+                showToast(`📎 ${docLabel} 成功上传 ${successes} 个附件${failures > 0 ? `，${failures} 个失败` : ''}`, successes === total ? "success" : "warning");
+                // 刷新页面数据
+                loadProductDetails(product.id, state.activeThickness);
+            } else {
+                showToast("所有附件上传失败，请重试", "error");
+            }
+        });
+
+    // 重置 input 以允许重复上传同一文件
+    inputEl.value = '';
+};
+
+/**
+ * 删除附件
+ */
+window.removeStepAttachment = function(stepId, docType, fileUrl) {
+    if (!checkPermission(["Admin", "Process Engineer", "R&D Engineer"], "移除 SOP/SIP 附件")) return;
+
+    const product = state.activeProduct;
+    if (!product || !stepId) return;
+
+    fetch(`/api/products/${product.id}/step_remove_attachment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            step_id: stepId,
+            doc_type: docType,
+            file_url: fileUrl
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showToast(data.message, "success");
+            loadProductDetails(product.id, state.activeThickness);
+        } else {
+            showToast(data.error || "删除附件失败", "error");
+        }
+    })
+    .catch(err => {
+        showToast("网络连接异常", "error");
     });
 };
 
