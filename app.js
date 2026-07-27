@@ -13611,13 +13611,13 @@ window.openManualDetailModal = function(tabId) {
             content: `
                 <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #065f46;">
                     <strong style="color: #047857; font-size: 0.95rem;">📌 模块概述：</strong>
-                    <div style="margin-top: 4px; color: #064e3b; font-weight: 500;">针对生箔添加剂、整平剂、阴极辊抛光轮等第二供应商原材料进行全生命周期准入审核与品质检验。</div>
+                    <div style="margin-top: 4px; color: #064e3b; font-weight: 500;">针对生箔添加剂、整平剂、阴极辊抛光轮等第二供应商原材料进行全生命周期准入审核与品质检验。包含 M1~M6 阶段管道看板、合格物料库与供应商履约风险 3 大视图。</div>
                 </div>
                 <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
                 <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">新建 MQC 申请：</strong> 提交新物料样品规格书、MSDS 安全数据表及第三方 SGS 检验报告。</li>
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">离子色谱与物性检核：</strong> 品质工程师录入入厂抽检数据（如微量杂质 ppm 浓度）。</li>
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">会签与准入库：</strong> 检验合格后会签通过，物料自动进入受控原材料 BOM 选择库。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">新建 MQC 承认申请：</strong> 提交新物料样品规格书、MSDS 安全数据表及第三方 SGS 检验报告。申请成功后自动划入 M1 阶段管道。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">M1~M6 阶段推进：</strong> 在管道看板中实时跟踪样品提送 ➔ 入厂检核 ➔ 中试验证 ➔ 承认会签全流程。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">合格物料库与风险监控：</strong> 承认会签通过后物料自动转入《合格物料库》，并在《供应商履约风险》中监控厂商交付质量。</li>
                 </ol>
             `
         },
@@ -13626,13 +13626,14 @@ window.openManualDetailModal = function(tabId) {
             content: `
                 <div style="background: #f4f3ff; border: 1px solid #ddd6fe; padding: 14px 18px; margin-bottom: 18px; border-radius: 6px; color: #5b21b6;">
                     <strong style="color: #6d28d9; font-size: 0.95rem;">📌 模块概述：</strong>
-                    <div style="margin-top: 4px; color: #4c1d95; font-weight: 500;">监控生箔机、阴极辊、后处理表面处理槽等极薄铜箔核心生产设备的研发调试、维保台账及工艺参数。</div>
+                    <div style="margin-top: 4px; color: #4c1d95; font-weight: 500;">对标标杆制造业精细化管控范式，实现关键设备 G1~G6 全生命周期里程碑推进、转固设备台账及设备供应商驻厂监造风险管控。</div>
                 </div>
                 <h4 style="color: #0f172a; font-weight: 800; font-size: 0.98rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">🚀 标准作业步骤 (SOP)：</h4>
                 <ol style="padding-left: 20px; line-height: 1.85; color: #0f172a;">
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">设备建档：</strong> 点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[新增关键设备]</code>，记录设备型号、阴极辊直径及制造商信息。</li>
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">运行状态变更：</strong> 跟踪设备阶段（设计中 ➔ 中试调试中 ➔ 正常量产中）。</li>
-                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">在线参数监控：</strong> 查看生箔槽液循环流速、阴极辊电流密度与温度在线趋势曲线。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">新增关键设备申请：</strong> 点击 <code style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">[+ 新增关键设备]</code> 填写设备代号、名称及预算等。提交后自动进入 <code style="background: #eff6ff; color: #2563eb; font-weight: 700; padding: 1px 6px; border-radius: 4px;">G1. 设备立项</code> 管道列。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">G1~G6 6 大阶段里程碑推进：</strong> 在管道看板中实时查看 <code style="background: #f1f5f9; color: #1e293b; font-weight: 700; padding: 1px 5px; border-radius: 4px;">G1立项 ➔ G2方案 ➔ G3发包 ➔ G4制作 ➔ G5调试 ➔ G6验收交付</code>。点击卡片右下角 <code style="color: #2563eb; font-weight: 700;">详细内容 &rarr;</code> 可进入项目详情视角。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">G2~G6 计划方案与离焦保存：</strong> 在阶段详情页中，支持在线录入/更新各阶段的【本阶段计划方案与实施说明】，离焦后实时自动写入系统。</li>
+                    <li style="margin-bottom: 8px;"><strong style="color: #1e293b;">负责人提档与转固台账：</strong> 所有负责人下拉框均从后端用户清单实时提取；G6 终验合格后自动移交至 <code style="background: #ecfdf5; color: #059669; font-weight: 700; padding: 1px 6px; border-radius: 4px;">转固设备台账</code>。</li>
                 </ol>
             `
         },
