@@ -262,8 +262,6 @@ window.renderMqcMaterials = function() {
             </td>
             <td><span class="badge badge-gray">${m.mat_category || '通用物料'}</span></td>
             <td style="font-weight:600; color:#334155;">${m.supplier_name || '多渠道供货'}</td>
-            <td>${stageBadge}</td>
-            <td>${conclusionHtml}</td>
             <td>${supBadge}</td>
             <td style="text-align:center;" onclick="event.stopPropagation()">
                 <div style="display:flex; gap:6px; justify-content:center;">
