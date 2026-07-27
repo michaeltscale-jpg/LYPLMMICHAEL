@@ -3256,7 +3256,7 @@ window.renderRoutingStepsForVersion = function(version) {
                             <i data-lucide="save" style="width: 12px; height: 12px;"></i> 单独保存 SOP 页
                         </button>` : ''}
                     </div>
-                    <textarea id="${sopId}" class="form-control" placeholder="【${r.stage_name}】SOP 独立页：请输入该工段的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 95px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sop || ''}</textarea>
+                    <textarea id="${sopId}" class="form-control" placeholder="【${r.stage_name}】SOP 独立页：请输入该工段的标准作业步骤、准备事项与安全规程..." style="width: 100%; min-height: 190px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sop || ''}</textarea>
                     ${r.sop_image ? `<div style="margin-top: 8px;"><img src="${r.sop_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SOP 规范图形"></div>` : ''}
                 </div>
 
@@ -3272,7 +3272,7 @@ window.renderRoutingStepsForVersion = function(version) {
                             <i data-lucide="save" style="width: 12px; height: 12px;"></i> 单独保存 SIP 页
                         </button>` : ''}
                     </div>
-                    <textarea id="${sipId}" class="form-control" placeholder="【${r.stage_name}】SIP 独立页：请输入该工段的受控检验项目、规格公差与判定标准..." style="width: 100%; min-height: 95px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sip || ''}</textarea>
+                    <textarea id="${sipId}" class="form-control" placeholder="【${r.stage_name}】SIP 独立页：请输入该工段的受控检验项目、规格公差与判定标准..." style="width: 100%; min-height: 190px; font-size: 0.78rem; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; line-height: 1.5; flex: 1;">${r.sip || ''}</textarea>
                     ${r.sip_image ? `<div style="margin-top: 8px;"><img src="${r.sip_image}" style="max-width: 100%; max-height: 180px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer;" onclick="window.open(this.src)" title="点击预览 SIP 规范图形"></div>` : ''}
                 </div>
             </div>
