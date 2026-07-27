@@ -3238,6 +3238,10 @@ window.renderRoutingStepsForVersion = function(version) {
             `;
         }
 
+        // 每个工段的 SOP 与 SIP 独成一页，提供各自单独个别的保存控制
+        const sopId = `routing-step-sop-${r.id}`;
+        const sipId = `routing-step-sip-${r.id}`;
+
         // 渲染附件列表 HTML 的辅助函数
         const renderAttachList = (attachments, stepId, docType, isActive) => {
             if ((!attachments || attachments.length === 0) && !isActive) return '';
