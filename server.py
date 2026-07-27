@@ -10,7 +10,8 @@ import urllib.parse
 import re
 from datetime import datetime, timedelta
 
-PORT = 8080
+PORT = int(os.environ.get("PLM_PORT", "8080"))
+URL_PREFIX = os.environ.get("PLM_URL_PREFIX", "").rstrip("/")  # 例如 "/ghz-plm"
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(DIRECTORY, "plm.db")
 
@@ -107,18 +108,28 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
+    def strip_prefix(self, path):
+        """剥离 URL 前缀，支持 /ghz-plm/api/xxx 形式的路径路由"""
+        if URL_PREFIX and path.startswith(URL_PREFIX):
+            stripped = path[len(URL_PREFIX):]
+            return stripped if stripped else "/"
+        return path
+
     def do_GET(self):
         parsed_url = urllib.parse.urlparse(self.path)
-        path = parsed_url.path
+        path = self.strip_prefix(parsed_url.path)
         
         if path.startswith("/api/"):
             self.handle_api_get(path, urllib.parse.parse_qs(parsed_url.query))
         else:
+            # 剥离前缀后重写 self.path 以让 SimpleHTTPRequestHandler 正确服务静态文件
+            if URL_PREFIX and self.path.startswith(URL_PREFIX):
+                self.path = self.path[len(URL_PREFIX):] or "/"
             super().do_GET()
 
     def do_POST(self):
         parsed_url = urllib.parse.urlparse(self.path)
-        path = parsed_url.path
+        path = self.strip_prefix(parsed_url.path)
         
         if path.startswith("/api/"):
             content_type = self.headers.get('Content-Type', '')
@@ -3228,14 +3239,16 @@ def init_task_tables():
 
 def open_browser():
     time.sleep(1.0)
-    url = f"http://localhost:{PORT}"
+    prefix = URL_PREFIX or ""
+    url = f"http://localhost:{PORT}{prefix}"
     print(f"Opening browser at: {url}")
     webbrowser.open(url)
 
 def run_server():
     socketserver.ThreadingTCPServer.allow_reuse_address = True
     with socketserver.ThreadingTCPServer(("", PORT), PLMRequestHandler) as httpd:
-        print(f"PLM Server with TDS, BOM & Routing is running at http://localhost:{PORT} ...")
+        prefix_info = f" (URL Prefix: {URL_PREFIX})" if URL_PREFIX else ""
+        print(f"PLM Server is running at http://0.0.0.0:{PORT}{URL_PREFIX or ''}{prefix_info} ...")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
