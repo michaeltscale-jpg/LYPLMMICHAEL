@@ -3178,14 +3178,16 @@ window.renderRoutingStepsForVersion = function(version) {
 
         let stdParamsHtml = "";
         const renderedKeys = new Set();
+        const isEditable = r.status === '活动';
         // Render standard parameters
         for (const [key, val] of Object.entries(r.standard_params)) {
             const field = STAGE_FIELDS[r.stage_name]?.find(f => f.key === key);
             if (field) {
                 stdParamsHtml += `
-                    <div class="routing-param-card">
+                    <div class="routing-param-card${isEditable ? ' editable' : ''}"
+                         ${isEditable ? `onclick="inlineEditParam(this, ${r.id}, '${key}', '${field.unit}')" data-step-id="${r.id}" data-param-key="${key}" data-param-unit="${field.unit}" data-param-name="${field.name}"` : ''}>
                         <div class="routing-param-label">${field.name}</div>
-                        <div class="routing-param-val">${val}<span>${field.unit}</span></div>
+                        <div class="routing-param-val" data-raw-value="${val}">${val}<span>${field.unit}</span></div>
                     </div>
                 `;
                 renderedKeys.add(key);
@@ -3195,9 +3197,10 @@ window.renderRoutingStepsForVersion = function(version) {
                 const displayName = metadata[key]?.name || key.replace(/_/g, " ");
                 const displayUnit = metadata[key]?.unit || "";
                 stdParamsHtml += `
-                    <div class="routing-param-card">
+                    <div class="routing-param-card${isEditable ? ' editable' : ''}"
+                         ${isEditable ? `onclick="inlineEditParam(this, ${r.id}, '${key}', '${displayUnit}')" data-step-id="${r.id}" data-param-key="${key}" data-param-unit="${displayUnit}" data-param-name="${displayName}"` : ''}>
                         <div class="routing-param-label">${displayName}</div>
-                        <div class="routing-param-val">${val}${displayUnit ? `<span>${displayUnit}</span>` : ''}</div>
+                        <div class="routing-param-val" data-raw-value="${val}">${val}${displayUnit ? `<span>${displayUnit}</span>` : ''}</div>
                     </div>
                 `;
                 renderedKeys.add(key);
@@ -3209,9 +3212,10 @@ window.renderRoutingStepsForVersion = function(version) {
                 const key = cp.key || cp.name.toLowerCase().replace(/\s+/g, "_");
                 if (!renderedKeys.has(key)) {
                     stdParamsHtml += `
-                        <div class="routing-param-card">
+                        <div class="routing-param-card${isEditable ? ' editable' : ''}"
+                             ${isEditable ? `onclick="inlineEditParam(this, ${r.id}, '${key}', '${cp.unit || ""}')" data-step-id="${r.id}" data-param-key="${key}" data-param-unit="${cp.unit || ""}" data-param-name="${cp.name}"` : ''}>
                             <div class="routing-param-label">${cp.name}</div>
-                            <div class="routing-param-val">${cp.value}<span>${cp.unit || ""}</span></div>
+                            <div class="routing-param-val" data-raw-value="${cp.value}">${cp.value}<span>${cp.unit || ""}</span></div>
                         </div>
                     `;
                     renderedKeys.add(key);
@@ -4004,6 +4008,153 @@ window.saveStepEdit = function() {
         loadProductDetails(product.id, state.activeThickness);
     });
 };
+
+// ===================== 参数就地编辑 (Inline Edit) =====================
+/**
+ * 点击参数卡片后，将数值区域替换为 input 输入框。
+ * Enter 或失焦时自动调用 API 保存单个参数。
+ */
+window.inlineEditParam = function(cardEl, stepId, paramKey, paramUnit) {
+    // 权限校验
+    if (!checkPermission(["Admin", "Process Engineer"], "就地编辑工艺参数")) return;
+
+    // 防止重复进入编辑态
+    if (cardEl.classList.contains("editing")) return;
+
+    const valEl = cardEl.querySelector(".routing-param-val");
+    if (!valEl) return;
+
+    const rawValue = valEl.getAttribute("data-raw-value") || valEl.textContent.trim();
+    const originalValue = rawValue;
+
+    // 切换样式为编辑态
+    cardEl.classList.remove("editable");
+    cardEl.classList.add("editing");
+    // 移除 onclick 避免冒泡再次触发
+    cardEl.removeAttribute("onclick");
+
+    // 构建 input
+    valEl.innerHTML = `
+        <input type="text" class="inline-edit-input" value="${originalValue}" autofocus>
+        <div class="inline-edit-hint">Enter 保存 · Esc 取消</div>
+    `;
+    const input = valEl.querySelector(".inline-edit-input");
+    input.focus();
+    input.select();
+
+    // 阻止事件冒泡
+    input.addEventListener("click", e => e.stopPropagation());
+
+    let saved = false;
+
+    const doSave = () => {
+        if (saved) return;
+        saved = true;
+        const newValue = input.value.trim();
+        if (newValue === originalValue || newValue === "") {
+            // 无变化或为空 → 恢复原值
+            restoreParamCard(cardEl, valEl, originalValue, paramUnit, stepId, paramKey);
+            return;
+        }
+        // 调用 API 保存
+        saveInlineParamEdit(cardEl, valEl, stepId, paramKey, paramUnit, newValue);
+    };
+
+    const doCancel = () => {
+        if (saved) return;
+        saved = true;
+        restoreParamCard(cardEl, valEl, originalValue, paramUnit, stepId, paramKey);
+    };
+
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            doSave();
+        } else if (e.key === "Escape") {
+            e.preventDefault();
+            doCancel();
+        }
+    });
+
+    input.addEventListener("blur", () => {
+        // 延迟一帧确保不与 Enter 冲突
+        setTimeout(() => doSave(), 50);
+    });
+};
+
+/**
+ * 恢复参数卡片为静态展示态
+ */
+function restoreParamCard(cardEl, valEl, value, unit, stepId, paramKey) {
+    valEl.setAttribute("data-raw-value", value);
+    valEl.innerHTML = `${value}${unit ? `<span>${unit}</span>` : ''}`;
+    cardEl.classList.remove("editing");
+    cardEl.classList.add("editable");
+    // 重新绑定 onclick
+    cardEl.setAttribute("onclick", `inlineEditParam(this, ${stepId}, '${paramKey}', '${unit}')`);
+}
+
+/**
+ * 向后端 API 保存单个参数的就地修改
+ */
+function saveInlineParamEdit(cardEl, valEl, stepId, paramKey, paramUnit, newValue) {
+    const product = state.activeProduct;
+    if (!product) return;
+
+    // 先找到该 step 的完整数据
+    let targetStep = null;
+    for (const ver of Object.values(product.routing_history || {})) {
+        targetStep = ver.find(s => s.id === stepId);
+        if (targetStep) break;
+    }
+    if (!targetStep) targetStep = (product.routing || []).find(s => s.id === stepId);
+    if (!targetStep) {
+        showToast("找不到该工步记录", "error");
+        restoreParamCard(cardEl, valEl, newValue, paramUnit, stepId, paramKey);
+        return;
+    }
+
+    // 构造 standard_params：复制原有数据，仅修改该 key
+    const standardParams = { ...(targetStep.standard_params || {}) };
+    const parsedVal = isNaN(newValue) ? newValue : parseFloat(newValue);
+    standardParams[paramKey] = parsedVal;
+
+    // 显示保存中状态
+    valEl.innerHTML = `<span style="font-size:0.8rem; color:var(--color-primary); font-weight:600;">⏳ 保存中...</span>`;
+
+    fetch(`/api/products/${product.id}/update_routing_step?thickness=${state.activeThickness}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            step_id: stepId,
+            stage_name: targetStep.stage_name,
+            device_name: targetStep.device_name,
+            device_code: targetStep.device_code,
+            standard_params: standardParams,
+            custom_params: targetStep.custom_params || [],
+            step_remark: targetStep.step_remark || targetStep.remark || "",
+            sop: targetStep.sop || "",
+            sip: targetStep.sip || "",
+            sop_image: targetStep.sop_image || "",
+            sip_image: targetStep.sip_image || ""
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        // 保存成功：更新显示值 + 闪烁动画
+        restoreParamCard(cardEl, valEl, String(parsedVal), paramUnit, stepId, paramKey);
+        cardEl.classList.add("save-flash");
+        setTimeout(() => cardEl.classList.remove("save-flash"), 700);
+        showToast(`✅ ${cardEl.querySelector('.routing-param-label')?.textContent || '参数'} 已更新为 ${parsedVal} ${paramUnit}`, "success");
+
+        // 同步刷新内存中的产品数据
+        loadProductDetails(product.id, state.activeThickness);
+    })
+    .catch(err => {
+        showToast("保存失败: " + (err.message || "网络异常"), "error");
+        restoreParamCard(cardEl, valEl, newValue, paramUnit, stepId, paramKey);
+    });
+}
 
 // Fetch ECN list
 function fetchEcns() {

@@ -684,6 +684,68 @@ body {
     margin-left: 2px;
 }
 
+/* ---- 就地编辑 (Inline Edit) 样式 ---- */
+.routing-param-card.editable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.routing-param-card.editable:hover {
+    border-color: var(--color-primary);
+    background: rgba(37, 99, 235, 0.04);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+.routing-param-card.editable:hover::after {
+    content: "✏️ 点击编辑";
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 0.6rem;
+    color: var(--color-primary);
+    opacity: 0.7;
+    font-weight: 500;
+    pointer-events: none;
+}
+.routing-param-card.editing {
+    border-color: var(--color-primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+.routing-param-card.editing::after {
+    display: none;
+}
+.routing-param-card .inline-edit-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid var(--color-primary);
+    background: transparent;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    outline: none;
+    padding: 2px 0;
+    margin-top: 2px;
+    font-family: inherit;
+}
+.routing-param-card .inline-edit-input:focus {
+    border-bottom-color: #6366f1;
+}
+.routing-param-card .inline-edit-hint {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.routing-param-card.save-flash {
+    animation: paramSaveFlash 0.6s ease;
+}
+@keyframes paramSaveFlash {
+    0%   { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
+    100% { background: #f8fafc; border-color: var(--border-color); }
+}
+
 
 
 /* Table 横向滚动容器 */
