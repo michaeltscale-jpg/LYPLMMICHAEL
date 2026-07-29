@@ -1188,25 +1188,8 @@ window.saveG1Docs = function() {
     if (!product) return;
     const docs = _collectG1Docs();
 
-    // ---- 必填项校验 ----
-    const REQUIRED = [
-        // Tab 1 必填
-        { id: 'g1-proposal-product-name', tab: 'proposal', label: '产品名称 / 型号' },
-        { id: 'g1-proposal-proposer',     tab: 'proposal', label: '立项提案人' },
-        { id: 'g1-proposal-date',         tab: 'proposal', label: '立项日期' },
-        { id: 'g1-proposal-market-bg',    tab: 'proposal', label: '市场需求背景与立项动因' },
-        // Tab 2 必填
-        { id: 'g1-tds-doc-no',     tab: 'tds', label: '文件编号' },
-        { id: 'g1-tds-thickness',  tab: 'tds', label: '铜箔厚度规格' },
-        { id: 'g1-tds-rz',         tab: 'tds', label: '毛面粗糙度 Rz 限值' },
-        { id: 'g1-tds-df',         tab: 'tds', label: '介质损耗因子 Df' },
-        { id: 'g1-tds-peel',       tab: 'tds', label: '剥离强度' },
-        { id: 'g1-tds-tensile',    tab: 'tds', label: '抗张强度' },
-        { id: 'g1-tds-elongation', tab: 'tds', label: '延伸率' },
-        // Tab 3 必填
-        { id: 'g1-feas-author',    tab: 'feasibility', label: '报告编制人' },
-        { id: 'g1-feas-date',      tab: 'feasibility', label: '编制日期' },
-    ];
+    // 评测阶段模式：免除必填项强校验，允许空白保存
+    const REQUIRED = [];
 
     // 先清除所有错误高亮
     REQUIRED.forEach(r => {
@@ -2647,10 +2630,9 @@ window.saveTdsRowEdit = function() {
         group: document.getElementById("tds-row-edit-group").value.trim()
     };
 
-    if (!updatedItem.name_zh || !updatedItem.spec) {
-        showToast("中文检验项目名称和规格值必填！", "error");
-        return;
-    }
+    // 评测阶段模式：如果名称留空，自动补充缺省名称
+    if (!updatedItem.name_zh) updatedItem.name_zh = "自定义检验项";
+    if (!updatedItem.spec) updatedItem.spec = "-";
 
     if (idx >= 0 && idx < tdsItems.length) {
         tdsItems[idx] = updatedItem;

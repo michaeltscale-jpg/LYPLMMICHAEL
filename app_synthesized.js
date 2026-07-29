@@ -746,8 +746,11 @@ function renderNpiSubpanel() {
                     ${bodyHtml}
                 </div>
             </div>
-            <div class="npi-gate-card-footer">
+            <div class="npi-gate-card-footer" style="display:flex; flex-direction:column; gap:4px;">
                 ${footerHtml}
+                <button class="btn-xs" style="font-size:0.7rem; padding:4px 8px; width:100%; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700; border-radius:6px;" onclick="event.stopPropagation(); triggerDqeApproval('npi', { id: ${product.id}, spec_thickness: ${product.spec_thickness}, stage_key: '${g.key}', target_name: '${product.code || '新品'} (${product.spec_thickness}μm)', stage_flow: '${g.num} ${g.label}' })">
+                    🛡️ DQE 阶段核准
+                </button>
             </div>
         `;
 
@@ -1412,10 +1415,9 @@ window.saveTdsRowEdit = function() {
         group: document.getElementById("tds-row-edit-group").value.trim()
     };
 
-    if (!updatedItem.name_zh || !updatedItem.spec) {
-        showToast("中文检验项目名称和规格值必填！", "error");
-        return;
-    }
+    // 评测阶段模式：如果名称留空，自动补充缺省名称
+    if (!updatedItem.name_zh) updatedItem.name_zh = "自定义检验项";
+    if (!updatedItem.spec) updatedItem.spec = "-";
 
     if (idx >= 0 && idx < tdsItems.length) {
         tdsItems[idx] = updatedItem;

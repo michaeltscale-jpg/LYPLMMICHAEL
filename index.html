@@ -35,8 +35,8 @@
                         <input type="number" id="tds-row-edit-item-no" class="form-control" placeholder="1">
                     </div>
                     <div class="form-group">
-                        <label>中文检验项目名称 <span style="color:var(--color-danger);">*</span></label>
-                        <input type="text" id="tds-row-edit-name-zh" class="form-control" placeholder="例：铜箔厚度(Avg.)" required>
+                        <label>中文检验项目名称 </label>
+                        <input type="text" id="tds-row-edit-name-zh" class="form-control" placeholder="例：铜箔厚度(Avg.)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -49,8 +49,8 @@
                         <input type="text" id="tds-row-edit-unit" class="form-control" placeholder="um / % / -">
                     </div>
                     <div class="form-group">
-                        <label>规格值 (Spec.) <span style="color:var(--color-danger);">*</span></label>
-                        <input type="text" id="tds-row-edit-spec" class="form-control" placeholder="例：12±2、≥99.5、<0.2" required>
+                        <label>规格值 (Spec.) </label>
+                        <input type="text" id="tds-row-edit-spec" class="form-control" placeholder="例：12±2、≥99.5、<0.2">
                     </div>
                 </div>
                 <div class="form-group">
@@ -82,7 +82,7 @@
                     发布后当前版本将归档为历史版本，自动升级版本号（如 T1.0 → T1.1）。历史版本仍可查看但不可修改。
                 </div>
                 <div class="form-group">
-                    <label>版本变更说明 <span style="color:var(--color-danger);">*</span></label>
+                    <label>版本变更说明 </label>
                     <textarea id="tds-publish-notes" class="form-control" rows="4" placeholder="请描述本次 TDS 版本的主要变更内容，例如：新增粗糙度 Sdr 检验项，调整抗张强度规格值至 >280MPa..."></textarea>
                 </div>
                 <div class="form-group">
@@ -1673,25 +1673,25 @@ requests.post(url, json=payload)</code></pre>
 
                             <!-- Plan Textarea -->
                             <div id="tab-Plan" class="pdca-tab">
-                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">详细问题描述 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">详细问题描述 </label>
                                 <textarea id="pdca-edit-problem" class="form-control" rows="3" placeholder="详细描述品质不良现象、终检极差或指标测量超差数据..."></textarea>
 
-                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-top:12px; margin-bottom:6px;">改善对策 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-top:12px; margin-bottom:6px;">改善对策 </label>
                                 <textarea id="pdca-edit-improve" class="form-control" rows="3" placeholder="详细描述制定的改善步骤、应对策略或预防措施..."></textarea>
                             </div>
                             <!-- Do Textarea -->
                             <div id="tab-Do" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">排查与实施过程 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">排查与实施过程 </label>
                                 <textarea id="pdca-edit-rootcause" class="form-control" rows="4" placeholder="记录人机料法环原因排查过程及根本原因归因..."></textarea>
                             </div>
                             <!-- Check Textarea -->
                             <div id="tab-Check" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">效果验证记录 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">效果验证记录 </label>
                                 <textarea id="pdca-edit-action" class="form-control" rows="4" placeholder="记录具体改善步骤、工艺路线调整及中试计划验证结果..."></textarea>
                             </div>
                             <!-- Act Textarea -->
                             <div id="tab-Act" class="pdca-tab" style="display:none;">
-                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">闭环与归档说明 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.8rem; font-weight:700; color:#1e293b; margin-bottom:6px;">闭环与归档说明 </label>
                                 <textarea id="pdca-edit-verify" class="form-control" rows="4" placeholder="记录中试测试合格率、剥离强度改善数据及 SOP/ECN 归档说明..."></textarea>
                                 <div style="margin-top:8px;">
                                     <button type="button" class="btn-secondary" onclick="linkPdcaToEcn()" style="padding:4px 10px; font-size:0.75rem; color:#7c3aed; border-color:#ddd6fe; background:#f5f3ff; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="git-pull-request" style="width:14px; height:14px; color:#7c3aed;"></i> 联动发起 ECN 工程设变单</button>
@@ -1740,13 +1740,13 @@ requests.post(url, json=payload)</code></pre>
                         <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px;">
                             <!-- 1. 改善主题 (最上面) -->
                             <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 <span style="color:red;">*</span></label>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 </label>
                                 <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
                             </div>
 
                             <!-- 2. 5M1E 归因分类 (排第二) -->
                             <div>
-                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 <span style="color:red;">*</span></label>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 </label>
                                 <select id="pdca-edit-factor" style="display:none;">
                                     <option value="法">法</option>
                                     <option value="机">机</option>
@@ -1767,7 +1767,7 @@ requests.post(url, json=payload)</code></pre>
 
                             <!-- 3. 阶段负责人 -->
                             <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 <span style="color:red;">*</span></label>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 </label>
                                 <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
                                     <option value="">― 请选择负责人 ―</option>
                                 </select>
@@ -1830,11 +1830,11 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row" style="grid-template-columns: 1fr 1fr 1.2fr; gap: 12px;">
                         <div class="form-group">
                             <label>产品型号 <span style="font-size:0.65rem; color:var(--text-muted);">(大类代号)</span></label>
-                            <input type="text" class="form-control" id="proj-code" placeholder="如: PTS2" required>
+                            <input type="text" class="form-control" id="proj-code" placeholder="如: PTS2">
                         </div>
                         <div class="form-group">
                             <label>产品类别 <span style="font-size:0.65rem; color:var(--text-muted);">(可自由输入)</span></label>
-                            <input type="text" class="form-control" id="proj-category" list="category-list" placeholder="如: 高频铜箔" required>
+                            <input type="text" class="form-control" id="proj-category" list="category-list" placeholder="如: 高频铜箔">
                             <datalist id="category-list">
                                 <option value="PTS2 AI 铜箔">
                                 <option value="HIS 载体铜箔">
@@ -1843,7 +1843,7 @@ requests.post(url, json=payload)</code></pre>
                         </div>
                         <div class="form-group">
                             <label>主规格厚度 (μm)</label>
-                            <input type="number" step="0.1" class="form-control" id="proj-thickness" placeholder="例：12" required>
+                            <input type="number" step="0.1" class="form-control" id="proj-thickness" placeholder="例：12">
                         </div>
                     </div>
                     
@@ -1852,31 +1852,31 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>目标毛面粗糙度 Rz (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="proj-roughness" value="1.20" required>
+                                <input type="number" step="0.01" class="form-control" id="proj-roughness" value="1.20">
                             </div>
                             <div class="form-group">
                                 <label>目标10GHz Df 传输损耗</label>
-                                <input type="number" step="0.0001" class="form-control" id="proj-df" value="0.0013" required>
+                                <input type="number" step="0.0001" class="form-control" id="proj-df" value="0.0013">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>目标最低剥离强度 (N/mm)</label>
-                                <input type="number" step="0.01" class="form-control" id="proj-peel" value="0.75" required>
+                                <input type="number" step="0.01" class="form-control" id="proj-peel" value="0.75">
                             </div>
                             <div class="form-group">
                                 <label>目标抗拉强度 (MPa)</label>
-                                <input type="number" step="1" class="form-control" id="proj-tensile" value="310" required>
+                                <input type="number" step="1" class="form-control" id="proj-tensile" value="310">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>目标延伸率 (%)</label>
-                                <input type="number" step="0.1" class="form-control" id="proj-elongation" value="2.5" required>
+                                <input type="number" step="0.1" class="form-control" id="proj-elongation" value="2.5">
                             </div>
                             <div class="form-group">
                                 <label>立项申请人</label>
-                                <input type="text" class="form-control" id="proj-creator" value="李建国" required>
+                                <input type="text" class="form-control" id="proj-creator" value="李建国">
                             </div>
                         </div>
                     </div>
@@ -1888,25 +1888,25 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
                             <div class="form-group">
                                 <label>G1. 立项与目标负责人</label>
-                                <input type="text" class="form-control" id="plan-proj-owner-g1" value="李建国" required>
+                                <input type="text" class="form-control" id="plan-proj-owner-g1" value="李建国">
                             </div>
                             <div class="form-group">
                                 <label>G2. 配方定型负责人</label>
-                                <input type="text" class="form-control" id="plan-proj-owner-g2" value="李建国" required>
+                                <input type="text" class="form-control" id="plan-proj-owner-g2" value="李建国">
                             </div>
                             <div class="form-group">
                                 <label>G3. 中试工艺负责人</label>
-                                <input type="text" class="form-control" id="plan-proj-owner-g3" value="赵立功" required>
+                                <input type="text" class="form-control" id="plan-proj-owner-g3" value="赵立功">
                             </div>
                         </div>
                         <div class="form-row" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
                             <div class="form-group">
                                 <label>G4. 试产/良率负责人</label>
-                                <input type="text" class="form-control" id="plan-proj-owner-g4" value="钱品质" required>
+                                <input type="text" class="form-control" id="plan-proj-owner-g4" value="钱品质">
                             </div>
                             <div class="form-group">
                                 <label>G5. 量产导入负责人</label>
-                                <input type="text" class="form-control" id="plan-proj-owner-g5" value="孙生产" required>
+                                <input type="text" class="form-control" id="plan-proj-owner-g5" value="孙生产">
                             </div>
                         </div>
                     </div>
@@ -1949,19 +1949,19 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div class="form-group">
-                            <label>产品名称 / 型号 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>产品名称 / 型号 </label>
                             <input type="text" class="form-control" id="g1-proposal-product-name" placeholder="如：PTS2 AI 铜箔-12μm-SL203">
                         </div>
                         <div class="form-group">
-                            <label>铜箔厚度 (μm) <span style="color:#ef4444;font-weight:700;">*</span></label>
-                            <input type="text" class="form-control" id="g1-proposal-customer" placeholder="如：12, 18, 35 (可自由输入多种不同厚度)" required>
+                            <label>铜箔厚度 (μm) </label>
+                            <input type="text" class="form-control" id="g1-proposal-customer" placeholder="如：12, 18, 35 (可自由输入多种不同厚度)">
                         </div>
                         <div class="form-group">
-                            <label>立项提案人 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>立项提案人 </label>
                             <select class="form-control" id="g1-proposal-proposer"></select>
                         </div>
                         <div class="form-group">
-                            <label>立项日期 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>立项日期 </label>
                             <input type="date" class="form-control" id="g1-proposal-date">
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
@@ -1985,7 +1985,7 @@ requests.post(url, json=payload)</code></pre>
                             <input type="text" class="form-control" id="g1-proposal-budget" placeholder="如：120 万元">
                         </div>
                         <div class="form-group">
-                            <label>立项决策结论 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>立项决策结论 </label>
                             <select class="form-control" id="g1-proposal-decision">
                                 <option value="">── 请选择 ──</option>
                                 <option value="批准立项">✅ 批准立项</option>
@@ -2009,7 +2009,7 @@ requests.post(url, json=payload)</code></pre>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div class="form-group">
                             <label style="display:flex; align-items:center; gap:8px;">
-                                文件编号 <span style="color:#ef4444;font-weight:700;">*</span>
+                                文件编号 
                                 <span style="font-size:0.68rem; padding:1px 6px; border-radius:10px;
                                              background:rgba(16,185,129,0.12); color:#10b981;
                                              border:1px solid rgba(16,185,129,0.3); font-weight:600;">
@@ -2038,7 +2038,7 @@ requests.post(url, json=payload)</code></pre>
                             <input type="text" class="form-control" id="g1-tds-version" placeholder="如：Rev.A">
                         </div>
                         <div class="form-group">
-                            <label>铜箔厚度规格（μm）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>铜箔厚度规格（μm）</label>
                             <input type="text" class="form-control" id="g1-tds-thickness" placeholder="如：12 μm">
                         </div>
                         <div class="form-group">
@@ -2046,23 +2046,23 @@ requests.post(url, json=payload)</code></pre>
                             <input type="text" class="form-control" id="g1-tds-surface" placeholder="如：SL203 硅烷">
                         </div>
                         <div class="form-group">
-                            <label>毛面粗糙度 Rz 限值（μm）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>毛面粗糙度 Rz 限值（μm）</label>
                             <input type="text" class="form-control" id="g1-tds-rz" placeholder="如：≤ 1.20">
                         </div>
                         <div class="form-group">
-                            <label>介质损耗因子 Df @ 10GHz <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>介质损耗因子 Df @ 10GHz </label>
                             <input type="text" class="form-control" id="g1-tds-df" placeholder="如：≤ 0.0012">
                         </div>
                         <div class="form-group">
-                            <label>剥离强度（N/mm）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>剥离强度（N/mm）</label>
                             <input type="text" class="form-control" id="g1-tds-peel" placeholder="如：≥ 0.75">
                         </div>
                         <div class="form-group">
-                            <label>抗张强度（MPa）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>抗张强度（MPa）</label>
                             <input type="text" class="form-control" id="g1-tds-tensile" placeholder="如：≥ 310">
                         </div>
                         <div class="form-group">
-                            <label>延伸率（%）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>延伸率（%）</label>
                             <input type="text" class="form-control" id="g1-tds-elongation" placeholder="如：≥ 2.5">
                         </div>
                         <div class="form-group">
@@ -2096,15 +2096,15 @@ requests.post(url, json=payload)</code></pre>
                 <div id="g1-tab-feasibility" class="g1-doc-panel" style="display:none;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                         <div class="form-group">
-                            <label>报告编制人 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>报告编制人 </label>
                             <select class="form-control" id="g1-feas-author"></select>
                         </div>
                         <div class="form-group">
-                            <label>编制日期 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>编制日期 </label>
                             <input type="date" class="form-control" id="g1-feas-date">
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
-                            <label>技术可行性分析（工艺路线、设备能力、原材料）<span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>技术可行性分析（工艺路线、设备能力、原材料）</label>
                             <textarea class="form-control" id="g1-feas-tech" rows="3" placeholder="对现有生产线、设备精度、工艺参数控制能力的评估..."></textarea>
                         </div>
                         <div class="form-group" style="grid-column: span 2;">
@@ -2136,7 +2136,7 @@ requests.post(url, json=payload)</code></pre>
                             <textarea class="form-control" id="g1-feas-risk" rows="2" placeholder="技术风险、市场风险、供应链风险及应对策略..."></textarea>
                         </div>
                         <div class="form-group">
-                            <label>可行性结论 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>可行性结论 </label>
                             <select class="form-control" id="g1-feas-conclusion">
                                 <option value="">── 请选择 ──</option>
                                 <option value="完全可行">✅ 完全可行，建议立项</option>
@@ -2155,7 +2155,7 @@ requests.post(url, json=payload)</code></pre>
             </div><!-- end modal-body -->
 
             <div class="modal-footer" style="flex-shrink: 0; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.75rem; color: var(--text-muted);"><span style="color:#ef4444;font-weight:700;">*</span> 为必填项</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);"> 为必填项</span>
                 <span style="font-size: 0.75rem; color: var(--text-muted);" id="g1-docs-saved-hint"></span>
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-secondary" onclick="closeModal('modal-g1-docs')">关闭</button>
@@ -2184,15 +2184,15 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>阶段开始日期</label>
-                                <input type="date" class="form-control" id="tds-plan-start" style="height:32px; font-size:0.8rem;" required>
+                                <input type="date" class="form-control" id="tds-plan-start" style="height:32px; font-size:0.8rem;">
                             </div>
                             <div class="form-group">
                                 <label>计划完成日期</label>
-                                <input type="date" class="form-control" id="tds-plan-end" style="height:32px; font-size:0.8rem;" required>
+                                <input type="date" class="form-control" id="tds-plan-end" style="height:32px; font-size:0.8rem;">
                             </div>
                             <div class="form-group">
                                 <label>阶段负责人</label>
-                                <select class="form-control" id="tds-plan-owner" style="height:32px; font-size:0.8rem;" required></select>
+                                <select class="form-control" id="tds-plan-owner" style="height:32px; font-size:0.8rem;"></select>
                             </div>
                         </div>
                     </div>
@@ -2200,27 +2200,27 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row">
                         <div class="form-group">
                             <label>目标毛面粗糙度 Rz (μm)</label>
-                            <input type="number" step="0.01" class="form-control" id="tds-roughness" required>
+                            <input type="number" step="0.01" class="form-control" id="tds-roughness">
                         </div>
                         <div class="form-group">
                             <label>最低剥离强度 (N/mm)</label>
-                            <input type="number" step="0.01" class="form-control" id="tds-peel" required>
+                            <input type="number" step="0.01" class="form-control" id="tds-peel">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>10GHz Df 介质损耗限值</label>
-                            <input type="number" step="0.0001" class="form-control" id="tds-df" required>
+                            <input type="number" step="0.0001" class="form-control" id="tds-df">
                         </div>
                         <div class="form-group">
                             <label>最低抗拉强度 (MPa)</label>
-                            <input type="number" step="1" class="form-control" id="tds-tensile" required>
+                            <input type="number" step="1" class="form-control" id="tds-tensile">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>最低延伸率 (%)</label>
-                            <input type="number" step="0.1" class="form-control" id="tds-elongation" required>
+                            <input type="number" step="0.1" class="form-control" id="tds-elongation">
                         </div>
                     </div>
                 </form>
@@ -2247,8 +2247,8 @@ requests.post(url, json=payload)</code></pre>
                         <input type="number" id="tds-row-edit-item-no" class="form-control" placeholder="1">
                     </div>
                     <div class="form-group">
-                        <label>中文检验项目名称 <span style="color:var(--color-danger);">*</span></label>
-                        <input type="text" id="tds-row-edit-name-zh" class="form-control" placeholder="例：铜箔厚度(Avg.)" required>
+                        <label>中文检验项目名称 </label>
+                        <input type="text" id="tds-row-edit-name-zh" class="form-control" placeholder="例：铜箔厚度(Avg.)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -2261,8 +2261,8 @@ requests.post(url, json=payload)</code></pre>
                         <input type="text" id="tds-row-edit-unit" class="form-control" placeholder="um / % / -">
                     </div>
                     <div class="form-group">
-                        <label>规格值 (Spec.) <span style="color:var(--color-danger);">*</span></label>
-                        <input type="text" id="tds-row-edit-spec" class="form-control" placeholder="例：12±2、≥99.5、<0.2" required>
+                        <label>规格值 (Spec.) </label>
+                        <input type="text" id="tds-row-edit-spec" class="form-control" placeholder="例：12±2、≥99.5、<0.2">
                     </div>
                 </div>
                 <div class="form-group">
@@ -2294,7 +2294,7 @@ requests.post(url, json=payload)</code></pre>
                     发布后当前版本将归档为历史版本，自动升级版本号（如 T1.0 → T1.1）。历史版本仍可查看但不可修改。
                 </div>
                 <div class="form-group">
-                    <label>版本变更说明 <span style="color:var(--color-danger);">*</span></label>
+                    <label>版本变更说明 </label>
                     <textarea id="tds-publish-notes" class="form-control" rows="4" placeholder="请描述本次 TDS 版本的主要变更内容，例如：新增粗糙度 Sdr 检验项，调整抗张强度规格值至 >280MPa..."></textarea>
                 </div>
                 <div class="form-group">
@@ -2326,41 +2326,41 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>实测厚度 (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-thickness" required>
+                                <input type="number" step="0.01" class="form-control" id="test-thickness">
                             </div>
                             <div class="form-group">
                                 <label>毛面粗糙度 Rz (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-roughness-m" required>
+                                <input type="number" step="0.01" class="form-control" id="test-roughness-m">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>光面粗糙度 Rz (μm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-roughness-s" required>
+                                <input type="number" step="0.01" class="form-control" id="test-roughness-s">
                             </div>
                             <div class="form-group">
                                 <label>剥离强度 (N/mm)</label>
-                                <input type="number" step="0.01" class="form-control" id="test-peel" required>
+                                <input type="number" step="0.01" class="form-control" id="test-peel">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>10GHz Df 介质损耗</label>
-                                <input type="number" step="0.0001" class="form-control" id="test-df" required>
+                                <input type="number" step="0.0001" class="form-control" id="test-df">
                             </div>
                             <div class="form-group">
                                 <label>抗拉强度 (MPa)</label>
-                                <input type="number" step="1" class="form-control" id="test-tensile" value="320" required>
+                                <input type="number" step="1" class="form-control" id="test-tensile" value="320">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>延伸率 (%)</label>
-                                <input type="number" step="0.1" class="form-control" id="test-elongation" value="3.0" required>
+                                <input type="number" step="0.1" class="form-control" id="test-elongation" value="3.0">
                             </div>
                             <div class="form-group">
                                 <label>测试人员</label>
-                                <input type="text" class="form-control" id="test-tester" value="张测试" required>
+                                <input type="text" class="form-control" id="test-tester" value="张测试">
                             </div>
                         </div>
                     </div>
@@ -2415,7 +2415,7 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>承认检验员</label>
-                                <input type="text" class="form-control" id="bom-test-tester" value="李工" required>
+                                <input type="text" class="form-control" id="bom-test-tester" value="李工">
                             </div>
                             <div class="form-group">
                                 <label>备考 / 备注说明</label>
@@ -2561,13 +2561,13 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row">
                         <div class="form-group">
                             <label>关联变更产品</label>
-                            <select class="form-control" id="ecn-product-select" required>
+                            <select class="form-control" id="ecn-product-select">
                                 <!-- Injected dynamically in JS -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label>变更类型</label>
-                            <select class="form-control" id="ecn-change-type" required>
+                            <select class="form-control" id="ecn-change-type">
                                 <option value="配方微调">配方微调</option>
                                 <option value="原料变更">原料变更</option>
                                 <option value="设备变更">设备变更</option>
@@ -2577,15 +2577,15 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                     <div class="form-group">
                         <label>变更原因说明</label>
-                        <textarea class="form-control" id="ecn-change-reason" rows="2" placeholder="简述因何需要变更，如设备微调、材料切换等..." required></textarea>
+                        <textarea class="form-control" id="ecn-change-reason" rows="2" placeholder="简述因何需要变更，如设备微调、材料切换等..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>变更前工艺/设备参数</label>
-                        <textarea class="form-control" id="ecn-change-before" rows="2" placeholder="当前参数状态，如：BOM配方：明胶浓度为 5.2 ppm" required></textarea>
+                        <textarea class="form-control" id="ecn-change-before" rows="2" placeholder="当前参数状态，如：BOM配方：明胶浓度为 5.2 ppm"></textarea>
                     </div>
                     <div class="form-group">
                         <label>变更后工艺/设备参数</label>
-                        <textarea class="form-control" id="ecn-change-after" rows="2" placeholder="拟变更参数，如：BOM配方：明胶浓度降为 4.2 ppm" required></textarea>
+                        <textarea class="form-control" id="ecn-change-after" rows="2" placeholder="拟变更参数，如：BOM配方：明胶浓度降为 4.2 ppm"></textarea>
                     </div>
                     
                     <div style="border-top: 1px solid var(--border-color); margin: 16px 0; padding-top: 12px;">
@@ -2615,7 +2615,7 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row">
                         <div class="form-group" style="grid-column: span 2;">
                             <label>提报发起人</label>
-                            <input type="text" class="form-control" id="ecn-creator" value="李建国" required>
+                            <input type="text" class="form-control" id="ecn-creator" value="李建国">
                         </div>
                     </div>
 
@@ -2664,41 +2664,41 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row">
                         <div class="form-group">
                             <label>特种明胶骨胶 (AD-GEL-01) ppm</label>
-                            <input type="number" step="0.1" class="form-control" id="npi-bom-gel" required>
+                            <input type="number" step="0.1" class="form-control" id="npi-bom-gel">
                         </div>
                         <div class="form-group">
                             <label>活性硫整平剂 (AD-SPS-01) ppm</label>
-                            <input type="number" step="0.1" class="form-control" id="npi-bom-s" required>
+                            <input type="number" step="0.1" class="form-control" id="npi-bom-s">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>羟乙基纤维素 (AD-HEC-01) ppm</label>
-                            <input type="number" step="0.1" class="form-control" id="npi-bom-hec" required>
+                            <input type="number" step="0.1" class="form-control" id="npi-bom-hec">
                         </div>
                         <div class="form-group">
                             <label>PA后处理靶材型号</label>
-                            <input type="text" class="form-control" id="npi-bom-silane-type" required>
+                            <input type="text" class="form-control" id="npi-bom-silane-type">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>硅烷涂覆浓度 (%)</label>
-                            <input type="number" step="0.01" class="form-control" id="npi-bom-silane-conc" required>
+                            <input type="number" step="0.01" class="form-control" id="npi-bom-silane-conc">
                         </div>
                         <div class="form-group">
                             <label>铜原料占比 (%)</label>
-                            <input type="number" step="0.01" class="form-control" id="npi-bom-copper" value="99.85" required>
+                            <input type="number" step="0.01" class="form-control" id="npi-bom-copper" value="99.85">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>硫酸占比 (%)</label>
-                            <input type="number" step="0.01" class="form-control" id="npi-bom-sulfuric" value="0.15" required>
+                            <input type="number" step="0.01" class="form-control" id="npi-bom-sulfuric" value="0.15">
                         </div>
                         <div class="form-group">
                             <label>配方修改人</label>
-                            <input type="text" class="form-control" id="npi-bom-updater" value="李建国" required>
+                            <input type="text" class="form-control" id="npi-bom-updater" value="李建国">
                         </div>
                     </div>
                 </form>
@@ -2749,15 +2749,15 @@ requests.post(url, json=payload)</code></pre>
                     <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                         <div class="form-group">
                             <label style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
-                                立项人 <span style="color: #ef4444;">*</span>
+                                立项人 
                             </label>
-                            <input type="text" id="g3-pdca-initiator" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;" value="赵立功" required>
+                            <input type="text" id="g3-pdca-initiator" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;" value="赵立功">
                         </div>
                         <div class="form-group">
                             <label style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
-                                立项时间 <span style="color: #ef4444;">*</span>
+                                立项时间 
                             </label>
-                            <input type="datetime-local" id="g3-pdca-created-at" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;" required>
+                            <input type="datetime-local" id="g3-pdca-created-at" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;">
                         </div>
                     </div>
 
@@ -2811,25 +2811,25 @@ requests.post(url, json=payload)</code></pre>
                     <!-- 行 3.5：试验目的 -->
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
-                            试验目的 <span style="color: #ef4444;">*</span>
+                            试验目的 
                         </label>
-                        <input type="text" id="g3-pdca-purpose" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;" placeholder="如：验证高频低损耗生箔添加剂配方窗口及对开折弯寿命稳定性..." required>
+                        <input type="text" id="g3-pdca-purpose" class="form-control" style="font-size: 0.88rem; height: 38px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #ffffff; color: #0f172a;" placeholder="如：验证高频低损耗生箔添加剂配方窗口及对开折弯寿命稳定性...">
                     </div>
 
                     <!-- 行 4：品质问题详细陈述 (5W2H 描述) -->
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
-                            品质问题详细陈述 (5W2H 描述) <span style="color: #ef4444;">*</span>
+                            品质问题详细陈述 (5W2H 描述) 
                         </label>
-                        <textarea id="g3-pdca-problem-desc" class="form-control" rows="3" style="font-size: 0.88rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; background: #ffffff; color: #0f172a;" placeholder="描述谁(Who)、何时(When)、何地(Where)、什么现象(What)、为何发生(Why)、如何改善(How)、影响数量(How much)..." required></textarea>
+                        <textarea id="g3-pdca-problem-desc" class="form-control" rows="3" style="font-size: 0.88rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; background: #ffffff; color: #0f172a;" placeholder="描述谁(Who)、何时(When)、何地(Where)、什么现象(What)、为何发生(Why)、如何改善(How)、影响数量(How much)..."></textarea>
                     </div>
 
                     <!-- 行 5：试制期望达成目标 (TARGET) -->
                     <div class="form-group" style="margin-bottom: 16px;">
                         <label style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px; display: block;">
-                            试制期望达成目标 (TARGET) <span style="color: #ef4444;">*</span>
+                            试制期望达成目标 (TARGET) 
                         </label>
-                        <textarea id="g3-pdca-target-goal" class="form-control" rows="2" style="font-size: 0.88rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; background: #ffffff; color: #0f172a;" placeholder="如：MIT 对开折弯寿命 ≥ 2500 次，双面粗糙度 Rz 极差 ≤ 0.05μm，180℃ 延伸率 ≥ 4.5%..." required></textarea>
+                        <textarea id="g3-pdca-target-goal" class="form-control" rows="2" style="font-size: 0.88rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; background: #ffffff; color: #0f172a;" placeholder="如：MIT 对开折弯寿命 ≥ 2500 次，双面粗糙度 Rz 极差 ≤ 0.05μm，180℃ 延伸率 ≥ 4.5%..."></textarea>
                     </div>
 
                     <!-- 行 6：中试机台控制参数 -->
@@ -2840,21 +2840,21 @@ requests.post(url, json=payload)</code></pre>
                         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
                             <div class="form-group">
                                 <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block;">溶铜电解电流密度 (A/dm²)</label>
-                                <input type="number" step="0.1" id="g3-routing-current-density" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="65.0" required>
+                                <input type="number" step="0.1" id="g3-routing-current-density" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="65.0">
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block;">电解槽温度控制 (°C)</label>
-                                <input type="number" step="0.1" id="g3-routing-temp" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="60.0" required>
+                                <input type="number" step="0.1" id="g3-routing-temp" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="60.0">
                             </div>
                         </div>
                         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                             <div class="form-group">
                                 <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block;">阴极辊极距偏差 (mm)</label>
-                                <input type="number" step="0.01" id="g3-routing-drum-tolerance" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="0.02" required>
+                                <input type="number" step="0.01" id="g3-routing-drum-tolerance" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="0.02">
                             </div>
                             <div class="form-group">
                                 <label style="font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block;">添加剂补充流量 (mL/h)</label>
-                                <input type="number" step="1" id="g3-routing-additive-flow" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="450" required>
+                                <input type="number" step="1" id="g3-routing-additive-flow" class="form-control" style="font-size: 0.85rem; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; background: #ffffff;" value="450">
                             </div>
                         </div>
                     </div>
@@ -3136,7 +3136,7 @@ requests.post(url, json=payload)</code></pre>
                 <!-- 搜索框 -->
                 <div class="form-group" style="margin-bottom:8px;">
                     <label style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 4px;">
-                        <span style="font-weight: 600;">从物料承认台账中选取 <span style="color:var(--color-danger); margin-right: 4px;">*</span><span id="bom-mqc-count" style="font-size:0.72rem; color:var(--text-muted); font-weight:normal;"></span></span>
+                        <span style="font-weight: 600;">从物料承认台账中选取 <span id="bom-mqc-count" style="font-size:0.72rem; color:var(--text-muted); font-weight:normal;"></span></span>
                         <span id="bom-mqc-loading-tip" style="font-size:0.72rem; color:var(--color-warning); display:none;">
                             <i data-lucide="loader" style="width:11px;height:11px;"></i> 加载中…
                         </span>
@@ -3186,9 +3186,9 @@ requests.post(url, json=payload)</code></pre>
                 <!-- 配比 + 单位 -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label>配比 / 添加量 <span style="color:var(--color-danger);">*</span></label>
+                        <label>配比 / 添加量 </label>
                         <input type="number" id="bom-row-edit-ratio" class="form-control"
-                            placeholder="例：99.8、4.8" step="any" required>
+                            placeholder="例：99.8、4.8" step="any">
                     </div>
                     <div class="form-group">
                         <label>单位</label>
@@ -3216,16 +3216,16 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-body">
                 <input type="hidden" id="user-edit-id">
                 <div class="form-group" id="user-username-group">
-                    <label>登录用户名 (不可修改，限英文/拼音/数字) <span style="color:var(--color-danger);">*</span></label>
-                    <input type="text" id="user-username" class="form-control" placeholder="例：pe_wang" required>
+                    <label>登录用户名 (不可修改，限英文/拼音/数字) </label>
+                    <input type="text" id="user-username" class="form-control" placeholder="例：pe_wang">
                 </div>
                 <div class="form-group">
-                    <label>显示名称 (中文全名，用于系统记录签署人) <span style="color:var(--color-danger);">*</span></label>
-                    <input type="text" id="user-display-name" class="form-control" placeholder="例：王工" required>
+                    <label>显示名称 (中文全名，用于系统记录签署人) </label>
+                    <input type="text" id="user-display-name" class="form-control" placeholder="例：王工">
                 </div>
                 <div class="form-group">
-                    <label>系统角色权限 <span style="color:var(--color-danger);">*</span></label>
-                    <select id="user-role" class="form-control" required>
+                    <label>系统角色权限 </label>
+                    <select id="user-role" class="form-control">
                         <option value="Admin">管理员</option>
                         <option value="Product Manager">产品经理</option>
                         <option value="Quality Engineer">品质工程师</option>
@@ -3302,15 +3302,15 @@ requests.post(url, json=payload)</code></pre>
                 <!-- 1. 物料基础资料 (2x2 网格) -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
                     <div>
-                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料代号 <span style="color: #ef4444;">*</span></label>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料代号 </label>
                         <input type="text" class="form-control" id="mqc-mat-code" placeholder="如：MAT-CU-001" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
                     </div>
                     <div>
-                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料名称 <span style="color: #ef4444;">*</span></label>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料名称 </label>
                         <input type="text" class="form-control" id="mqc-mat-name" placeholder="如：高纯电解铜线 / 特种明胶" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%;">
                     </div>
                     <div>
-                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料种类 <span style="color: #ef4444;">*</span></label>
+                        <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">物料种类 </label>
                         <select class="form-control" id="mqc-mat-category" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%; cursor: pointer;">
                             <option value="氧化铜粉">氧化铜粉</option>
                             <option value="添加剂">添加剂</option>
@@ -3362,7 +3362,7 @@ requests.post(url, json=payload)</code></pre>
                     <!-- 立项责任人与技术/品质负责人 (2栏) -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                         <div>
-                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">立项责任人 <span style="color: #ef4444;">*</span></label>
+                            <label style="font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 5px; display: block;">立项责任人 </label>
                             <select id="mqc-mat-apply-by" class="user-select-dropdown form-control" style="font-size: 0.85rem; height: 38px; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; width: 100%; cursor: pointer;"></select>
                         </div>
                         <div>
@@ -3511,11 +3511,11 @@ requests.post(url, json=payload)</code></pre>
                 <input type="hidden" id="mqc-mat-id">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                     <div class="form-group">
-                        <label>物料编码 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>物料编码 </label>
                         <input type="text" class="form-control" id="mqc-mat-code" placeholder="如：MAT-CU-BALL-001">
                     </div>
                     <div class="form-group">
-                        <label>物料名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>物料名称 </label>
                         <input type="text" class="form-control" id="mqc-mat-name" placeholder="如：高纯铜球">
                     </div>
                     <div class="form-group">
@@ -3964,7 +3964,7 @@ requests.post(url, json=payload)</code></pre>
                     <input type="hidden" id="mqc-sup-mat-code">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                         <div class="form-group">
-                            <label>供应商名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                            <label>供应商名称 </label>
                             <input type="text" class="form-control" id="mqc-sup-name" placeholder="如：某某铜业有限公司">
                         </div>
                         <div class="form-group">
@@ -4280,7 +4280,7 @@ requests.post(url, json=payload)</code></pre>
                 <input type="hidden" id="task-edit-id">
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
                     <div class="form-group" style="grid-column:1/-1;">
-                        <label>任务名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>任务名称 </label>
                         <input type="text" id="task-edit-title" class="form-control" placeholder="请输入任务名称">
                     </div>
                     <div class="form-group">
@@ -4290,7 +4290,7 @@ requests.post(url, json=payload)</code></pre>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>5M1E 分类 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>5M1E 分类 </label>
                         <select id="task-edit-5m" class="form-control">
                             <option value="人">人</option>
                             <option value="机">机</option>
@@ -4360,15 +4360,15 @@ requests.post(url, json=payload)</code></pre>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 16px;">
                     <div class="form-group">
-                        <label>设备代号 <span style="color:#ef4444;font-weight:700;">*</span></label>
-                        <input type="text" id="equipment-edit-code" class="form-control" placeholder="如: EQ-生箔-03" required>
+                        <label>设备代号 </label>
+                        <input type="text" id="equipment-edit-code" class="form-control" placeholder="如: EQ-生箔-03">
                     </div>
                     <div class="form-group">
-                        <label>设备名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
-                        <input type="text" id="equipment-edit-name" class="form-control" placeholder="如: 3#生箔机" required>
+                        <label>设备名称 </label>
+                        <input type="text" id="equipment-edit-name" class="form-control" placeholder="如: 3#生箔机">
                     </div>
                     <div class="form-group">
-                        <label>设备种类 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>设备种类 </label>
                         <select id="equipment-edit-stage" class="form-control">
                             <option value="生产设备">生产设备</option>
                             <option value="厂务设备">厂务设备</option>
@@ -4435,15 +4435,15 @@ requests.post(url, json=payload)</code></pre>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom: 16px;">
                     <div class="form-group">
-                        <label>物料代码 <span style="color:#ef4444;font-weight:700;">*</span></label>
-                        <input type="text" id="mqc-create-code" class="form-control" placeholder="如: MAT-CU-BALL-002" required>
+                        <label>物料代码 </label>
+                        <input type="text" id="mqc-create-code" class="form-control" placeholder="如: MAT-CU-BALL-002">
                     </div>
                     <div class="form-group">
-                        <label>物料名称 <span style="color:#ef4444;font-weight:700;">*</span></label>
-                        <input type="text" id="mqc-create-name" class="form-control" placeholder="如: 高纯阴极铜球" required>
+                        <label>物料名称 </label>
+                        <input type="text" id="mqc-create-name" class="form-control" placeholder="如: 高纯阴极铜球">
                     </div>
                     <div class="form-group">
-                        <label>物料大类 <span style="color:#ef4444;font-weight:700;">*</span></label>
+                        <label>物料大类 </label>
                         <select id="mqc-create-category" class="form-control">
                             <option value="氧化铜粉">氧化铜粉</option>
                             <option value="添加剂">添加剂</option>
@@ -4595,7 +4595,7 @@ requests.post(url, json=payload)</code></pre>
                     <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">
                         新规格厚度 (μm)
                     </label>
-                    <input type="number" step="0.1" id="clone-new-thickness" class="form-control" style="width: 100%;" placeholder="请输入新规格厚度，例：50" required>
+                    <input type="number" step="0.1" id="clone-new-thickness" class="form-control" style="width: 100%;" placeholder="请输入新规格厚度，例：50">
                 </div>
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin: 0; line-height: 1.5; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid var(--border-color);">
                     💡 <strong>提示：</strong>系统将一键克隆该源规格下的全部受控参数与文档资料，无需重复录入。克隆成功后，您只需在工艺卡中微调该厚度对应的线速、张力等差异化参数即可。
@@ -4672,7 +4672,7 @@ requests.post(url, json=payload)</code></pre>
 
             <!-- 评审结论选择 -->
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">DQE 阶段评审结论 <span style="color: #ef4444;">*</span></label>
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">DQE 阶段评审结论 </label>
                 <div style="display: flex; gap: 16px;">
                     <label style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; cursor: pointer;">
                         <input type="radio" name="dqe-action-radio" value="approve" checked style="accent-color: #10b981;">
