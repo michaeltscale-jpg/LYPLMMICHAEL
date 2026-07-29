@@ -842,8 +842,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json({"error": f"数据库重置失败: {str(e)}"}, 500)
             return
 
-        # 默认只读访客拒绝所有写操作
-        if user_role == 'Viewer':
+        # 评测阶段模式：先不用设定角色权限，所有人均可使用所有功能与写接口
+        EVALUATION_MODE = True
+        if not EVALUATION_MODE and user_role == 'Viewer':
             self.send_json({"error": "权限不足：当前角色【只读访客】无权进行任何写操作，请在右上角切换身份。"}, 403)
             return
 
@@ -889,7 +890,9 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif path in ("/api/npi/dqe_approve", "/api/mqc/dqe_approve", "/api/ems/dqe_approve", "/api/pdca/dqe_approve"):
             required_roles = {"Admin", "Quality Engineer"}
 
-        if required_roles and user_role not in required_roles:
+        # 评测阶段模式：先不用设定角色权限，所有人均可使用所有功能与写接口
+        EVALUATION_MODE = True
+        if not EVALUATION_MODE and required_roles and user_role not in required_roles:
             role_names_map = {
                 "Admin": "管理员",
                 "Product Manager": "产品经理",
