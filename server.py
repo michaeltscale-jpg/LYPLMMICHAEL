@@ -886,6 +886,8 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
             required_roles = {"Admin"}
         elif path == "/api/users" or ("/users/" in path):
             required_roles = {"Admin"}
+        elif path in ("/api/npi/dqe_approve", "/api/mqc/dqe_approve", "/api/ems/dqe_approve", "/api/pdca/dqe_approve"):
+            required_roles = {"Admin", "Quality Engineer"}
 
         if required_roles and user_role not in required_roles:
             role_names_map = {
@@ -2993,6 +2995,212 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     cursor.execute("DELETE FROM pdca_records WHERE id=?", (rec_id,))
                     conn.commit()
                 self.send_json({"success": True, "message": "已删除该PDCA改善单"})
+
+            # ================= DQE 阶段核准 API 路由 =================
+            elif path == "/api/npi/dqe_approve":
+                product_id = int(data.get("product_id"))
+                spec_thickness = float(data.get("spec_thickness"))
+                gate_key = data.get("gate_key", "gate1")
+                action = data.get("action", "approve")  # 'approve' / 'reject'
+                comments = data.get("comments", "")
+                dqe_name = data.get("dqe_name", user_display_name or "陈品质")
+
+                t_info = self.get_thickness_info(cursor, product_id, spec_thickness)
+                if not t_info:
+                    self.send_json({"error": "未找到对应的产品规格记录"}, 404)
+                    return
+
+                plan = t_info.get("npi_project_plan") or {}
+                if isinstance(plan, str):
+                    try: plan = json.loads(plan)
+                    except: plan = {}
+
+                gate_order = ["gate1", "gate2", "gate3", "gate4", "gate5"]
+                if gate_key not in plan:
+                    plan[gate_key] = {"title": gate_key, "status": "进行中"}
+
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                plan[gate_key]["dqe_approval"] = {
+                    "status": "已通过" if action == "approve" else "已驳回",
+                    "approver": dqe_name,
+                    "approve_time": now_str,
+                    "comments": comments
+                }
+
+                if action == "approve":
+                    plan[gate_key]["status"] = "已完成"
+                    curr_idx = gate_order.index(gate_key) if gate_key in gate_order else 0
+                    if curr_idx + 1 < len(gate_order):
+                        next_gate = gate_order[curr_idx + 1]
+                        if next_gate not in plan:
+                            plan[next_gate] = {}
+                        plan[next_gate]["status"] = "进行中"
+                        t_info["status"] = f"G{curr_idx+2}阶段"
+                    else:
+                        t_info["status"] = "已结案发布"
+                else:
+                    plan[gate_key]["status"] = "DQE驳回整改"
+                    t_info["status"] = "DQE驳回整改"
+
+                t_info["npi_project_plan"] = plan
+                self.update_thickness_info(cursor, product_id, spec_thickness, t_info)
+                conn.commit()
+                self.send_json({"success": True, "message": f"NPI {gate_key.upper()} 阶段 DQE 评审{'通过' if action == 'approve' else '驳回'}！", "data": t_info})
+
+            elif path == "/api/mqc/dqe_approve":
+                mat_id = int(data.get("mat_id"))
+                stage_key = data.get("stage_key", "stage1_req")
+                action = data.get("action", "approve")
+                comments = data.get("comments", "")
+                dqe_name = data.get("dqe_name", user_display_name or "陈品质")
+
+                cursor.execute("SELECT stage_name, status, project_plan_json FROM mqc_materials WHERE id = ?", (mat_id,))
+                row = cursor.fetchone()
+                if not row:
+                    self.send_json({"error": "未找到物料承认记录"}, 404)
+                    return
+
+                stage_name, mat_status, plan_json = row
+                try: plan = json.loads(plan_json) if plan_json else {}
+                except: plan = {}
+
+                stages = [
+                    ("stage1_req", "M1 物料立项需求"),
+                    ("stage2_sample", "M2 送样与样品初验"),
+                    ("stage3_trial", "M3 中试与小批量验证"),
+                    ("stage4_mass", "M4 大批量量产验证"),
+                    ("stage5_audit", "M5 现场稽核与双通道"),
+                    ("stage6_release", "M6 正式承认签发与归档")
+                ]
+                stage_keys = [s[0] for s in stages]
+
+                if stage_key not in plan:
+                    plan[stage_key] = {}
+
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                plan[stage_key]["dqe_approval"] = {
+                    "status": "已通过" if action == "approve" else "已驳回",
+                    "approver": dqe_name,
+                    "approve_time": now_str,
+                    "comments": comments
+                }
+
+                new_stage_name = stage_name
+                new_status = mat_status
+                if action == "approve":
+                    plan[stage_key]["status"] = "已完成"
+                    curr_idx = stage_keys.index(stage_key) if stage_key in stage_keys else 0
+                    if curr_idx + 1 < len(stages):
+                        next_key, next_title = stages[curr_idx + 1]
+                        if next_key not in plan: plan[next_key] = {}
+                        plan[next_key]["status"] = "进行中"
+                        new_stage_name = next_title
+                        new_status = "中试中" if curr_idx + 1 < 4 else ("审核中" if curr_idx + 1 == 4 else "承认通过")
+                    else:
+                        new_status = "承认通过"
+                else:
+                    new_status = "DQE驳回整改"
+
+                cursor.execute("UPDATE mqc_materials SET stage_name = ?, status = ?, project_plan_json = ? WHERE id = ?",
+                               (new_stage_name, new_status, json.dumps(plan, ensure_ascii=False), mat_id))
+                conn.commit()
+                self.send_json({"success": True, "message": f"MQC 阶段 DQE 评审{'通过' if action == 'approve' else '驳回'}！"})
+
+            elif path == "/api/ems/dqe_approve":
+                eq_id = int(data.get("equipment_id"))
+                stage_key = data.get("stage_key", "stage1_plan")
+                action = data.get("action", "approve")
+                comments = data.get("comments", "")
+                dqe_name = data.get("dqe_name", user_display_name or "陈品质")
+
+                cursor.execute("SELECT stage_name, status, project_plan_json FROM equipments WHERE id = ?", (eq_id,))
+                row = cursor.fetchone()
+                if not row:
+                    self.send_json({"error": "未找到设备开发记录"}, 404)
+                    return
+
+                stage_name, eq_status, plan_json = row
+                try: plan = json.loads(plan_json) if plan_json else {}
+                except: plan = {}
+
+                stages = [
+                    ("stage1_plan", "G1 设备立项"),
+                    ("stage2_scheme", "G2 拟定技术方案"),
+                    ("stage3_bidding", "G3 请购发包"),
+                    ("stage4_make", "G4 设备制作"),
+                    ("stage5_install", "G5 安装调试"),
+                    ("stage6_accept", "G6 验收交付使用")
+                ]
+                stage_keys = [s[0] for s in stages]
+
+                if stage_key not in plan:
+                    plan[stage_key] = {}
+
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                plan[stage_key]["dqe_approval"] = {
+                    "status": "已通过" if action == "approve" else "已驳回",
+                    "approver": dqe_name,
+                    "approve_time": now_str,
+                    "comments": comments
+                }
+
+                new_stage_name = stage_name
+                new_status = eq_status
+                if action == "approve":
+                    plan[stage_key]["status"] = "已完成"
+                    curr_idx = stage_keys.index(stage_key) if stage_key in stage_keys else 0
+                    if curr_idx + 1 < len(stages):
+                        next_key, next_title = stages[curr_idx + 1]
+                        if next_key not in plan: plan[next_key] = {}
+                        plan[next_key]["status"] = "进行中"
+                        new_stage_name = next_title
+                        new_status = "导入中" if curr_idx + 1 < 5 else "运行中"
+                    else:
+                        new_status = "运行中"
+                else:
+                    new_status = "DQE驳回整改"
+
+                cursor.execute("UPDATE equipments SET stage_name = ?, status = ?, project_plan_json = ? WHERE id = ?",
+                               (new_stage_name, new_status, json.dumps(plan, ensure_ascii=False), eq_id))
+                conn.commit()
+                self.send_json({"success": True, "message": f"EMS 阶段 DQE 评审{'通过' if action == 'approve' else '驳回'}！"})
+
+            elif path == "/api/pdca/dqe_approve":
+                pdca_id = int(data.get("pdca_id"))
+                action = data.get("action", "approve")
+                comments = data.get("comments", "")
+                dqe_name = data.get("dqe_name", user_display_name or "陈品质")
+
+                cursor.execute("SELECT stage, status, verify_result FROM pdca_records WHERE id = ?", (pdca_id,))
+                row = cursor.fetchone()
+                if not row:
+                    self.send_json({"error": "未找到指定PDCA改善单"}, 404)
+                    return
+
+                stage, status, verify_result = row
+                pdca_stages = ["Plan", "Do", "Check", "Act", "Closed"]
+                curr_idx = pdca_stages.index(stage) if stage in pdca_stages else 0
+
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                log_entry = f"\n[DQE阶段评审{'通过' if action == 'approve' else '驳回'}] 审核人: {dqe_name}, 时间: {now_str}, 意见: {comments}"
+                new_verify = (verify_result or "") + log_entry
+
+                if action == "approve":
+                    if curr_idx + 1 < len(pdca_stages):
+                        new_stage = pdca_stages[curr_idx + 1]
+                        new_status = "已闭环" if new_stage == "Closed" else "进行中"
+                    else:
+                        new_stage = "Closed"
+                        new_status = "已闭环"
+                else:
+                    new_stage = stage
+                    new_status = "DQE驳回整改"
+
+                cursor.execute("UPDATE pdca_records SET stage = ?, status = ?, verify_result = ?, updated_at = ? WHERE id = ?",
+                               (new_stage, new_status, new_verify, now_str, pdca_id))
+                conn.commit()
+                self.send_json({"success": True, "message": f"PDCA 阶段 DQE 评审{'通过' if action == 'approve' else '驳回'}！"})
+
 
             else:
                 self.send_json({"error": "Endpoint not found"}, 404)

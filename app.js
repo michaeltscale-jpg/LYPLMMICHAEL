@@ -4569,6 +4569,138 @@ window.closeModal = function(id) {
     document.getElementById(id).classList.remove("active");
 };
 
+// ==================== DQE 阶段核准通用前端处理逻辑 ====================
+window.triggerDqeApproval = function(moduleType, options) {
+    options = options || {};
+    const userRole = state.currentUserRole || localStorage.getItem('currentUserRole') || 'Admin';
+    const roleZh = typeof translateRoleName === 'function' ? translateRoleName(userRole) : userRole;
+
+    // 检查角色是否有权审核（必须为 Admin / Quality Engineer / 品质工程师 / 质量工程师）
+    const isDqe = ['Admin', 'Quality Engineer', '品质工程师', '质量工程师'].includes(userRole);
+    if (!isDqe) {
+        if (typeof showToast === 'function') {
+            showToast(`权限拦截：每个阶段流转必须经过 DQE (质量工程师) 角色核准！\n当前身份【${roleZh}】无核准权限，请在右上角身份切换为【陈品质 (Quality Engineer)】或管理员！`, 'warning');
+        } else {
+            alert(`权限拦截：每个阶段流转必须经过 DQE (质量工程师) 角色核准！\n当前身份【${roleZh}】无核准权限，请切换为【陈品质 (Quality Engineer)】角色！`);
+        }
+        return;
+    }
+
+    // 填入模态框参数
+    if (document.getElementById('dqe-module-type')) document.getElementById('dqe-module-type').value = moduleType || '';
+    if (document.getElementById('dqe-item-id')) document.getElementById('dqe-item-id').value = options.id || '';
+    if (document.getElementById('dqe-spec-thick')) document.getElementById('dqe-spec-thick').value = options.spec_thickness || '';
+    if (document.getElementById('dqe-stage-key')) document.getElementById('dqe-stage-key').value = options.stage_key || '';
+    
+    if (document.getElementById('dqe-target-name')) document.getElementById('dqe-target-name').innerText = options.target_name || '当前核心节点';
+    if (document.getElementById('dqe-stage-flow')) document.getElementById('dqe-stage-flow').innerText = options.stage_flow || '当前阶段 ➔ 下一阶段';
+    
+    const userName = state.currentUserName || '陈品质';
+    if (document.getElementById('dqe-approver-name')) document.getElementById('dqe-approver-name').innerText = `${userName} (${roleZh})`;
+    
+    if (document.getElementById('dqe-approval-comments')) document.getElementById('dqe-approval-comments').value = '';
+    
+    const radios = document.getElementsByName('dqe-action-radio');
+    if (radios && radios.length > 0) radios[0].checked = true;
+
+    openModal('modal-dqe-approval');
+};
+
+window.submitDqeApproval = function() {
+    const moduleType = document.getElementById('dqe-module-type') ? document.getElementById('dqe-module-type').value : '';
+    const itemId = document.getElementById('dqe-item-id') ? document.getElementById('dqe-item-id').value : '';
+    const specThick = document.getElementById('dqe-spec-thick') ? document.getElementById('dqe-spec-thick').value : '';
+    const stageKey = document.getElementById('dqe-stage-key') ? document.getElementById('dqe-stage-key').value : '';
+    const comments = (document.getElementById('dqe-approval-comments') ? document.getElementById('dqe-approval-comments').value : '').trim();
+    
+    const radios = document.getElementsByName('dqe-action-radio');
+    let action = 'approve';
+    for (const r of radios) {
+        if (r.checked) {
+            action = r.value;
+            break;
+        }
+    }
+
+    if (action === 'reject' && !comments) {
+        if (typeof showToast === 'function') showToast('退回整改时请输入 DQE 质检意见与整改要求！', 'warning');
+        else alert('退回整改时请输入 DQE 质检意见与整改要求！');
+        return;
+    }
+
+    const btn = document.getElementById('dqe-submit-btn');
+    if (btn) { btn.disabled = true; btn.innerText = '正在提交...'; }
+
+    let url = `/api/${moduleType}/dqe_approve`;
+    const payload = {
+        action: action,
+        comments: comments,
+        dqe_name: state.currentUserName || '陈品质'
+    };
+
+    if (moduleType === 'npi') {
+        payload.product_id = itemId;
+        payload.spec_thickness = specThick;
+        payload.gate_key = stageKey;
+    } else if (moduleType === 'mqc') {
+        payload.mat_id = itemId;
+        payload.stage_key = stageKey;
+    } else if (moduleType === 'ems') {
+        payload.equipment_id = itemId;
+        payload.stage_key = stageKey;
+    } else if (moduleType === 'pdca') {
+        payload.pdca_id = itemId;
+    }
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-Role': state.currentUserRole || 'Quality Engineer',
+            'X-User-Name': encodeURIComponent(state.currentUserName || '陈品质')
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (btn) { btn.disabled = false; btn.innerText = '确认提交评审'; }
+        if (res.error) {
+            if (typeof showToast === 'function') showToast('DQE 核准失败: ' + res.error, 'error');
+            else alert('DQE 核准失败: ' + res.error);
+            return;
+        }
+        if (typeof showToast === 'function') showToast(res.message || 'DQE 阶段评审成功！', 'success');
+        else alert(res.message || 'DQE 阶段评审成功！');
+
+        closeModal('modal-dqe-approval');
+
+        // 刷新对应模块
+        if (moduleType === 'npi') {
+            if (window.fetchProducts) window.fetchProducts();
+            if (state.activeProduct && window.renderProductDetailView) {
+                window.renderProductDetailView(state.activeProduct);
+            }
+        } else if (moduleType === 'mqc') {
+            if (window.fetchMqcData) window.fetchMqcData();
+            if (state.currentMqcId && window.renderMqcDetailView) {
+                window.renderMqcDetailView(state.currentMqcId);
+            }
+        } else if (moduleType === 'ems') {
+            if (window.fetchEmsData) window.fetchEmsData();
+            if (state.currentEmsId && window.renderEmsDetailView) {
+                window.renderEmsDetailView(state.currentEmsId);
+            }
+        } else if (moduleType === 'pdca') {
+            if (window.fetchPdcaData) window.fetchPdcaData();
+        }
+    })
+    .catch(err => {
+        if (btn) { btn.disabled = false; btn.innerText = '确认提交评审'; }
+        if (typeof showToast === 'function') showToast('提交失败: ' + err.message, 'error');
+        else alert('提交失败: ' + err.message);
+    });
+};
+
 function openProjectModal() {
     openModal("modal-project");
     
@@ -13005,6 +13137,7 @@ function renderPdcaTable(list) {
                 <td style="padding:10px 8px;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${row.target_date || '-'}</td>
                 <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <div style="display:flex;gap:6px;justify-content:center;">
+                        <button class="btn-primary" onclick="triggerDqeApproval('pdca', { id: ${row.id}, target_name: '${(row.title||'').replace(/'/g, "\\'")} (${row.code})', stage_flow: '${row.stage} ➔ 下一阶段' })" style="padding:3px 8px;font-size:0.72rem;background:linear-gradient(135deg, #10b981, #059669);font-weight:700;">🛡️ DQE核准</button>
                         <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看</button>
                         <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
                         <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>

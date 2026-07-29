@@ -222,7 +222,10 @@ window.renderEmsKanban = function() {
                             <div>责任人: <span style="color: var(--text-primary); font-weight: 500;">${ownerText}</span></div>
                         </div>
 
-                        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
+                            <button class="btn-xs" style="font-size:0.65rem; padding:2px 6px; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700; border-radius:4px;" onclick="event.stopPropagation(); triggerDqeApproval('ems', { id: ${eq.id}, stage_key: '${st.key}', target_name: '${eqName.replace(/'/g, "\\'")} (${eqCode})', stage_flow: '${st.code} ${st.title} ➔ 下一阶段' })">
+                                🛡️ DQE 核准
+                            </button>
                             <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
                                 详细内容 &rarr;
                             </span>

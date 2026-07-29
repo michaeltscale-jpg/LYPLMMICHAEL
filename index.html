@@ -4636,6 +4636,76 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
+    <!-- ================= 通用 DQE 阶段评审核准模态框 ================= -->
+    <div class="modal-overlay" id="modal-dqe-approval" style="z-index: 1200;">
+        <div class="glass-panel" style="width: 580px; max-width: 92vw; padding: 24px; border-radius: 16px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 18px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="shield-check" style="width: 20px; height: 20px; color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-primary);" id="dqe-modal-title">DQE 阶段质量评审核准</h3>
+                        <span style="font-size: 0.78rem; color: var(--text-secondary);" id="dqe-modal-subtitle">阶段转阶段强制核准卡点</span>
+                    </div>
+                </div>
+                <button onclick="closeModal('modal-dqe-approval')" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                    <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+
+            <!-- 项目/对象基础信息卡片 -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-secondary);">评审对象:</span>
+                    <strong style="color: var(--text-primary);" id="dqe-target-name">--</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: var(--text-secondary);">当前流转:</span>
+                    <span style="color: #60a5fa; font-weight: 700;" id="dqe-stage-flow">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">审核人身份:</span>
+                    <span style="color: #10b981; font-weight: 600;" id="dqe-approver-name">陈品质 (Quality Engineer)</span>
+                </div>
+            </div>
+
+            <!-- 评审结论选择 -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">DQE 阶段评审结论 <span style="color: #ef4444;">*</span></label>
+                <div style="display: flex; gap: 16px;">
+                    <label style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; cursor: pointer;">
+                        <input type="radio" name="dqe-action-radio" value="approve" checked style="accent-color: #10b981;">
+                        <span style="font-weight: 700; color: #10b981; font-size: 0.85rem;">✅ 评审通过 (进入下一阶段)</span>
+                    </label>
+                    <label style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; cursor: pointer;">
+                        <input type="radio" name="dqe-action-radio" value="reject" style="accent-color: #ef4444;">
+                        <span style="font-weight: 700; color: #ef4444; font-size: 0.85rem;">❌ 驳回整改 (退回当前阶段)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- DQE 审核意见 -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px;">DQE 质检意见 / 签署评语</label>
+                <textarea id="dqe-approval-comments" rows="3" placeholder="请输入质量审核意见、指标核查情况或整改要求..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 0.85rem; outline: none;"></textarea>
+            </div>
+
+            <!-- 隐藏 Context 参数 -->
+            <input type="hidden" id="dqe-module-type" value="">
+            <input type="hidden" id="dqe-item-id" value="">
+            <input type="hidden" id="dqe-spec-thick" value="">
+            <input type="hidden" id="dqe-stage-key" value="">
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button onclick="closeModal('modal-dqe-approval')" style="padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.85rem;">取消</button>
+                <button id="dqe-submit-btn" onclick="submitDqeApproval()" style="padding: 8px 20px; border-radius: 8px; border: none; background: linear-gradient(135deg, #10b981, #059669); color: #ffffff; font-weight: 700; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> 确认提交评审
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== 产品规格对比弹窗 ===== -->
     <div class="modal-overlay" id="modal-compare-products" style="z-index: 1050;">
         <div class="modal-box" style="width: 950px; max-width: 95vw; height: 85vh; display: flex; flex-direction: column;">

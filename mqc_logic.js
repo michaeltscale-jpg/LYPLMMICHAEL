@@ -612,10 +612,13 @@ window.renderMqcDetailView = function(matId) {
                         </div>
                     </div>
 
-                    <!-- 卡片五：进度与品质/供应链风险管控点 -->
+                    <!-- 卡片五：进度与 DQE 质量评审卡点 -->
                     <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
-                        <div style="font-weight:700; font-size:0.88rem; color:#0f172a; margin-bottom:12px;">
-                            五、进度与品质/供应链风险管控点
+                        <div style="font-weight:700; font-size:0.88rem; color:#0f172a; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>五、进度与 DQE 质量阶段核准卡点</span>
+                            <button class="btn-primary" style="font-size:0.75rem; padding:5px 12px; background:linear-gradient(135deg, #10b981, #059669); font-weight:700; border-radius:6px;" onclick="triggerDqeApproval('mqc', { id: ${matId}, stage_key: '${activeStageKey}', target_name: '${(mat.mat_name||'').replace(/'/g, "\\'")}', stage_flow: '${(currentStageData.title || activeStageKey).replace(/'/g, "\\'")} ➔ 下一阶段' })">
+                                🛡️ DQE 阶段评审核准
+                            </button>
                         </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
                             <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
