@@ -233,20 +233,6 @@ window.checkPermission = function(allowedRoles, actionName) {
     return true; // 评测模式：开放所有人全部功能与操作权限
 };
 
-    const roleNames = {
-        'Admin': '管理员',
-        'Product Manager': '产品经理',
-        'Quality Engineer': '品质工程师',
-        'R&D Engineer': '研发工程师',
-        'Equipment Engineer': '设备工程师',
-        'Process Engineer': '工艺工程师',
-        'Viewer': '访客'
-    };
-    const curName = roleNames[role] || role;
-    showToast(`【权限不足】当前身份【${curName}】无权进行「${actionName}」操作，请在页眉切换登录身份。`, "error");
-    return false;
-};
-
 // 角色身份切换事件
 window.onUserRoleChange = function(selectEl) {
     const selectedOption = selectEl.options[selectEl.selectedIndex];
