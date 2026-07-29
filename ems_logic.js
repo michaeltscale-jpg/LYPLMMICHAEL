@@ -207,6 +207,17 @@ window.renderEmsKanban = function() {
                     reqDate = eq.created_at.substring(0, 10);
                 }
 
+                let emsPlanObj = {};
+                if (eq.project_plan_json) {
+                    try { emsPlanObj = typeof eq.project_plan_json === 'string' ? JSON.parse(eq.project_plan_json) : eq.project_plan_json; }
+                    catch(e) {}
+                }
+                const isEmsApproved = emsPlanObj[st.key] && emsPlanObj[st.key].status === "已完成";
+
+                const emsBtnHtml = isEmsApproved
+                    ? `<button class="btn-xs" style="font-size:0.65rem; padding:3px 7px; background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; font-weight:700; border-radius:4px; cursor:pointer;" onclick="event.stopPropagation(); triggerDqeApproval('ems', { id: ${eq.id}, stage_key: '${st.key}', target_name: '${eqName.replace(/'/g, "\\'")} (${eqCode})', stage_flow: '${st.code} ${st.title}' })">✓ ${st.code} 评审通过</button>`
+                    : `<button class="btn-xs" style="font-size:0.65rem; padding:3px 7px; background:linear-gradient(135deg, #10b981, #059669); color:#ffffff; border:none; font-weight:700; border-radius:4px; cursor:pointer; box-shadow:0 1px 4px rgba(16,185,129,0.3);" onclick="event.stopPropagation(); triggerDqeApproval('ems', { id: ${eq.id}, stage_key: '${st.key}', target_name: '${eqName.replace(/'/g, "\\'")} (${eqCode})', stage_flow: '${st.code} ${st.title} ➔ 下一阶段' })">🛡️ ${st.code} 阶段评审</button>`;
+
                 html += `
                     <div onclick="openEmsDetailView(${eq.id})" style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid ${st.color}; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 1px 4px rgba(0,0,0,0.04);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)';">
                         <div style="margin-bottom: 4px;">
@@ -223,9 +234,7 @@ window.renderEmsKanban = function() {
                         </div>
 
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
-                            <button class="btn-xs" style="font-size:0.65rem; padding:2px 6px; background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:700; border-radius:4px;" onclick="event.stopPropagation(); triggerDqeApproval('ems', { id: ${eq.id}, stage_key: '${st.key}', target_name: '${eqName.replace(/'/g, "\\'")} (${eqCode})', stage_flow: '${st.code} ${st.title} ➔ 下一阶段' })">
-                                🛡️ DQE 核准
-                            </button>
+                            ${emsBtnHtml}
                             <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
                                 详细内容 &rarr;
                             </span>

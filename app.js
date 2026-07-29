@@ -4639,24 +4639,44 @@ window.submitDqeApproval = function() {
 
         closeModal('modal-dqe-approval');
 
-        // 刷新对应模块
+        // 刷新对应模块与实时重绘
         if (moduleType === 'npi') {
-            if (window.fetchProducts) window.fetchProducts();
-            if (state.activeProduct && window.renderProductDetailView) {
-                window.renderProductDetailView(state.activeProduct);
-            }
+            const pid = itemId || (state.activeProduct ? state.activeProduct.id : 1);
+            const thick = specThick || (state.activeProduct ? state.activeProduct.spec_thickness : 18);
+            fetch(`/api/products/${pid}?thickness=${thick}`)
+                .then(r => r.json())
+                .then(updatedProd => {
+                    if (updatedProd && !updatedProd.error) {
+                        state.activeProduct = updatedProd;
+                        if (Array.isArray(state.products)) {
+                            const idx = state.products.findIndex(p => p.id == pid);
+                            if (idx >= 0) state.products[idx] = updatedProd;
+                        }
+                        if (typeof window.renderNpiSubpanel === 'function') window.renderNpiSubpanel();
+                        if (typeof window.renderProductDetailView === 'function') window.renderProductDetailView(updatedProd);
+                    }
+                })
+                .catch(() => {
+                    if (window.fetchProducts) window.fetchProducts();
+                });
         } else if (moduleType === 'mqc') {
-            if (window.fetchMqcData) window.fetchMqcData();
-            if (state.currentMqcId && window.renderMqcDetailView) {
-                window.renderMqcDetailView(state.currentMqcId);
+            if (typeof window.fetchMqcData === 'function') {
+                window.fetchMqcData(() => {
+                    if (state.currentMqcId && typeof window.renderMqcDetailView === 'function') {
+                        window.renderMqcDetailView(state.currentMqcId);
+                    }
+                });
             }
         } else if (moduleType === 'ems') {
-            if (window.fetchEmsData) window.fetchEmsData();
-            if (state.currentEmsId && window.renderEmsDetailView) {
-                window.renderEmsDetailView(state.currentEmsId);
+            if (typeof window.fetchEmsData === 'function') {
+                window.fetchEmsData(() => {
+                    if (state.currentEmsId && typeof window.renderEmsDetailView === 'function') {
+                        window.renderEmsDetailView(state.currentEmsId);
+                    }
+                });
             }
         } else if (moduleType === 'pdca') {
-            if (window.fetchPdcaData) window.fetchPdcaData();
+            if (typeof window.fetchPdcaData === 'function') window.fetchPdcaData();
         }
     })
     .catch(err => {
