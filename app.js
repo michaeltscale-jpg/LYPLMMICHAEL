@@ -932,7 +932,12 @@ function renderNpiSubpanel() {
                 </div>
             `;
         } else if (g.key === "gate3") {
-            upperActionHtml = `<button class="btn-secondary" style="font-size:0.72rem; padding:4px 6px; width:100%; display:flex; align-items:center; justify-content:center; gap:4px;" onclick="switchPlmSubTab('routing')"><i data-lucide="eye" style="width:11px; height:11px;"></i> 查看工艺中试</button>`;
+            upperActionHtml = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%;">
+                    <button class="btn-secondary" style="font-size: 0.68rem; padding: 4px 2px; display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap;" onclick="switchPlmSubTab('routing')"><i data-lucide="eye" style="width: 11px; height: 11px;"></i> 查看中试工艺</button>
+                    <button class="btn-primary" style="font-size: 0.68rem; padding: 4px 2px; display: flex; align-items: center; justify-content: center; gap: 3px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border: none; white-space: nowrap;" onclick="triggerTrialProductionFlow()"><i data-lucide="play-circle" style="width: 11px; height: 11px;"></i> 发起试制流程</button>
+                </div>
+            `;
         } else if (g.key === "gate4") {
             upperActionHtml = `<button class="btn-secondary" style="font-size:0.72rem; padding:4px 6px; width:100%; display:flex; align-items:center; justify-content:center; gap:4px;" onclick="openQualityTestModal()"><i data-lucide="beaker" style="width:11px; height:11px;"></i> 录入品质数据</button>`;
         } else if (g.key === "gate5") {
