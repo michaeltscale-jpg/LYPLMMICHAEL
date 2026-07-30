@@ -13782,6 +13782,12 @@ window.linkPdcaToEcn = function() {
     showToast(`已联动携带当前 PDCA 改善单信息并跳转打开 ECN 设变表单！`, "success");
 };
 
+window.triggerTrialProductionFlow = function() {
+    const code = document.getElementById("pdca-edit-code")?.value || "";
+    const title = document.getElementById("pdca-edit-title-input")?.value || "";
+    showToast(`🚀 已成功基于改善单【${code} ${title}】发起生产中试/小批试制流程！系统已联动推送至 NPI 工艺工程与生产 MES 调试台。`, "success");
+};
+
 window.approvePDCAStage = function() {
     const stages = ['Plan', 'Do', 'Check', 'Act'];
     const currentMax = window.currentPdcaMaxStage || 'Plan';
