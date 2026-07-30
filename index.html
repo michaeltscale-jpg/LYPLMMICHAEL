@@ -1517,7 +1517,18 @@ requests.post(url, json=payload)</code></pre>
 
                     <!-- ===== PDCA 质量持续改善控制中心 ===== -->
                     <div class="tab-panel" id="pdca-panel">
-                        <!-- 3 Sub-Tabs 视角切换导航栏 + 集中控制栏 (右侧精简靠右) -->
+                        <!-- PDCA 顶栏主操作区 (上一列) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <div style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                                🚀 质量改善 4 大阶段管道推进线
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">(点击任意改善卡片可查看与编辑 8D 明细)</span>
+                            </div>
+                            <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.8rem; padding: 6px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
+                                <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
+                            </button>
+                        </div>
+
+                        <!-- 3 Sub-Tabs 视角切换导航栏 + 5M1E 归因 & 关联产品 (下一列) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; padding-bottom: 6px; flex-wrap: nowrap;">
                             <!-- 左侧 3 大视角切换 Tab -->
                             <div style="display: flex; gap: 8px; shrink: 0;">
@@ -1532,7 +1543,7 @@ requests.post(url, json=payload)</code></pre>
                                 </button>
                             </div>
 
-                            <!-- 右侧 5M1E 分类标签按钮组 + 关联产品下拉 + 新建操作按钮 (右对齐) -->
+                            <!-- 右侧 5M1E 分类标签按钮组 + 关联产品下拉 (右对齐) -->
                             <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: nowrap;">
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">5M1E 归因:</span>
                                 <div id="pdca-factor-chips-container" style="display: flex; gap: 4px; align-items: center;">
@@ -1552,24 +1563,11 @@ requests.post(url, json=payload)</code></pre>
                                     <option value="RTF 反转铜箔">RTF 反转铜箔</option>
                                     <option value="HVLP 极低轮廓铜箔">HVLP 极低轮廓铜箔</option>
                                 </select>
-
-                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.78rem; padding: 5px 12px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                    <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> 发起 PDCA 改善单
-                                </button>
                             </div>
                         </div>
 
                         <!-- ================= 视角 1: P1-P4 质量改善管道看板 (比照 EMS 附图1 结构) ================= -->
                         <div id="pdca-panel-kanban" style="display: block;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-                                    🚀 质量改善 4 大阶段管道推进线
-                                </div>
-                                <div style="font-size: 0.75rem; color: var(--text-secondary);">
-                                    点击任意改善卡片可一键查看与编辑 8D 阶段明细
-                                </div>
-                            </div>
-
                             <!-- 4 阶段管道 Grid (P1 ~ P4) -->
                             <div class="pdca-pipeline-grid" id="pdca-pipeline-kanban-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
                                 <!-- JS 动态渲染 4 大管道列 -->
