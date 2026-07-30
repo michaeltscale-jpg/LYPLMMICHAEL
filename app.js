@@ -13763,23 +13763,53 @@ window.linkPdcaToProduct = function() {
 };
 
 window.linkPdcaToEcn = function() {
-    const code = document.getElementById("pdca-edit-code").value;
-    const title = document.getElementById("pdca-edit-title-input").value;
-    const prodId = document.getElementById("pdca-edit-product").value;
+    const code = document.getElementById("pdca-edit-code")?.value || "";
+    const title = document.getElementById("pdca-edit-title-input")?.value || "";
+    const prodId = document.getElementById("pdca-edit-product")?.value || "";
     
+    // 读取阶段 4 (ACT) 的标准化输出及全流程改善数据
+    const actVerify = document.getElementById("pdca-edit-verify")?.value || "";
+    const problem = document.getElementById("pdca-edit-problem")?.value || "";
+    const improve = document.getElementById("pdca-edit-improve")?.value || "";
+    const rootcause = document.getElementById("pdca-edit-rootcause")?.value || "";
+
+    // 切换至 ECN 设变控制中心并弹框
     switchTab('ecn-panel');
-    if (window.openNewEcnModal) {
-        openNewEcnModal();
-        setTimeout(() => {
-            const ecnReason = document.getElementById("ecn-reason");
-            if (ecnReason) ecnReason.value = `由 PDCA 改善单【${code} - ${title || '质量改善'}】标准化结论联动发起`;
-            if (prodId) {
-                const ecnProd = document.getElementById("ecn-product-id");
-                if (ecnProd) ecnProd.value = prodId;
-            }
-        }, 200);
-    }
-    showToast(`已联动携带当前 PDCA 改善单信息并跳转打开 ECN 设变表单！`, "success");
+    openModal('modal-ecn');
+
+    setTimeout(() => {
+        // 1. 自动关联产品
+        if (prodId) {
+            const prodEl = document.getElementById("ecn-product-select");
+            if (prodEl) prodEl.value = prodId;
+        }
+
+        // 2. 自动带入变更类型为『工艺变更』
+        const typeEl = document.getElementById("ecn-change-type");
+        if (typeEl) typeEl.value = "工艺变更";
+
+        // 3. 自动填入 ECN 变更原因
+        const reasonEl = document.getElementById("ecn-change-reason");
+        if (reasonEl) {
+            reasonEl.value = `由 PDCA 改善单【${code} - ${title || '质量改善'}】标准化结论联动发起。\n原因排查: ${rootcause || problem || '针对质量异常现象进行的工艺参数调整与标准化归档'}`;
+        }
+
+        // 4. 自动填入变更前状态
+        const beforeEl = document.getElementById("ecn-change-before");
+        if (beforeEl) {
+            beforeEl.value = `改善前不良现象: ${problem || '无记录'}\n原工艺对策: ${improve || '无记录'}`;
+        }
+
+        // 5. 核心：自动全量导入阶段 4 (ACT) 的标准化与闭环输出至 ECN 拟变更方案
+        const afterEl = document.getElementById("ecn-change-after");
+        if (afterEl) {
+            afterEl.value = actVerify 
+                ? `【PDCA 阶段 4 (ACT) 标准化与闭环输出】\n${actVerify}` 
+                : `【PDCA 阶段 4 (ACT) 标准化输出】\n针对 ${title}，已完成中试验证与合格率提升测试，现申请将优化后的工艺路线、BOM 规范与 SOP 正式固化入库受控。`;
+        }
+    }, 200);
+
+    showToast(`🎉 已成功将 PDCA 阶段 4 (ACT) 标准化输出自动导入 ECN 申请表！`, "success");
 };
 
 window.triggerTrialProductionFlow = function() {
