@@ -1517,123 +1517,129 @@ requests.post(url, json=payload)</code></pre>
 
                     <!-- ===== PDCA 质量持续改善控制中心 ===== -->
                     <div class="tab-panel" id="pdca-panel">
-                        <!-- 顶栏 KPI 统计卡片面板 -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 16px;">
-                            <div class="glass-panel" style="padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.25); display: flex; align-items: center; justify-content: center; color: var(--color-primary);">
-                                    <i data-lucide="repeat" style="width: 22px; height: 22px;"></i>
+                        <!-- 顶栏页头 Header (比照 EMS 附图1) -->
+                        <div style="background: rgba(255,255,255,0.7); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 20px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #2563eb, #1d4ed8); display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                                    <i data-lucide="repeat" style="width: 24px; height: 24px;"></i>
                                 </div>
                                 <div>
-                                    <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600;">改善单累计总数</div>
-                                    <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);" id="pdca-kpi-total">0</div>
+                                    <h2 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">PDCA 质量持续改善控制中心</h2>
+                                    <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: var(--text-secondary); font-weight: 500;">对标精益质量 8D 闭环管理规范，实现 P1~P4 阶段性推进与全面品质预防。</p>
                                 </div>
                             </div>
-                            <div class="glass-panel" style="padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.25); display: flex; align-items: center; justify-content: center; color: #f59e0b;">
-                                    <i data-lucide="clock" style="width: 22px; height: 22px;"></i>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="position: relative;">
+                                    <input type="text" id="pdca-search" placeholder="搜索改善单号 / 主题 / 责任人..." oninput="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 7px 12px 7px 32px; font-size: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 240px;">
+                                    <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-secondary);"></i>
                                 </div>
-                                <div>
-                                    <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600;">进行中 (Plan/Do/Check)</div>
-                                    <div style="font-size: 1.4rem; font-weight: 800; color: #f59e0b;" id="pdca-kpi-ongoing">0</div>
-                                </div>
-                            </div>
-                            <div class="glass-panel" style="padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); display: flex; align-items: center; justify-content: center; color: #ef4444;">
-                                    <i data-lucide="alert-triangle" style="width: 22px; height: 22px;"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600;">闭环延误率</div>
-                                    <div style="font-size: 1.4rem; font-weight: 800; color: #ef4444;" id="pdca-kpi-delay">0%</div>
-                                </div>
-                            </div>
-                            <div class="glass-panel" style="padding: 14px 18px; display: flex; align-items: center; gap: 14px;">
-                                <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25); display: flex; align-items: center; justify-content: center; color: #8b5cf6;">
-                                    <i data-lucide="pie-chart" style="width: 22px; height: 22px;"></i>
-                                </div>
-                                <div>
-                                    <div style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600;">5M1E 主导归因</div>
-                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);" id="pdca-kpi-5m">法 (高频)</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- PDCA 当前选中改善单主控卡片与工具栏 -->
-                        <div class="glass-panel" style="padding: 16px; margin-bottom: 16px;">
-                            <!-- 改善单选择器 & 工具栏 -->
-                            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color);">
-                                <span style="font-size: 0.82rem; color: var(--text-primary); font-weight: 800; display: flex; align-items: center; gap: 4px;">
-                                    <i data-lucide="layers" style="width: 16px; height: 16px; color: var(--color-primary);"></i> 改善单管控：
-                                </span>
-                                <select id="pdca-ticket-select" class="form-control" style="width: 280px; font-size: 0.8rem; font-weight: 700; height: 34px; padding: 4px 10px; border-color: var(--color-primary);" onchange="switchActivePdca(this.value)">
-                                    <!-- 动态填充改善单 -->
-                                </select>
-                                <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 700; margin-left: 10px;">筛选：</span>
-                                <select id="pdca-filter-product" class="form-control" style="width: 140px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">全部产品</option>
-                                </select>
-                                <select id="pdca-filter-factor" class="form-control" style="width: 120px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">5M1E 归因</option>
-                                    <option value="人">人</option>
-                                    <option value="机">机</option>
-                                    <option value="料">料</option>
-                                    <option value="法">法</option>
-                                    <option value="环">环</option>
-                                </select>
-                                <select id="pdca-filter-stage" class="form-control" style="width: 120px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">全部阶段</option>
-                                    <option value="Plan">Plan 计划</option>
-                                    <option value="Do">Do 措施</option>
-                                    <option value="Check">Check 验证</option>
-                                    <option value="Act">Act 闭环</option>
-                                </select>
-                                <button onclick="fetchPdcaData()" class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; height: 32px;">
-                                    <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i> 刷新
-                                </button>
-                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; margin-left: auto;">
+                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.8rem; padding: 7px 16px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
                                 </button>
                             </div>
+                        </div>
 
-                            <!-- 当前 PDCA 改善单 Banner 详情 Header -->
-                            <div id="pdca-active-banner" style="background: rgba(255, 255, 255, 0.65); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;">
-                                <!-- 由 JS 动态渲染主 Banner -->
+                        <!-- 3 Sub-Tabs 视角切换导航栏 (比照附图2) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 14px; padding-bottom: 2px;">
+                            <div style="display: flex; gap: 10px;">
+                                <button class="tab-btn active" id="pdca-tab-btn-kanban" onclick="switchPdcaTab('kanban')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
+                                    <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i> P1-P4 质量改善看板
+                                </button>
+                                <button class="tab-btn" id="pdca-tab-btn-archived" onclick="switchPdcaTab('archived')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                    <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i> 归档改善台账
+                                </button>
+                                <button class="tab-btn" id="pdca-tab-btn-risk" onclick="switchPdcaTab('risk')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                                    <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> 改善延误与风险提示
+                                </button>
                             </div>
 
-                            <!-- PDCA 4 大阶段卡片网格 (Plan, Do, Check, Act) -->
-                            <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                                <i data-lucide="activity" style="width: 16px; height: 16px; color: var(--color-primary);"></i> PDCA 阶段管控与 8D 闭环门禁
-                            </div>
-                            <div class="npi-gates-grid" id="pdca-cards-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-                                <!-- 由 JS 动态渲染 P-D-C-A 卡片 -->
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">5M1E 归因:</span>
+                                <select id="pdca-factor-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
+                                    <option value="">全部归因</option>
+                                    <option value="人">人 (Man)</option>
+                                    <option value="机">机 (Machine)</option>
+                                    <option value="料">料 (Material)</option>
+                                    <option value="法">法 (Method)</option>
+                                    <option value="环">环 (Environment)</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- 全部改善单数据列表 (卡片下方总览表) -->
-                        <div class="glass-panel" style="padding: 16px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="list" style="width: 16px; height: 16px; color: var(--color-primary);"></i> 改善单全量视图 (点击行快速切换卡片)
+                        <!-- ================= 视角 1: P1-P4 质量改善管道看板 (比照 EMS 附图1 结构) ================= -->
+                        <div id="pdca-panel-kanban" style="display: block;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                                    🚀 质量改善 4 大阶段管道推进线
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                                    点击任意改善卡片可一键查看与编辑 8D 阶段明细
                                 </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="data-table" style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="background: rgba(241, 245, 249, 0.8); border-bottom: 1px solid var(--border-color);">
-                                            <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">改善单号</th>
-                                            <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem;">改善主题</th>
-                                            <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">关联产品 / 厚度</th>
-                                            <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">5M1E 归因</th>
-                                            <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">PDCA 阶段</th>
-                                            <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">状态</th>
-                                            <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">责任人</th>
-                                            <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">预计完成</th>
-                                            <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">操作</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="pdca-table-body">
-                                        <!-- 由 JS 动态渲染 -->
-                                    </tbody>
-                                </table>
+
+                            <!-- 4 阶段管道 Grid (P1 ~ P4) -->
+                            <div class="pdca-pipeline-grid" id="pdca-pipeline-kanban-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                                <!-- JS 动态渲染 4 大管道列 -->
+                            </div>
+                        </div>
+
+                        <!-- ================= 视角 2: 归档改善台账 (已闭环改善单台账) ================= -->
+                        <div id="pdca-panel-archived" style="display: none;">
+                            <div class="glass-panel" style="padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <div style="font-size: 0.88rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                                        🛡️ 已结案归档与历史改善单全量台账
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: rgba(241, 245, 249, 0.8); border-bottom: 1px solid var(--border-color);">
+                                                <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">改善单号</th>
+                                                <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem;">改善主题</th>
+                                                <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">关联产品 / 厚度</th>
+                                                <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">5M1E 归因</th>
+                                                <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">PDCA 阶段</th>
+                                                <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">状态</th>
+                                                <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">责任人</th>
+                                                <th style="padding: 10px 8px; text-align: left; font-size: 0.78rem; white-space: nowrap;">预计完成</th>
+                                                <th style="padding: 10px 8px; text-align: center; font-size: 0.78rem; white-space: nowrap;">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pdca-archived-table-body">
+                                            <!-- JS 动态渲染 -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================= 视角 3: 改善延误与风险提示 ================= -->
+                        <div id="pdca-panel-risk" style="display: none;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                <div class="glass-panel" style="padding: 16px; border-left: 4px solid #ef4444;">
+                                    <div style="font-size: 0.88rem; font-weight: 800; color: #ef4444; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                        <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i> 闭环超期与延误预警清单
+                                    </div>
+                                    <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                        自动监控目标完成日期小于当前时间且尚未完成闭环的改善项目。
+                                    </div>
+                                    <div id="pdca-risk-delay-list">
+                                        <!-- JS 渲染延误清单 -->
+                                    </div>
+                                </div>
+
+                                <div class="glass-panel" style="padding: 16px; border-left: 4px solid #f59e0b;">
+                                    <div style="font-size: 0.88rem; font-weight: 800; color: #d97706; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                        <i data-lucide="pie-chart" style="width: 18px; height: 18px;"></i> 5M1E 质量根本原因分布统计
+                                    </div>
+                                    <div style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                        分析改善单在人 (Man)、机 (Machine)、料 (Material)、法 (Method)、环 (Env) 的高发分布。
+                                    </div>
+                                    <div id="pdca-risk-5m-stats">
+                                        <!-- JS 渲染统计表 -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3523,10 +3529,10 @@ requests.post(url, json=payload)</code></pre>
     })();
     </script>
 
-    <!-- JS Application -->
     <script src="app.js?v=20260725_sop_fix"></script>
     <script src="mqc_logic.js"></script>
     <script src="ems_logic.js"></script>
+    <script src="pdca_logic.js"></script>
 
     <!-- ===== MQC 物料承认编辑弹窗 ===== -->
     <div class="modal-overlay" id="modal-mqc-material">
