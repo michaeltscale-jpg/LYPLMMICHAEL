@@ -1521,10 +1521,8 @@ requests.post(url, json=payload)</code></pre>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
                                 🚀 质量改善 4 大阶段管道推进线
-                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">(点击任意改善卡片可查看与编辑 8D 明细)</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <input type="text" id="pdca-keyword-search" oninput="window.renderPdcaPipelineKanban && window.renderPdcaPipelineKanban(); window.renderPdcaArchivedTable && window.renderPdcaArchivedTable();" placeholder="🔍 搜索改善主题/单号/对策..." style="padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 180px; font-weight: 500; outline: none; transition: all 0.2s ease;">
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">关联产品:</span>
                                 <select id="pdca-product-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 4px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
                                     <option value="">全部产品</option>
