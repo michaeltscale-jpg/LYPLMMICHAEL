@@ -233,8 +233,7 @@ window.renderEmsKanban = function() {
                             <div>责任人: <span style="color: var(--text-primary); font-weight: 500;">${ownerText}</span></div>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.66rem; color: var(--text-secondary);">
-                            ${emsBtnHtml}
+                        <div style="display: flex; justify-content: flex-end; align-items: center; border-top: 1px dashed var(--border-color); padding-top: 6px; font-size: 0.68rem;">
                             <span style="color: var(--color-primary); font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
                                 详细内容 &rarr;
                             </span>
