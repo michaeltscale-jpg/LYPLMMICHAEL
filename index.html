@@ -1107,11 +1107,13 @@
                         <!-- DMS 主布局：单列整版铺满，直接联动全局左侧研发新品列表 -->
                         <div style="display: flex; flex-direction: column; gap: 16px;">
                             <div class="glass-panel highlight-blue">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <h2 style="font-size: 1.2rem; display: flex; align-items: center; gap: 6px; margin: 0;" id="dms-selected-product-title">
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <h2 style="font-size: 1.1rem; display: flex; align-items: center; gap: 6px; margin: 0; white-space: nowrap;" id="dms-selected-product-title">
                                             <i data-lucide="folder-git"></i> 请在左侧列表中选择产品型号
                                         </h2>
+                                        <!-- 文档即时搜索框 -->
+                                        <input type="text" id="dms-search-input" oninput="window.filterDmsBySearch && window.filterDmsBySearch(this.value)" placeholder="🔍 搜索受控文档名称/工段/规范..." style="padding: 4px 12px; font-size: 0.78rem; border-radius: 6px; border: 1.5px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 220px; font-weight: 500; outline: none; transition: all 0.2s ease;">
                                     </div>
                                     <!-- 右侧 G1-G5 门禁筛选标签 -->
                                     <div class="dms-gate-tabs" style="display: flex; gap: 6px; align-items: center;">
@@ -1524,6 +1526,7 @@ requests.post(url, json=payload)</code></pre>
                                 <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">(点击任意改善卡片可查看与编辑 8D 明细)</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="text" id="pdca-keyword-search" oninput="window.renderPdcaPipelineKanban && window.renderPdcaPipelineKanban(); window.renderPdcaArchivedTable && window.renderPdcaArchivedTable();" placeholder="🔍 搜索改善主题/单号/对策..." style="padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 180px; font-weight: 500; outline: none; transition: all 0.2s ease;">
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">关联产品:</span>
                                 <select id="pdca-product-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 4px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
                                     <option value="">全部产品</option>

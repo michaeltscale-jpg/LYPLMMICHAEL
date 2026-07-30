@@ -138,11 +138,20 @@ window.renderPdcaPipelineKanban = function() {
 
     const factorVal = state.pdcaFactorFilter || "";
     const productVal = document.getElementById("pdca-product-filter")?.value || "";
+    const searchKey = (document.getElementById("pdca-keyword-search")?.value || "").trim().toLowerCase();
 
     // 过滤进行中的改善单
     let filteredList = (state.pdcaList || []).filter(item => {
         if (factorVal && item.factor_5m1e !== factorVal) return false;
         if (productVal && !(item.product_category || "").includes(productVal)) return false;
+        if (searchKey) {
+            const matchTitle = (item.title || "").toLowerCase().includes(searchKey);
+            const matchCode = (item.code || "").toLowerCase().includes(searchKey);
+            const matchProblem = (item.problem_desc || "").toLowerCase().includes(searchKey);
+            const matchImprove = (item.improve_plan || "").toLowerCase().includes(searchKey);
+            const matchOwner = (item.owner || "").toLowerCase().includes(searchKey);
+            if (!matchTitle && !matchCode && !matchProblem && !matchImprove && !matchOwner) return false;
+        }
         return true;
     });
 
@@ -219,9 +228,26 @@ window.renderPdcaArchivedTable = function() {
     const tbody = document.getElementById("pdca-archived-table-body");
     if (!tbody) return;
 
-    const list = state.pdcaList || [];
+    const factorVal = state.pdcaFactorFilter || "";
+    const productVal = document.getElementById("pdca-product-filter")?.value || "";
+    const searchKey = (document.getElementById("pdca-keyword-search")?.value || "").trim().toLowerCase();
+
+    let list = (state.pdcaList || []).filter(item => {
+        if (factorVal && item.factor_5m1e !== factorVal) return false;
+        if (productVal && !(item.product_category || "").includes(productVal)) return false;
+        if (searchKey) {
+            const matchTitle = (item.title || "").toLowerCase().includes(searchKey);
+            const matchCode = (item.code || "").toLowerCase().includes(searchKey);
+            const matchProblem = (item.problem_desc || "").toLowerCase().includes(searchKey);
+            const matchImprove = (item.improve_plan || "").toLowerCase().includes(searchKey);
+            const matchOwner = (item.owner || "").toLowerCase().includes(searchKey);
+            if (!matchTitle && !matchCode && !matchProblem && !matchImprove && !matchOwner) return false;
+        }
+        return true;
+    });
+
     if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">暂无 PDCA 归档改善记录</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted);">暂无匹配的 PDCA 归档改善记录</td></tr>`;
         return;
     }
 

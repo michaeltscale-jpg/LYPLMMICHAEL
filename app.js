@@ -678,7 +678,7 @@ function switchTab(tabId) {
     }
 
     if (productBadgeBox) {
-        if (tabId === 'plm-panel') {
+        if (tabId === 'plm-panel' || tabId === 'dms-panel') {
             productBadgeBox.style.display = "flex";
         } else {
             productBadgeBox.style.display = "none";
@@ -4517,6 +4517,14 @@ window.handleMockApprove = function(instanceId, action) {
         if (state.activeTab === 'ecn-panel') {
             fetchEcns();
         }
+        // 跨模块自动化闭环：ECN 审核通过后，智能引导至文管中心 (DMS) 文件受控
+        if (action === 'AGREE') {
+            setTimeout(() => {
+                if (confirm("🎉 工程设变单 (ECN) 已通过审核！是否需要将更新后的技术规范/SOP 自动归档至《文管中心 (DMS)》进行文件受控？")) {
+                    switchTab('dms-panel');
+                }
+            }, 600);
+        }
     });
 };
 
@@ -6102,10 +6110,12 @@ const DEFAULT_EMS_STAGE_INPUT_FILES = {
     ],
     "stage5_install": [
         "出厂合格证.pdf",
+        "设备出厂试运报告.pdf",
         "设备动能供给规范.docx"
     ],
     "stage6_accept": [
         "安装自检自测报告.pdf",
+        "设备厂内 FAT 试运测试记录.xlsx",
         "设备单机试运转记录.xlsx"
     ]
 };
@@ -8955,6 +8965,14 @@ window.filterDmsByGate = function(gateKey) {
     }
 };
 
+window.filterDmsBySearch = function(keyword) {
+    state.dmsSearchKeyword = (keyword || '').trim().toLowerCase();
+    const activeProd = state.activeProduct || (state.products && state.products[0]);
+    if (activeProd) {
+        renderDmsDeliverablesTable(activeProd);
+    }
+};
+
 function renderDmsDeliverablesTable(product) {
     const tbody = document.querySelector("#dms-deliverables-table tbody");
     if (!tbody) return;
@@ -8988,9 +9006,22 @@ function renderDmsDeliverablesTable(product) {
     ];
 
     const activeFilter = state.dmsActiveGateFilter || 'all';
-    const filteredDocs = (activeFilter === 'all')
+    const searchKey = state.dmsSearchKeyword || '';
+    
+    let filteredDocs = (activeFilter === 'all')
         ? docs
         : docs.filter(d => d.phase.startsWith(activeFilter));
+
+    if (searchKey) {
+        filteredDocs = filteredDocs.filter(d => {
+            const spec = getDynamicDmsTemplate(d.code, product);
+            const docName = spec ? spec.name : '';
+            return d.code.toLowerCase().includes(searchKey) || 
+                   d.phase.toLowerCase().includes(searchKey) || 
+                   d.stage.toLowerCase().includes(searchKey) ||
+                   docName.toLowerCase().includes(searchKey);
+        });
+    }
 
     if (filteredDocs.length === 0) {
         const tr = document.createElement("tr");
@@ -10019,8 +10050,11 @@ window.renderMqcMaterials = function() {
         tr.innerHTML = `
             <td style="font-weight:600; font-family:monospace;">${m.mat_code}</td>
             <td>
-                <div style="font-weight:600;">${m.mat_name}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${m.mat_spec || '-'}</div>
+                <div style="font-weight:700; color:var(--text-primary);">${m.mat_name}</div>
+                <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:3px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    <span>规格: <strong style="color:var(--color-primary);">${m.mat_spec || '-'}</strong></span>
+                    ${m.tds_file ? `<span style="color:#2563eb; font-weight:700; background:#eff6ff; border:1px solid #bfdbfe; border-radius:4px; padding:0 4px; font-size:0.7rem;">📄 TDS: ${m.tds_file}</span>` : `<span style="color:#0284c7; font-weight:700; background:#f0f9ff; border:1px solid #bae6fd; border-radius:4px; padding:0 4px; font-size:0.7rem;">📄 TDS规范对齐</span>`}
+                </div>
             </td>
             <td><span class="badge badge-gray">${m.mat_category || '其他'}</span></td>
             <td>${supsHtml}</td>
@@ -13761,6 +13795,12 @@ window.approvePDCAStage = function() {
             recordPdcaAuditLog(code, `全流程 4 大阶段审核通过 ➔ 状态更变为 [已闭环]`, currentUser);
             savePdcaRecord(() => {
                 showToast("🎉 该 PDCA 质量改善单已成功审核结案并关单！", "success");
+                // 跨模块自动化闭环：PDCA 完结后智能引导进入《工程变更 (ECN)》
+                setTimeout(() => {
+                    if (confirm("🔗 该 PDCA 改善单已成功闭环！是否需要针对此改善结论自动关联发起《工程变更 (ECN)》设变表单？")) {
+                        window.linkPdcaToEcn && window.linkPdcaToEcn();
+                    }
+                }, 500);
             });
         }
         return;
