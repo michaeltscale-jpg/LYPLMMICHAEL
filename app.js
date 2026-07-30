@@ -13522,12 +13522,12 @@ window.closePdcaModal = function(modalId) {
     if (modal) modal.style.display = "none";
 };
 
-window.savePdcaRecord = function() {
+window.savePdcaRecord = function(callback) {
     const id = document.getElementById("pdca-edit-id").value;
     const code = document.getElementById("pdca-edit-code").value;
     const factor_5m1e = document.getElementById("pdca-edit-factor").value;
     const title = document.getElementById("pdca-edit-title-input").value.trim();
-    const product_id = document.getElementById("pdca-edit-product").value;
+    const product_id_val = document.getElementById("pdca-edit-product").value;
     const thickness = document.getElementById("pdca-edit-thickness").value;
     const stage = document.getElementById("pdca-edit-stage").value;
     const problem_desc = document.getElementById("pdca-edit-problem").value.trim();
@@ -13549,8 +13549,8 @@ window.savePdcaRecord = function() {
         code,
         factor_5m1e,
         title,
-        product_id: product_id ? parseInt(product_id) : null,
-        thickness: thickness ? parseFloat(thickness) : null,
+        product_id: (product_id_val && !isNaN(product_id_val)) ? parseInt(product_id_val, 10) : null,
+        thickness: (thickness && !isNaN(thickness)) ? parseFloat(thickness) : null,
         stage,
         problem_desc,
         improve_plan,
@@ -13571,7 +13571,7 @@ window.savePdcaRecord = function() {
     .then(data => {
         if (data.success) {
             showToast("PDCA 质量改善单已成功保存！", "success");
-            closePdcaModal("modal-pdca-edit");
+            if (typeof callback === 'function') callback();
             fetchPdcaData();
         } else {
             showToast("保存失败: " + (data.error || "未知错误"), "error");
@@ -13719,7 +13719,7 @@ window.switchPDCAStage = function(stage) {
 window.linkPdcaToProduct = function() {
     const prodId = document.getElementById("pdca-edit-product").value;
     if (!prodId) {
-        showToast("请先在右侧选择关联的研发产品", "warning");
+        showToast("请先在左侧选择关联的研发产品", "warning");
         return;
     }
     state.activeProductId = parseInt(prodId);
@@ -13754,11 +13754,19 @@ window.approvePDCAStage = function() {
     const currentIndex = stages.indexOf(currentMax);
     
     if (currentIndex >= stages.length - 1) {
-        showToast("已经是最后阶段，无需继续推进", "info");
+        if (confirm("当前已是最终 Act 阶段，确认全流程审核通过并归档结案闭环此 PDCA 改善单吗？")) {
+            document.getElementById("pdca-edit-status").value = "已闭环";
+            const code = document.getElementById("pdca-edit-code").value;
+            const currentUser = (state.users && state.users[0] && state.users[0].name) || '超级管理员';
+            recordPdcaAuditLog(code, `全流程 4 大阶段审核通过 ➔ 状态更变为 [已闭环]`, currentUser);
+            savePdcaRecord(() => {
+                showToast("🎉 该 PDCA 质量改善单已成功审核结案并关单！", "success");
+            });
+        }
         return;
     }
     
-    if (!confirm(`确认审核通过 ${currentMax} 阶段并进入下一阶段吗？`)) return;
+    if (!confirm(`确认审核通过 ${currentMax} 阶段并解锁进入下一阶段吗？`)) return;
     
     const nextStage = stages[currentIndex + 1];
     window.currentPdcaMaxStage = nextStage;
@@ -13766,7 +13774,7 @@ window.approvePDCAStage = function() {
     
     const code = document.getElementById("pdca-edit-code").value;
     const currentUser = (state.users && state.users[0] && state.users[0].name) || '超级管理员';
-    recordPdcaAuditLog(code, `审核通过 ${currentMax} 阶段 ➔ 推进至 ${nextStage} 阶段`, currentUser);
+    recordPdcaAuditLog(code, `审核通过 ${currentMax} 阶段 ➔ 推进解锁 ${nextStage} 阶段`, currentUser);
     
     switchPDCAStage(nextStage);
     savePdcaRecord();

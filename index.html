@@ -1691,9 +1691,77 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                 </div>
 
-                <!-- 左右双栏结构 -->
-                <div style="display:grid; grid-template-columns: 1fr 340px; gap:16px; align-items:start;">
-                    <!-- 左侧：阶段详情表单 -->
+                <!-- 左右双栏结构 (左侧：阶段管理属性 340px，右侧：阶段详情表单 1fr) -->
+                <div style="display:grid; grid-template-columns: 340px 1fr; gap:16px; align-items:start;">
+                    <!-- 左侧：管理属性 -->
+                    <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
+                        <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="edit-3" style="color:#d97706; width:16px; height:16px;"></i>
+                            <h4 style="margin:0; font-size:0.85rem; color:#334155;">阶段管理属性</h4>
+                        </div>
+                        <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px;">
+                            <!-- 1. 改善主题 (最上面) -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 </label>
+                                <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
+                            </div>
+
+                            <!-- 2. 5M1E 归因分类 (排第二) -->
+                            <div>
+                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 </label>
+                                <select id="pdca-edit-factor" style="display:none;">
+                                    <option value="法">法</option>
+                                    <option value="机">机</option>
+                                    <option value="料">料</option>
+                                    <option value="人">人</option>
+                                    <option value="环">环</option>
+                                </select>
+                                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">人</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">机</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">料</button>
+                                    <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:6px 0; font-size:0.75rem; font-weight:700; border-radius:6px; border:1px solid #1d4ed8; background:#2563eb; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(37,99,235,0.2);">法</button>
+                                    <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">环</button>
+                                </div>
+                            </div>
+
+                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:2px 0;">
+
+                            <!-- 3. 阶段负责人 -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 </label>
+                                <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
+                                    <option value="">― 请选择负责人 ―</option>
+                                </select>
+                            </div>
+                            <div style="display:none;">
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段状态</label>
+                                <select id="pdca-edit-status" class="form-control" style="font-size:0.8rem; background:#fff;">
+                                    <option value="进行中">进行中</option>
+                                    <option value="已闭环">已闭环</option>
+                                    <option value="暂缓">暂缓</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">预计完成日期</label>
+                                <input type="date" id="pdca-edit-target-date" class="form-control" style="font-size:0.8rem; background:#fff;">
+                            </div>
+
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善单号</label>
+                                <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc; font-size:0.8rem; color:#94a3b8;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">关联研发产品</label>
+                                <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populatePdcaProductDropdowns()" onclick="if(this.options.length<=1) populatePdcaProductDropdowns()">
+                                    <option value="">全部/通用产品</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="pdca-edit-thickness">
+                        </div>
+                    </div>
+
+                    <!-- 右侧：阶段详情表单 -->
                     <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
                         <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
                             <i data-lucide="map-pin" style="color:#2563eb; width:16px; height:16px;"></i>
@@ -1759,74 +1827,6 @@ requests.post(url, json=payload)</code></pre>
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-
-                    <!-- 右侧：管理属性 -->
-                    <div style="background:#fff; border-radius:8px; border:1px solid #cbd5e1; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
-                        <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px;">
-                            <i data-lucide="edit-3" style="color:#d97706; width:16px; height:16px;"></i>
-                            <h4 style="margin:0; font-size:0.85rem; color:#334155;">阶段管理属性</h4>
-                        </div>
-                        <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px;">
-                            <!-- 1. 改善主题 (最上面) -->
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善主题 </label>
-                                <input type="text" id="pdca-edit-title-input" class="form-control" placeholder="简要概括品质异常..." style="font-size:0.8rem; background:#fff;">
-                            </div>
-
-                            <!-- 2. 5M1E 归因分类 (排第二) -->
-                            <div>
-                                <label style="display:block; font-size:0.75rem; font-weight:700; margin-bottom:8px; color:#475569;">5M1E 归因分类 </label>
-                                <select id="pdca-edit-factor" style="display:none;">
-                                    <option value="法">法</option>
-                                    <option value="机">机</option>
-                                    <option value="料">料</option>
-                                    <option value="人">人</option>
-                                    <option value="环">环</option>
-                                </select>
-                                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-人" onclick="selectPdcaFactor('人')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">人</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-机" onclick="selectPdcaFactor('机')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">机</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-料" onclick="selectPdcaFactor('料')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">料</button>
-                                    <button type="button" class="factor-pill-btn active" id="factor-pill-法" onclick="selectPdcaFactor('法')" style="padding:6px 0; font-size:0.75rem; font-weight:700; border-radius:6px; border:1px solid #1d4ed8; background:#2563eb; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(37,99,235,0.2);">法</button>
-                                    <button type="button" class="factor-pill-btn" id="factor-pill-环" onclick="selectPdcaFactor('环')" style="padding:6px 0; font-size:0.75rem; font-weight:600; border-radius:6px; border:1px solid #cbd5e1; background:#fff; color:#475569; cursor:pointer;">环</button>
-                                </div>
-                            </div>
-
-                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:2px 0;">
-
-                            <!-- 3. 阶段负责人 -->
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段负责人 </label>
-                                <select id="pdca-edit-owner" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)" onclick="if(this.options.length<=1) populateUserSelect('pdca-edit-owner', this.value)">
-                                    <option value="">― 请选择负责人 ―</option>
-                                </select>
-                            </div>
-                            <div style="display:none;">
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">阶段状态</label>
-                                <select id="pdca-edit-status" class="form-control" style="font-size:0.8rem; background:#fff;">
-                                    <option value="进行中">进行中</option>
-                                    <option value="已闭环">已闭环</option>
-                                    <option value="暂缓">暂缓</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">预计完成日期</label>
-                                <input type="date" id="pdca-edit-target-date" class="form-control" style="font-size:0.8rem; background:#fff;">
-                            </div>
-
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">改善单号</label>
-                                <input type="text" id="pdca-edit-code" class="form-control" placeholder="系统自动生成" readonly style="background:#f8fafc; font-size:0.8rem; color:#94a3b8;">
-                            </div>
-                            <div>
-                                <label style="display:block;font-size:0.75rem;font-weight:700;margin-bottom:6px;color:#475569;">关联研发产品</label>
-                                <select id="pdca-edit-product" class="form-control" style="font-size:0.8rem; background:#fff;" onfocus="if(this.options.length<=1) populatePdcaProductDropdowns()" onclick="if(this.options.length<=1) populatePdcaProductDropdowns()">
-                                    <option value="">全部/通用产品</option>
-                                </select>
-                            </div>
-                            <input type="hidden" id="pdca-edit-thickness">
                         </div>
                     </div>
                 </div>
