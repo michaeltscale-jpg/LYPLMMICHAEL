@@ -100,23 +100,49 @@ window.renderPdcaAll = function() {
     renderPdcaRiskView();
 };
 
+// 5M1E 分类标签切换处理
+window.setPdcaFactorFilter = function(factor) {
+    state.pdcaFactorFilter = factor;
+
+    document.querySelectorAll(".pdca-factor-btn").forEach(btn => {
+        const f = btn.getAttribute("data-factor");
+        if (f === factor) {
+            btn.classList.add("active");
+            btn.style.background = "var(--color-primary)";
+            btn.style.color = "#ffffff";
+            btn.style.borderColor = "var(--color-primary)";
+        } else {
+            btn.classList.remove("active");
+            const factorStyles = {
+                '': { bg: 'var(--bg-input)', color: 'var(--text-primary)', border: 'var(--border-color)' },
+                '人': { bg: '#dbeafe', color: '#1e40af', border: '#93c5fd' },
+                '机': { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
+                '料': { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
+                '法': { bg: '#ede9fe', color: '#5b21b6', border: '#c4b5fd' },
+                '环': { bg: '#fae8ff', color: '#86198f', border: '#f5d0fe' }
+            };
+            const s = factorStyles[f] || factorStyles[''];
+            btn.style.background = s.bg;
+            btn.style.color = s.color;
+            btn.style.borderColor = s.border;
+        }
+    });
+
+    renderPdcaAll();
+};
+
 // 1. 渲染 P1-P4 质量改善 4 大阶段管道看板 (比照 EMS 附图1)
 window.renderPdcaPipelineKanban = function() {
     const gridEl = document.getElementById("pdca-pipeline-kanban-grid");
     if (!gridEl) return;
 
-    const searchVal = (document.getElementById("pdca-search")?.value || "").toLowerCase().trim();
-    const factorVal = document.getElementById("pdca-factor-filter")?.value || "";
+    const factorVal = state.pdcaFactorFilter || "";
+    const productVal = document.getElementById("pdca-product-filter")?.value || "";
 
     // 过滤进行中的改善单
     let filteredList = (state.pdcaList || []).filter(item => {
         if (factorVal && item.factor_5m1e !== factorVal) return false;
-        if (searchVal) {
-            const mCode = (item.code || "").toLowerCase().includes(searchVal);
-            const mTitle = (item.title || "").toLowerCase().includes(searchVal);
-            const mOwner = (item.owner || "").toLowerCase().includes(searchVal);
-            return mCode || mTitle || mOwner;
-        }
+        if (productVal && !(item.product_category || "").includes(productVal)) return false;
         return true;
     });
 
@@ -148,6 +174,7 @@ window.renderPdcaPipelineKanban = function() {
             stageItems.forEach(item => {
                 const factorStyle = factorBadgeStyles[item.factor_5m1e] || factorBadgeStyles['法'];
                 const prodText = item.product_category ? `${item.product_category} (${item.thickness || '通用'}μm)` : (item.thickness ? `通用规格 (${item.thickness}μm)` : '通用规格');
+                const isOverdue = item.target_date && item.target_date < new Date().toISOString().split('T')[0];
 
                 cardsHtml += `
                     <div class="glass-panel" style="padding:10px 12px; margin-bottom:10px; border:1px solid var(--border-color); border-radius:8px; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.03); cursor:pointer; transition:all 0.15s ease;" onclick="openPdcaEditModal(${item.id})" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.03)';">
@@ -156,17 +183,14 @@ window.renderPdcaPipelineKanban = function() {
                             <span style="padding:1px 6px; border-radius:8px; font-size:0.68rem; font-weight:800; ${factorStyle}">${item.factor_5m1e}</span>
                         </div>
                         <h4 style="margin:0 0 5px 0; font-size:0.82rem; font-weight:800; color:var(--text-primary); line-height:1.35; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;" title="${(item.title||'').replace(/"/g, '&quot;')}">${item.title}</h4>
-                        <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
                             <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:65%;">📦 ${prodText}</span>
                             <span style="font-weight:600; color:var(--text-muted); font-size:0.7rem; white-space:nowrap;">${item.owner || '-'}</span>
                         </div>
-                        <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-size:0.7rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
                             <span>目标完成:</span>
-                            <span style="font-weight:700; color:${item.target_date && item.target_date < new Date().toISOString().split('T')[0] ? '#ef4444' : 'var(--text-primary)'}">${item.target_date || '-'}</span>
+                            <span style="font-weight:800; color:${isOverdue ? '#ef4444' : 'var(--text-primary)'};">${item.target_date || '-'}</span>
                         </div>
-                        <button class="btn-primary" style="font-size:0.72rem; padding:4px 8px; width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; font-weight:700; border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;" onclick="event.stopPropagation(); triggerDqeApproval('pdca', { id: ${item.id}, target_name: '${(item.title||'').replace(/'/g, "\\'")} (${item.code})', stage_flow: '${st.title} ➔ 进入下一阶段' })">
-                            <i data-lucide="shield-check" style="width:12px; height:12px;"></i> 🛡️ ${st.num} 阶段评审
-                        </button>
                     </div>
                 `;
             });
@@ -233,7 +257,6 @@ window.renderPdcaArchivedTable = function() {
                 <td style="padding:10px 8px;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${row.target_date || '-'}</td>
                 <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
                     <div style="display:flex;gap:6px;justify-content:center;">
-                        <button class="btn-primary" onclick="triggerDqeApproval('pdca', { id: ${row.id}, target_name: '${(row.title||'').replace(/'/g, "\\'")} (${row.code})', stage_flow: '${row.stage} ➔ 下一阶段' })" style="padding:3px 8px;font-size:0.72rem;background:linear-gradient(135deg, #10b981, #059669);font-weight:700;">🛡️ DQE核准</button>
                         <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
                         <button class="btn-secondary" onclick="exportPdca8DReport(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:#2563eb;">导出8D</button>
                         <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>
