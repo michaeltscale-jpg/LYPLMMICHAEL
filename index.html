@@ -1517,18 +1517,28 @@ requests.post(url, json=payload)</code></pre>
 
                     <!-- ===== PDCA 质量持续改善控制中心 ===== -->
                     <div class="tab-panel" id="pdca-panel">
-                        <!-- PDCA 顶栏主操作区 (上一列) -->
+                        <!-- PDCA 顶栏主操作区 (上一列：标题 + 关联产品下拉 + 发起PDCA改善单) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
                                 🚀 质量改善 4 大阶段管道推进线
                                 <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;">(点击任意改善卡片可查看与编辑 8D 明细)</span>
                             </div>
-                            <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.8rem; padding: 6px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
-                                <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">关联产品:</span>
+                                <select id="pdca-product-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 4px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
+                                    <option value="">全部产品</option>
+                                    <option value="PTS2 AI 铜箔">PTS2 AI 铜箔</option>
+                                    <option value="HIS 载体铜箔">HIS 载体铜箔</option>
+                                    <option value="RTF 反转铜箔">RTF 反转铜箔</option>
+                                    <option value="HVLP 极低轮廓铜箔">HVLP 极低轮廓铜箔</option>
+                                </select>
+                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.8rem; padding: 6px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
+                                    <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- 3 Sub-Tabs 视角切换导航栏 + 5M1E 归因 & 关联产品 (下一列) -->
+                        <!-- 3 Sub-Tabs 视角切换导航栏 + 5M1E 归因 (下一列) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; padding-bottom: 6px; flex-wrap: nowrap;">
                             <!-- 左侧 3 大视角切换 Tab -->
                             <div style="display: flex; gap: 8px; shrink: 0;">
@@ -1543,7 +1553,7 @@ requests.post(url, json=payload)</code></pre>
                                 </button>
                             </div>
 
-                            <!-- 右侧 5M1E 分类标签按钮组 + 关联产品下拉 (右对齐) -->
+                            <!-- 右侧 5M1E 分类标签按钮组 (右对齐) -->
                             <div style="display: flex; align-items: center; gap: 8px; margin-left: auto; flex-wrap: nowrap;">
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">5M1E 归因:</span>
                                 <div id="pdca-factor-chips-container" style="display: flex; gap: 4px; align-items: center;">
@@ -1554,15 +1564,6 @@ requests.post(url, json=payload)</code></pre>
                                     <button type="button" class="pdca-factor-btn" data-factor="法" onclick="setPdcaFactorFilter('法')" style="padding: 4px 8px; font-size: 0.72rem; font-weight: 800; border-radius: 6px; border: 1px solid #c4b5fd; background: #ede9fe; color: #5b21b6; cursor: pointer;">📋 法</button>
                                     <button type="button" class="pdca-factor-btn" data-factor="环" onclick="setPdcaFactorFilter('环')" style="padding: 4px 8px; font-size: 0.72rem; font-weight: 800; border-radius: 6px; border: 1px solid #f5d0fe; background: #fae8ff; color: #86198f; cursor: pointer;">🌡️ 环</button>
                                 </div>
-
-                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap; margin-left: 4px;">关联产品:</span>
-                                <select id="pdca-product-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 4px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
-                                    <option value="">全部产品</option>
-                                    <option value="PTS2 AI 铜箔">PTS2 AI 铜箔</option>
-                                    <option value="HIS 载体铜箔">HIS 载体铜箔</option>
-                                    <option value="RTF 反转铜箔">RTF 反转铜箔</option>
-                                    <option value="HVLP 极低轮廓铜箔">HVLP 极低轮廓铜箔</option>
-                                </select>
                             </div>
                         </div>
 
