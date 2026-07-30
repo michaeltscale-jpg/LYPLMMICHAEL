@@ -1662,22 +1662,35 @@ requests.post(url, json=payload)</code></pre>
                 </select>
                 
                 <!-- 管道线 (Pipeline) UI -->
+                <!-- 管道线 (Pipeline) UI: 4 大阶段显性色彩卡片 -->
                 <div style="display:flex; gap:12px; margin-bottom:16px;">
-                    <div class="pipeline-card active" id="pipeline-Plan" onclick="switchPDCAStage('Plan')" style="flex:1; background:#fff; border:2px solid #2563eb; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 8px rgba(37,99,235,0.1); position:relative; transition:all 0.2s ease;">
-                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Plan" style="width:12px;height:12px;display:none;margin-right:4px;"></i>STAGE 1_PLAN</div>
-                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">问题识别与解决对策</div>
+                    <div class="pipeline-card active" id="pipeline-Plan" onclick="switchPDCAStage('Plan')" style="flex:1; background:linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border:2px solid #2563eb; border-radius:10px; padding:12px 14px; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.18); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.72rem; color:#1e40af; font-weight:800; margin-bottom:4px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between;">
+                            <span><i data-lucide="lock" class="stage-lock" id="lock-Plan" style="width:12px;height:12px;display:none;margin-right:4px;"></i>STAGE 1_PLAN</span>
+                            <span style="font-size:0.68rem; padding:1px 6px; border-radius:4px; background:#2563eb; color:#fff; font-weight:800;">P1 计划</span>
+                        </div>
+                        <div style="font-size:0.92rem; font-weight:800; color:#1e3a8a;">问题识别与解决对策</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Do" onclick="switchPDCAStage('Do')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
-                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Do" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 2_DO</div>
-                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">实施与中试排查</div>
+                    <div class="pipeline-card" id="pipeline-Do" onclick="switchPDCAStage('Do')" style="flex:1; background:#fffbe6; border:1.5px solid #fcd34d; border-radius:10px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 6px rgba(217,119,6,0.08); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.72rem; color:#b45309; font-weight:800; margin-bottom:4px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between;">
+                            <span><i data-lucide="lock" class="stage-lock" id="lock-Do" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#d97706;"></i>STAGE 2_DO</span>
+                            <span style="font-size:0.68rem; padding:1px 6px; border-radius:4px; background:#d97706; color:#fff; font-weight:800;">P2 执行</span>
+                        </div>
+                        <div style="font-size:0.92rem; font-weight:800; color:#78350f;">实施与中试排查</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Check" onclick="switchPDCAStage('Check')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
-                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Check" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 3_CHECK</div>
-                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">效果验证</div>
+                    <div class="pipeline-card" id="pipeline-Check" onclick="switchPDCAStage('Check')" style="flex:1; background:#faf5ff; border:1.5px solid #c4b5fd; border-radius:10px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 6px rgba(124,58,237,0.08); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.72rem; color:#6d28d9; font-weight:800; margin-bottom:4px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between;">
+                            <span><i data-lucide="lock" class="stage-lock" id="lock-Check" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#7c3aed;"></i>STAGE 3_CHECK</span>
+                            <span style="font-size:0.68rem; padding:1px 6px; border-radius:4px; background:#7c3aed; color:#fff; font-weight:800;">P3 验证</span>
+                        </div>
+                        <div style="font-size:0.92rem; font-weight:800; color:#4c1d95;">效果验证</div>
                     </div>
-                    <div class="pipeline-card" id="pipeline-Act" onclick="switchPDCAStage('Act')" style="flex:1; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:12px 14px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05); position:relative; transition:all 0.2s ease;">
-                        <div style="font-size:0.7rem; color:#64748b; font-weight:700; margin-bottom:4px; text-transform:uppercase;"><i data-lucide="lock" class="stage-lock" id="lock-Act" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#94a3b8;"></i>STAGE 4_ACT</div>
-                        <div style="font-size:0.9rem; font-weight:800; color:#1e293b;">标准化闭环或对策调整</div>
+                    <div class="pipeline-card" id="pipeline-Act" onclick="switchPDCAStage('Act')" style="flex:1; background:#f0fdf4; border:1.5px solid #6ee7b7; border-radius:10px; padding:12px 14px; cursor:pointer; box-shadow:0 2px 6px rgba(5,150,105,0.08); position:relative; transition:all 0.2s ease;">
+                        <div style="font-size:0.72rem; color:#047857; font-weight:800; margin-bottom:4px; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between;">
+                            <span><i data-lucide="lock" class="stage-lock" id="lock-Act" style="width:12px;height:12px;display:inline-block;margin-right:4px;color:#059669;"></i>STAGE 4_ACT</span>
+                            <span style="font-size:0.68rem; padding:1px 6px; border-radius:4px; background:#059669; color:#fff; font-weight:800;">P4 闭环</span>
+                        </div>
+                        <div style="font-size:0.92rem; font-weight:800; color:#064e3b;">标准化闭环或对策调整</div>
                     </div>
                 </div>
 
@@ -1822,15 +1835,7 @@ requests.post(url, json=payload)</code></pre>
                 </div>
 
             </div>
-            <div class="modal-footer" style="padding:12px 20px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
-                <div>
-                    <button class="btn-secondary" onclick="switchTab('pdca-panel')">取消</button>
-                </div>
-                <div id="pdca-edit-action-btns" style="display:flex; gap:12px;">
-                    <button class="btn-primary" style="background:#10b981; border:1px solid #059669; display:flex; align-items:center; gap:6px;" onclick="approvePDCAStage()"><i data-lucide="check-circle" style="width:14px; height:14px;"></i> 审核通过并进入下一阶段</button>
-                    <button class="btn-primary" style="display:flex; align-items:center; gap:6px;" onclick="savePdcaRecord()"><i data-lucide="save" style="width:14px; height:14px;"></i> 仅保存当前阶段</button>
-                </div>
-            </div>
+
         
                         </div>
                     </div>
