@@ -13210,14 +13210,21 @@ window.populatePdcaProductDropdowns = function(products) {
     const prods = products || state.products || [];
     const filterSelect = document.getElementById("pdca-filter-product");
     const editSelect = document.getElementById("pdca-edit-product");
+    // 顶部"关联产品"筛选下拉，与新品开发联动
+    const topFilterSelect = document.getElementById("pdca-product-filter");
 
     let filterHtml = '<option value="">全部产品</option>';
     let editHtml = '<option value="">全部/通用产品</option>';
+    // value 使用产品名称，与 pdca_logic.js 中 item.product_category.includes(productVal) 兼容
+    let topFilterHtml = '<option value="">全部产品</option>';
 
     prods.forEach(p => {
         const displayName = p.name ? `${p.name} (${p.category || p.code})` : `${p.category || '研发产品'} (${p.code})`;
+        const productName = p.name || p.category || p.code || '';
         filterHtml += `<option value="${p.id}">${displayName}</option>`;
         editHtml += `<option value="${p.id}">${displayName}</option>`;
+        // 顶部筛选用产品名作为 value，方便 pdca_logic.js 做字符串包含匹配
+        topFilterHtml += `<option value="${productName}">${displayName}</option>`;
     });
 
     if (filterSelect) {
@@ -13229,6 +13236,11 @@ window.populatePdcaProductDropdowns = function(products) {
         const currentEditVal = editSelect.value;
         editSelect.innerHTML = editHtml;
         if (currentEditVal) editSelect.value = currentEditVal;
+    }
+    if (topFilterSelect) {
+        const currentTopVal = topFilterSelect.value;
+        topFilterSelect.innerHTML = topFilterHtml;
+        if (currentTopVal) topFilterSelect.value = currentTopVal;
     }
 };
 
@@ -13617,18 +13629,51 @@ window.switchPDCAStage = function(stage) {
         'Act': '<div style="display:flex; gap:6px;"><i data-lucide="check-circle-2" style="width:12px; height:12px; color:#10b981; margin-top:3px;"></i> <span>归档 ECN/SOP 等标准文件。</span></div>'
     };
 
+    const stageThemeMap = {
+        'Plan': {
+            activeBg: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+            activeBorder: '2.5px solid #2563eb',
+            activeShadow: '0 4px 14px rgba(37,99,235,0.25)',
+            inactiveBg: '#f0f9ff',
+            inactiveBorder: '1.5px solid #93c5fd'
+        },
+        'Do': {
+            activeBg: 'linear-gradient(135deg, #fffbe6 0%, #fef3c7 100%)',
+            activeBorder: '2.5px solid #d97706',
+            activeShadow: '0 4px 14px rgba(217,119,6,0.25)',
+            inactiveBg: '#fffbeb',
+            inactiveBorder: '1.5px solid #fcd34d'
+        },
+        'Check': {
+            activeBg: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+            activeBorder: '2.5px solid #7c3aed',
+            activeShadow: '0 4px 14px rgba(124,58,237,0.25)',
+            inactiveBg: '#faf5ff',
+            inactiveBorder: '1.5px solid #c4b5fd'
+        },
+        'Act': {
+            activeBg: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            activeBorder: '2.5px solid #059669',
+            activeShadow: '0 4px 14px rgba(5,150,105,0.25)',
+            inactiveBg: '#f0fdf4',
+            inactiveBorder: '1.5px solid #6ee7b7'
+        }
+    };
+
     stages.forEach((s, idx) => {
         const card = document.getElementById(`pipeline-${s}`);
         const tab = document.getElementById(`tab-${s}`);
         const lock = document.getElementById(`lock-${s}`);
+        const theme = stageThemeMap[s];
         
         if (idx > maxIndex) {
             // 未解锁阶段 (Locked)
             if (card) {
                 card.style.background = '#f8fafc';
                 card.style.cursor = 'not-allowed';
-                card.style.borderColor = '#e2e8f0';
-                card.style.opacity = '0.65';
+                card.style.border = '1.5px solid #e2e8f0';
+                card.style.opacity = '0.6';
+                card.style.boxShadow = 'none';
             }
             if (lock) {
                 lock.style.display = 'inline-block';
@@ -13642,23 +13687,16 @@ window.switchPDCAStage = function(stage) {
                 card.style.cursor = 'pointer';
                 card.style.opacity = '1';
                 
-                if (idx < maxIndex) {
-                    // 已审核通过阶段 (Approved)
-                    card.style.background = '#ecfdf5';
-                    if (s === currentStage) {
-                        card.style.border = '2px solid #059669';
-                    } else {
-                        card.style.border = '1px solid #10b981';
-                    }
+                if (s === currentStage) {
+                    // 当前激活选中卡片
+                    card.style.background = theme.activeBg;
+                    card.style.border = theme.activeBorder;
+                    card.style.boxShadow = theme.activeShadow;
                 } else {
-                    // 当前推进阶段 (Active Pending)
-                    if (s === currentStage) {
-                        card.style.background = '#eff6ff';
-                        card.style.border = '2px solid #2563eb';
-                    } else {
-                        card.style.background = '#fff';
-                        card.style.border = '1px solid #cbd5e1';
-                    }
+                    // 已解锁未选中卡片
+                    card.style.background = theme.inactiveBg;
+                    card.style.border = theme.inactiveBorder;
+                    card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.04)';
                 }
             }
             
