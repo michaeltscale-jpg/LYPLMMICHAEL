@@ -207,7 +207,7 @@
 
 
             <!-- 厚度规格二级页签栏 -->
-            <div class="thickness-tabs-bar" id="thickness-tabs-bar">
+            <div class="thickness-tabs-bar" id="thickness-tabs-bar" style="display: none !important;">
                 <!-- 由 JS 动态渲染厚度子 Tab -->
             </div>
 
@@ -1528,6 +1528,8 @@ requests.post(url, json=payload)</code></pre>
                                     <option value="">全部产品</option>
                                     <!-- 由 populatePdcaProductDropdowns() 动态注入，与新品开发产品列表联动 -->
                                 </select>
+                                <!-- 改善主题关键词搜索框 (精确定位在关联产品下拉菜单右边) -->
+                                <input type="text" id="pdca-keyword-search" oninput="window.renderPdcaPipelineKanban && window.renderPdcaPipelineKanban(); window.renderPdcaArchivedTable && window.renderPdcaArchivedTable();" placeholder="🔍 搜索改善主题关键词..." style="padding: 4px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 175px; font-weight: 500; outline: none; transition: all 0.2s ease;">
                                 <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.8rem; padding: 6px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
                                 </button>
