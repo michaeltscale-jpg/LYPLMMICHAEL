@@ -150,22 +150,22 @@ window.renderPdcaPipelineKanban = function() {
                 const prodText = item.product_category ? `${item.product_category} (${item.thickness || '通用'}μm)` : (item.thickness ? `通用规格 (${item.thickness}μm)` : '通用规格');
 
                 cardsHtml += `
-                    <div class="glass-panel" style="padding:14px; margin-bottom:12px; border:1px solid var(--border-color); border-radius:10px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.04); cursor:pointer; transition:all 0.2s ease;" onclick="openPdcaEditModal(${item.id})" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span style="font-family:monospace; font-weight:800; font-size:0.82rem; color:var(--color-primary);">${item.code}</span>
-                            <span style="padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:800; ${factorStyle}">${item.factor_5m1e}</span>
+                    <div class="glass-panel" style="padding:10px 12px; margin-bottom:10px; border:1px solid var(--border-color); border-radius:8px; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.03); cursor:pointer; transition:all 0.15s ease;" onclick="openPdcaEditModal(${item.id})" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 1px 4px rgba(0,0,0,0.03)';">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <span style="font-family:monospace; font-weight:800; font-size:0.78rem; color:var(--color-primary);">${item.code}</span>
+                            <span style="padding:1px 6px; border-radius:8px; font-size:0.68rem; font-weight:800; ${factorStyle}">${item.factor_5m1e}</span>
                         </div>
-                        <h4 style="margin:0 0 6px 0; font-size:0.88rem; font-weight:800; color:var(--text-primary); line-height:1.4; word-break:break-word;">${item.title}</h4>
-                        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:8px; display:flex; justify-content:space-between;">
-                            <span>📦 ${prodText}</span>
-                            <span style="color:var(--color-primary); font-weight:600;">${item.owner || '-'}</span>
+                        <h4 style="margin:0 0 5px 0; font-size:0.82rem; font-weight:800; color:var(--text-primary); line-height:1.35; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;" title="${(item.title||'').replace(/"/g, '&quot;')}">${item.title}</h4>
+                        <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:65%;">📦 ${prodText}</span>
+                            <span style="font-weight:600; color:var(--text-muted); font-size:0.7rem; white-space:nowrap;">${item.owner || '-'}</span>
                         </div>
-                        <div style="font-size:0.72rem; color:var(--text-muted); padding:6px; background:rgba(248,250,252,0.8); border-radius:6px; margin-bottom:10px; display:flex; justify-content:space-between;">
-                            <span>预计完成：</span>
+                        <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>目标完成:</span>
                             <span style="font-weight:700; color:${item.target_date && item.target_date < new Date().toISOString().split('T')[0] ? '#ef4444' : 'var(--text-primary)'}">${item.target_date || '-'}</span>
                         </div>
-                        <button class="btn-primary" style="font-size:0.75rem; padding:6px 8px; width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; font-weight:700; border-radius:6px; cursor:pointer; box-shadow:0 2px 6px rgba(16,185,129,0.25); display:flex; align-items:center; justify-content:center; gap:4px;" onclick="event.stopPropagation(); triggerDqeApproval('pdca', { id: ${item.id}, target_name: '${(item.title||'').replace(/'/g, "\\'")} (${item.code})', stage_flow: '${st.title} ➔ 进入下一阶段' })">
-                            <i data-lucide="shield-check" style="width:13px; height:13px;"></i> 🛡️ ${st.num} 阶段评审
+                        <button class="btn-primary" style="font-size:0.72rem; padding:4px 8px; width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; font-weight:700; border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;" onclick="event.stopPropagation(); triggerDqeApproval('pdca', { id: ${item.id}, target_name: '${(item.title||'').replace(/'/g, "\\'")} (${item.code})', stage_flow: '${st.title} ➔ 进入下一阶段' })">
+                            <i data-lucide="shield-check" style="width:12px; height:12px;"></i> 🛡️ ${st.num} 阶段评审
                         </button>
                     </div>
                 `;

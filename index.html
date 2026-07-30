@@ -1517,25 +1517,25 @@ requests.post(url, json=payload)</code></pre>
 
                     <!-- ===== PDCA 质量持续改善控制中心 ===== -->
                     <div class="tab-panel" id="pdca-panel">
-                        <!-- 3 Sub-Tabs 视角切换导航栏 + 集中控制栏 (精简整合冗余页头) -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 14px; padding-bottom: 6px; flex-wrap: wrap; gap: 10px;">
+                        <!-- 3 Sub-Tabs 视角切换导航栏 + 集中控制栏 (右侧精简靠右) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; padding-bottom: 6px; flex-wrap: nowrap;">
                             <!-- 左侧 3 大视角切换 Tab -->
-                            <div style="display: flex; gap: 10px;">
-                                <button class="tab-btn active" id="pdca-tab-btn-kanban" onclick="switchPdcaTab('kanban')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="layout-grid" style="width: 16px; height: 16px;"></i> P1-P4 质量改善看板
+                            <div style="display: flex; gap: 8px; shrink: 0;">
+                                <button class="tab-btn active" id="pdca-tab-btn-kanban" onclick="switchPdcaTab('kanban')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                    <i data-lucide="layout-grid" style="width: 15px; height: 15px;"></i> P1-P4 质量改善看板
                                 </button>
-                                <button class="tab-btn" id="pdca-tab-btn-archived" onclick="switchPdcaTab('archived')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i> 归档改善台账
+                                <button class="tab-btn" id="pdca-tab-btn-archived" onclick="switchPdcaTab('archived')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                    <i data-lucide="shield-check" style="width: 15px; height: 15px;"></i> 归档改善台账
                                 </button>
-                                <button class="tab-btn" id="pdca-tab-btn-risk" onclick="switchPdcaTab('risk')" style="padding: 7px 16px; font-size: 0.84rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-                                    <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i> 改善延误与风险提示
+                                <button class="tab-btn" id="pdca-tab-btn-risk" onclick="switchPdcaTab('risk')" style="padding: 6px 14px; font-size: 0.82rem; font-weight: 700; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                    <i data-lucide="alert-triangle" style="width: 15px; height: 15px;"></i> 改善延误与风险提示
                                 </button>
                             </div>
 
-                            <!-- 右侧 5M1E 筛选 + 搜索框 + 新建操作按钮 -->
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">5M1E 归因:</span>
-                                <select id="pdca-factor-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 6px 10px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
+                            <!-- 右侧 5M1E 筛选 + 搜索框 + 新建操作按钮 (右对齐) -->
+                            <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); white-space: nowrap;">5M1E 归因:</span>
+                                <select id="pdca-factor-filter" onchange="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 5px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-weight: 600;">
                                     <option value="">全部归因</option>
                                     <option value="人">人 (Man)</option>
                                     <option value="机">机 (Machine)</option>
@@ -1545,11 +1545,11 @@ requests.post(url, json=payload)</code></pre>
                                 </select>
 
                                 <div style="position: relative;">
-                                    <input type="text" id="pdca-search" placeholder="搜索改善单号 / 主题 / 责任人..." oninput="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 6px 12px 6px 30px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 220px;">
-                                    <i data-lucide="search" style="position: absolute; left: 9px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--text-secondary);"></i>
+                                    <input type="text" id="pdca-search" placeholder="搜索改善单号 / 主题..." oninput="window.fetchPdcaData && window.fetchPdcaData()" style="padding: 5px 10px 5px 28px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); width: 200px;">
+                                    <i data-lucide="search" style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: var(--text-secondary);"></i>
                                 </div>
 
-                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.78rem; padding: 6px 14px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                                <button class="btn-primary" onclick="openPdcaEditModal(null)" style="font-size: 0.78rem; padding: 5px 12px; font-weight: 700; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;">
                                     <i data-lucide="plus-circle" style="width: 14px; height: 14px;"></i> 发起 PDCA 改善单
                                 </button>
                             </div>
