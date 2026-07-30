@@ -1557,28 +1557,34 @@ requests.post(url, json=payload)</code></pre>
                             </div>
                         </div>
 
-                        <!-- 筛选与数据表格组合卡片 -->
-                        <div class="glass-panel" style="padding: 16px;">
-                            <!-- 筛选与操作工具栏 -->
+                        <!-- PDCA 当前选中改善单主控卡片与工具栏 -->
+                        <div class="glass-panel" style="padding: 16px; margin-bottom: 16px;">
+                            <!-- 改善单选择器 & 工具栏 -->
                             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color);">
-                                <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 700;">筛选：</span>
-                                <select id="pdca-filter-product" class="form-control" style="width: 150px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
+                                <span style="font-size: 0.82rem; color: var(--text-primary); font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="layers" style="width: 16px; height: 16px; color: var(--color-primary);"></i> 改善单管控：
+                                </span>
+                                <select id="pdca-ticket-select" class="form-control" style="width: 280px; font-size: 0.8rem; font-weight: 700; height: 34px; padding: 4px 10px; border-color: var(--color-primary);" onchange="switchActivePdca(this.value)">
+                                    <!-- 动态填充改善单 -->
+                                </select>
+                                <span style="font-size: 0.78rem; color: var(--text-secondary); font-weight: 700; margin-left: 10px;">筛选：</span>
+                                <select id="pdca-filter-product" class="form-control" style="width: 140px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
                                     <option value="">全部产品</option>
                                 </select>
-                                <select id="pdca-filter-factor" class="form-control" style="width: 130px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
-                                    <option value="">5M1E 归因 - 全部</option>
+                                <select id="pdca-filter-factor" class="form-control" style="width: 120px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
+                                    <option value="">5M1E 归因</option>
                                     <option value="人">人</option>
                                     <option value="机">机</option>
                                     <option value="料">料</option>
                                     <option value="法">法</option>
                                     <option value="环">环</option>
                                 </select>
-                                <select id="pdca-filter-stage" class="form-control" style="width: 130px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
+                                <select id="pdca-filter-stage" class="form-control" style="width: 120px; font-size: 0.78rem; height: 32px; padding: 4px 8px;" onchange="fetchPdcaData()">
                                     <option value="">全部阶段</option>
-                                    <option value="Plan">Plan - 计划定案</option>
-                                    <option value="Do">Do - 措施执行</option>
-                                    <option value="Check">Check - 效果验证</option>
-                                    <option value="Act">Act - 标准化闭环</option>
+                                    <option value="Plan">Plan 计划</option>
+                                    <option value="Do">Do 措施</option>
+                                    <option value="Check">Check 验证</option>
+                                    <option value="Act">Act 闭环</option>
                                 </select>
                                 <button onclick="fetchPdcaData()" class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; height: 32px;">
                                     <i data-lucide="refresh-cw" style="width: 13px; height: 13px;"></i> 刷新
@@ -1586,6 +1592,28 @@ requests.post(url, json=payload)</code></pre>
                                 <button class="btn-primary" onclick="openPdcaEditModal(null)" style="padding: 6px 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; margin-left: auto;">
                                     <i data-lucide="plus-circle" style="width: 15px; height: 15px;"></i> 发起 PDCA 改善单
                                 </button>
+                            </div>
+
+                            <!-- 当前 PDCA 改善单 Banner 详情 Header -->
+                            <div id="pdca-active-banner" style="background: rgba(255, 255, 255, 0.65); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;">
+                                <!-- 由 JS 动态渲染主 Banner -->
+                            </div>
+
+                            <!-- PDCA 4 大阶段卡片网格 (Plan, Do, Check, Act) -->
+                            <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="activity" style="width: 16px; height: 16px; color: var(--color-primary);"></i> PDCA 阶段管控与 8D 闭环门禁
+                            </div>
+                            <div class="npi-gates-grid" id="pdca-cards-container" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+                                <!-- 由 JS 动态渲染 P-D-C-A 卡片 -->
+                            </div>
+                        </div>
+
+                        <!-- 全部改善单数据列表 (卡片下方总览表) -->
+                        <div class="glass-panel" style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                                    <i data-lucide="list" style="width: 16px; height: 16px; color: var(--color-primary);"></i> 改善单全量视图 (点击行快速切换卡片)
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="data-table" style="width: 100%; border-collapse: collapse;">

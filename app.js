@@ -12978,7 +12978,9 @@ window.fetchPdcaData = function() {
 
     if (window.location.protocol === 'file:') {
         state.pdcaList = fallbackPdcaList;
+        const activeItem = state.pdcaList.find(x => String(x.id) === String(state.activePdcaId)) || state.pdcaList[0];
         renderPdcaKpis(state.pdcaList);
+        renderPdcaConsoleView(activeItem);
         renderPdcaTable(state.pdcaList);
         return;
     }
@@ -12987,15 +12989,221 @@ window.fetchPdcaData = function() {
         .then(res => res.json())
         .then(list => {
             state.pdcaList = (Array.isArray(list) && list.length > 0) ? list : fallbackPdcaList;
+            const activeItem = state.pdcaList.find(x => String(x.id) === String(state.activePdcaId)) || state.pdcaList[0];
             renderPdcaKpis(state.pdcaList);
+            renderPdcaConsoleView(activeItem);
             renderPdcaTable(state.pdcaList);
         })
         .catch(err => {
             console.warn("使用离线默认 PDCA 数据:", err);
             state.pdcaList = fallbackPdcaList;
+            const activeItem = state.pdcaList.find(x => String(x.id) === String(state.activePdcaId)) || state.pdcaList[0];
             renderPdcaKpis(state.pdcaList);
+            renderPdcaConsoleView(activeItem);
             renderPdcaTable(state.pdcaList);
         });
+};
+
+window.switchActivePdca = function(id) {
+    state.activePdcaId = id;
+    const item = (state.pdcaList || []).find(x => String(x.id) === String(id));
+    if (item) {
+        renderPdcaConsoleView(item);
+        renderPdcaTable(state.pdcaList);
+    }
+};
+
+window.renderPdcaConsoleView = function(item) {
+    const bannerEl = document.getElementById("pdca-active-banner");
+    const containerEl = document.getElementById("pdca-cards-container");
+    const ticketSelect = document.getElementById("pdca-ticket-select");
+
+    if (!item) {
+        if (bannerEl) bannerEl.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:10px;">暂无选中的改善单数据</div>`;
+        if (containerEl) containerEl.innerHTML = ``;
+        return;
+    }
+
+    state.activePdcaId = item.id;
+
+    // 动态填充下拉选项
+    if (ticketSelect && state.pdcaList) {
+        ticketSelect.innerHTML = state.pdcaList.map(x => 
+            `<option value="${x.id}" ${String(x.id) === String(item.id) ? 'selected' : ''}>${x.code} - ${x.title}</option>`
+        ).join("");
+    }
+
+    const factorBadgeStyles = {
+        '人': 'background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;',
+        '机': 'background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;',
+        '料': 'background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;',
+        '法': 'background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd;',
+        '环': 'background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe;'
+    };
+    const factorStyle = factorBadgeStyles[item.factor_5m1e] || factorBadgeStyles['法'];
+    const prodText = item.product_category ? `${item.product_category} ${item.thickness ? item.thickness + 'μm' : ''}` : (item.thickness ? item.thickness + 'μm' : '通用规格');
+
+    // 1. 渲染顶部 Banner 详情
+    if (bannerEl) {
+        bannerEl.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        <span style="font-family: monospace; font-weight: 800; font-size: 1.05rem; color: var(--color-primary); background: rgba(37, 99, 235, 0.1); padding: 2px 8px; border-radius: 6px;">${item.code}</span>
+                        <span style="padding: 2px 10px; border-radius: 12px; font-size: 0.76rem; font-weight: 800; ${factorStyle}">5M1E 归因: ${item.factor_5m1e || '法'}</span>
+                        <span class="badge ${item.status === '已闭环' ? 'badge-green' : 'badge-blue'}">${item.status || '进行中'}</span>
+                    </div>
+                    <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">${item.title}</h3>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); display: flex; gap: 16px; flex-wrap: wrap;">
+                        <span>📦 关联产品/规格: <strong>${prodText}</strong></span>
+                        <span>👤 责任人: <strong>${item.owner || '-'}</strong></span>
+                        <span>📅 预计完成: <strong>${item.target_date || '-'}</strong></span>
+                        <span>🎯 当前阶段: <strong style="color: var(--color-primary);">${item.stage || 'Plan'} 阶段</strong></span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn-secondary" style="font-size: 0.78rem; padding: 5px 10px; display: flex; align-items: center; gap: 4px;" onclick="openPdcaEditModal(${item.id})">
+                        <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> 编辑改善单
+                    </button>
+                    <button class="btn-secondary" style="font-size: 0.78rem; padding: 5px 10px; display: flex; align-items: center; gap: 4px; color: #2563eb; background: #eff6ff; border-color: #bfdbfe;" onclick="exportPdca8DReport(${item.id})">
+                        <i data-lucide="file-text" style="width: 13px; height: 13px;"></i> 导出 8D 报告
+                    </button>
+                    <button class="btn-secondary" style="font-size: 0.78rem; padding: 5px 10px; display: flex; align-items: center; gap: 4px; color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);" onclick="deletePdcaRecord(${item.id})">
+                        <i data-lucide="trash-2" style="width: 13px; height: 13px;"></i> 删除
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // 2. 渲染 4 大阶段卡片网格 (Plan, Do, Check, Act)
+    if (containerEl) {
+        const pdcaStages = [
+            {
+                key: "Plan",
+                num: "P1",
+                label: "Plan 计划定案",
+                desc: "根因诊断与对策规划",
+                docs: [
+                    { name: "5Why 根因诊断报告", url: "#" },
+                    { name: "PFMEA 质量风险对策表", url: "#" },
+                    { name: "8D 实施计划方案", url: "#" }
+                ]
+            },
+            {
+                key: "Do",
+                num: "P2",
+                label: "Do 措施执行",
+                desc: "现场纠正与打样验证",
+                docs: [
+                    { name: "现场纠正措施跟踪单", url: "#" },
+                    { name: "工艺试打样记录卡", url: "#" },
+                    { name: "SOP 试行指导草案", url: "#" }
+                ]
+            },
+            {
+                key: "Check",
+                num: "P3",
+                label: "Check 效果验证",
+                desc: "理化测试与 CPK 验证",
+                docs: [
+                    { name: "CPK 过程能力对比表", url: "#" },
+                    { name: "铜箔理化物性测试表", url: "#" },
+                    { name: "连续批次合格率跟踪", url: "#" }
+                ]
+            },
+            {
+                key: "Act",
+                num: "P4",
+                label: "Act 固化闭环",
+                desc: "SOP 标准化与 ECN 归档",
+                docs: [
+                    { name: "正式 SOP 标准化发行件", url: "#" },
+                    { name: "ECN 工程变更单", url: "#" },
+                    { name: "8D 改善闭环总结报告", url: "#" }
+                ]
+            }
+        ];
+
+        const stageOrder = ["Plan", "Do", "Check", "Act", "Closed"];
+        const currentStageIdx = stageOrder.indexOf(item.stage || "Plan");
+        const isClosed = (item.status === "已闭环" || item.stage === "Closed");
+
+        let cardsHtml = "";
+        pdcaStages.forEach((stg, idx) => {
+            let gateStatus = "LOCKED";
+            if (isClosed || idx < currentStageIdx) {
+                gateStatus = "COMPLETED";
+            } else if (idx === currentStageIdx) {
+                gateStatus = "RUNNING";
+            } else {
+                gateStatus = "LOCKED";
+            }
+
+            let statusBadge = "";
+            if (gateStatus === "COMPLETED") statusBadge = `<span class="badge badge-green">已通过</span>`;
+            else if (gateStatus === "RUNNING") statusBadge = `<span class="badge badge-blue">进行中</span>`;
+            else statusBadge = `<span class="badge badge-gray">未开启</span>`;
+
+            // 阶段输出文档清单
+            const docItemsHtml = stg.docs.map(doc => `
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; border-bottom:1px dashed var(--border-color); padding:3px 0;">
+                    <span style="color:var(--text-primary); font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:170px;">📄 ${doc.name}</span>
+                    <span style="color:var(--color-primary); font-size:0.7rem; font-weight:700; cursor:pointer;" onclick="switchTab('dms-panel')">➔ DMS</span>
+                </div>
+            `).join("");
+
+            // 卡片底部评审标签
+            let reviewTagHtml = "";
+            if (gateStatus === "COMPLETED") {
+                reviewTagHtml = `<button class="btn-xs" style="font-size:0.75rem; padding:6px 8px; width:100%; background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; font-weight:700; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;" onclick="event.stopPropagation(); triggerDqeApproval('pdca', { id: ${item.id}, target_name: '${(item.title||'').replace(/'/g, "\\'")} (${item.code})', stage_flow: '${stg.label}' })">
+                    <i data-lucide="check-circle" style="width:13px; height:13px; color:#059669;"></i> ✓ ${stg.num} 评审通过
+                </button>`;
+            } else if (gateStatus === "RUNNING") {
+                reviewTagHtml = `<button class="btn-primary" style="font-size:0.75rem; padding:6px 8px; width:100%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#ffffff; border:none; font-weight:700; border-radius:6px; cursor:pointer; box-shadow:0 2px 6px rgba(16,185,129,0.25); display:flex; align-items:center; justify-content:center; gap:4px;" onclick="event.stopPropagation(); triggerDqeApproval('pdca', { id: ${item.id}, target_name: '${(item.title||'').replace(/'/g, "\\'")} (${item.code})', stage_flow: '${stg.label} ➔ 进入下一阶段' })">
+                    <i data-lucide="shield-check" style="width:13px; height:13px;"></i> 🛡️ ${stg.num} 阶段评审
+                </button>`;
+            } else {
+                reviewTagHtml = `<button class="btn-secondary" disabled style="font-size:0.75rem; padding:6px 8px; width:100%; background:#f8fafc; color:#94a3b8; border:1px solid #e2e8f0; font-weight:600; border-radius:6px; cursor:not-allowed; display:flex; align-items:center; justify-content:center; gap:4px;">
+                    <i data-lucide="lock" style="width:12px; height:12px; color:#cbd5e1;"></i> 🔒 ${stg.num} 待前置评审
+                </button>`;
+            }
+
+            cardsHtml += `
+                <div class="npi-gate-card ${gateStatus.toLowerCase()}" style="display:flex; flex-direction:column; justify-content:space-between; background:#fff; border-radius:8px; padding:12px; border:1px solid var(--border-color);">
+                    <div>
+                        <div class="npi-gate-card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span class="npi-gate-index" style="font-weight:800; font-size:0.88rem; color:var(--color-primary);">${stg.num}</span>
+                            ${statusBadge}
+                        </div>
+                        <h4 class="npi-gate-title" style="margin:0 0 4px 0; font-size:0.92rem; font-weight:800;">${stg.label}</h4>
+                        <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:8px;">${stg.desc}</div>
+                        <div class="npi-gate-data-box" style="padding:6px 8px; background:rgba(248,250,252,0.8); border-radius:6px; margin-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.72rem; border-bottom:1px dashed var(--border-color); padding-bottom:3px; margin-bottom:3px;">
+                                <span style="color:var(--text-secondary);">责任人</span>
+                                <span style="font-weight:600; color:var(--text-primary);">${item.owner || '-'}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.72rem;">
+                                <span style="color:var(--text-secondary);">目标完成</span>
+                                <span style="font-weight:600; color:var(--color-primary);">${item.target_date || '-'}</span>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:700; margin-bottom:4px;">📁 本阶段输出文档：</div>
+                            ${docItemsHtml}
+                        </div>
+                    </div>
+                    <div style="margin-top:auto;">
+                        ${reviewTagHtml}
+                    </div>
+                </div>
+            `;
+        });
+
+        containerEl.innerHTML = cardsHtml;
+    }
+
+    if (window.lucide) lucide.createIcons();
 };
 
 window.populatePdcaProductDropdowns = function(products) {
@@ -13082,6 +13290,7 @@ function renderPdcaTable(list) {
 
     let html = '';
     list.forEach(row => {
+        const isActive = (String(row.id) === String(state.activePdcaId));
         const factorStyle = factorBadgeStyles[row.factor_5m1e] || factorBadgeStyles['法'];
         const stageHtml = stageBadges[row.stage] || stageBadges['Plan'];
 
@@ -13095,7 +13304,7 @@ function renderPdcaTable(list) {
         const prodText = row.product_category ? `${row.product_category} ${row.thickness ? row.thickness + 'μm' : ''}` : (row.thickness ? row.thickness + 'μm' : '通用规格');
 
         html += `
-            <tr style="border-bottom:1px solid var(--border-color);">
+            <tr style="border-bottom:1px solid var(--border-color); cursor:pointer; ${isActive ? 'background:rgba(37,99,235,0.06); font-weight:bold;' : ''}" onclick="switchActivePdca(${row.id})">
                 <td style="padding:10px 8px;font-family:monospace;font-weight:700;color:var(--color-primary);font-size:0.78rem;white-space:nowrap;">${row.code}</td>
                 <td style="padding:10px 8px;font-weight:700;font-size:0.82rem;max-width:220px;word-break:break-word;white-space:normal;line-height:1.4;">${row.title}</td>
                 <td style="padding:10px 8px;font-size:0.78rem;color:var(--text-secondary);white-space:nowrap;">${prodText}</td>
@@ -13106,10 +13315,9 @@ function renderPdcaTable(list) {
                 <td style="padding:10px 8px;text-align:center;font-size:0.76rem;white-space:nowrap;">${statusBadge}</td>
                 <td style="padding:10px 8px;font-size:0.78rem;font-weight:600;white-space:nowrap;">${row.owner || '-'}</td>
                 <td style="padding:10px 8px;font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">${row.target_date || '-'}</td>
-                <td style="padding:10px 8px;text-align:center;white-space:nowrap;">
+                <td style="padding:10px 8px;text-align:center;white-space:nowrap;" onclick="event.stopPropagation();">
                     <div style="display:flex;gap:6px;justify-content:center;">
                         <button class="btn-primary" onclick="triggerDqeApproval('pdca', { id: ${row.id}, target_name: '${(row.title||'').replace(/'/g, "\\'")} (${row.code})', stage_flow: '${row.stage} ➔ 下一阶段' })" style="padding:3px 8px;font-size:0.72rem;background:linear-gradient(135deg, #10b981, #059669);font-weight:700;">🛡️ DQE核准</button>
-                        <button class="btn-secondary" onclick="openPdcaDetailModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">查看</button>
                         <button class="btn-secondary" onclick="openPdcaEditModal(${row.id})" style="padding:3px 8px;font-size:0.72rem;">编辑</button>
                         <button class="btn-secondary" onclick="deletePdcaRecord(${row.id})" style="padding:3px 8px;font-size:0.72rem;color:var(--color-danger);">删除</button>
                     </div>
