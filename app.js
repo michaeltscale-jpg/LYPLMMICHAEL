@@ -7883,30 +7883,24 @@ function renderUsersTable(users) {
 
     users.forEach(u => {
         const tr = document.createElement("tr");
-        const isBuiltIn = ["admin", "pm_zhang", "pe_li", "qe_chen", "guest"].includes(u.username);
         
-        let editBtn = "";
-        let deleteBtn = "";
-
-        if (state.currentUserRole === 'Admin') {
-            editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
+        // 评测阶段模式下，全员均开放编辑、权限细化及删除操作
+        const editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
                             <i data-lucide="edit-3" style="width:11px; height:11px;"></i> 编辑
                        </button>
                        <button class="btn-primary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserPermissionsModal(${u.id})">
                             <i data-lucide="shield" style="width:11px; height:11px;"></i> 权限
                        </button>`;
-            if (u.username === 'admin') {
-                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--text-muted); opacity:0.4; cursor:not-allowed;" disabled title="超级管理员不可删除">
-                                <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
-                             </button>`;
-            } else {
-                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
-                                <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
-                             </button>`;
-            }
+        
+        let deleteBtn = "";
+        if (u.username === 'admin') {
+            deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--text-muted); opacity:0.4; cursor:not-allowed;" disabled title="超级管理员不可删除">
+                            <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                         </button>`;
         } else {
-            editBtn = `<span style="color:var(--text-muted); font-size:0.72rem;">只读</span>`;
-            deleteBtn = `-`;
+            deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
+                            <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                         </button>`;
         }
 
         const roleNames = {
@@ -7941,6 +7935,9 @@ function renderUsersTable(users) {
 
 // 核心助手：校验模块具体动作权限（view, edit, delete）
 window.hasModuleActionPermission = function(tabId, action = 'view') {
+    // 评测阶段模式：所有人均放行所有功能模块与具体操作权限
+    if (window.EVALUATION_MODE !== false) return true;
+
     const user = (state.users || []).find(u => u.username === state.currentUsername);
     if (!user) return true;
     if (user.role === 'Admin') return true;
@@ -7992,6 +7989,8 @@ window.hasModulePermission = function(tabId) {
 
 // 核心助手：校验工段工艺具体操作权限（view, edit, delete）
 window.hasStageActionPermission = function(stageName, action = 'edit') {
+    if (window.EVALUATION_MODE !== false) return true;
+
     const user = (state.users || []).find(u => u.username === state.currentUsername);
     if (!user) return true;
     if (user.role === 'Admin') return true;
@@ -8036,7 +8035,7 @@ window.hasStagePermission = function(stageName) {
 };
 
 window.openUserPermissionsModal = function(userId) {
-    const user = (state.users || []).find(u => u.id === userId);
+    const user = (state.users || []).find(u => String(u.id) === String(userId));
     if (!user) {
         showToast("用户不存在", "error");
         return;
