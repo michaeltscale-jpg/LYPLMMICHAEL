@@ -696,7 +696,8 @@ function switchTab(tabId) {
         'users-panel': '用户与系统角色权限控制台',
         'mqc-panel': '物料承认管控中心 (MQC)',
         'task-panel': '研发受控任务与进度管控中心',
-        'pdca-panel': 'PDCA 质量持续改善控制中心'
+        'pdca-panel': 'PDCA 质量持续改善控制中心',
+        'pdca-edit-panel': 'PDCA 质量持续改善控制中心'
     };
     document.getElementById("header-panel-title").innerText = headerTitleMap[tabId] || 'PLM平台';
 
