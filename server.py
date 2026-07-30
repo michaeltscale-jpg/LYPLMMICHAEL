@@ -564,63 +564,58 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                     active_idx = stages.index("量产送样")
 
                 plan = product.get('npi_project_plan', {})
-                def get_gate_data(g_key):
+                if isinstance(plan, str):
+                    try: plan = json.loads(plan)
+                    except: plan = {}
+
+                gate_keys = ["gate1", "gate2", "gate3", "gate4", "gate5"]
+                title_map = {
+                    "gate1": "概念设计与立项",
+                    "gate2": "添加剂配方定型",
+                    "gate3": "工艺路径与中试",
+                    "gate4": "品质理化验证",
+                    "gate5": "PPAP送样与量产"
+                }
+
+                # 严格单线程串行门禁规则 (前一阶段评审未通过，后续阶段一律强行保持 LOCKED)
+                for idx, g_key in enumerate(gate_keys):
                     g_plan = plan.get(g_key, {})
-                    return {
-                        "start_date": g_plan.get("start_date", ""),
-                        "plan_end_date": g_plan.get("plan_end_date", ""),
-                        "owner": g_plan.get("owner", "")
-                    }
+                    g_raw_status = g_plan.get("status", "")
 
-                # 1. Gate 1: 概念设计与立项
-                gate1 = {"status": "LOCKED", "title": "概念设计与立项", "data": get_gate_data("gate1")}
-                if prod_status == "立项中":
-                    gate1["status"] = "RUNNING"
-                elif prod_status == "钉钉立项审批中":
-                    gate1["status"] = "APPROVING"
-                else:
-                    gate1["status"] = "COMPLETED"
-                npi["gate1"] = gate1
-
-                # 2. Gate 2: 配方设计与定型
-                gate2 = {"status": "LOCKED", "title": "添加剂配方定型", "data": get_gate_data("gate2")}
-                if active_idx > 0:
-                    cursor.execute("SELECT * FROM ecn_records WHERE product_id = ? AND status = '钉钉审批中' LIMIT 1", (product_id,))
-                    ecn_running = cursor.fetchone()
-                    if ecn_running:
-                        gate2["status"] = "RUNNING"  # 设变进行中
-                    else:
-                        gate2["status"] = "COMPLETED"
-                npi["gate2"] = gate2
-
-                # 3. Gate 3: 工艺路线与现场中试
-                gate3 = {"status": "LOCKED", "title": "工艺路径与中试", "data": get_gate_data("gate3")}
-                if active_idx > 0:
-                    if active_idx < stages.index("测试验证"):
-                        gate3["status"] = "RUNNING"
-                    else:
-                        gate3["status"] = "COMPLETED"
-                npi["gate3"] = gate3
-
-                # 4. Gate 4: 理化与高频验证
-                gate4 = {"status": "LOCKED", "title": "品质理化验证", "data": get_gate_data("gate4")}
-                if active_idx >= stages.index("测试验证"):
-                    gate4["status"] = "RUNNING"
-                    if len(product['test_records']) > 0:
-                        latest_test = product['test_records'][0]
-                        if latest_test["test_result"] == "合格":
-                            gate4["status"] = "COMPLETED"
+                    if idx == 0:
+                        if g_raw_status in ["已完成", "COMPLETED", "已通过"]:
+                            status_code = "COMPLETED"
+                        elif g_raw_status == "DQE驳回整改":
+                            status_code = "FAILED"
+                        elif prod_status == "钉钉立项审批中":
+                            status_code = "APPROVING"
                         else:
-                            gate4["status"] = "FAILED"
-                npi["gate4"] = gate4
+                            status_code = "RUNNING"
+                    else:
+                        prev_key = gate_keys[idx - 1]
+                        prev_status = npi.get(prev_key, {}).get("status")
 
-                # 5. Gate 5: 客户送样与量产
-                gate5 = {"status": "LOCKED", "title": "PPAP送样与量产", "data": {}}
-                if prod_status == "量产中":
-                    gate5["status"] = "COMPLETED"
-                elif active_idx >= stages.index("测试验证") and len(product['test_records']) > 0 and product['test_records'][0]["test_result"] == "合格":
-                    gate5["status"] = "RUNNING"
-                npi["gate5"] = gate5
+                        # 核心门禁判定：前一阶段未完成（非 COMPLETED），后续阶段强行锁定 LOCKED！
+                        if prev_status != "COMPLETED":
+                            status_code = "LOCKED"
+                        else:
+                            # 前一阶段已评审通过，判定本阶段具体状态
+                            if g_raw_status in ["已完成", "COMPLETED", "已通过"]:
+                                status_code = "COMPLETED"
+                            elif g_raw_status == "DQE驳回整改":
+                                status_code = "FAILED"
+                            else:
+                                status_code = "RUNNING"  # 前一阶段已通过，本阶段解锁并点亮启动！
+
+                    npi[g_key] = {
+                        "status": status_code,
+                        "title": title_map[g_key],
+                        "data": {
+                            "start_date": g_plan.get("start_date", ""),
+                            "plan_end_date": g_plan.get("plan_end_date", ""),
+                            "owner": g_plan.get("owner", "")
+                        }
+                    }
 
                 product['npi_workflow'] = npi
 
