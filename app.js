@@ -14722,32 +14722,36 @@ window.XiaoheAI = {
         const msgId = 'xiaohe-msg-' + Date.now();
         const msgDiv = document.createElement('div');
         msgDiv.className = 'xiaohe-msg-item xiaohe-msg-ai';
-        
-        const htmlContent = this.simpleMarkdownToHtml(markdownContent);
 
         msgDiv.innerHTML = `
-            <div class="xiaohe-msg-bubble">
-                ${title ? `<h3>${this.escapeHtml(title)}</h3>` : ''}
-                <div class="xiaohe-msg-text-content" id="${msgId}-text"></div>
-                <div class="xiaohe-draft-actions">
-                    <button class="btn-xiaohe-action btn-xiaohe-apply" onclick="XiaoheAI.applyDraft('${msgId}-raw', '${targetFieldId || ''}')">
+            <div class="xiaohe-msg-bubble" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 10px; padding: 12px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:6px;">
+                    <h4 style="margin:0; font-size:0.83rem; color:#818cf8; font-weight:700; display:flex; align-items:center; gap:6px;">
+                        <i data-lucide="sparkles" style="width:14px; height:14px; color:#a855f7;"></i>
+                        <span>${title ? this.escapeHtml(title) : '草拟解决方案'}</span>
+                    </h4>
+                    <span style="font-size:0.65rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:12px; display:inline-flex; align-items:center; gap:3px;">
+                        <i data-lucide="edit-3" style="width:10px; height:10px;"></i> 可直接编辑草稿
+                    </span>
+                </div>
+                
+                <!-- 可直接实时二次编辑修改的草稿文本框 -->
+                <textarea id="${msgId}-raw" class="xiaohe-editable-draft" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.85); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:8px 10px; font-size:0.78rem; font-family:inherit; line-height:1.55; min-height:110px; max-height:280px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="您可以直接在此框内修改、补充小赫生成的草稿..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 10px rgba(129,140,248,0.3)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';">${this.escapeHtml(markdownContent)}</textarea>
+
+                <div class="xiaohe-draft-actions" style="display:flex; gap:8px; margin-top:10px;">
+                    <button class="btn-xiaohe-action btn-xiaohe-apply" onclick="XiaoheAI.applyDraft('${msgId}-raw', '${targetFieldId || ''}')" style="flex:1; padding:7px 12px; background:linear-gradient(135deg, #2563eb, #4f46e5); color:#ffffff; border:none; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 3px 10px rgba(37,99,235,0.4);">
                         <i data-lucide="corner-down-left" style="width:13px; height:13px;"></i>
-                        <span>插入到编辑框</span>
+                        <span>确认回填至目标编辑框</span>
                     </button>
-                    <button class="btn-xiaohe-action btn-xiaohe-copy" onclick="XiaoheAI.copyDraft('${msgId}-raw')">
+                    <button class="btn-xiaohe-action btn-xiaohe-copy" onclick="XiaoheAI.copyDraft('${msgId}-raw')" style="padding:7px 12px; background:rgba(255,255,255,0.08); color:#cbd5e1; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
                         <i data-lucide="copy" style="width:13px; height:13px;"></i>
-                        <span>复制草稿</span>
+                        <span>复制</span>
                     </button>
                 </div>
-                <textarea id="${msgId}-raw" style="display:none;">${this.escapeHtml(markdownContent)}</textarea>
             </div>
         `;
 
         chatBody.appendChild(msgDiv);
-
-        const textContainer = document.getElementById(`${msgId}-text`);
-        textContainer.innerHTML = htmlContent;
-
         chatBody.scrollTop = chatBody.scrollHeight;
         if (window.lucide) lucide.createIcons();
 
