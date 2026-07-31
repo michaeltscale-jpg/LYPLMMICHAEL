@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聚赫新材 - 54㎡ 高频铜箔科技展台三维全景交互方案</title>
+    <!-- Lucide Icons & Google Fonts -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js 3D Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #090d16;
+            --bg-secondary: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --accent-copper: #d97706;
+            --accent-gold: #fbbf24;
+            --accent-copper-glow: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: rgba(217, 119, 6, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Navigation Bar */
+        header {
+            height: 64px;
+            background: rgba(9, 13, 22, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #d97706, #b45309);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
+        }
+
+        .logo-text {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #fef3c7, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .header-tags {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tag-pill {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-pill.copper {
+            border-color: rgba(217, 119, 6, 0.4);
+            color: #fbbf24;
+            background: rgba(217, 119, 6, 0.15);
+        }
+
+        /* Main Workspace App Layout */
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+        }
+
+        /* Left Control Panel */
+        .panel-left {
+            background: var(--bg-secondary);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .spec-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .spec-num {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .spec-num.copper { color: #f59e0b; }
+
+        .spec-label {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .view-btn {
+            padding: 10px 14px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn:hover, .view-btn.active {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(79, 70, 229, 0.25));
+            border-color: var(--accent-copper);
+            color: #fff;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+        }
+
+        /* Middle 3D Canvas Area */
+        .canvas-area {
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #booth-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .canvas-overlay-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 30px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-copper);
+            color: #fff;
+        }
+
+        /* Right Detail Inspector Panel */
+        .panel-right {
+            background: var(--bg-secondary);
+            border-left: 1px solid rgba(255,255,255,0.08);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .detail-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(217, 119, 6, 0.25);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: rgba(217, 119, 6, 0.2);
+            border: 1px solid var(--accent-copper);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+        }
+
+        .detail-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .detail-desc {
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .feature-item {
+            font-size: 0.75rem;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-item i {
+            color: #10b981;
+            width: 14px;
+            height: 14px;
+        }
+
+        .hotspot-badge {
+            position: absolute;
+            background: rgba(217, 119, 6, 0.9);
+            color: #fff;
+            border: 1px solid #fbbf24;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+            transition: all 0.2s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 5;
+        }
+
+        .hotspot-badge:hover {
+            transform: scale(1.1);
+            background: #f59e0b;
+        }
+
+        /* Material List Table */
+        .mat-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            margin-top: 6px;
+        }
+
+        .mat-table th, .mat-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .mat-table th {
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .mat-table td {
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo-box">
+            <div class="logo-icon">
+                <i data-lucide="box"></i>
+            </div>
+            <div>
+                <div class="logo-text">聚赫新材 54㎡ 高频铜箔科技展台三维全景交互方案</div>
+                <div class="logo-sub">GHZ New Materials • 9m×6m Interactive Exhibition Booth Architecture</div>
+            </div>
+        </div>
+
+        <div class="header-tags">
+            <div class="tag-pill copper">
+                <i data-lucide="maximize-2" style="width:13px; height:13px;"></i>
+                <span>尺寸: 东西 6m × 南北 9m (54㎡)</span>
+            </div>
+            <div class="tag-pill">
+                <i data-lucide="door-open" style="width:13px; height:13px; color:#10b981;"></i>
+                <span>南北开门无墙通透</span>
+            </div>
+            <div class="tag-pill">
+                <i data-lucide="layers" style="width:13px; height:13px; color:#60a5fa;"></i>
+                <span>东西闭合形象主墙</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Container -->
+    <div class="app-container">
+
+        <!-- Left Controls & Spatial Layout -->
+        <div class="panel-left">
+            <div>
+                <div class="section-title">
+                    <i data-lucide="layout" style="width:16px; height:16px;"></i>
+                    <span>展台空间结构参数</span>
+                </div>
+                <div class="spec-grid">
+                    <div class="spec-card">
+                        <div class="spec-num copper">54 ㎡</div>
+                        <div class="spec-label">展位总面积</div>
+                    </div>
+                    <div class="spec-card">
+                        <div class="spec-num">4.5 m</div>
+                        <div class="spec-label">主墙限高高度</div>
+                    </div>
+                    <div class="spec-card">
+                        <div class="spec-num">9 米</div>
+                        <div class="spec-label">南北双向畅通道</div>
+                    </div>
+                    <div class="spec-card">
+                        <div class="spec-num">6 米</div>
+                        <div class="spec-label">东西主墙深度</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">
+                    <i data-lucide="video" style="width:16px; height:16px;"></i>
+                    <span>三维视角切换</span>
+                </div>
+                <div class="btn-group">
+                    <button class="view-btn active" onclick="switchView('iso')">
+                        <span>三维鸟瞰全景视角</span>
+                        <i data-lucide="eye" style="width:14px; height:14px;"></i>
+                    </button>
+                    <button class="view-btn" onclick="switchView('top')">
+                        <span>平面俯视布局视角 (9m×6m)</span>
+                        <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
+                    </button>
+                    <button class="view-btn" onclick="switchView('east')">
+                        <span>东面形象墙视角 (LED 巨幕)</span>
+                        <i data-lucide="tv" style="width:14px; height:14px;"></i>
+                    </button>
+                    <button class="view-btn" onclick="switchView('west')">
+                        <span>西面展柜视角 (铜箔样品)</span>
+                        <i data-lucide="sparkles" style="width:14px; height:14px;"></i>
+                    </button>
+                    <button class="view-btn" onclick="switchView('vip')">
+                        <span>VIP 商务洽谈区视角</span>
+                        <i data-lucide="users" style="width:14px; height:14px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">
+                    <i data-lucide="sliders" style="width:16px; height:16px;"></i>
+                    <span>展台氛围与灯光调节</span>
+                </div>
+                <div class="btn-group">
+                    <button class="view-btn" onclick="toggleLighting('cyber')">
+                        <span>暗夜金铜科技风 (夜间聚光)</span>
+                        <i data-lucide="moon" style="width:14px; height:14px; color:#fbbf24;"></i>
+                    </button>
+                    <button class="view-btn" onclick="toggleLighting('day')">
+                        <span>明亮日间展会风 (全亮视角)</span>
+                        <i data-lucide="sun" style="width:14px; height:14px; color:#38bdf8;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle 3D Interactive Canvas -->
+        <div class="canvas-area">
+            <canvas id="booth-canvas"></canvas>
+
+            <!-- 2.5D Interactive Canvas Hotspot Overlays -->
+            <div id="hotspot-sculpture" class="hotspot-badge" style="top: 48%; left: 48%;" onclick="selectZone('sculpture')">
+                <i data-lucide="sparkles" style="width:12px; height:12px;"></i> 核心铜箔流线雕塑
+            </div>
+            <div id="hotspot-east" class="hotspot-badge" style="top: 30%; left: 25%;" onclick="selectZone('east')">
+                <i data-lucide="tv" style="width:12px; height:12px;"></i> 东墙 8K 多媒体巨幕
+            </div>
+            <div id="hotspot-west" class="hotspot-badge" style="top: 32%; left: 70%;" onclick="selectZone('west')">
+                <i data-lucide="box" style="width:12px; height:12px;"></i> 西墙 铜箔产品发光柜
+            </div>
+            <div id="hotspot-vip" class="hotspot-badge" style="top: 65%; left: 72%;" onclick="selectZone('vip')">
+                <i data-lucide="users" style="width:12px; height:12px;"></i> VIP 商务洽谈区
+            </div>
+
+            <div class="canvas-overlay-bar">
+                <span style="font-size: 0.78rem; color: var(--text-sub); font-weight: 600;">拖拽旋转 / 滚轮缩放 3D 展台模型</span>
+                <button class="mode-btn active" onclick="resetCamera()">
+                    <i data-lucide="refresh-cw" style="width:13px; height:13px;"></i> 重置视角
+                </button>
+            </div>
+        </div>
+
+        <!-- Right Inspector & Zone Details -->
+        <div class="panel-right">
+            <div class="section-title">
+                <i data-lucide="info" style="width:16px; height:16px;"></i>
+                <span id="zone-section-title">选中区域详细解析</span>
+            </div>
+
+            <!-- Dynamic Zone Detail Card -->
+            <div class="detail-card" id="detail-card">
+                <div class="detail-header">
+                    <div class="detail-icon" id="detail-icon">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <div>
+                        <div class="detail-title" id="detail-title">中轴艺术区：紫铜微米流线雕塑</div>
+                        <div style="font-size: 0.68rem; color: #fbbf24; margin-top: 1px;">南北向 9 米客流通道入口视觉焦点</div>
+                    </div>
+                </div>
+                <div class="detail-desc" id="detail-desc">
+                    在南北 9 米大通道正中心，设置轻量化悬浮紫铜色流线造型。展示聚赫新材微米级超薄铜箔的柔韧延展性与金属光泽，配合 4000K 专业聚光灯，瞬间吸引双向过往观众眼球。
+                </div>
+                <ul class="feature-list" id="feature-list">
+                    <li class="feature-item"><i data-lucide="check-circle"></i> 南北双向贯通客流，进出极其顺畅无阻</li>
+                    <li class="feature-item"><i data-lucide="check-circle"></i> 真实铜箔卷材艺术展开与卷收展示</li>
+                    <li class="feature-item"><i data-lucide="check-circle"></i> 悬浮式暖光 LED 氛围灯带装饰</li>
+                </ul>
+            </div>
+
+            <!-- Material & Cost Spec breakdown -->
+            <div>
+                <div class="section-title">
+                    <i data-lucide="package" style="width:16px; height:16px;"></i>
+                    <span>展台结构搭建与材质表</span>
+                </div>
+                <table class="mat-table">
+                    <thead>
+                        <tr>
+                            <th>结构位置</th>
+                            <th>工艺材质描述</th>
+                            <th>功能说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>东墙 (6m)</td>
+                            <td>暗夜蓝木饰面 + P1.8 LED</td>
+                            <td>品牌形象与宣传片播放</td>
+                        </tr>
+                        <tr>
+                            <td>西墙 (6m)</td>
+                            <td>发光亚克力柱 + 烤漆柜</td>
+                            <td>铜箔样品与显微透光检测</td>
+                        </tr>
+                        <tr>
+                            <td>地面地台</td>
+                            <td>100mm 哑光灰发光地台</td>
+                            <td>走线隐藏与高端防滑</td>
+                        </tr>
+                        <tr>
+                            <td>艺术中央雕塑</td>
+                            <td>电镀紫铜色铝镁合金</td>
+                            <td>视觉焦点与品牌识别</td>
+                        </tr>
+                        <tr>
+                            <td>照明系统</td>
+                            <td>4000K 专业高显射灯</td>
+                            <td>还原铜箔极佳光泽度</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3D Engine & Interactive Renderer Script -->
+    <script>
+        lucide.createIcons();
+
+        // Three.js 3D Engine Setup
+        let scene, camera, renderer;
+        let boothGroup;
+        let currentLightingMode = 'cyber';
+
+        function init3D() {
+            const container = document.querySelector('.canvas-area');
+            const canvas = document.getElementById('booth-canvas');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x090d16);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(12, 10, 14);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+
+            // Lighting Setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xfbbf24, 1.2);
+            dirLight.position.set(10, 20, 10);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            const blueLight = new THREE.PointLight(0x3b82f6, 1.5, 30);
+            blueLight.position.set(-6, 8, 0);
+            scene.add(blueLight);
+
+            // Create 3D Booth Group (9m South-North, 6m East-West)
+            boothGroup = new THREE.Group();
+
+            // 1. Floor Base Platform (9m x 6m -> converted to Three units 9 x 6)
+            const floorGeo = new THREE.BoxGeometry(6, 0.2, 9);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.2 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.position.y = -0.1;
+            boothGroup.add(floor);
+
+            // Floor Grid Lines
+            const grid = new THREE.GridHelper(12, 12, 0xd97706, 0x334155);
+            grid.position.y = 0.01;
+            boothGroup.add(grid);
+
+            // 2. East Wall (6m long, 4.5m tall, on East side X = -3)
+            const eastWallGeo = new THREE.BoxGeometry(0.3, 4.5, 9);
+            const eastWallMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
+            const eastWall = new THREE.Mesh(eastWallGeo, eastWallMat);
+            eastWall.position.set(-3, 2.25, 0);
+            boothGroup.add(eastWall);
+
+            // LED Screen on East Wall
+            const screenGeo = new THREE.BoxGeometry(0.1, 2.2, 4.5);
+            const screenMat = new THREE.MeshBasicMaterial({ color: 0x2563eb });
+            const screen = new THREE.Mesh(screenGeo, screenMat);
+            screen.position.set(-2.8, 2.5, 0);
+            boothGroup.add(screen);
+
+            // 3. West Wall (6m long, 4.5m tall, on West side X = 3)
+            const westWallGeo = new THREE.BoxGeometry(0.3, 4.5, 9);
+            const westWallMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
+            const westWall = new THREE.Mesh(westWallGeo, westWallMat);
+            westWall.position.set(3, 2.25, 0);
+            boothGroup.add(westWall);
+
+            // Showcase Display Cabinets on West Wall
+            for (let i = -3; i <= 3; i += 2) {
+                const cabGeo = new THREE.BoxGeometry(0.8, 1.2, 1.2);
+                const cabMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5 });
+                const cab = new THREE.Mesh(cabGeo, cabMat);
+                cab.position.set(2.4, 0.6, i);
+                boothGroup.add(cab);
+
+                // Copper Roll on Cabinet
+                const rollGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.6, 16);
+                const rollMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.2 });
+                const roll = new THREE.Mesh(rollGeo, rollMat);
+                roll.rotation.x = Math.PI / 2;
+                roll.position.set(2.4, 1.4, i);
+                boothGroup.add(roll);
+            }
+
+            // 4. Center Sculpture (Copper Foil Ribbon Flow)
+            const torusGeo = new THREE.TorusKnotGeometry(1.2, 0.15, 64, 16);
+            const torusMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95, roughness: 0.1 });
+            const sculpture = new THREE.Mesh(torusGeo, torusMat);
+            sculpture.position.set(0, 2.5, 0);
+            boothGroup.add(sculpture);
+
+            // 5. VIP Lounge Furniture (West-South Side)
+            const tableGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.8, 16);
+            const tableMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+            const table = new THREE.Mesh(tableGeo, tableMat);
+            table.position.set(1.5, 0.4, 3);
+            boothGroup.add(table);
+
+            scene.add(boothGroup);
+
+            // Animation Loop
+            function animate() {
+                requestAnimationFrame(animate);
+                sculpture.rotation.y += 0.008;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Window Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // Camera View Control Handler
+        function switchView(type) {
+            document.querySelectorAll('.btn-group .view-btn').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            if (type === 'iso') {
+                animateCameraTo(12, 10, 14);
+            } else if (type === 'top') {
+                animateCameraTo(0, 18, 0.1);
+            } else if (type === 'east') {
+                animateCameraTo(6, 4, 0);
+                selectZone('east');
+            } else if (type === 'west') {
+                animateCameraTo(-6, 4, 0);
+                selectZone('west');
+            } else if (type === 'vip') {
+                animateCameraTo(-2, 3, 5);
+                selectZone('vip');
+            }
+        }
+
+        function animateCameraTo(x, y, z) {
+            const startX = camera.position.x;
+            const startY = camera.position.y;
+            const startZ = camera.position.z;
+            let progress = 0;
+
+            function step() {
+                progress += 0.05;
+                camera.position.x = startX + (x - startX) * progress;
+                camera.position.y = startY + (y - startY) * progress;
+                camera.position.z = startZ + (z - startZ) * progress;
+                camera.lookAt(0, 1.5, 0);
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            step();
+        }
+
+        function resetCamera() {
+            animateCameraTo(12, 10, 14);
+        }
+
+        // Lighting Toggle
+        function toggleLighting(mode) {
+            if (mode === 'cyber') {
+                scene.background = new THREE.Color(0x090d16);
+            } else {
+                scene.background = new THREE.Color(0x1e293b);
+            }
+        }
+
+        // Zone Data & Detail Inspector Selector
+        const zoneDetails = {
+            sculpture: {
+                title: "中轴艺术区：紫铜微米流线雕塑",
+                sub: "南北向 9 米客流通道入口视觉焦点",
+                icon: "sparkles",
+                desc: "在南北 9 米大通道正中心，设置轻量化悬浮紫铜色流线造型。展示聚赫新材微米级超薄铜箔的柔韧延展性与金属光泽，配合 4000K 专业聚光灯，瞬间吸引双向过往观众眼球。",
+                features: [
+                    "南北双向贯通客流，进出极其顺畅无阻",
+                    "真实铜箔卷材艺术展开与卷收展示",
+                    "悬浮式暖光 LED 氛围灯带装饰"
+                ]
+            },
+            east: {
+                title: "东墙 (6m)：品牌形象墙与 8K 巨幕多媒体区",
+                sub: "沉浸式展示企业软实力与生产工艺",
+                icon: "tv",
+                desc: "高 4.5 米的暗夜蓝高定饰面墙，镶嵌 3.5m × 2m 超清 8K LED 巨幕。循环播放铜箔微观晶体生长动画、AI 算力服务器 PCB 叠层示意及数字化无尘工厂宣介。",
+                features: [
+                    "悬浮发光金属立体 Logo 与品牌 Slogan",
+                    "内置高保真立体声导音系统",
+                    "隐藏式走线与无缝铝合金边框"
+                ]
+            },
+            west: {
+                title: "西墙 (6m)：铜箔精细化产品展柜与测试台",
+                sub: "HVLP / 锂电铜箔 / FCCL 样品实物展示",
+                icon: "box",
+                desc: "专为铜箔定制的模块化发光亚克力展柜。配备无影发光板与电子放大镜，可供客户现场亲眼观察 4.5µm 极薄铜箔致密度与无孔洞物理性能。",
+                features: [
+                    "极薄锂电铜箔 (4.5µm/6µm) 卷材展示",
+                    "高频高速 HVLP 电子铜箔与 PCB 样板",
+                    "透光检验无影发光台与微观观察镜"
+                ]
+            },
+            vip: {
+                title: "西南侧角：VIP 商务密谈与茶饮区",
+                sub: "舒适高雅的商务对接空间",
+                icon: "users",
+                desc: "配备 2 套高定哑光皮艺圆桌沙发与隐藏式茶饮吧台。为重点客户提供安静、高尊贵感的技术交流与项目合作洽谈环境。",
+                features: [
+                    "隔音装饰吸音墙面与柔光壁灯",
+                    "配备精品咖啡与高山茶饮服务",
+                    "专属产品手册与样品礼盒展示"
+                ]
+            }
+        };
+
+        function selectZone(key) {
+            const data = zoneDetails[key];
+            if (!data) return;
+
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-desc').innerText = data.desc;
+            document.getElementById('detail-icon').innerHTML = `<i data-lucide="${data.icon}"></i>`;
+
+            const listEl = document.getElementById('feature-list');
+            listEl.innerHTML = data.features.map(f => `<li class="feature-item"><i data-lucide="check-circle"></i> ${f}</li>`).join('');
+
+            lucide.createIcons();
+        }
+
+        // Initialize 3D Engine on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            init3D();
+        });
+    </script>
+</body>
+</html>
