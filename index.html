@@ -4887,8 +4887,8 @@ requests.post(url, json=payload)</code></pre>
                 <span style="font-size:0.62rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:10px; font-weight:600;">唯一草案工作区</span>
             </div>
 
-            <!-- 唯一可编辑草案文本框 -->
-            <textarea id="xiaohe-single-draft-input" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.9); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:8px 10px; font-size:0.78rem; font-family:inherit; line-height:1.55; min-height:115px; max-height:240px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="鼠标点击正式页面上的任意输入框，此框将实时显示并同步该内容；AI 生成的草稿也会在此为您呈现并支持直接二次修改..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 12px rgba(129,140,248,0.35)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';"></textarea>
+            <!-- 唯一可编辑草案文本框 (高度已加大一倍，方便清晰阅读与二次修改) -->
+            <textarea id="xiaohe-single-draft-input" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.9); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:10px 12px; font-size:0.8rem; font-family:inherit; line-height:1.6; min-height:240px; height:240px; max-height:500px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="鼠标点击正式页面上的任意输入框，此框将实时显示并同步该内容；AI 生成的草稿也会在此为您呈现并支持直接二次修改..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 12px rgba(129,140,248,0.35)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';"></textarea>
 
             <!-- 草案操作栏 -->
             <div style="display:flex; gap:8px; margin-top:10px;">
