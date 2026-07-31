@@ -4341,13 +4341,19 @@ function renderEcnTable(ecns) {
             try { attachList = JSON.parse(attachList); } catch(ex){}
         }
         if (Array.isArray(attachList) && attachList.length > 0) {
-            attachHtml = `<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">`;
-            attachList.forEach((att, aIdx) => {
-                if (att.is_image) {
-                    attachHtml += `<img src="${att.url}" class="ecn-attachment-thumb" style="width:32px; height:32px;" title="${att.name} (点击预览照片)" onclick="window.openLightboxImage('${att.url}', '${att.name}')" />`;
+            attachHtml = `<div style="display:flex; flex-wrap:wrap; gap:5px; align-items:center;">`;
+            attachList.forEach((att) => {
+                const isPhoto = att.is_image || (window.isImageFileOrUrl && window.isImageFileOrUrl(att.url, att.name));
+                if (isPhoto) {
+                    attachHtml += `
+                        <div style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:4px; padding:2px 7px; cursor:pointer; font-size:0.7rem;" onclick="window.openLightboxImage('${att.url}', '${att.name}')" title="点击在平台内大图预览照片">
+                            <img src="${att.url}" class="ecn-attachment-thumb" style="width:20px; height:20px; object-fit:cover; border-radius:3px;" />
+                            <span style="color:#1d4ed8; font-weight:700; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${att.name}</span>
+                            <span style="color:#2563eb; font-weight:800; margin-left:2px; font-size:0.65rem;">👁️ 预览照片</span>
+                        </div>`;
                 } else {
                     const ext = att.name ? att.name.split('.').pop().toUpperCase() : 'DOC';
-                    attachHtml += `<a href="${att.url}" download="${att.name}" style="font-size:0.68rem; padding:2px 6px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:4px; color:#1d4ed8; font-weight:600; text-decoration:none;" title="点击下载 ${att.name}">${ext} 📄</a>`;
+                    attachHtml += `<a href="${att.url}" download="${att.name}" style="font-size:0.68rem; padding:2px 6px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:4px; color:#475569; font-weight:600; text-decoration:none;" title="点击下载 ${att.name}">${ext} 📄 ${att.name}</a>`;
                 }
             });
             attachHtml += `</div>`;
