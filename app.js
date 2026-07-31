@@ -14714,61 +14714,62 @@ window.XiaoheAI = {
         if (el) el.remove();
     },
 
-    // 追加 AI 消息并支持区分普通对话与可编辑草稿框
+    // 核心功能：实时同步正式页面的目标输入框内容到小赫唯一的草案框中
+    syncTargetInputToSingleDraft: function(target) {
+        const singleInput = document.getElementById('xiaohe-single-draft-input');
+        const labelSpan = document.getElementById('xiaohe-target-field-label');
+
+        const label = this.currentTargetLabel || "当前编辑框";
+        if (labelSpan) {
+            labelSpan.innerHTML = `🎯 锁定目标: <strong style="color:#a855f7;">[ ${this.escapeHtml(label)} ]</strong>`;
+        }
+
+        if (singleInput && target) {
+            // 当鼠标落停或聚焦正式页面输入框时，唯一草案框即刻显示并同步该框的内容
+            singleInput.value = target.value || "";
+        }
+    },
+
+    // 追加 AI 消息：文字记录纯文本化呈现，AI 生成的草稿直接流向唯一草案框
     appendAIMessage: function(title, markdownContent, targetFieldId, isDraft = true) {
         const chatBody = document.getElementById('xiaohe-chat-body');
         if (!chatBody) return;
 
+        // 清理 Markdown 的 ### 和 ** 标记
+        const cleanText = (markdownContent || '')
+            .replace(/^#{1,6}\s+/gm, '')
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .replace(/`([^`]+)`/g, '$1')
+            .trim();
+
+        // 1. 若为生成的草案文件，直接流式注入到【全界面唯一的小赫草案编辑框】中
+        if (isDraft) {
+            const singleInput = document.getElementById('xiaohe-single-draft-input');
+            if (singleInput) {
+                singleInput.value = cleanText;
+                // 触发紫蓝色脉冲闪烁发光高亮提示
+                const container = document.getElementById('xiaohe-single-draft-container');
+                if (container) {
+                    container.classList.remove('xiaohe-applied-highlight');
+                    void container.offsetWidth;
+                    container.classList.add('xiaohe-applied-highlight');
+                }
+            }
+        }
+
+        // 2. 聊天历史对话区仅展示纯净优雅的文字解答（绝无任何重复或多余的 textarea 输入框）
         const msgId = 'xiaohe-msg-' + Date.now();
         const msgDiv = document.createElement('div');
         msgDiv.className = 'xiaohe-msg-item xiaohe-msg-ai';
+        const htmlContent = this.simpleMarkdownToHtml(markdownContent);
 
-        if (!isDraft) {
-            // 普通问候语/解答对话：渲染为干净的对话气泡，不渲染冗余的编辑框
-            const htmlContent = this.simpleMarkdownToHtml(markdownContent);
-            msgDiv.innerHTML = `
-                <div class="xiaohe-msg-bubble" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
-                    ${title ? `<h4 style="margin: 0 0 6px 0; font-size: 0.82rem; color: #818cf8; font-weight: 700;">${this.escapeHtml(title)}</h4>` : ''}
-                    <div>${htmlContent}</div>
-                </div>
-            `;
-        } else {
-            // 真正草拟的文件：仅渲染一个干净、可直接编辑的二次修改草稿框
-            // 清理 Markdown 的 ### 和 ** 标记，确保回填至表单时文本整洁无杂质
-            const cleanText = (markdownContent || '')
-                .replace(/^#{1,6}\s+/gm, '')
-                .replace(/\*\*(.*?)\*\*/g, '$1')
-                .replace(/`([^`]+)`/g, '$1')
-                .trim();
-
-            msgDiv.innerHTML = `
-                <div class="xiaohe-msg-bubble" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 10px; padding: 12px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:6px;">
-                        <h4 style="margin:0; font-size:0.83rem; color:#818cf8; font-weight:700; display:flex; align-items:center; gap:6px;">
-                            <i data-lucide="sparkles" style="width:14px; height:14px; color:#a855f7;"></i>
-                            <span>${title ? this.escapeHtml(title) : '草拟解决方案'}</span>
-                        </h4>
-                        <span style="font-size:0.65rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:12px; display:inline-flex; align-items:center; gap:3px;">
-                            <i data-lucide="edit-3" style="width:10px; height:10px;"></i> 可直接编辑草稿
-                        </span>
-                    </div>
-                    
-                    <!-- 唯一的实时二次编辑草稿文本框 -->
-                    <textarea id="${msgId}-raw" class="xiaohe-editable-draft" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.85); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:8px 10px; font-size:0.78rem; font-family:inherit; line-height:1.55; min-height:110px; max-height:280px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="您可以直接在此框内修改、补充小赫生成的草稿..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 10px rgba(129,140,248,0.3)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';">${this.escapeHtml(cleanText)}</textarea>
-
-                    <div class="xiaohe-draft-actions" style="display:flex; gap:8px; margin-top:10px;">
-                        <button class="btn-xiaohe-action btn-xiaohe-apply" onclick="XiaoheAI.applyDraft('${msgId}-raw', '${targetFieldId || ''}')" style="flex:1; padding:7px 12px; background:linear-gradient(135deg, #2563eb, #4f46e5); color:#ffffff; border:none; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 3px 10px rgba(37,99,235,0.4);">
-                            <i data-lucide="corner-down-left" style="width:13px; height:13px;"></i>
-                            <span>确认回填至目标编辑框</span>
-                        </button>
-                        <button class="btn-xiaohe-action btn-xiaohe-copy" onclick="XiaoheAI.copyDraft('${msgId}-raw')" style="padding:7px 12px; background:rgba(255,255,255,0.08); color:#cbd5e1; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
-                            <i data-lucide="copy" style="width:13px; height:13px;"></i>
-                            <span>复制</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+        msgDiv.innerHTML = `
+            <div class="xiaohe-msg-bubble" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.55;">
+                ${title ? `<h4 style="margin: 0 0 6px 0; font-size: 0.82rem; color: #818cf8; font-weight: 700; display:flex; align-items:center; gap:5px;"><i data-lucide="sparkles" style="width:14px; height:14px; color:#a855f7;"></i> ${this.escapeHtml(title)}</h4>` : ''}
+                <div>${htmlContent}</div>
+                ${isDraft ? `<div style="margin-top:6px; font-size:0.68rem; color:#a5b4fc; font-weight:600; background:rgba(99,102,241,0.15); padding:3px 8px; border-radius:4px; display:inline-block;"><i data-lucide="arrow-up-circle" style="width:12px; height:12px; vertical-align:middle;"></i> 草稿已同步至上方【唯一草案工作区】，您可以直接二次修改后点击回填</div>` : ''}
+            </div>
+        `;
 
         chatBody.appendChild(msgDiv);
         chatBody.scrollTop = chatBody.scrollHeight;
@@ -14796,40 +14797,54 @@ window.XiaoheAI = {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     },
 
-    // 回填草稿到表单字段
-    applyDraft: function(rawElemId, targetFieldId) {
-        const rawElem = document.getElementById(rawElemId);
-        if (!rawElem) return;
-        const text = rawElem.value;
+    // 一键回填【唯一草案框】内容到正式页面的锁定输入框
+    applySingleDraft: function() {
+        const singleInput = document.getElementById('xiaohe-single-draft-input');
+        if (!singleInput) return;
+        const text = singleInput.value;
 
-        // 尝试寻找活跃或指定的输入框
-        let field = null;
-        if (targetFieldId) {
-            field = document.getElementById(targetFieldId);
-        }
-
+        let field = this.currentTargetElement;
         if (!field) {
-            // 尝试在页面找任何正在聚焦或选中的多行文本框
             field = document.activeElement;
-            if (field && field.tagName !== 'TEXTAREA' && field.tagName !== 'INPUT') {
-                field = document.querySelector('textarea:not(#xiaohe-input), input[type="text"]:not(#xiaohe-input)');
+            if (field && (field.tagName !== 'TEXTAREA' && field.tagName !== 'INPUT')) {
+                field = document.querySelector('textarea:not(#xiaohe-input):not(#xiaohe-single-draft-input), input[type="text"]:not(#xiaohe-input)');
             }
         }
 
         if (field && (field.tagName === 'TEXTAREA' || field.tagName === 'INPUT')) {
             field.value = text;
-            field.focus();
+            if (window.autoResizeTextarea) autoResizeTextarea(field);
+            
+            field.classList.remove('xiaohe-applied-highlight');
+            void field.offsetWidth;
+            field.classList.add('xiaohe-applied-highlight');
+
+            this.closeDrawer();
+            setTimeout(function() {
+                field.focus();
+                if (field.scrollIntoView) field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+
+            const labelName = this.currentTargetLabel || "目标编辑框";
             if (window.showToast) {
-                showToast("✨ 已成功将小赫草稿回填至目标输入框！", "success");
-            } else {
-                alert("已成功回填草稿！");
+                showToast(`✨ 已成功将二次修改后的草稿回填至【${labelName}】！`, "success");
             }
         } else {
-            // 未找到可回填字段，自动复制
-            this.copyDraft(rawElemId);
+            this.copySingleDraft();
             if (window.showToast) {
                 showToast("📋 页面未锁定活动表单，已将草稿复制到剪贴板！", "info");
             }
+        }
+    },
+
+    // 复制【唯一草案框】内容
+    copySingleDraft: function() {
+        const singleInput = document.getElementById('xiaohe-single-draft-input');
+        if (!singleInput) return;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(singleInput.value).then(() => {
+                if (window.showToast) showToast("📋 已成功将当前草案复制到剪贴板！", "success");
+            });
         }
     },
 
@@ -14868,7 +14883,7 @@ window.XiaoheAI = {
     handleInputInteraction: function(target, type) {
         if (!target) return;
         // 排除小赫自身的输入框与按钮
-        if (target.closest('#xiaohe-drawer') || target.id === 'xiaohe-input') return;
+        if (target.closest('#xiaohe-drawer') || target.id === 'xiaohe-input' || target.id === 'xiaohe-single-draft-input') return;
 
         if (target.tagName === 'TEXTAREA' || (target.tagName === 'INPUT' && target.type === 'text')) {
             if (this.pillHideTimer) {
@@ -14878,6 +14893,17 @@ window.XiaoheAI = {
 
             this.currentTargetElement = target;
             this.currentTargetLabel = this.inferFieldLabel(target);
+
+            // 1. 实时同步正式页面的目标输入框内容到小赫唯一的草案框中
+            this.syncTargetInputToSingleDraft(target);
+
+            // 2. 更新右侧抽屉顶部的上下文感知
+            this.updateContextDisplay();
+
+            // 3. 显示随动胶囊
+            this.showFocusPill(target);
+        }
+    },
 
             // 更新右侧抽屉顶部的上下文感知
             this.updateContextDisplay();

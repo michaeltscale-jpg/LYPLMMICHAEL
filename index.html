@@ -4877,6 +4877,32 @@ requests.post(url, json=payload)</code></pre>
             </div>
         </div>
 
+        <!-- 🎯 唯一专用的【小赫草案编辑控制台】(全界面仅此一个草稿框，鼠标落在正式页面输入框时自动实时显示与同步内容) -->
+        <div id="xiaohe-single-draft-container" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(99, 102, 241, 0.5); border-radius: 10px; padding: 12px; margin: 10px 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: all 0.25s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px dashed rgba(255,255,255,0.12); padding-bottom:6px;">
+                <div style="font-size:0.78rem; font-weight:700; color:#818cf8; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="edit-3" style="width:14px; height:14px; color:#a855f7;"></i>
+                    <span id="xiaohe-target-field-label">🎯 锁定目标: 请在页面点击任意编辑框</span>
+                </div>
+                <span style="font-size:0.62rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:10px; font-weight:600;">唯一草案工作区</span>
+            </div>
+
+            <!-- 唯一可编辑草案文本框 -->
+            <textarea id="xiaohe-single-draft-input" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.9); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:8px 10px; font-size:0.78rem; font-family:inherit; line-height:1.55; min-height:115px; max-height:240px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="鼠标点击正式页面上的任意输入框，此框将实时显示并同步该内容；AI 生成的草稿也会在此为您呈现并支持直接二次修改..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 12px rgba(129,140,248,0.35)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';"></textarea>
+
+            <!-- 草案操作栏 -->
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button onclick="XiaoheAI.applySingleDraft()" style="flex:1; padding:7px 12px; background:linear-gradient(135deg, #2563eb, #4f46e5); color:#ffffff; border:none; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; box-shadow:0 3px 10px rgba(37,99,235,0.4);">
+                    <i data-lucide="corner-down-left" style="width:13px; height:13px;"></i>
+                    <span>确认回填至正式页面编辑框</span>
+                </button>
+                <button onclick="XiaoheAI.copySingleDraft()" style="padding:7px 12px; background:rgba(255,255,255,0.08); color:#cbd5e1; border:1px solid rgba(255,255,255,0.15); border-radius:6px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px;">
+                    <i data-lucide="copy" style="width:13px; height:13px;"></i>
+                    <span>复制</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Chat Body -->
         <div class="xiaohe-chat-body" id="xiaohe-chat-body">
             <!-- 初始小赫欢迎消息由 JS 自动渲染 -->
