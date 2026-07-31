@@ -15348,7 +15348,7 @@ window.processEcnUploadedFiles = function(files) {
     
     let loadedCount = 0;
     fileList.forEach(file => {
-        const isImage = file.type.startsWith("image/");
+        const isImage = (file.type && file.type.startsWith("image/")) || /\.(jpg|jpeg|png|webp|gif|bmp|svg)$/i.test(file.name);
         const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
         const fileSizeStr = fileSizeMB < 0.1 ? Math.round(file.size / 1024) + " KB" : fileSizeMB + " MB";
         
