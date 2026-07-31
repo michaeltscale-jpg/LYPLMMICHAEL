@@ -4820,15 +4820,10 @@ requests.post(url, json=payload)</code></pre>
 
 
     <!-- ===== 小赫 AI 助手 (Xiaohe AI Assistant Component) ===== -->
-    <!-- 0. 小赫帮忙：随动 AI 智能草拟与全屏放大编辑双功能胶囊按钮 -->
-    <div id="xiaohe-focus-pill" class="xiaohe-focus-pill" title="【小赫帮忙】随动辅助">
-        <div style="display:flex; align-items:center; gap:5px; cursor:pointer;" onclick="XiaoheAI.triggerPillClick(event)" title="点击由【小赫帮忙】AI 助手一键草拟该框内容">
-            <i data-lucide="sparkles" style="width:13px; height:13px; color:#a855f7;"></i>
-            <span id="xiaohe-pill-text">🤖 小赫帮忙</span>
-        </div>
-        <span style="border-left:1px solid rgba(255,255,255,0.3); padding-left:7px; margin-left:2px; cursor:pointer; display:inline-flex; align-items:center; gap:3px;" onclick="event.stopPropagation(); window.openFullscreenEditor && window.openFullscreenEditor(XiaoheAI.currentTargetElement)" title="点击全貌全屏放大单独编辑该文本框，以便清晰预览全貌">
-            <i data-lucide="maximize-2" style="width:12px; height:12px; color:#60a5fa;"></i> 放大
-        </span>
+    <!-- 0. 小赫帮忙：随动 AI 智能草拟胶囊按钮 -->
+    <div id="xiaohe-focus-pill" class="xiaohe-focus-pill" onclick="XiaoheAI.triggerPillClick(event)" title="点击由【小赫帮忙】AI 助手一键草拟该文本框内容">
+        <i data-lucide="sparkles" style="width:13px; height:13px; color:#a855f7;"></i>
+        <span id="xiaohe-pill-text">🤖 小赫帮忙</span>
     </div>
 
     <!-- 1. 抽屉背景遮罩 -->

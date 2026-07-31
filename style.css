@@ -2718,6 +2718,36 @@ textarea.form-control {
     100% { box-shadow: 0 0 0px rgba(59, 130, 246, 0); }
 }
 
+/* 文本框右下角专用 [⛶ 放大全屏] 快捷图标按钮样式 */
+.textarea-corner-btn {
+    position: absolute;
+    z-index: 9965;
+    padding: 3px 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+    opacity: 0.85;
+}
+
+.textarea-corner-btn:hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #ffffff;
+    border-color: rgba(147, 197, 253, 0.8);
+    opacity: 1;
+    transform: scale(1.08) translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+}
+
 /* ==========================================================================
    输入框内容自适应拉高 & 右下角一键最大化展开 (Auto-Expand & Maximize Textarea)
    ========================================================================== */

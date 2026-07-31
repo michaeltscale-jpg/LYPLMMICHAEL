@@ -14900,8 +14900,13 @@ window.XiaoheAI = {
             // 2. 更新右侧抽屉顶部的上下文感知
             this.updateContextDisplay();
 
-            // 3. 显示随动胶囊
+            // 3. 显示随动胶囊 (仅显示纯粹的 🤖 小赫帮忙)
             this.showFocusPill(target);
+
+            // 4. 如果是多行文本框 (如 SOP/SIP/8D)，在文本框右下角拖拽手柄旁单独渲染 [⛶ 放大] 按钮
+            if (target.tagName === 'TEXTAREA') {
+                window.showTextareaCornerMaximizeBtn && window.showTextareaCornerMaximizeBtn(target);
+            }
         }
     },
 
@@ -15207,6 +15212,45 @@ window.confirmFullscreenEditor = function() {
 
 window.closeFullscreenEditor = function() {
     closeModal("modal-fullscreen-editor");
+};
+
+// 专门在多行文本框 (如 SOP/SIP/8D) 右下角拖拽手柄旁渲染 [⛶ 放大] 图标按钮
+window.showTextareaCornerMaximizeBtn = function(textarea) {
+    if (!textarea || textarea.tagName !== 'TEXTAREA' || textarea.id === 'xiaohe-input' || textarea.id === 'fullscreen-editor-textarea') return;
+
+    let btn = document.getElementById('textarea-corner-maximize-btn');
+    if (!btn) {
+        btn = document.createElement('button');
+        btn.id = 'textarea-corner-maximize-btn';
+        btn.type = 'button';
+        btn.innerHTML = '<i data-lucide="maximize-2" style="width:11px; height:11px;"></i> 放大';
+        btn.title = '点击全貌全屏编辑该输入框，以便清晰预览全貌内容';
+        btn.className = 'textarea-corner-btn';
+        document.body.appendChild(btn);
+
+        btn.addEventListener('click', function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            if (window._cornerActiveTextarea) {
+                openFullscreenEditor(window._cornerActiveTextarea);
+            }
+        });
+    }
+
+    window._cornerActiveTextarea = textarea;
+
+    const rect = textarea.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
+    // 精准定位在 textarea 的右下角内部 (紧邻 resize 拖拽手柄)
+    const top = rect.bottom + window.scrollY - 30;
+    const left = rect.right + window.scrollX - 62;
+
+    btn.style.top = `${Math.max(top, 5)}px`;
+    btn.style.left = `${Math.max(left, 5)}px`;
+    btn.style.display = 'inline-flex';
+
+    if (window.lucide) lucide.createIcons();
 };
 
 // 全局绑定输入自适应与右下角手柄单击最大化
