@@ -15121,6 +15121,94 @@ window.toggleMaximizeTextarea = function(el) {
     }
 };
 
+// ==========================================================================
+// 大文本框（SOP/SIP/8D/ECN）全貌全屏专注放大编辑模式逻辑
+// ==========================================================================
+window._activeFullscreenTargetElement = null;
+
+window.openFullscreenEditor = function(fieldOrId) {
+    let target = null;
+    if (typeof fieldOrId === 'string') {
+        target = document.getElementById(fieldOrId);
+    } else if (fieldOrId && fieldOrId.tagName) {
+        target = fieldOrId;
+    }
+
+    if (!target) {
+        target = document.activeElement;
+        if (target && (target.tagName !== 'TEXTAREA' && target.tagName !== 'INPUT')) {
+            target = document.querySelector('textarea:not(#xiaohe-input):not(#fullscreen-editor-textarea), input[type="text"]:not(#xiaohe-input)');
+        }
+    }
+
+    if (!target) {
+        if (window.showToast) showToast("未指定目标文本框，请在页面点击文本框后再试", "warning");
+        return;
+    }
+
+    window._activeFullscreenTargetElement = target;
+
+    // 获取字段名称
+    let labelName = "文本框全貌内容";
+    if (window.XiaoheAI && window.XiaoheAI.inferFieldLabel) {
+        labelName = window.XiaoheAI.inferFieldLabel(target);
+    }
+
+    const titleEl = document.getElementById("fullscreen-editor-title");
+    if (titleEl) {
+        titleEl.innerText = `📌 ${labelName} - 全貌全屏编辑模式`;
+    }
+
+    const editorTextarea = document.getElementById("fullscreen-editor-textarea");
+    if (editorTextarea) {
+        editorTextarea.value = target.value || "";
+        
+        // 绑定字数统计
+        const countEl = document.getElementById("fullscreen-editor-charcount");
+        const updateCharCount = () => {
+            if (countEl) countEl.innerText = `字符统计: ${editorTextarea.value.length} 字`;
+        };
+        editorTextarea.oninput = updateCharCount;
+        updateCharCount();
+    }
+
+    openModal("modal-fullscreen-editor");
+    setTimeout(() => {
+        if (editorTextarea) editorTextarea.focus();
+    }, 200);
+};
+
+window.confirmFullscreenEditor = function() {
+    const editorTextarea = document.getElementById("fullscreen-editor-textarea");
+    const target = window._activeFullscreenTargetElement;
+
+    if (target && editorTextarea) {
+        target.value = editorTextarea.value;
+        if (window.autoResizeTextarea) autoResizeTextarea(target);
+
+        // 高亮提示
+        target.classList.remove('xiaohe-applied-highlight');
+        void target.offsetWidth;
+        target.classList.add('xiaohe-applied-highlight');
+
+        // 如果是小赫唯一草稿框，同步刷新感知
+        if (target.id === 'xiaohe-single-draft-input' && window.XiaoheAI) {
+            if (window.XiaoheAI.currentTargetElement) {
+                window.XiaoheAI.currentTargetElement.value = editorTextarea.value;
+            }
+        }
+
+        closeModal("modal-fullscreen-editor");
+        if (window.showToast) showToast("✨ 已完成全貌全屏编辑并保存同步！", "success");
+    } else {
+        closeModal("modal-fullscreen-editor");
+    }
+};
+
+window.closeFullscreenEditor = function() {
+    closeModal("modal-fullscreen-editor");
+};
+
 // 全局绑定输入自适应与右下角手柄单击最大化
 window.bindAutoResizeEvents = function() {
     document.addEventListener('input', function(e) {

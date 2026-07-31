@@ -4820,10 +4820,15 @@ requests.post(url, json=payload)</code></pre>
 
 
     <!-- ===== 小赫 AI 助手 (Xiaohe AI Assistant Component) ===== -->
-    <!-- 0. 小赫帮忙：随动 AI 智能草拟胶囊按钮 -->
-    <div id="xiaohe-focus-pill" class="xiaohe-focus-pill" onclick="XiaoheAI.triggerPillClick(event)" title="点击由【小赫帮忙】AI 助手一键草拟该文本框内容">
-        <i data-lucide="sparkles" style="width:13px; height:13px; color:#a855f7;"></i>
-        <span id="xiaohe-pill-text">🤖 小赫帮忙草拟</span>
+    <!-- 0. 小赫帮忙：随动 AI 智能草拟与全屏放大编辑双功能胶囊按钮 -->
+    <div id="xiaohe-focus-pill" class="xiaohe-focus-pill" title="【小赫帮忙】随动辅助">
+        <div style="display:flex; align-items:center; gap:5px; cursor:pointer;" onclick="XiaoheAI.triggerPillClick(event)" title="点击由【小赫帮忙】AI 助手一键草拟该框内容">
+            <i data-lucide="sparkles" style="width:13px; height:13px; color:#a855f7;"></i>
+            <span id="xiaohe-pill-text">🤖 小赫帮忙</span>
+        </div>
+        <span style="border-left:1px solid rgba(255,255,255,0.3); padding-left:7px; margin-left:2px; cursor:pointer; display:inline-flex; align-items:center; gap:3px;" onclick="event.stopPropagation(); window.openFullscreenEditor && window.openFullscreenEditor(XiaoheAI.currentTargetElement)" title="点击全貌全屏放大单独编辑该文本框，以便清晰预览全貌">
+            <i data-lucide="maximize-2" style="width:12px; height:12px; color:#60a5fa;"></i> 放大
+        </span>
     </div>
 
     <!-- 1. 抽屉背景遮罩 -->
@@ -4884,10 +4889,15 @@ requests.post(url, json=payload)</code></pre>
                     <i data-lucide="edit-3" style="width:14px; height:14px; color:#a855f7;"></i>
                     <span id="xiaohe-target-field-label">🎯 锁定目标: 请在页面点击任意编辑框</span>
                 </div>
-                <span style="font-size:0.62rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:10px; font-weight:600;">唯一草案工作区</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button type="button" onclick="openFullscreenEditor('xiaohe-single-draft-input')" style="background:rgba(168,85,247,0.25); color:#e9d5ff; border:1px solid rgba(216,180,254,0.4); padding:2px 8px; border-radius:6px; font-size:0.68rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:3px; transition:all 0.2s ease;" onmouseenter="this.style.background='rgba(168,85,247,0.4)'" onmouseleave="this.style.background='rgba(168,85,247,0.25)'" title="点击放大单独全屏编辑，以便全貌查看输入内容">
+                        <i data-lucide="maximize-2" style="width:11px; height:11px;"></i> ⛶ 全屏全貌编辑
+                    </button>
+                    <span style="font-size:0.62rem; color:#a5b4fc; background:rgba(99,102,241,0.25); border:1px solid rgba(165,180,252,0.3); padding:2px 7px; border-radius:10px; font-weight:600;">唯一草案工作区</span>
+                </div>
             </div>
 
-            <!-- 唯一可编辑草案文本框 (高度已加大一倍，方便清晰阅读与二次修改) -->
+            <!-- 唯一可编辑草案文本框 -->
             <textarea id="xiaohe-single-draft-input" style="width:100%; box-sizing:border-box; background:rgba(30, 41, 59, 0.9); color:#f8fafc; border:1px solid #475569; border-radius:6px; padding:10px 12px; font-size:0.8rem; font-family:inherit; line-height:1.6; min-height:240px; height:240px; max-height:500px; resize:vertical; outline:none; transition:all 0.2s ease;" placeholder="鼠标点击正式页面上的任意输入框，此框将实时显示并同步该内容；AI 生成的草稿也会在此为您呈现并支持直接二次修改..." onfocus="this.style.borderColor='#818cf8'; this.style.boxShadow='0 0 12px rgba(129,140,248,0.35)';" onblur="this.style.borderColor='#475569'; this.style.boxShadow='none';"></textarea>
 
             <!-- 草案操作栏 -->
@@ -4924,6 +4934,43 @@ requests.post(url, json=payload)</code></pre>
         <i data-lucide="bot" style="width: 18px; height: 18px;"></i>
         <span>🤖 小赫帮忙</span>
     </button>
+
+    <!-- ================= 核心大文件/SOP/SIP/8D 全貌全屏编辑模态框 ================= -->
+    <div class="modal-overlay" id="modal-fullscreen-editor" style="z-index: 99990;">
+        <div class="modal-box" style="width: 92vw; max-width: 1400px; height: 88vh; background: #0f172a; border: 1px solid rgba(129,140,248,0.4); border-radius: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; padding: 20px;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align- items: center; border-bottom: 1px solid #1e293b; padding-bottom: 14px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #2563eb, #7c3aed); display: flex; align-items: center; justify-content: center; color: #fff;">
+                        <i data-lucide="maximize-2" style="width: 18px; height: 18px;"></i>
+                    </div>
+                    <div>
+                        <h3 id="fullscreen-editor-title" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;">全貌全屏编辑模式</h3>
+                        <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px;">全景畅览与大容量编辑 SOP / SIP / 8D / ECN 技术规范与工艺报告</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" class="btn-primary" onclick="confirmFullscreenEditor()" style="padding: 6px 16px; font-size: 0.82rem; font-weight: 700; background: linear-gradient(135deg, #2563eb, #4f46e5); border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.4);">
+                        <i data-lucide="check-circle" style="width: 15px; height: 15px;"></i> 完成编辑并保存
+                    </button>
+                    <button type="button" onclick="closeFullscreenEditor()" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 12px; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                        <i data-lucide="minimize-2" style="width: 14px; height: 14px;"></i> 缩小还原
+                    </button>
+                </div>
+            </div>
+
+            <!-- Body Fullscreen Textarea -->
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <textarea id="fullscreen-editor-textarea" style="width: 100%; flex: 1; box-sizing: border-box; background: rgba(30, 41, 59, 0.95); color: #f8fafc; border: 1px solid #475569; border-radius: 8px; padding: 16px 20px; font-size: 0.92rem; font-family: inherit; line-height: 1.7; resize: none; outline: none; transition: all 0.2s ease; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);" placeholder="在此全貌全屏编辑长文本内容..." onfocus="this.style.borderColor='#818cf8';" onblur="this.style.borderColor='#475569';"></textarea>
+            </div>
+
+            <!-- Footer Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.75rem; color: #94a3b8;">
+                <div id="fullscreen-editor-charcount">字符统计: 0 字</div>
+                <div>💡 提示：在此模式下编辑完成并点击【完成编辑并保存】，内容将自动同步写回原文本框。</div>
+            </div>
+        </div>
+    </div>
 
     <!-- Image Lightbox Modal for Photo Preview -->
     <div class="modal-overlay" id="modal-image-lightbox" style="z-index: 99999;" onclick="closeModal('modal-image-lightbox')">
