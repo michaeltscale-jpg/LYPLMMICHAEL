@@ -14923,7 +14923,7 @@ window.XiaoheAI = {
         pill.style.left = `${Math.max(left, 10)}px`;
 
         if (pillText) {
-            pillText.innerText = `✨ 小赫起草`;
+            pillText.innerText = `🤖 小赫帮忙`;
         }
 
         pill.classList.add('active');
