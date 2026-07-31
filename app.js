@@ -3228,16 +3228,27 @@ window.renderRoutingStepsForVersion = function(version) {
                 return (bytes / 1048576).toFixed(1) + ' MB';
             };
 
+            const isImg = (filename) => {
+                if (!filename) return false;
+                const ext = filename.split('.').pop().toLowerCase();
+                return ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext);
+            };
+
             let listHtml = '';
             if (attachments && attachments.length > 0) {
-                listHtml = attachments.map(a => `
-                    <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.72rem;">
-                        <span>${fileIcon(a.name)}</span>
-                        <a href="${a.url}" target="_blank" download style="color: #2563eb; text-decoration: none; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${a.name}">${a.name}</a>
-                        <span style="color: #94a3b8; font-size: 0.65rem; flex-shrink: 0;">${formatSize(a.size)}</span>
-                        ${isActive ? `<button onclick="removeStepAttachment(${stepId}, '${docType}', '${a.url}')" style="border: none; background: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; padding: 0 2px; flex-shrink: 0;" title="移除此附件">✕</button>` : ''}
-                    </div>
-                `).join('');
+                listHtml = attachments.map(a => {
+                    const isPhoto = isImg(a.name);
+                    return `
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.72rem;">
+                            ${isPhoto ? `<img src="${a.url}" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1; cursor:pointer;" onclick="window.openLightboxImage('${a.url}', '${a.name}')" title="点击在平台内大图预览照片"/>` : `<span>${fileIcon(a.name)}</span>`}
+                            <span onclick="window.handleAttachmentClick(event, '${a.url}', '${a.name}')" style="color: #2563eb; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" title="点击在平台内大图预览">${a.name}</span>
+                            <span style="color: #94a3b8; font-size: 0.65rem; flex-shrink: 0;">${formatSize(a.size)}</span>
+                            ${isPhoto ? `<button onclick="window.openLightboxImage('${a.url}', '${a.name}')" style="border:1px solid #93c5fd; background:#eff6ff; color:#1d4ed8; border-radius:4px; font-size:0.65rem; padding:1px 6px; cursor:pointer; font-weight:600;" title="在平台内直接大图预览照片">👁️ 预览</button>` : ''}
+                            <a href="${a.url}" target="_blank" download style="color:#64748b; text-decoration:none; font-size:0.65rem; padding:1px 4px;" title="下载原文件">⬇️</a>
+                            ${isActive ? `<button onclick="removeStepAttachment(${stepId}, '${docType}', '${a.url}')" style="border: none; background: none; color: #ef4444; cursor: pointer; font-size: 0.8rem; padding: 0 2px; flex-shrink: 0;" title="移除此附件">✕</button>` : ''}
+                        </div>
+                    `;
+                }).join('');
             }
 
             return `
@@ -15407,16 +15418,91 @@ window.renderPendingEcnAttachments = function() {
     });
 };
 
+window._lightboxScale = 1.0;
+window._lightboxRotate = 0;
+
+window.updateLightboxTransform = function() {
+    const lightboxImg = document.getElementById("lightbox-img");
+    if (lightboxImg) {
+        lightboxImg.style.transform = `scale(${window._lightboxScale}) rotate(${window._lightboxRotate}deg)`;
+    }
+};
+
 window.openLightboxImage = function(imgUrl, caption) {
+    if (!imgUrl) return;
     const lightboxModal = document.getElementById("modal-image-lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
     const lightboxCaption = document.getElementById("lightbox-caption");
+    const downloadLink = document.getElementById("lightbox-download-link");
+
     if (lightboxModal && lightboxImg) {
+        window._lightboxScale = 1.0;
+        window._lightboxRotate = 0;
+
         lightboxImg.src = imgUrl;
+        lightboxImg.style.transform = "scale(1) rotate(0deg)";
+
         if (lightboxCaption) lightboxCaption.innerText = caption || "照片大图预览";
+        if (downloadLink) {
+            downloadLink.href = imgUrl;
+            downloadLink.setAttribute("download", caption || "photo.jpg");
+        }
+
         openModal("modal-image-lightbox");
     }
 };
+
+window.zoomLightboxImage = function(delta) {
+    window._lightboxScale = Math.max(0.3, Math.min(4.0, window._lightboxScale + delta));
+    window.updateLightboxTransform();
+};
+
+window.rotateLightboxImage = function() {
+    window._lightboxRotate = (window._lightboxRotate + 90) % 360;
+    window.updateLightboxTransform();
+};
+
+window.resetLightboxImage = function() {
+    window._lightboxScale = 1.0;
+    window._lightboxRotate = 0;
+    window.updateLightboxTransform();
+};
+
+window.handleAttachmentClick = function(e, url, name) {
+    if (!url) return;
+    const filename = name || url;
+    const ext = filename.split('.').pop().split('?')[0].toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg'].includes(ext);
+
+    if (isImage) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        window.openLightboxImage(url, filename);
+        return false;
+    } else {
+        window.open(url, '_blank');
+    }
+};
+
+// 全局捕获图片文件点击事件，实现平台内部全自动 Lightbox 照片大图预览
+document.addEventListener('click', function(e) {
+    const target = e.target.closest('a, .attachment-link, [data-preview-img]');
+    if (!target) return;
+
+    const href = target.getAttribute('href') || target.getAttribute('data-src') || target.getAttribute('src');
+    const title = target.getAttribute('title') || target.innerText || '照片预览';
+
+    if (href && typeof href === 'string') {
+        const cleanPath = href.split('?')[0].split('#')[0].toLowerCase();
+        if (cleanPath.endsWith('.jpg') || cleanPath.endsWith('.jpeg') || cleanPath.endsWith('.png') || cleanPath.endsWith('.webp') || cleanPath.endsWith('.gif') || cleanPath.endsWith('.bmp')) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.openLightboxImage(href, title.replace(/^[🖼️📄📦]\s*/, ''));
+        }
+    }
+}, true);
 
 
 

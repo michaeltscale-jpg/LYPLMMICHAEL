@@ -4942,14 +4942,31 @@ requests.post(url, json=payload)</code></pre>
         </div>
     </div>
 
-    <!-- Image Lightbox Modal for Photo Preview -->
-    <div class="modal-overlay" id="modal-image-lightbox" style="z-index: 99999;" onclick="closeModal('modal-image-lightbox')">
-        <div class="modal-box" style="width: auto; max-width: 90vw; background: transparent; border: none; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;" onclick="event.stopPropagation()">
-            <div style="position: relative; max-width: 100%;">
-                <button class="modal-close" onclick="closeModal('modal-image-lightbox')" style="position: absolute; top: -15px; right: -15px; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 50%; width: 32px; height: 32px; font-size: 20px; color: #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10;">&times;</button>
-                <img id="lightbox-img" src="" alt="照片大图预览" style="max-width: 85vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); object-fit: contain; background: #fff;">
+    <!-- Image Lightbox Modal for Photo Preview (全平台照片高清大图预览视窗) -->
+    <div class="modal-overlay" id="modal-image-lightbox" style="z-index: 99999; backdrop-filter: blur(8px);" onclick="closeModal('modal-image-lightbox')">
+        <div class="modal-box" style="width: auto; max-width: 95vw; background: transparent; border: none; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;" onclick="event.stopPropagation()">
+            <div style="position: relative; max-width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <!-- Close Button -->
+                <button class="modal-close" onclick="closeModal('modal-image-lightbox')" style="position: absolute; top: -18px; right: -18px; background: #ffffff; border: 2px solid #cbd5e1; border-radius: 50%; width: 34px; height: 34px; font-size: 22px; color: #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 20;">&times;</button>
+                
+                <!-- Main Image Preview Container -->
+                <div style="position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 25px 60px rgba(0,0,0,0.8); background: #000; display: flex; align-items: center; justify-content: center;">
+                    <img id="lightbox-img" src="" alt="照片大图预览" style="max-width: 88vw; max-height: 78vh; object-fit: contain; transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); cursor: zoom-in;" onclick="window.rotateLightboxImage && window.rotateLightboxImage()">
+                </div>
+
+                <!-- Control Bar & Caption -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); padding: 6px 18px; border-radius: 30px; backdrop-filter: blur(10px); box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
+                    <div id="lightbox-caption" style="color: #ffffff; font-size: 0.85rem; font-weight: 600; max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">照片预览</div>
+                    <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2);"></div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" onclick="window.zoomLightboxImage(0.25)" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer;" title="放大图像">🔍+</button>
+                        <button type="button" onclick="window.zoomLightboxImage(-0.25)" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer;" title="缩小图像">🔍-</button>
+                        <button type="button" onclick="window.rotateLightboxImage()" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer;" title="旋转 90 度">🔄 旋转</button>
+                        <button type="button" onclick="window.resetLightboxImage()" style="background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; cursor: pointer;" title="还原大小">1:1 重置</button>
+                        <a id="lightbox-download-link" href="" download target="_blank" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; text-decoration: none; border-radius: 6px; padding: 3px 12px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" title="下载原图">⬇️ 下载原图</a>
+                    </div>
+                </div>
             </div>
-            <div id="lightbox-caption" style="color: #ffffff; margin-top: 12px; font-size: 0.9rem; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(0,0,0,0.6); padding: 4px 16px; border-radius: 20px;"></div>
         </div>
     </div>
 
