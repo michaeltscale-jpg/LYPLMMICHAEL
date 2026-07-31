@@ -14905,14 +14905,6 @@ window.XiaoheAI = {
         }
     },
 
-            // 更新右侧抽屉顶部的上下文感知
-            this.updateContextDisplay();
-
-            // 显示随动胶囊
-            this.showFocusPill(target);
-        }
-    },
-
     // 推导输入框名称
     inferFieldLabel: function(el) {
         if (!el) return "活动文本框";
