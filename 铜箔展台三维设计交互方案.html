@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聚赫新材 - 54㎡ 高频铜箔科技展台三维全景交互方案</title>
+    <title>聚赫新材 - 54㎡ 高频铜箔科技展台三维全景与 2D CAD 设计图</title>
     <!-- Lucide Icons & Google Fonts -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -200,7 +200,7 @@
             box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
         }
 
-        /* Middle 3D Canvas Area */
+        /* Middle 3D / 2D Canvas Area */
         .canvas-area {
             position: relative;
             background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
@@ -208,12 +208,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
-        #booth-canvas {
+        #booth-canvas, #cad-canvas {
             width: 100%;
             height: 100%;
             display: block;
+        }
+
+        #cad-canvas {
+            display: none;
+            background: #0b1329;
         }
 
         .canvas-overlay-bar {
@@ -243,7 +249,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 16px;
             transition: all 0.2s;
         }
@@ -383,8 +389,8 @@
                 <i data-lucide="box"></i>
             </div>
             <div>
-                <div class="logo-text">聚赫新材 54㎡ 高频铜箔科技展台三维全景交互方案</div>
-                <div class="logo-sub">GHZ New Materials • 9m×6m Interactive Exhibition Booth Architecture</div>
+                <div class="logo-text">聚赫新材 54㎡ 高频铜箔科技展台三维全景与 2D CAD 设计图纸</div>
+                <div class="logo-sub">GHZ New Materials • 9m×6m Architectural Exhibition Booth Blueprint & 3D Interactive Design</div>
             </div>
         </div>
 
@@ -436,16 +442,37 @@
 
             <div>
                 <div class="section-title">
-                    <i data-lucide="video" style="width:16px; height:16px;"></i>
-                    <span>三维视角切换</span>
+                    <i data-lucide="layers" style="width:16px; height:16px;"></i>
+                    <span>图纸模式与视角切换</span>
                 </div>
                 <div class="btn-group">
-                    <button class="view-btn active" onclick="switchView('iso')">
+                    <button class="view-btn active" id="btn-mode-3d" onclick="toggleRenderMode('3d')">
+                        <span>三维全景 3D 渲染图</span>
+                        <i data-lucide="box" style="width:14px; height:14px;"></i>
+                    </button>
+                    <button class="view-btn" id="btn-mode-cad" onclick="toggleRenderMode('cad')">
+                        <span>2D CAD 建筑平面设计图 (9m×6m)</span>
+                        <i data-lucide="map" style="width:14px; height:14px; color:#fbbf24;"></i>
+                    </button>
+                    <button class="view-btn" id="btn-mode-elevation" onclick="toggleRenderMode('elevation')">
+                        <span>2D 东西侧主墙立面结构图 (高 4.5m)</span>
+                        <i data-lucide="align-justify" style="width:14px; height:14px; color:#38bdf8;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">
+                    <i data-lucide="video" style="width:16px; height:16px;"></i>
+                    <span>三维透视镜头快速跳转</span>
+                </div>
+                <div class="btn-group">
+                    <button class="view-btn" onclick="switchView('iso')">
                         <span>三维鸟瞰全景视角</span>
                         <i data-lucide="eye" style="width:14px; height:14px;"></i>
                     </button>
                     <button class="view-btn" onclick="switchView('top')">
-                        <span>平面俯视布局视角 (9m×6m)</span>
+                        <span>3D 俯视视角</span>
                         <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
                     </button>
                     <button class="view-btn" onclick="switchView('east')">
@@ -455,10 +482,6 @@
                     <button class="view-btn" onclick="switchView('west')">
                         <span>西面展柜视角 (铜箔样品)</span>
                         <i data-lucide="sparkles" style="width:14px; height:14px;"></i>
-                    </button>
-                    <button class="view-btn" onclick="switchView('vip')">
-                        <span>VIP 商务洽谈区视角</span>
-                        <i data-lucide="users" style="width:14px; height:14px;"></i>
                     </button>
                 </div>
             </div>
@@ -481,11 +504,12 @@
             </div>
         </div>
 
-        <!-- Middle 3D Interactive Canvas -->
+        <!-- Middle Interactive Canvas (3D vs 2D CAD Blueprint) -->
         <div class="canvas-area">
             <canvas id="booth-canvas"></canvas>
+            <canvas id="cad-canvas"></canvas>
 
-            <!-- 2.5D Interactive Canvas Hotspot Overlays -->
+            <!-- 3D Interactive Hotspot Overlays -->
             <div id="hotspot-sculpture" class="hotspot-badge" style="top: 48%; left: 48%;" onclick="selectZone('sculpture')">
                 <i data-lucide="sparkles" style="width:12px; height:12px;"></i> 核心铜箔流线雕塑
             </div>
@@ -500,8 +524,16 @@
             </div>
 
             <div class="canvas-overlay-bar">
-                <span style="font-size: 0.78rem; color: var(--text-sub); font-weight: 600;">拖拽旋转 / 滚轮缩放 3D 展台模型</span>
-                <button class="mode-btn active" onclick="resetCamera()">
+                <button class="mode-btn active" id="bar-btn-3d" onclick="toggleRenderMode('3d')">
+                    <i data-lucide="box" style="width:13px; height:13px;"></i> 3D 三维透视图
+                </button>
+                <button class="mode-btn" id="bar-btn-cad" onclick="toggleRenderMode('cad')">
+                    <i data-lucide="map" style="width:13px; height:13px;"></i> 2D CAD 平面设计图 (9m×6m)
+                </button>
+                <button class="mode-btn" id="bar-btn-elevation" onclick="toggleRenderMode('elevation')">
+                    <i data-lucide="align-justify" style="width:13px; height:13px;"></i> 2D 侧面立面图
+                </button>
+                <button class="mode-btn" onclick="resetCamera()">
                     <i data-lucide="refresh-cw" style="width:13px; height:13px;"></i> 重置视角
                 </button>
             </div>
@@ -511,7 +543,7 @@
         <div class="panel-right">
             <div class="section-title">
                 <i data-lucide="info" style="width:16px; height:16px;"></i>
-                <span id="zone-section-title">选中区域详细解析</span>
+                <span id="zone-section-title">选中区域结构详细解析</span>
             </div>
 
             <!-- Dynamic Zone Detail Card -->
@@ -539,7 +571,7 @@
             <div>
                 <div class="section-title">
                     <i data-lucide="package" style="width:16px; height:16px;"></i>
-                    <span>展台结构搭建与材质表</span>
+                    <span>展台结构搭建与材质施工明细表</span>
                 </div>
                 <table class="mat-table">
                     <thead>
@@ -582,14 +614,16 @@
 
     </div>
 
-    <!-- 3D Engine & Interactive Renderer Script -->
+    <!-- 3D Engine & 2D CAD Blueprint Renderer Script -->
     <script>
         lucide.createIcons();
+
+        // Mode State
+        let currentMode = '3d'; // '3d', 'cad', 'elevation'
 
         // Three.js 3D Engine Setup
         let scene, camera, renderer;
         let boothGroup;
-        let currentLightingMode = 'cyber';
 
         function init3D() {
             const container = document.querySelector('.canvas-area');
@@ -622,7 +656,7 @@
             // Create 3D Booth Group (9m South-North, 6m East-West)
             boothGroup = new THREE.Group();
 
-            // 1. Floor Base Platform (9m x 6m -> converted to Three units 9 x 6)
+            // 1. Floor Base Platform
             const floorGeo = new THREE.BoxGeometry(6, 0.2, 9);
             const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.2 });
             const floor = new THREE.Mesh(floorGeo, floorMat);
@@ -634,7 +668,7 @@
             grid.position.y = 0.01;
             boothGroup.add(grid);
 
-            // 2. East Wall (6m long, 4.5m tall, on East side X = -3)
+            // 2. East Wall (6m long, 4.5m tall, X = -3)
             const eastWallGeo = new THREE.BoxGeometry(0.3, 4.5, 9);
             const eastWallMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
             const eastWall = new THREE.Mesh(eastWallGeo, eastWallMat);
@@ -648,7 +682,7 @@
             screen.position.set(-2.8, 2.5, 0);
             boothGroup.add(screen);
 
-            // 3. West Wall (6m long, 4.5m tall, on West side X = 3)
+            // 3. West Wall (6m long, 4.5m tall, X = 3)
             const westWallGeo = new THREE.BoxGeometry(0.3, 4.5, 9);
             const westWallMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
             const westWall = new THREE.Mesh(westWallGeo, westWallMat);
@@ -691,8 +725,10 @@
             // Animation Loop
             function animate() {
                 requestAnimationFrame(animate);
-                sculpture.rotation.y += 0.008;
-                renderer.render(scene, camera);
+                if (currentMode === '3d') {
+                    sculpture.rotation.y += 0.008;
+                    renderer.render(scene, camera);
+                }
             }
             animate();
 
@@ -701,11 +737,245 @@
                 camera.aspect = container.clientWidth / container.clientHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(container.clientWidth, container.clientHeight);
+                if (currentMode !== '3d') drawCADBlueprint();
             });
+        }
+
+        // Mode Switching between 3D Canvas and 2D Architectural CAD Blueprint
+        function toggleRenderMode(mode) {
+            currentMode = mode;
+            const canvas3D = document.getElementById('booth-canvas');
+            const canvasCAD = document.getElementById('cad-canvas');
+            const hotspots = document.querySelectorAll('.hotspot-badge');
+
+            document.querySelectorAll('.mode-btn, .view-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (mode === '3d') {
+                canvas3D.style.display = 'block';
+                canvasCAD.style.display = 'none';
+                hotspots.forEach(h => h.style.display = 'flex');
+                document.getElementById('btn-mode-3d').classList.add('active');
+                document.getElementById('bar-btn-3d').classList.add('active');
+            } else {
+                canvas3D.style.display = 'none';
+                canvasCAD.style.display = 'block';
+                hotspots.forEach(h => h.style.display = 'none');
+
+                if (mode === 'cad') {
+                    document.getElementById('btn-mode-cad').classList.add('active');
+                    document.getElementById('bar-btn-cad').classList.add('active');
+                } else if (mode === 'elevation') {
+                    document.getElementById('btn-mode-elevation').classList.add('active');
+                    document.getElementById('bar-btn-elevation').classList.add('active');
+                }
+                drawCADBlueprint();
+            }
+        }
+
+        // Render High Precision 2D CAD Blueprint on HTML5 Canvas
+        function drawCADBlueprint() {
+            const canvas = document.getElementById('cad-canvas');
+            const container = document.querySelector('.canvas-area');
+
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (currentMode === 'cad') {
+                draw2DFloorPlan(ctx, w, h);
+            } else if (currentMode === 'elevation') {
+                draw2DElevation(ctx, w, h);
+            }
+        }
+
+        // 2D CAD Floor Plan (9m x 6m Top View Blueprint)
+        function draw2DFloorPlan(ctx, w, h) {
+            const centerX = w / 2;
+            const centerY = h / 2;
+
+            // Scale: 9m (height) by 6m (width)
+            const scale = Math.min(w / 12, h / 14);
+            const boothW = 6 * scale; // East-West 6m
+            const boothH = 9 * scale; // North-South 9m
+
+            const left = centerX - boothW / 2;
+            const top = centerY - boothH / 2;
+
+            // Background Grid (CAD Style Grid)
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 30) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+            }
+            for (let y = 0; y < h; y += 30) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Booth Boundary (54m²)
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 6]);
+            ctx.strokeRect(left, top, boothW, boothH);
+            ctx.setLineDash([]);
+
+            // Dimensions Annotation (9.0m North-South)
+            ctx.strokeStyle = '#fbbf24';
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 12px Inter';
+
+            // North-South 9.0m Dimension Line
+            ctx.beginPath(); ctx.moveTo(left - 30, top); ctx.lineTo(left - 30, top + boothH); ctx.stroke();
+            ctx.fillText('◄── 南北贯通 9.0m (开门无墙) ──►', left - 210, centerY);
+
+            // East-West 6.0m Dimension Line
+            ctx.beginPath(); ctx.moveTo(left, top - 25); ctx.lineTo(left + boothW, top - 25); ctx.stroke();
+            ctx.fillText('▲ 东西封闭 6.0m ▲', centerX - 55, top - 35);
+
+            // North & South Entrance Flow Arrows
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 14px Inter';
+            ctx.fillText('⬇ 北门主客流入口 (NORTH 9M OPEN) ⬇', centerX - 130, top - 10);
+            ctx.fillText('⬆ 南门主客流出口 (SOUTH 9M OPEN) ⬆', centerX - 130, top + boothH + 25);
+
+            // East Wall Structure (Solid Wall 6m on East)
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(left, top, 16, boothH);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(left, top, 16, boothH);
+            ctx.fillStyle = '#93c5fd';
+            ctx.font = '11px Inter';
+            ctx.fillText('东墙形象背景墙 (6m 实墙)', left + 22, top + 30);
+
+            // LED Screen Box on East Wall (3.5m x 2.2m)
+            const ledH = 3.5 * scale;
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(left + 6, centerY - ledH / 2, 18, ledH);
+            ctx.fillStyle = '#fff';
+            ctx.fillText('P1.8 LED 巨幕 (3.5m)', left + 28, centerY);
+
+            // West Wall Structure (Solid Wall 6m on West)
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(left + boothW - 16, top, 16, boothH);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.strokeRect(left + boothW - 16, top, 16, boothH);
+            ctx.fillStyle = '#93c5fd';
+            ctx.fillText('西墙展柜主墙 (6m 实墙)', left + boothW - 155, top + 30);
+
+            // West Wall Showcase Stand Cabinets (4 Cabinets)
+            ctx.fillStyle = '#d97706';
+            for (let i = 0; i < 4; i++) {
+                const cabY = top + (i + 0.8) * (boothH / 5);
+                ctx.fillRect(left + boothW - 48, cabY, 30, 40);
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = '10px Inter';
+                ctx.fillText(`铜箔展台 ${i+1}`, left + boothW - 110, cabY + 22);
+            }
+
+            // Center Sculpture Circle (Center Node)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 38, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('中轴紫铜流线雕塑', centerX - 48, centerY + 4);
+
+            // VIP Lounge Area (Southwest)
+            ctx.beginPath();
+            ctx.arc(left + boothW - 60, top + boothH - 60, 26, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(51, 65, 85, 0.8)';
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.stroke();
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '10px Inter';
+            ctx.fillText('VIP 洽谈桌', left + boothW - 85, top + boothH - 56);
+        }
+
+        // 2D CAD Elevation Construction View (Height: 4.5m)
+        function draw2DElevation(ctx, w, h) {
+            const centerX = w / 2;
+            const centerY = h / 2 + 20;
+
+            const scale = Math.min(w / 12, h / 10);
+            const wallW = 6 * scale; // 6m width
+            const wallH = 4.5 * scale; // 4.5m height
+
+            const left = centerX - wallW / 2;
+            const top = centerY - wallH / 2;
+
+            // Background Grid
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let y = 0; y < h; y += 25) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
+
+            // Ground Baseline
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(40, top + wallH); ctx.lineTo(w - 40, top + wallH); ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('±0.00m 展厅地面基准线', 45, top + wallH + 20);
+
+            // 4.5m Height Dimension Line
+            ctx.strokeStyle = '#fbbf24';
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.moveTo(left - 30, top); ctx.lineTo(left - 30, top + wallH); ctx.stroke();
+            ctx.fillText('◄── 限高 4.5m ──►', left - 130, centerY);
+
+            // 6.0m Width Dimension Line
+            ctx.beginPath(); ctx.moveTo(left, top - 20); ctx.lineTo(left + wallW, top - 20); ctx.stroke();
+            ctx.fillText('▲ 东西主墙长度 6.0m ▲', centerX - 70, top - 30);
+
+            // Main Elevation Frame Wall (Navy Wood Panel)
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(left, top, wallW, wallH);
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(left, top, wallW, wallH);
+
+            // Header Title on Wall Elevation
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 18px Inter';
+            ctx.fillText('聚赫新材 GHZ NEW MATERIALS', centerX - 140, top + 40);
+
+            // LED Screen Frame Elevation (3.5m x 2.2m)
+            const ledW = 3.5 * scale;
+            const ledH = 2.2 * scale;
+            ctx.fillStyle = '#1e40af';
+            ctx.fillRect(centerX - ledW / 2, top + 60, ledW, ledH);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.strokeRect(centerX - ledW / 2, top + 60, ledW, ledH);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 13px Inter';
+            ctx.fillText('8K 超清多媒体 P1.8 LED 巨幕 (3.5m × 2.2m)', centerX - 130, top + 60 + ledH / 2);
+
+            // Product Display Cabinets Baseline (1.2m Height)
+            const cabH = 1.2 * scale;
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(left + 20, top + wallH - cabH, wallW - 40, cabH);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.strokeRect(left + 20, top + wallH - cabH, wallW - 40, cabH);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('铜箔核心样品无影发光展柜区 (H: 1.2m)', centerX - 110, top + wallH - cabH / 2);
         }
 
         // Camera View Control Handler
         function switchView(type) {
+            if (currentMode !== '3d') toggleRenderMode('3d');
+
             document.querySelectorAll('.btn-group .view-btn').forEach(btn => btn.classList.remove('active'));
             event.currentTarget.classList.add('active');
 
@@ -719,9 +989,6 @@
             } else if (type === 'west') {
                 animateCameraTo(-6, 4, 0);
                 selectZone('west');
-            } else if (type === 'vip') {
-                animateCameraTo(-2, 3, 5);
-                selectZone('vip');
             }
         }
 
@@ -746,6 +1013,7 @@
         }
 
         function resetCamera() {
+            if (currentMode !== '3d') toggleRenderMode('3d');
             animateCameraTo(12, 10, 14);
         }
 
