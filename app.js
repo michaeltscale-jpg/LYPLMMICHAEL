@@ -15409,9 +15409,13 @@ window.renderPendingEcnAttachments = function() {
         card.innerHTML = `
             <div class="ecn-attachment-remove" onclick="window.removePendingEcnAttachment(${idx})" title="移除此文件">&times;</div>
             ${iconOrThumb}
-            <div style="flex:1; overflow:hidden;">
-                <div style="font-weight:600; color:#1e293b; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;" title="${att.name}">${att.name}</div>
-                <div style="font-size:0.68rem; color:#64748b;">${att.size} • ${att.uploaded_at || ''}</div>
+            <div style="flex:1; overflow:hidden; display:flex; flex-direction:column; justify-content:center;">
+                <div style="font-weight:700; color:#1e293b; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; cursor:pointer;" onclick="window.handleAttachmentClick(event, '${att.url}', '${att.name}')" title="点击预览/打开文件">${att.name}</div>
+                <div style="font-size:0.68rem; color:#64748b; margin-top:2px;">${att.size} • ${att.uploaded_at || ''}</div>
+                ${att.is_image ? `
+                <button type="button" onclick="window.openLightboxImage('${att.url}', '${att.name}')" style="margin-top:4px; padding:3px 9px; background:linear-gradient(135deg, #2563eb, #3b82f6); color:#ffffff; border:none; border-radius:4px; font-size:0.68rem; font-weight:700; cursor:pointer; align-self:flex-start; display:inline-flex; align-items:center; gap:3px; box-shadow:0 2px 6px rgba(37,99,235,0.3);">
+                    👁️ 预览照片
+                </button>` : ''}
             </div>
         `;
         container.appendChild(card);
