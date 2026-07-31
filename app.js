@@ -15490,20 +15490,42 @@ window.handleAttachmentClick = function(e, url, name) {
     }
 };
 
-// 全局捕获图片文件点击事件，实现平台内部全自动 Lightbox 照片大图预览
+window.isImageFileOrUrl = function(url, text) {
+    const str = `${url || ''} ${text || ''}`.toLowerCase();
+    if (str.includes('data:image/') || str.includes('blob:')) return true;
+    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)($|\?|#|\s)/i.test(str);
+};
+
+// 全局捕获任何图片/照片节点点击事件，100% 阻止浏览器默认下载行为，强制触发平台内 Lightbox 预览
 document.addEventListener('click', function(e) {
-    const target = e.target.closest('a, .attachment-link, [data-preview-img]');
+    // 允许明确标记为仅下载的下载图标触发下载
+    if (e.target.closest('a[download][style*="color:#64748b"], a[download][style*="color: #64748b"], [data-download-only]')) {
+        return;
+    }
+
+    const target = e.target.closest('a, img, .attachment-link, .ecn-attachment-card, [title*="IMG"], [title*="jpg"], [title*="png"], [title*="jpeg"], span, div');
     if (!target) return;
 
-    const href = target.getAttribute('href') || target.getAttribute('data-src') || target.getAttribute('src');
-    const title = target.getAttribute('title') || target.innerText || '照片预览';
+    // 检查元素文本、title 或 href 是否关联图片照片
+    const href = target.getAttribute('href') || target.getAttribute('src') || target.getAttribute('data-src') || (target.querySelector && target.querySelector('img')?.src);
+    const text = target.getAttribute('title') || target.getAttribute('download') || target.innerText || target.alt || '';
 
-    if (href && typeof href === 'string') {
-        const cleanPath = href.split('?')[0].split('#')[0].toLowerCase();
-        if (cleanPath.endsWith('.jpg') || cleanPath.endsWith('.jpeg') || cleanPath.endsWith('.png') || cleanPath.endsWith('.webp') || cleanPath.endsWith('.gif') || cleanPath.endsWith('.bmp')) {
-            e.preventDefault();
-            e.stopPropagation();
-            window.openLightboxImage(href, title.replace(/^[🖼️📄📦]\s*/, ''));
+    if (window.isImageFileOrUrl(href, text)) {
+        // 100% 拦截阻断浏览器的默认下载/跳转行为
+        e.preventDefault();
+        e.stopPropagation();
+
+        let previewUrl = href && href !== '#' && !href.startsWith('javascript:') ? href : null;
+        if (!previewUrl && target.querySelector) {
+            const imgEl = target.querySelector('img');
+            if (imgEl) previewUrl = imgEl.src;
+        }
+
+        const previewTitle = text.replace(/^[🖼️📄📦]\s*/, '').trim() || '照片大图预览';
+
+        if (previewUrl) {
+            window.openLightboxImage(previewUrl, previewTitle);
+            return false;
         }
     }
 }, true);
