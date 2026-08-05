@@ -14881,10 +14881,29 @@ window.XiaoheAI = {
             self.handleInputInteraction(e.target, 'focus');
         }, true);
 
-        // 监听 mouseover (鼠标悬停移入)
+        // 监听 click (鼠标显式点击输入框)
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.tagName === 'TEXTAREA') {
+                self.handleInputInteraction(e.target, 'focus');
+            }
+        }, true);
+
+        // 监听 mouseover (鼠标悬停移入) - 仅感知上下文与悬浮胶囊，不弹放大按钮
         document.addEventListener('mouseover', function(e) {
             if (e.target && (e.target.tagName === 'TEXTAREA' || (e.target.tagName === 'INPUT' && e.target.type === 'text'))) {
                 self.handleInputInteraction(e.target, 'hover');
+            }
+        }, true);
+
+        // 监听 focusout (光标离开/失焦) - 隐藏放大按钮
+        document.addEventListener('focusout', function(e) {
+            if (e.target && e.target.tagName === 'TEXTAREA') {
+                setTimeout(function() {
+                    const active = document.activeElement;
+                    if (active !== e.target && (!active || active.id !== 'textarea-corner-maximize-btn')) {
+                        if (window.hideTextareaCornerMaximizeBtn) window.hideTextareaCornerMaximizeBtn();
+                    }
+                }, 150);
             }
         }, true);
 
@@ -14920,9 +14939,11 @@ window.XiaoheAI = {
             // 3. 显示随动胶囊 (仅显示纯粹的 🤖 小赫帮忙)
             this.showFocusPill(target);
 
-            // 4. 如果是多行文本框 (如 SOP/SIP/8D)，在文本框右下角拖拽手柄旁单独渲染 [⛶ 放大] 按钮
+            // 4. 如果是多行文本框 (如 SOP/SIP/8D)，仅在鼠标点击/聚焦 (focus) 时才渲染 [⛶ 放大] 按钮
             if (target.tagName === 'TEXTAREA') {
-                window.showTextareaCornerMaximizeBtn && window.showTextareaCornerMaximizeBtn(target);
+                if (type === 'focus' || document.activeElement === target) {
+                    window.showTextareaCornerMaximizeBtn && window.showTextareaCornerMaximizeBtn(target);
+                }
             }
         }
     },
@@ -15231,6 +15252,14 @@ window.closeFullscreenEditor = function() {
     closeModal("modal-fullscreen-editor");
 };
 
+// 隐藏多行文本框右下角的 [⛶ 放大] 按钮
+window.hideTextareaCornerMaximizeBtn = function() {
+    const btn = document.getElementById('textarea-corner-maximize-btn');
+    if (btn) {
+        btn.style.display = 'none';
+    }
+};
+
 // 专门在多行文本框 (如 SOP/SIP/8D) 右下角拖拽手柄旁渲染 [⛶ 放大] 图标按钮
 window.showTextareaCornerMaximizeBtn = function(textarea) {
     if (!textarea || textarea.tagName !== 'TEXTAREA' || textarea.id === 'xiaohe-input' || textarea.id === 'fullscreen-editor-textarea') return;
@@ -15244,6 +15273,10 @@ window.showTextareaCornerMaximizeBtn = function(textarea) {
         btn.title = '点击全貌全屏编辑该输入框，以便清晰预览全貌内容';
         btn.className = 'textarea-corner-btn';
         document.body.appendChild(btn);
+
+        btn.addEventListener('mousedown', function(evt) {
+            evt.preventDefault(); // 阻止聚焦转移，防止文本框被触发 focusout 隐藏按钮
+        });
 
         btn.addEventListener('click', function(evt) {
             evt.preventDefault();
