@@ -806,18 +806,36 @@ window.switchToDmsDocument = function(productId, docFileName) {
 // ======================== 管控模块零：NPI 新品导入全流程联动渲染 ========================
 function renderNpiSubpanel() {
     const product = state.activeProduct || {};
+    const pId = Number(product.id);
     
-    const defaultNpiWorkflow = {
-        gate1: { status: "COMPLETED", data: { start_date: "2026-03-01", plan_end_date: "2026-03-15", owner: "张研发" } },
-        gate2: { status: "RUNNING", data: { start_date: "2026-03-16", plan_end_date: "2026-04-10", owner: "李工程" } },
-        gate3: { status: "UNSTARTED", data: { start_date: "2026-04-11", plan_end_date: "2026-05-01", owner: "王制造" } },
-        gate4: { status: "UNSTARTED", data: { start_date: "2026-05-02", plan_end_date: "2026-05-20", owner: "赵质量" } },
-        gate5: { status: "UNSTARTED", data: { start_date: "2026-05-21", plan_end_date: "2026-06-10", owner: "孙PLM" } }
-    };
-
-    if (!product.npi_workflow) {
-        product.npi_workflow = defaultNpiWorkflow;
+    let defaultNpiWorkflow = {};
+    if (pId === 3 || (product.name && product.name.includes("DBJ"))) {
+        defaultNpiWorkflow = {
+            gate1: { status: "COMPLETED", data: { start_date: "2026-03-05", plan_end_date: "2026-03-20", owner: "李工程" } },
+            gate2: { status: "COMPLETED", data: { start_date: "2026-03-21", plan_end_date: "2026-04-15", owner: "陈配方" } },
+            gate3: { status: "RUNNING", data: { start_date: "2026-04-16", plan_end_date: "2026-05-10", owner: "周工艺" } },
+            gate4: { status: "UNSTARTED", data: { start_date: "2026-05-11", plan_end_date: "2026-06-01", owner: "吴品质" } },
+            gate5: { status: "UNSTARTED", data: { start_date: "2026-06-02", plan_end_date: "2026-06-25", owner: "郑制造" } }
+        };
+    } else if (pId === 2 || (product.name && product.name.includes("HIS"))) {
+        defaultNpiWorkflow = {
+            gate1: { status: "COMPLETED", data: { start_date: "2026-02-10", plan_end_date: "2026-02-25", owner: "王技术" } },
+            gate2: { status: "COMPLETED", data: { start_date: "2026-02-26", plan_end_date: "2026-03-20", owner: "杨材料" } },
+            gate3: { status: "COMPLETED", data: { start_date: "2026-03-21", plan_end_date: "2026-04-15", owner: "徐设备" } },
+            gate4: { status: "RUNNING", data: { start_date: "2026-04-16", plan_end_date: "2026-05-05", owner: "朱质量" } },
+            gate5: { status: "UNSTARTED", data: { start_date: "2026-05-06", plan_end_date: "2026-05-30", owner: "胡生产" } }
+        };
+    } else {
+        defaultNpiWorkflow = {
+            gate1: { status: "COMPLETED", data: { start_date: "2026-03-01", plan_end_date: "2026-03-15", owner: "张研发" } },
+            gate2: { status: "RUNNING", data: { start_date: "2026-03-16", plan_end_date: "2026-04-10", owner: "李工程" } },
+            gate3: { status: "UNSTARTED", data: { start_date: "2026-04-11", plan_end_date: "2026-05-01", owner: "王制造" } },
+            gate4: { status: "UNSTARTED", data: { start_date: "2026-05-02", plan_end_date: "2026-05-20", owner: "赵质量" } },
+            gate5: { status: "UNSTARTED", data: { start_date: "2026-05-21", plan_end_date: "2026-06-10", owner: "孙PLM" } }
+        };
     }
+
+    product.npi_workflow = defaultNpiWorkflow;
     const workflow = product.npi_workflow;
 
     const titleEl = document.getElementById("npi-panel-title");
@@ -2836,27 +2854,44 @@ function renderBomSubpanel() {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    const defaultBomItems = [
-        { item_no: 1, mat_code: "MAT-RAW-001", mat_name: "高纯电解铜阴极板 (99.99%)", category: "主元原材料", std_qty: 1.025, unit: "kg/kg", loss_rate: "2.5%", supplier: "江西铜业" },
-        { item_no: 2, mat_code: "MAT-ADD-001", mat_name: "高纯生箔添加剂 A剂 (超平滑光亮剂)", category: "化学添加剂", std_qty: 4.5, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
-        { item_no: 3, mat_code: "MAT-ADD-002", mat_name: "晶粒细化剂 B剂 (高抗拉抑制剂)", category: "化学添加剂", std_qty: 2.2, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
-        { item_no: 4, mat_code: "MAT-CHEM-003", mat_name: "电子级浓硫酸 (98%)", category: "辅助化工原料", std_qty: 0.15, unit: "kg/kg", loss_rate: "3.0%", supplier: "巨化股份" },
-        { item_no: 5, mat_code: "MAT-TRT-004", mat_name: "偶联剂防氧化硅烷 C-101", category: "表面处理剂", std_qty: 25, unit: "g/m²", loss_rate: "0.5%", supplier: "道康宁" }
-    ];
+    const pId = Number(product.id);
+    let defaultBomItems = [];
+    if (pId === 3 || (product.name && product.name.includes("DBJ"))) {
+        defaultBomItems = [
+            { item_no: 1, mat_code: "MAT-CU-003", mat_name: "阴极电解高纯铜板 (99.995%)", category: "双晶原材料", std_qty: 1.030, unit: "kg/kg", loss_rate: "2.0%", supplier: "铜陵有色" },
+            { item_no: 2, mat_code: "MAT-ADD-DBJ1", mat_name: "双晶结构生成控制剂 D-1", category: "双晶添加剂", std_qty: 5.2, unit: "mL/kA·h", loss_rate: "0.8%", supplier: "聚赫新材自研" },
+            { item_no: 3, mat_code: "MAT-ADD-DBJ2", mat_name: "高强背板晶向抑制剂 D-2", category: "双晶添加剂", std_qty: 3.0, unit: "mL/kA·h", loss_rate: "0.8%", supplier: "聚赫新材自研" },
+            { item_no: 4, mat_code: "MAT-CHEM-008", mat_name: "高纯盐酸试剂 (37%)", category: "辅助化工", std_qty: 0.08, unit: "kg/kg", loss_rate: "2.0%", supplier: "江化微" },
+            { item_no: 5, mat_code: "MAT-SIL-201", mat_name: "背板高粘结耐热偶联剂", category: "表面处理剂", std_qty: 35, unit: "g/m²", loss_rate: "0.4%", supplier: "信越化学" }
+        ];
+    } else if (pId === 2 || (product.name && product.name.includes("HIS"))) {
+        defaultBomItems = [
+            { item_no: 1, mat_code: "MAT-AL-001", mat_name: "高平整高纯铝箔载体 (15μm)", category: "载体基材", std_qty: 1.00, unit: "m²/m²", loss_rate: "1.5%", supplier: "鼎胜新材" },
+            { item_no: 2, mat_code: "MAT-CU-001", mat_name: "3μm 极薄电镀铜阳极", category: "极薄电镀源", std_qty: 0.28, unit: "kg/kg", loss_rate: "1.0%", supplier: "江西铜业" },
+            { item_no: 3, mat_code: "MAT-POLY-01", mat_name: "界面高分子极薄剥离层液", category: "剥离试剂", std_qty: 12.5, unit: "mL/m²", loss_rate: "0.5%", supplier: "聚赫新材自研" },
+            { item_no: 4, mat_code: "MAT-TRT-002", mat_name: "载体防氧化防锈剂 H-02", category: "保护处理剂", std_qty: 18, unit: "g/m²", loss_rate: "0.5%", supplier: "巴斯夫" }
+        ];
+    } else {
+        defaultBomItems = [
+            { item_no: 1, mat_code: "MAT-RAW-001", mat_name: "高纯电解铜阴极板 (99.99%)", category: "主元原材料", std_qty: 1.025, unit: "kg/kg", loss_rate: "2.5%", supplier: "江西铜业" },
+            { item_no: 2, mat_code: "MAT-ADD-001", mat_name: "高纯生箔添加剂 A剂 (超平滑光亮剂)", category: "化学添加剂", std_qty: 4.5, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
+            { item_no: 3, mat_code: "MAT-ADD-002", mat_name: "晶粒细化剂 B剂 (高抗拉抑制剂)", category: "化学添加剂", std_qty: 2.2, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
+            { item_no: 4, mat_code: "MAT-CHEM-003", mat_name: "电子级浓硫酸 (98%)", category: "辅助化工原料", std_qty: 0.15, unit: "kg/kg", loss_rate: "3.0%", supplier: "巨化股份" },
+            { item_no: 5, mat_code: "MAT-TRT-004", mat_name: "偶联剂防氧化硅烷 C-101", category: "表面处理剂", std_qty: 25, unit: "g/m²", loss_rate: "0.5%", supplier: "道康宁" }
+        ];
+    }
 
     const defaultBom = {
         version: "V1.0",
         status: "活动",
-        notes: "量产标准初始配方",
+        notes: `${product.name || '标准'}量产标准初始配方`,
         created_at: "2026-03-20",
-        creator: "张研发",
+        creator: product.creator || "张研发",
         items: defaultBomItems
     };
 
-    if (!product.bom_list || product.bom_list.length === 0) {
-        product.bom_list = [defaultBom];
-        product.bom = defaultBom;
-    }
+    product.bom_list = [defaultBom];
+    product.bom = defaultBom;
 
     let displayBom = null;
     if (state.selectedBomVersion && product.bom_list) {
@@ -3137,64 +3172,39 @@ function renderRoutingSubpanel() {
     // Reset selected stage index when loading a new product
     state.activeRoutingStageIdx = undefined;
 
+    const pId = Number(product.id);
+    let defaultRoutingSteps = [];
+    if (pId === 3 || (product.name && product.name.includes("DBJ"))) {
+        defaultRoutingSteps = [
+            { stage_name: "G1 溶铜造液工段", status: "活动", process_code: "PROC-DBJ-01", equipment_name: "双晶高纯溶铜系统 (EQ-SOL-DBJ01)", station_name: "造液车间-3号线", std_cycle_time: 40, key_params: "铜离子: 90-100 g/L | 硫酸: 95-105 g/L | 溶铜温度: 85±2 ℃", operator_role: "双晶造液员 / 李工程" },
+            { stage_name: "G2 阴极电镀双晶层", status: "进行中", process_code: "PROC-DBJ-02", equipment_name: "脉冲双晶高频电镀机台 (EQ-ED-DBJ02)", station_name: "生箔车间-08号机", std_cycle_time: 65, key_params: "双晶脉冲电流: 80 A/dm² | 阴极辊转速: 1.5 m/min | D-1添加剂: 5.2 mL/kA·h", operator_role: "双晶资深操作工 / 周主管" },
+            { stage_name: "G3 晶向热处理工段", status: "未开始", process_code: "PROC-DBJ-03", equipment_name: "连续式真空气氛退火炉 (EQ-HT-DBJ03)", station_name: "热处理车间-01线", std_cycle_time: 50, key_params: "退火温度: 180±5 ℃ | 保温时间: 45 min | 保护气体: 99.999% 高纯氩气", operator_role: "热处理工程师 / 蔡工" },
+            { stage_name: "G4 双面粗化处理", status: "未开始", process_code: "PROC-DBJ-04", equipment_name: "双面对称粗化固化联动机 (EQ-TRT-DBJ04)", station_name: "表面处理车间-04线", std_cycle_time: 45, key_params: "粗化电流: 20 A/dm² | 硅烷涂布量: 35 g/m² | 烘干温度: 150 ℃", operator_role: "表处技术员 / 严资深" },
+            { stage_name: "G5 精密分切打包", status: "未开始", process_code: "PROC-DBJ-05", equipment_name: "双晶特种分切机 & 在线表面粗糙度仪 (EQ-SLT-DBJ05)", station_name: "分切车间-05机", std_cycle_time: 30, key_params: "分切张力: 140 N | 在线Rz检测精度: 0.05 μm", operator_role: "分切组长 / 范工" }
+        ];
+    } else if (pId === 2 || (product.name && product.name.includes("HIS"))) {
+        defaultRoutingSteps = [
+            { stage_name: "G1 铝载体前处理", status: "活动", process_code: "PROC-HIS-01", equipment_name: "超平整铝箔清洗拉矫机 (EQ-PRE-HIS01)", station_name: "载体车间-01线", std_cycle_time: 30, key_params: "拉矫张力: 200 N | 清洗温度: 65 ℃ | 洁净度: 100 级", operator_role: "载体操作工 / 王技术" },
+            { stage_name: "G2 剥离层涂布工段", status: "进行中", process_code: "PROC-HIS-02", equipment_name: "高分子界面涂布烤箱 (EQ-COAT-HIS02)", station_name: "涂布车间-02线", std_cycle_time: 40, key_params: "涂布湿厚: 0.5 μm | 烘干风速: 12 m/s | 固化温度: 160 ℃", operator_role: "涂布工程师 / 杨材料" },
+            { stage_name: "G3 3μm 极薄铜电镀", status: "未开始", process_code: "PROC-HIS-03", equipment_name: "极薄电镀铜专用机 (EQ-ED-HIS03)", station_name: "生箔车间-极薄01机", std_cycle_time: 55, key_params: "阴极电流: 45 A/dm² | 针孔在线扫描率: 100%", operator_role: "极薄操作工 / 徐设备" },
+            { stage_name: "G4 复合压合与剥离", status: "未开始", process_code: "PROC-HIS-04", equipment_name: "载体复合贴合机 (EQ-LAM-HIS04)", station_name: "压合车间-03线", std_cycle_time: 35, key_params: "贴合辊压: 0.4 MPa | 剥离力监控: 15-35 N/m", operator_role: "压合技术员 / 朱质量" },
+            { stage_name: "G5 极薄分卷检验", status: "未开始", process_code: "PROC-HIS-05", equipment_name: "恒张力分切机 & CCD 针孔仪 (EQ-SLT-HIS05)", station_name: "分切车间-06机", std_cycle_time: 25, key_params: "分切张力: 80 N | 零针孔感应自动报警拦截", operator_role: "检验组长 / 胡生产" }
+        ];
+    } else {
+        defaultRoutingSteps = [
+            { stage_name: "G1 溶铜造液工段", status: "活动", process_code: "PROC-SOL-01", equipment_name: "主溶铜罐 & 氧气高效浸出系统 (EQ-SOL-001)", station_name: "造液车间-1号线", std_cycle_time: 45, key_params: "铜离子浓度: 85-95 g/L | 游离硫酸: 90-100 g/L | 溶铜温度: 82±2 ℃ | 溶氧量: ≥ 18 mg/L", operator_role: "造液工艺员 / 张工程" },
+            { stage_name: "G2 净液精滤工段", status: "未开始", process_code: "PROC-FIL-02", equipment_name: "多级钛芯精密过滤器 & 活性碳吸附塔 (EQ-FIL-003)", station_name: "净液车间-2号线", std_cycle_time: 30, key_params: "过滤精度: ≤ 0.22 μm | 浊度: ≤ 0.5 NTU | 循环流量: 180 m³/h", operator_role: "品质检验员 / 李品保" },
+            { stage_name: "G3 生箔生产工段", status: "未开始", process_code: "PROC-ED-03", equipment_name: "高精度阴极辊电镀机台 & 阳极槽 (EQ-ED-008)", station_name: "生箔车间-生箔05号机", std_cycle_time: 60, key_params: "电流密度: 65-75 A/dm² | 阴极辊转速: 1.8-2.2 m/min | 添加剂A剂: 4.5 mL/kA·h", operator_role: "生箔高级操作工 / 王主管" },
+            { stage_name: "G4 表面处理工段", status: "未开始", process_code: "PROC-TRT-04", equipment_name: "高频铜箔粗化/固化/锌镍合金镀层联动机 (EQ-TRT-002)", station_name: "表面处理车间-02号线", std_cycle_time: 50, key_params: "粗化电流: 18 A/dm² | 防氧化硅烷浓度: 2.5% | 烘干温度: 145 ℃", operator_role: "表面处理技术员 / 赵资深" },
+            { stage_name: "G5 分切分卷与检验工段", status: "未开始", process_code: "PROC-SLT-05", equipment_name: "高精度自动张力分切机 & 针孔在线CCD检测仪 (EQ-SLT-006)", station_name: "分切车间-3号分切机", std_cycle_time: 25, key_params: "分切刀压: 0.35 MPa | 分切张力: 120 N | CCD在线缺陷扫描率: 100%", operator_role: "包装分切工 / 孙组长" }
+        ];
+    }
+
     const defaultRoutingHistory = {
-        "V1.0 (生产通用)": [
-            {
-                stage_name: "G1 溶铜造液工段",
-                status: "活动",
-                process_code: "PROC-SOL-01",
-                equipment_name: "主溶铜罐 & 氧气高效浸出系统 (EQ-SOL-001)",
-                station_name: "造液车间-1号线",
-                std_cycle_time: 45,
-                key_params: "铜离子浓度: 85-95 g/L | 游离硫酸: 90-100 g/L | 溶铜温度: 82±2 ℃ | 溶氧量: ≥ 18 mg/L",
-                operator_role: "造液工艺员 / 张工程"
-            },
-            {
-                stage_name: "G2 净液精滤工段",
-                status: "未开始",
-                process_code: "PROC-FIL-02",
-                equipment_name: "多级钛芯精密过滤器 & 活性碳吸附塔 (EQ-FIL-003)",
-                station_name: "净液车间-2号线",
-                std_cycle_time: 30,
-                key_params: "过滤精度: ≤ 0.22 μm | 浊度: ≤ 0.5 NTU | 循环流量: 180 m³/h",
-                operator_role: "品质检验员 / 李品保"
-            },
-            {
-                stage_name: "G3 生箔生产工段",
-                status: "未开始",
-                process_code: "PROC-ED-03",
-                equipment_name: "高精度阴极辊电镀机台 & 阳极槽 (EQ-ED-008)",
-                station_name: "生箔车间-生箔05号机",
-                std_cycle_time: 60,
-                key_params: "电流密度: 65-75 A/dm² | 阴极辊转速: 1.8-2.2 m/min | 添加剂A剂: 4.5 mL/kA·h",
-                operator_role: "生箔高级操作工 / 王主管"
-            },
-            {
-                stage_name: "G4 表面处理工段",
-                status: "未开始",
-                process_code: "PROC-TRT-04",
-                equipment_name: "高频铜箔粗化/固化/锌镍合金镀层联动机 (EQ-TRT-002)",
-                station_name: "表面处理车间-02号线",
-                std_cycle_time: 50,
-                key_params: "粗化电流: 18 A/dm² | 防氧化硅烷浓度: 2.5% | 烘干温度: 145 ℃",
-                operator_role: "表面处理技术员 / 赵资深"
-            },
-            {
-                stage_name: "G5 分切分卷与检验工段",
-                status: "未开始",
-                process_code: "PROC-SLT-05",
-                equipment_name: "高精度自动张力分切机 & 针孔在线CCD检测仪 (EQ-SLT-006)",
-                station_name: "分切车间-3号分切机",
-                std_cycle_time: 25,
-                key_params: "分切刀压: 0.35 MPa | 分切张力: 120 N | CCD在线缺陷扫描率: 100%",
-                operator_role: "包装分切工 / 孙组长"
-            }
-        ]
+        "V1.0 (生产通用)": defaultRoutingSteps
     };
 
-    if (!product.routing_history || Object.keys(product.routing_history).length === 0) {
-        product.routing_history = defaultRoutingHistory;
-    }
+    product.routing_history = defaultRoutingHistory;
 
     const history = product.routing_history;
     const versions = Object.keys(history).sort().reverse();
