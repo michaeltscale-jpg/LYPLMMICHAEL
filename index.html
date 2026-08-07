@@ -3277,16 +3277,137 @@ requests.post(url, json=payload)</code></pre>
         }
     </style>
     <div class="modal-overlay" id="modal-user-permissions" style="z-index: 1100;">
-        <div class="modal-box" style="width: 550px; max-height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-header">
-                <h3><i data-lucide="shield-check" style="vertical-align:middle; margin-right:6px; color:var(--color-primary);"></i> 配置用户具体模块与工段权限</h3>
-                <button class="modal-close" onclick="closeModal('modal-user-permissions')">&times;</button>
+        <div class="modal-box" style="width: 650px; max-height: 88vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="shield-check" style="width: 20px; height: 20px; color: #60a5fa;"></i> 配置用户具体模块与工段读写权限
+                </h3>
+                <button class="modal-close" onclick="closeModal('modal-user-permissions')" style="color: #ffffff; font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
             </div>
-            <div class="modal-body" style="padding: 16px 20px; overflow-y: auto; flex: 1;">
+            <div class="modal-body" style="padding: 18px 22px; overflow-y: auto; flex: 1; background: #ffffff; font-size: 0.85rem;">
                 <input type="hidden" id="perms-user-id">
-                <div style="margin-bottom: 12px; font-weight: 700; font-size: 0.9rem; color: #1e293b; display: flex; align-items: center; gap: 6px;">
-                    <span>当前编辑用户：</span>
-                    <span id="perms-user    <!-- ===== 参考新增设备开发模板：新增/编辑物料承认申请表 Modal 弹窗 ===== -->
+                <div style="margin-bottom: 14px; padding: 10px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; font-weight: 700; font-size: 0.9rem; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span>当前编辑用户：</span>
+                        <span id="perms-user-display" style="color: #2563eb;">--</span>
+                    </div>
+                    <span style="font-size: 0.75rem; color: #3b82f6; font-weight: 600;">权限实时生效</span>
+                </div>
+
+                <div style="font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="layout-grid" style="width: 16px; height: 16px; color: #2563eb;"></i> 1. 系统核心功能模块权限
+                </div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+                    <thead style="background: #f8fafc; color: #475569;">
+                        <tr>
+                            <th style="padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0;">系统模块名称</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">查看 / 浏览</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">编辑 / 写入</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">删除 / 归档</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">📊 PLM 驾驶舱</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dashboard_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dashboard_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dashboard_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">🚀 新品开发控制台 (NPD)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_product_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_product_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_product_delete"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">📦 物料承认管控 (MQC)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_mqc_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_mqc_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_mqc_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">⚙️ 设备开发管控 (EMS)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ems_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ems_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ems_delete"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">📁 受控文管中心 (DMS)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dms_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dms_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dms_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">🔀 工程设变管控 (ECN)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ecn_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ecn_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ecn_delete"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">👤 用户与系统角色权限</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_delete"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                    <i data-lucide="cpu" style="width: 16px; height: 16px; color: #059669;"></i> 2. 生产制程工段工艺参数控制权限
+                </div>
+                <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; font-size: 0.8rem;">
+                    <thead style="background: #f8fafc; color: #475569;">
+                        <tr>
+                            <th style="padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0;">关键工段名称</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">查看 / 浏览</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">编辑 / 写入</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #e2e8f0;">删除 / 归档</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">G1 溶铜造液工段</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_init_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_init_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_init_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">G2 真空溅镀工段</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_sputter_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_sputter_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_sputter_delete"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">G3 水电镀生箔工段</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_electro_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_electro_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_electro_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">G4 表面处理与固化工段</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_pa_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_pa_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_pa_delete"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">G5 分切分卷与检验工段</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_peel_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_peel_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-stage_peel_delete"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="padding: 14px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-secondary" onclick="closeModal('modal-user-permissions')" style="padding: 8px 16px; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700; cursor: pointer;">取消</button>
+                <button class="btn-primary" onclick="submitUserPermissions()" style="padding: 8px 18px; background: #2563eb; color: #ffffff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
+                    <i data-lucide="save" style="width: 15px; height: 15px;"></i> 保存权限配置
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 参考新增设备开发模板：新增/编辑物料承认申请表 Modal 弹窗 ===== -->
     <div class="modal-overlay" id="modal-mqc-material">
         <div class="modal-content" style="max-width: 680px; width: 92%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);">
             <div class="modal-header" style="background: #ffffff; color: #0f172a; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">

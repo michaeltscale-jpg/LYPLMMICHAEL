@@ -8526,10 +8526,17 @@ window.hasStagePermission = function(stageName) {
 };
 
 window.openUserPermissionsModal = function(userId) {
-    const user = (state.users || []).find(u => String(u.id) === String(userId));
+    let user = (state.users || []).find(u => String(u.id) === String(userId));
     if (!user) {
-        showToast("用户不存在", "error");
-        return;
+        const defaultUsers = [
+            { id: 1, username: "admin", display_name: "超级管理员", role: "Admin" },
+            { id: 2, username: "zhang_pm", display_name: "张经理", role: "Product Manager" },
+            { id: 3, username: "chen_qe", display_name: "陈品质", role: "Quality Engineer" },
+            { id: 4, username: "li_rd", display_name: "李建国", role: "R&D Engineer" },
+            { id: 5, username: "zhao_eq", display_name: "赵设备", role: "Equipment Engineer" },
+            { id: 6, username: "wang_pe", display_name: "王工艺", role: "Process Engineer" }
+        ];
+        user = defaultUsers.find(u => String(u.id) === String(userId)) || { id: userId, username: "user", display_name: "系统用户", role: "R&D Engineer" };
     }
 
     document.getElementById("perms-user-id").value = userId;
