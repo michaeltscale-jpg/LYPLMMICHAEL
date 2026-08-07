@@ -180,6 +180,9 @@
                             <option value="3">DBJ 双晶铜箔</option>
                         </select>
                     </div>
+                    <button class="btn-secondary" onclick="openAiPlatformPortal()" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #93c5fd; color: #1e40af; font-weight: 800; font-size: 0.85rem; padding: 6px 14px; height: 34px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.15); box-sizing: border-box; transition: all 0.2s ease;" title="调出【AI 管理平台 (公开评测)】全景应用导航矩阵">
+                        <i data-lucide="layout-grid" style="width: 15px; height: 15px; color: #2563eb;"></i> AI 管理平台
+                    </button>
                     <button class="btn-secondary" id="btn-reset-demo" onclick="resetDemoDatabase()" style="background: #ffffff; border: 1.5px solid #cbd5e1; color: #475569; font-weight: 700; font-size: 0.85rem; padding: 6px 14px; height: 34px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); box-sizing: border-box;" title="用户测试试填数据后，随时可一键重置恢复为干净演示数据">
                         <i data-lucide="refresh-cw" style="width: 15px; height: 15px; color: #2563eb;"></i> 重置演示数据
                     </button>
@@ -5153,6 +5156,92 @@ requests.post(url, json=payload)</code></pre>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: AI 管理平台（公开评测）全景应用导航 portal ================= -->
+    <div class="modal-overlay" id="modal-ai-platform-portal" style="z-index: 12000; backdrop-filter: blur(10px);" onclick="closeModal('modal-ai-platform-portal')">
+        <div class="modal-box" style="width: 460px; background: #ffffff; border-radius: 20px; padding: 22px 24px; box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35); border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; gap: 16px;" onclick="event.stopPropagation()">
+            
+            <!-- 顶部 Header 标题栏 -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 4px;">
+                <div style="font-size: 1.15rem; font-weight: 900; color: #0f172a; letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px;">
+                    <span>AI 管理平台（公开评测）</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="javascript:void(0)" onclick="onAiPlatformSettingClick()" style="font-size: 0.92rem; font-weight: 700; color: #64748b; text-decoration: none; display: flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#64748b'">
+                        <i data-lucide="sliders" style="width: 15px; height: 15px;"></i> 设置
+                    </a>
+                    <button onclick="closeModal('modal-ai-platform-portal')" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; line-height: 1; padding: 0;">&times;</button>
+                </div>
+            </div>
+
+            <!-- 应用图标 7 大网格 Matrix (完美对齐用户截图) -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 14px; text-align: center;">
+                
+                <!-- 1. AI 知识库 -->
+                <div onclick="switchAiSubApp('AI知识库')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #78cbf5 0%, #38bdf8 50%, #0284c7 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.35);">
+                        <i data-lucide="book-open-check" style="width: 36px; height: 36px; color: #ffffff;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">AI知识库</span>
+                </div>
+
+                <!-- 2. 财务管理... -->
+                <div onclick="switchAiSubApp('财务管理平台')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #60a5fa 0%, #2563eb 50%, #1d4ed8 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);">
+                        <i data-lucide="line-chart" style="width: 36px; height: 36px; color: #ffffff;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">财务管理...</span>
+                </div>
+
+                <!-- 3. 聚赫研发... -->
+                <div onclick="switchAiSubApp('聚赫研发中心')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #c084fc 0%, #9333ea 50%, #6b21a8 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(147, 51, 234, 0.35);">
+                        <i data-lucide="sparkles" style="width: 36px; height: 36px; color: #ffffff;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">聚赫研发...</span>
+                </div>
+
+                <!-- 4. IT管理平台 -->
+                <div onclick="switchAiSubApp('IT管理平台')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 50%, #0f766e 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(20, 184, 166, 0.35);">
+                        <i data-lucide="monitor" style="width: 36px; height: 36px; color: #ffffff;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">IT管理平台</span>
+                </div>
+
+                <!-- 5. 聚赫设备... -->
+                <div onclick="switchAiSubApp('聚赫设备管理')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: #ffffff; border: 2.5px solid #0284c7; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(2, 132, 199, 0.18);">
+                        <i data-lucide="wrench" style="width: 36px; height: 36px; color: #0284c7;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">聚赫设备...</span>
+                </div>
+
+                <!-- 6. 聚赫PLM... (高亮当前在线系统) -->
+                <div onclick="switchAiSubApp('聚赫PLM')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2.5px solid #10b981; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35); position: relative;">
+                        <i data-lucide="box" style="width: 38px; height: 38px; color: #059669;"></i>
+                        <span style="position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; background: #10b981; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 6px #10b981;" title="当前所在 PLM 系统"></span>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 900; color: #059669;">聚赫PLM...</span>
+                </div>
+
+                <!-- 7. 测试中心... -->
+                <div onclick="switchAiSubApp('测试中心平台')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                    <div style="width: 68px; height: 68px; border-radius: 18px; background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35);">
+                        <i data-lucide="cpu" style="width: 36px; height: 36px; color: #ffffff;"></i>
+                    </div>
+                    <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b;">测试中心...</span>
+                </div>
+
+            </div>
+
+            <div style="font-size: 0.72rem; color: #94a3b8; text-align: center; margin-top: 4px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                聚赫新材 AI 数字化平台统一身份认证与单点登录 (SSO) 生态中心
+            </div>
+
         </div>
     </div>
 

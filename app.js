@@ -16120,6 +16120,34 @@ window.submitEmsHistorySupplement = async function() {
     }
 };
 
+// ==================== AI 管理平台（公开评测）应用导航中心逻辑 ====================
+window.openAiPlatformPortal = function() {
+    if (typeof openModal === 'function') openModal("modal-ai-platform-portal");
+    const modalEl = document.getElementById("modal-ai-platform-portal");
+    if (modalEl) {
+        modalEl.classList.add("active");
+        modalEl.style.display = "flex";
+    }
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+};
+
+window.switchAiSubApp = function(appName) {
+    if (appName === '聚赫PLM') {
+        if (typeof showToast === 'function') showToast("✨ 您当前正处于【聚赫 PLM 生命周期管理平台】中，全站功能已就绪！", "success");
+    } else {
+        if (typeof showToast === 'function') showToast(`🚀 已为您成功发起【${appName}】单点登录 (SSO) 调起指令，正在载入安全微前端应用...`, "success");
+    }
+    if (typeof closeModal === 'function') closeModal("modal-ai-platform-portal");
+    const modalEl = document.getElementById("modal-ai-platform-portal");
+    if (modalEl) { modalEl.classList.remove("active"); modalEl.style.display = "none"; }
+};
+
+window.onAiPlatformSettingClick = function() {
+    if (typeof showToast === 'function') showToast("⚙️ 正在打开【AI 管理平台 (公开评测)】全局 SSO 与微前端入口配置视窗...", "info");
+};
+
 
 
 
