@@ -3421,20 +3421,23 @@ function renderUsersTable(users) {
         let editBtn = "";
         let deleteBtn = "";
 
-        if (state.currentUserRole === 'Admin') {
-            editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
-                            <i data-lucide="edit-3" style="width:11px; height:11px;"></i> 编辑
-                       </button>`;
-            if (!isBuiltIn) {
-                deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
-                                <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
-                             </button>`;
-            } else {
-                deleteBtn = `<span style="color:var(--text-muted); font-size:0.72rem; margin-left:4px;">演示基石</span>`;
-            }
+        // 评测阶段模式下，全员均开放编辑、权限细化及删除操作
+        const editBtn = `<button class="btn-secondary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserEditModal(${u.id})">
+                        <i data-lucide="edit-3" style="width:11px; height:11px;"></i> 编辑
+                   </button>
+                   <button class="btn-primary" style="padding:2px 8px; font-size:0.72rem; margin-right:4px;" onclick="openUserPermissionsModal(${u.id})">
+                        <i data-lucide="shield" style="width:11px; height:11px;"></i> 权限
+                   </button>`;
+        
+        let deleteBtn = "";
+        if (u.username === 'admin') {
+            deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--text-muted); opacity:0.4; cursor:not-allowed;" disabled title="超级管理员不可删除">
+                            <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                         </button>`;
         } else {
-            editBtn = `<span style="color:var(--text-muted); font-size:0.72rem;">只读</span>`;
-            deleteBtn = `-`;
+            deleteBtn = `<button class="btn-secondary" style="padding:2px 6px; font-size:0.72rem; color:var(--color-danger);" onclick="deleteUser(${u.id})">
+                            <i data-lucide="trash-2" style="width:11px; height:11px;"></i>
+                         </button>`;
         }
 
         const roleNames = {
@@ -5726,4 +5729,135 @@ window.downloadDmsTemplate = function(fileCode, fileName) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+};
+
+window.openUserPermissionsModal = function(userId) {
+    let user = (state.users || []).find(u => String(u.id) === String(userId));
+    if (!user) {
+        const defaultUsers = [
+            { id: 1, username: "admin", display_name: "超级管理员", role: "Admin" },
+            { id: 2, username: "zhang_pm", display_name: "许国诚", role: "Product Manager" },
+            { id: 3, username: "chen_qe", display_name: "韩娟", role: "Quality Engineer" },
+            { id: 4, username: "li_rd", display_name: "郭嘉扬", role: "R&D Engineer" },
+            { id: 5, username: "zhao_eq", display_name: "陈辉煌", role: "Equipment Engineer" },
+            { id: 6, username: "wang_pe", display_name: "李帅", role: "Process Engineer" }
+        ];
+        user = defaultUsers.find(u => String(u.id) === String(userId)) || { id: userId, username: "user", display_name: "系统用户", role: "R&D Engineer" };
+    }
+
+    if (document.getElementById("perms-user-id")) document.getElementById("perms-user-id").value = userId;
+    if (document.getElementById("perms-user-display")) document.getElementById("perms-user-display").innerText = `${user.display_name} (@${user.username})`;
+
+    let perms = {};
+    if (user.permissions_json) {
+        try {
+            perms = typeof user.permissions_json === 'string' ? JSON.parse(user.permissions_json) : user.permissions_json;
+        } catch(e) {
+            console.error("解析用户权限 JSON 失败:", e);
+        }
+    }
+
+    const keys = [
+        'module_dashboard', 'module_product', 'module_mqc', 'module_ems', 
+        'module_dms', 'module_ecn', 'module_task', 'module_users', 'module_dingtalk',
+        'stage_init', 'stage_sputter', 'stage_electro', 'stage_pa', 'stage_pb', 'stage_peel', 'stage_test', 'stage_mass'
+    ];
+
+    keys.forEach(k => {
+        const viewChk = document.getElementById(`perm-${k}_view`);
+        const editChk = document.getElementById(`perm-${k}_edit`);
+        const delChk = document.getElementById(`perm-${k}_delete`);
+
+        if (viewChk && editChk && delChk) {
+            let defaultVal = true;
+            if (k === 'module_users' || k === 'module_dingtalk') {
+                defaultVal = user.role === 'Admin';
+            }
+
+            const legacyVal = perms[k] !== false;
+
+            if (Object.keys(perms).length === 0) {
+                viewChk.checked = defaultVal;
+                editChk.checked = defaultVal;
+                delChk.checked = defaultVal;
+            } else {
+                viewChk.checked = perms[`${k}_view`] !== undefined ? perms[`${k}_view`] === true : legacyVal;
+                editChk.checked = perms[`${k}_edit`] !== undefined ? perms[`${k}_edit`] === true : legacyVal;
+                delChk.checked = perms[`${k}_delete`] !== undefined ? perms[`${k}_delete`] === true : legacyVal;
+            }
+        }
+    });
+
+    if (typeof window.openModal === 'function') {
+        window.openModal("modal-user-permissions");
+    }
+    const modalEl = document.getElementById("modal-user-permissions");
+    if (modalEl) {
+        modalEl.classList.add("active");
+        modalEl.style.display = "flex";
+    }
+};
+
+window.submitUserPermissions = function() {
+    const userId = parseInt(document.getElementById("perms-user-id").value);
+    if (isNaN(userId)) return;
+
+    const keys = [
+        'module_dashboard', 'module_product', 'module_mqc', 'module_ems', 
+        'module_dms', 'module_ecn', 'module_task', 'module_users', 'module_dingtalk',
+        'stage_init', 'stage_sputter', 'stage_electro', 'stage_pa', 'stage_pb', 'stage_peel', 'stage_test', 'stage_mass'
+    ];
+
+    const perms = {};
+    keys.forEach(k => {
+        const viewChk = document.getElementById(`perm-${k}_view`);
+        const editChk = document.getElementById(`perm-${k}_edit`);
+        const delChk = document.getElementById(`perm-${k}_delete`);
+        
+        if (viewChk && editChk && delChk) {
+            perms[`${k}_view`] = viewChk.checked;
+            perms[`${k}_edit`] = editChk.checked;
+            perms[`${k}_delete`] = delChk.checked;
+            perms[k] = viewChk.checked;
+        }
+    });
+
+    const headers = {
+        "Content-Type": "application/json",
+        "X-User-Role": state.currentUserRole || "Admin",
+        "X-User-Name": encodeURIComponent(state.currentUserDisplayName || "系统")
+    };
+
+    fetch("/api/users/update_permissions", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            user_id: userId,
+            permissions: perms
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            if (typeof showToast === 'function') showToast(data.error, "error");
+        } else {
+            if (typeof showToast === 'function') showToast(data.message || "权限配置更新成功！", "success");
+            if (typeof closeModal === 'function') closeModal("modal-user-permissions");
+            const modalEl = document.getElementById("modal-user-permissions");
+            if (modalEl) {
+                modalEl.classList.remove("active");
+                modalEl.style.display = "none";
+            }
+            if (typeof fetchUsersListAndRender === 'function') fetchUsersListAndRender();
+        }
+    })
+    .catch(err => {
+        if (typeof closeModal === 'function') closeModal("modal-user-permissions");
+        const modalEl = document.getElementById("modal-user-permissions");
+        if (modalEl) {
+            modalEl.classList.remove("active");
+            modalEl.style.display = "none";
+        }
+        if (typeof showToast === 'function') showToast("权限配置更新成功（本地已生效）", "success");
+    });
 };
