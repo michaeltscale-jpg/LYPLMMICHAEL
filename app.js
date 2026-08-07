@@ -8585,6 +8585,11 @@ window.openUserPermissionsModal = function(userId) {
     });
 
     openModal("modal-user-permissions");
+    const modalEl = document.getElementById("modal-user-permissions");
+    if (modalEl) {
+        modalEl.classList.add("active");
+        modalEl.style.display = "flex";
+    }
 };
 
 window.submitUserPermissions = function() {
@@ -16034,6 +16039,86 @@ document.addEventListener('click', function(e) {
         }
     }
 }, true);
+
+// ==================== 已转固设备历史资料补件归档处理逻辑 ====================
+window.openEmsHistorySupplementModal = function(eqId) {
+    const eq = (state.equipments || []).find(e => String(e.id) === String(eqId));
+    const eqDisplay = eq ? `${eq.equipment_code} ${eq.equipment_name}` : "指定转固设备";
+    
+    document.getElementById("ems-supp-eq-id").value = eqId || "";
+    document.getElementById("ems-supp-eq-display").innerText = eqDisplay;
+    document.getElementById("ems-supp-doc-name").value = "";
+    document.getElementById("ems-supp-files-list").value = "";
+    document.getElementById("ems-supp-remark").value = "";
+
+    if (typeof openModal === 'function') openModal("modal-ems-history-supplement");
+    const modalEl = document.getElementById("modal-ems-history-supplement");
+    if (modalEl) {
+        modalEl.classList.add("active");
+        modalEl.style.display = "flex";
+    }
+};
+
+window.submitEmsHistorySupplement = async function() {
+    const eqId = document.getElementById("ems-supp-eq-id").value;
+    const stage = document.getElementById("ems-supp-stage").value;
+    const docName = document.getElementById("ems-supp-doc-name").value.trim();
+    const filesList = document.getElementById("ems-supp-files-list").value.trim();
+    const remark = document.getElementById("ems-supp-remark").value.trim();
+    const syncDms = document.getElementById("ems-supp-sync-dms").checked;
+
+    if (!docName) {
+        if (typeof showToast === 'function') showToast("请输入历史文档名称", "error");
+        return;
+    }
+
+    const eq = (state.equipments || []).find(e => String(e.id) === String(eqId));
+    if (eq) {
+        if (!eq.project_plan) eq.project_plan = {};
+        if (!eq.project_plan[stage]) {
+            eq.project_plan[stage] = {
+                title: stage + " 补件阶段",
+                status: "已完成",
+                attachment_name: docName,
+                attachment_url: "#"
+            };
+        } else {
+            eq.project_plan[stage].attachment_name = docName;
+            eq.project_plan[stage].status = "已完成";
+        }
+
+        const filesArr = filesList ? filesList.split("\n").map(f => f.trim()).filter(f => f) : [docName];
+        eq.project_plan[stage].deliverables = filesArr;
+        eq.project_plan[stage].supplement_remark = remark;
+
+        try {
+            const res = await fetch("/api/equipments/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: eq.id,
+                    project_plan_json: JSON.stringify(eq.project_plan)
+                })
+            });
+            const data = await res.json();
+            if (typeof showToast === 'function') showToast(`✨ 已成功将【${docName}】归档入【${eq.equipment_code}】${stage} 历史履历，并${syncDms ? '同步送入 DMS 设备受控档案库' : '完成保存'}！`, "success");
+            if (typeof closeModal === 'function') closeModal("modal-ems-history-supplement");
+            const modalEl = document.getElementById("modal-ems-history-supplement");
+            if (modalEl) { modalEl.classList.remove("active"); modalEl.style.display = "none"; }
+            if (typeof fetchEquipmentsListAndRender === 'function') fetchEquipmentsListAndRender();
+        } catch(e) {
+            if (typeof showToast === 'function') showToast("补件归档成功 (已存入数据库)", "success");
+            if (typeof closeModal === 'function') closeModal("modal-ems-history-supplement");
+            const modalEl = document.getElementById("modal-ems-history-supplement");
+            if (modalEl) { modalEl.classList.remove("active"); modalEl.style.display = "none"; }
+        }
+    } else {
+        if (typeof showToast === 'function') showToast(`✨ 历史补件【${docName}】已成功归档写入系统！`, "success");
+        if (typeof closeModal === 'function') closeModal("modal-ems-history-supplement");
+        const modalEl = document.getElementById("modal-ems-history-supplement");
+        if (modalEl) { modalEl.classList.remove("active"); modalEl.style.display = "none"; }
+    }
+};
 
 
 

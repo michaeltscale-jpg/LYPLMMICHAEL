@@ -3343,11 +3343,23 @@ requests.post(url, json=payload)</code></pre>
                             <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ecn_edit"></td>
                             <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_ecn_delete"></td>
                         </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">📋 研发受控任务与进度 (Task)</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_task_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_task_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_task_delete"></td>
+                        </tr>
                         <tr>
                             <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">👤 用户与系统角色权限</td>
                             <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_view"></td>
                             <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_edit"></td>
                             <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_users_delete"></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td style="padding: 8px 12px; border: 1px solid #e2e8f0; font-weight: 600;">🔔 钉钉协同配置与回调</td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dingtalk_view"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dingtalk_edit"></td>
+                            <td style="text-align: center; border: 1px solid #e2e8f0;"><input type="checkbox" id="perm-module_dingtalk_delete"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -4694,6 +4706,74 @@ requests.post(url, json=payload)</code></pre>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('modal-ems-stage-input-files')">取消</button>
                 <button class="btn-primary" onclick="saveEmsStageInputFiles()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: 已转固设备历史资料补件归档 ================= -->
+    <div class="modal-overlay" id="modal-ems-history-supplement" style="z-index: 1150;">
+        <div class="modal-box" style="width: 580px; max-height: 88vh; display: flex; flex-direction: column; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.35);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="folder-archive" style="width: 20px; height: 20px; color: #38bdf8;"></i> 已转固设备历史资料补件归档
+                </h3>
+                <button class="modal-close" onclick="closeModal('modal-ems-history-supplement')" style="color: #ffffff; font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1; background: #ffffff; font-size: 0.85rem;">
+                <input type="hidden" id="ems-supp-eq-id">
+                
+                <div style="margin-bottom: 14px; padding: 12px 16px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 8px;">
+                    <div style="font-size: 0.8rem; color: #0369a1; font-weight: 700; margin-bottom: 2px;">目标归档设备</div>
+                    <div id="ems-supp-eq-display" style="font-size: 0.95rem; font-weight: 800; color: #0284c7;">EQ-SOL-001 主溶铜罐系统</div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                        选择补件对应的研发/验收阶段 <span style="color: #ef4444;">*</span>
+                    </label>
+                    <select id="ems-supp-stage" class="form-control" style="width: 100%; height: 38px; padding: 6px 12px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                        <option value="M1">M1 立项评估阶段 (立项书、可行性报告)</option>
+                        <option value="M2">M2 方案设计阶段 (机械3D图纸、电气原理图)</option>
+                        <option value="M3">M3 制造加工阶段 (零件加工单、BOM采购表)</option>
+                        <option value="M4">M4 现场调试阶段 (FAT/SAT调试记录、试运转单)</option>
+                        <option value="M5">M5 验收交付阶段 (最终验收报告、CPK分析报告)</option>
+                        <option value="M6" selected>M6 资产转固阶段 (固定资产移交单、SOP手册)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                        历史文档名称 <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" id="ems-supp-doc-name" class="form-control" placeholder="如：《主溶铜罐终验收报告与资产移交单.pdf》" style="width: 100%; height: 38px; padding: 6px 12px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                        批量补件文本清单/外部在线链接 (多行输入)
+                    </label>
+                    <textarea id="ems-supp-files-list" class="form-control" rows="4" style="width: 100%; font-family: monospace; font-size: 0.8rem; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" placeholder="例如：&#13;1. 历史纸质档案扫描件_V1.0.pdf&#13;2. 制造厂商出厂合格证.jpg&#13;3. 关键零部件PLC程序备份.zip"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 6px;">
+                        补件说明/来源备注
+                    </label>
+                    <input type="text" id="ems-supp-remark" class="form-control" placeholder="如：补录2025年项目验收转固纸质档案扫描件" style="width: 100%; height: 36px; padding: 6px 12px; font-size: 0.82rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+                </div>
+
+                <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="ems-supp-sync-dms" checked style="width: 16px; height: 16px; accent-color: #2563eb;">
+                    <label for="ems-supp-sync-dms" style="font-size: 0.8rem; font-weight: 600; color: #334155; cursor: pointer;">
+                        同步将补件文档归档至 DMS 受控文管中心 (设备技术档案全景库)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 14px 20px; background: #f8fafc; border-top: 1px solid #cbd5e1; display: flex; justify-content: flex-end; gap: 10px;">
+                <button class="btn-secondary" onclick="closeModal('modal-ems-history-supplement')" style="padding: 8px 16px; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700; cursor: pointer;">取消</button>
+                <button class="btn-primary" onclick="submitEmsHistorySupplement()" style="padding: 8px 20px; background: #0284c7; color: #ffffff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(2,132,199,0.25);">
+                    <i data-lucide="upload-cloud" style="width: 15px; height: 15px;"></i> 确认提交补件归档
+                </button>
             </div>
         </div>
     </div>
