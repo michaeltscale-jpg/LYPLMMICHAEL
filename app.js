@@ -3502,6 +3502,297 @@ window.renderRoutingStepsForVersion = function(version) {
         container.appendChild(card);
     });
 
+    // ── 附图数据强联动导入：渲染 3 大复合铜箔制程工艺管控表 ──
+    const specTablesPanel = document.createElement("div");
+    specTablesPanel.className = "glass-panel";
+    specTablesPanel.style.cssText = "margin-top: 24px; padding: 20px; border-radius: 12px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.35);";
+    
+    specTablesPanel.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1.5px solid rgba(99, 102, 241, 0.3); padding-bottom: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="table" style="width: 22px; height: 22px; color: #38bdf8;"></i>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px;">⚡ 复合铜箔制程工艺参数管控全景表 (源于附图标准规范)</h3>
+            </div>
+            <span style="font-size: 0.72rem; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">依据 《GHZ-3J-2-001 温湿度管控规范》</span>
+        </div>
+
+        <!-- 1. 复合铜箔 (真空溅镀) 制程工艺管控表 -->
+        <div style="margin-bottom: 24px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <span style="background: #0284c7; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem;">图表一</span>
+                1. 复合铜箔（真空溅镀）制程工艺管控表
+            </div>
+            <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #334155;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.72rem; text-align: center; color: #e2e8f0;">
+                    <thead style="background: #1e293b; color: #94a3b8;">
+                        <tr>
+                            <th style="padding: 8px; border: 1px solid #334155;">产品类别</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">半成品料号</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">基材材质</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">规格(μm)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">运行速度(m/min)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">靶材速度(m/min)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">UW张力</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">RW张力</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">真空电阻(Ω/□)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">启镀真空(Torr)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">主轮A/B温度(°C)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">预镀时间(S)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">预镀线速(m/min)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">A/B氩气(sccm)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">氢气时间(S)</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">单靶预镀功率</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">单铬靶功率</th>
+                            <th style="padding: 8px; border: 1px solid #334155;">单铜靶功率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(30,41,59,0.5);">
+                            <td style="padding: 8px; border: 1px solid #334155; font-weight:700; color:#38bdf8;">锂电铜箔</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">ALTV0045T</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">PET</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">1+4.5+1</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">12 / 15</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">8</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">270±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">240±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">1.5±0.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">≤ 1E-5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">-3±1 / 2±1</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">600±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">2±0.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">300±5 / 250±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">30±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">2±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">4.5±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">7.5±0.1 KW</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #334155; font-weight:700; color:#cbd5e1;" rowspan="2">雷藤电缆包裹膜</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">ASTE0045Q</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">PET</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">1+4.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">12 / 15</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">8</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">270±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">240±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">1.5±0.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">≤ 1E-5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">-3±1 / 2±1</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">600±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">2±0.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">300±5 / 250±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">30±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">2±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">4.5±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;" rowspan="2">7.5±0.1 KW</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #334155;">0.3+4.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">12 / 15</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">8</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">270±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">240±10</td>
+                        </tr>
+                        <tr style="background: rgba(30,41,59,0.5);">
+                            <td style="padding: 8px; border: 1px solid #334155; font-weight:700; color:#a855f7;">PTS高频低损耗铜箔</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">FH080000003</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">离型膜</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">50+1.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">6</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">8</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">330±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">310±10</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">0.5±0.1</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">≤ 9E-6</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">-5±1 / 2±1</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">60±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">2±0.5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">300±5 / 0</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">120±5</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">3±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">5.5±0.1 KW</td>
+                            <td style="padding: 8px; border: 1px solid #334155;">9.5±0.1 KW</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. 复合铜箔 (水电镀) 制程工艺管控表 -->
+        <div style="margin-bottom: 24px;">
+            <div style="font-size: 0.85rem; font-weight: 700; color: #10b981; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <span style="background: #059669; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem;">图表二</span>
+                2. 复合铜箔（水电镀）制程工艺管控表
+            </div>
+            <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #334155;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.7rem; text-align: center; color: #e2e8f0;">
+                    <thead style="background: #1e293b; color: #94a3b8;">
+                        <tr>
+                            <th style="padding: 6px; border: 1px solid #334155;">产品类别</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">线别</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">成品料号</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">基材</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">规格(μm)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">速度(m/min)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">纯水PH</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">电导率(us/cm)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">CuSO4(g/L)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">H2SO4(g/L)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">Cl-(ppm)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">RF-23 B/C/L(ml/L)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">镀液温(°C)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">XL分子(ml/L)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">抗氧化PH</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">抗氧化温(°C)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">过抗氧化时间(S)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;">烘箱温(°C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(30,41,59,0.5);">
+                            <td style="padding: 6px; border: 1px solid #334155; font-weight:700; color:#38bdf8;">锂电铜箔</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">LTV100B</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">PET</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">1+4.5+1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">6±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">7±0.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">≤ 2.0</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">140±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">60±20</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">2±1 / 20±10 / 10±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">23±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">700±50</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">9.5±1.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">33±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">15±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">75±5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; border: 1px solid #334155; font-weight:700; color:#a855f7;" rowspan="3">PTS高频低损耗</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-3</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">FH080000005</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">离型膜</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">18±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">0.3</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">7±0.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">≤ 2.0</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">70±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">2±1 / 20±10 / 10±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">23±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">700±50</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">6±1.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">20±1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">15±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">70±5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-3</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">FH080000006</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">离型膜</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">35±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">0.24</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">7±0.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">≤ 2.0</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">70±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">2±1 / 20±10 / 10±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">23±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">700±50</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">6±1.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">20±1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">15±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">70±5</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-4</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">FH080000008</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">离型膜</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">18±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">0.2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">7±0.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">≤ 2.0</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">130±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">70±10</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">2±1 / 20±10 / 10±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">23±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">700±50</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">6±1.5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">20±1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">15±5</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">50±5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. 复合铜箔 (水电镀) 电流参数工艺管控表 -->
+        <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #f59e0b; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <span style="background: #d97706; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 0.7rem;">图表三</span>
+                3. 复合铜箔（水电镀）28段电流与整流器参数工艺管控表
+            </div>
+            <div style="overflow-x: auto; border-radius: 8px; border: 1px solid #334155;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.68rem; text-align: center; color: #e2e8f0;">
+                    <thead style="background: #1e293b; color: #94a3b8;">
+                        <tr>
+                            <th style="padding: 6px; border: 1px solid #334155;" rowspan="2">产品类别</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" rowspan="2">成品料号</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" rowspan="2">规格</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" rowspan="2">线别</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" colspan="4">启镀段(A)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" colspan="4">增厚A段(A)</th>
+                            <th style="padding: 6px; border: 1px solid #334155;" colspan="10">增厚B段(A)</th>
+                        </tr>
+                        <tr>
+                            <th style="padding: 4px; border: 1px solid #334155;">1</th><th style="padding: 4px; border: 1px solid #334155;">2</th><th style="padding: 4px; border: 1px solid #334155;">3</th><th style="padding: 4px; border: 1px solid #334155;">4</th>
+                            <th style="padding: 4px; border: 1px solid #334155;">1</th><th style="padding: 4px; border: 1px solid #334155;">2</th><th style="padding: 4px; border: 1px solid #334155;">3</th><th style="padding: 4px; border: 1px solid #334155;">4</th>
+                            <th style="padding: 4px; border: 1px solid #334155;">1</th><th style="padding: 4px; border: 1px solid #334155;">2</th><th style="padding: 4px; border: 1px solid #334155;">3</th><th style="padding: 4px; border: 1px solid #334155;">4</th><th style="padding: 4px; border: 1px solid #334155;">5</th><th style="padding: 4px; border: 1px solid #334155;">6</th><th style="padding: 4px; border: 1px solid #334155;">7</th><th style="padding: 4px; border: 1px solid #334155;">8</th><th style="padding: 4px; border: 1px solid #334155;">9</th><th style="padding: 4px; border: 1px solid #334155;">10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(30,41,59,0.5);">
+                            <td style="padding: 6px; border: 1px solid #334155; font-weight:700; color:#38bdf8;">锂电铜箔</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">LTV100BTZZ</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">1+4.5+1</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-1</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">5±1</td><td style="padding: 4px; border: 1px solid #334155;">10±1</td><td style="padding: 4px; border: 1px solid #334155;">15±1</td><td style="padding: 4px; border: 1px solid #334155;">15±1</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">20±1</td><td style="padding: 4px; border: 1px solid #334155;">25±1</td><td style="padding: 4px; border: 1px solid #334155;">30±1</td><td style="padding: 4px; border: 1px solid #334155;">35±2</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">45±2</td><td style="padding: 4px; border: 1px solid #334155;">60±2</td><td style="padding: 4px; border: 1px solid #334155;">70±2</td><td style="padding: 4px; border: 1px solid #334155;">85±2</td><td style="padding: 4px; border: 1px solid #334155;">85±2</td><td style="padding: 4px; border: 1px solid #334155;">125±2</td><td style="padding: 4px; border: 1px solid #334155;">140±2</td><td style="padding: 4px; border: 1px solid #334155;">145±2</td><td style="padding: 4px; border: 1px solid #334155;">160±2</td><td style="padding: 4px; border: 1px solid #334155;">180±2</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px; border: 1px solid #334155; font-weight:700; color:#a855f7;">PTS高频低损耗</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">FH080000005</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">18±2</td>
+                            <td style="padding: 6px; border: 1px solid #334155;">PH-3</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">5±1</td><td style="padding: 4px; border: 1px solid #334155;">10±1</td><td style="padding: 4px; border: 1px solid #334155;">15±1</td><td style="padding: 4px; border: 1px solid #334155;">20±1</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">100±1</td><td style="padding: 4px; border: 1px solid #334155;">180±1</td><td style="padding: 4px; border: 1px solid #334155;">200±1</td><td style="padding: 4px; border: 1px solid #334155;">250±2</td>
+                            <td style="padding: 4px; border: 1px solid #334155;">160±2</td><td style="padding: 4px; border: 1px solid #334155;">180±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">200±2</td><td style="padding: 4px; border: 1px solid #334155;">180±2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 6px; font-size: 0.7rem; color: #cbd5e1; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px;">
+                <div>📍 <strong>整流器开启位置:</strong> 1720 ~ 28105 mm</div>
+                <div>🛑 <strong>整流器关闭位置:</strong> 1700 ~ 27965 mm</div>
+                <div>⏳ <strong>缓开启时间:</strong> 120 ~ 240 S</div>
+                <div>⌛ <strong>缓关闭时间:</strong> 100 ~ 300 S</div>
+                <div>⚙️ <strong>主马达速差/转速:</strong> 0~6 mm/min (127~129 Rpm)</div>
+                <div>📦 <strong>收放卷张力:</strong> 放 4±1 KG | 收 6±2 KG</div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(specTablesPanel);
+
     lucide.createIcons();
 };
 
