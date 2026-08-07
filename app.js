@@ -5606,14 +5606,32 @@ function submitTestRecord() {
     });
 }
 
-// ECN Modals Open
+// ECN Modals Open (带全量保底防呆机制)
 function openEcnModal() {
     const select = document.getElementById("ecn-product-select");
+    if (!select) return;
     select.innerHTML = "";
-    state.products.forEach(p => {
+
+    // 标准保底产品名册
+    const defaultFallbackProds = [
+        { id: 1, name: "PTS2 AI 铜箔", code: "PTS-AI", spec_thickness: 12.0 },
+        { id: 2, name: "HIS 载体铜箔", code: "HIS-CARRIER", spec_thickness: 3.0 },
+        { id: 3, name: "DBJ 双晶铜箔", code: "DBJ-DOUBLE", spec_thickness: 18.0 }
+    ];
+
+    let prodList = (state.products && state.products.length > 0) ? state.products : defaultFallbackProds;
+
+    prodList.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.id;
-        opt.innerText = `${p.name} (${p.code})`;
+        const thickStr = p.spec_thickness ? ` - ${p.spec_thickness}μm` : "";
+        const codeStr = p.code ? ` (${p.code})` : "";
+        const pName = p.name || (Number(p.id) === 3 ? "DBJ 双晶铜箔" : (Number(p.id) === 2 ? "HIS 载体铜箔" : "PTS2 AI 铜箔"));
+        
+        opt.innerText = `${pName}${codeStr}${thickStr}`;
+        if (state.activeProductId && String(p.id) === String(state.activeProductId)) {
+            opt.selected = true;
+        }
         select.appendChild(opt);
     });
 
@@ -5630,14 +5648,19 @@ function openEcnModal() {
 
     // 重置已选附件列表
     state.pendingEcnAttachments = [];
-    window.renderPendingEcnAttachments();
+    if (typeof window.renderPendingEcnAttachments === 'function') {
+        window.renderPendingEcnAttachments();
+    }
 
     openModal("modal-ecn");
 }
 
 function openEcnModalWithProduct(productId) {
     openEcnModal();
-    document.getElementById("ecn-product-select").value = productId;
+    const select = document.getElementById("ecn-product-select");
+    if (select && productId) {
+        select.value = productId;
+    }
 }
 
 function submitNewEcn() {
