@@ -2573,6 +2573,23 @@ class PLMRequestHandler(http.server.SimpleHTTPRequestHandler):
                 conn.commit()
                 self.send_json({"message": "用户已成功从系统中删除！"})
 
+            # 13. 更新用户权限配置 (持久化到 users.permissions_json 字段)
+            elif path == "/api/users/update_permissions":
+                user_id = data.get('user_id')
+                permissions = data.get('permissions', {})
+                if not user_id:
+                    self.send_json({"error": "用户 ID 不能为空"}, 400)
+                    return
+
+                perms_str = json.dumps(permissions, ensure_ascii=False)
+                cursor.execute("""
+                UPDATE users 
+                SET permissions_json = ? 
+                WHERE id = ?
+                """, (perms_str, user_id))
+                conn.commit()
+                self.send_json({"message": "用户权限配置已成功保存并持久化写入 SQLite 数据库！重启后仍保持生效。"})
+
             # ---- MQC 物料承认 POST ----
             elif path == "/api/mqc/materials/save":
                 rid = data.get('id')

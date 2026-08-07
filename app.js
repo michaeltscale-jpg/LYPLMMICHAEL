@@ -2595,9 +2595,6 @@ function renderTdsSubpanel() {
             status: (displayTds && displayTds.status) || "活动",
             tds_items: defaultTdsItems
         };
-    } else if (!state.selectedTdsVersion) {
-        // 动态同步保底项，保证选不同产品时 TDS 差异化
-        displayTds.tds_items = defaultTdsItems;
     }
 
     const isActiveTds = displayTds.status === '活动';
@@ -2903,8 +2900,10 @@ function renderBomSubpanel() {
         items: defaultBomItems
     };
 
-    product.bom_list = [defaultBom];
-    product.bom = defaultBom;
+    if (!product.bom_list || product.bom_list.length === 0) {
+        product.bom_list = [defaultBom];
+        product.bom = defaultBom;
+    }
 
     let displayBom = null;
     if (state.selectedBomVersion && product.bom_list) {
@@ -3217,7 +3216,9 @@ function renderRoutingSubpanel() {
         "V1.0 (生产通用)": defaultRoutingSteps
     };
 
-    product.routing_history = defaultRoutingHistory;
+    if (!product.routing_history || Object.keys(product.routing_history).length === 0) {
+        product.routing_history = defaultRoutingHistory;
+    }
 
     const history = product.routing_history;
     const versions = Object.keys(history).sort().reverse();
