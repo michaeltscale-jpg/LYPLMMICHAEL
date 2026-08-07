@@ -10924,13 +10924,14 @@ window.openMqcMaterialModal = function(id) {
         if (m.apply_by && m.apply_by.toLowerCase().endsWith(".pdf")) {
             certFileLabel.textContent = "✅ " + (m.apply_by_original || m.apply_by);
             certFileLabel.style.color = "var(--color-success)";
-            certPreviewLink.href = "/uploads/certificates/" + m.apply_by;
+            certPreviewLink.href = "javascript:void(0)";
+            certPreviewLink.onclick = () => window.safePreviewMqcFile(m.apply_by, "物料承认书");
             certPreviewLink.style.display = "inline";
         } else {
             certFileLabel.textContent = "未上传";
             certFileLabel.style.color = "var(--text-secondary)";
             certPreviewLink.style.display = "none";
-            certPreviewLink.href = "#";
+            certPreviewLink.href = "javascript:void(0)";
         }
 
         // 回显测试记录文件
@@ -10941,13 +10942,14 @@ window.openMqcMaterialModal = function(id) {
         if (m.test_record) {
             testRecordLabel.textContent = "✅ " + m.test_record;
             testRecordLabel.style.color = "var(--color-success)";
-            testRecordPreview.href = "/uploads/certificates/" + encodeURIComponent(m.test_record);
+            testRecordPreview.href = "javascript:void(0)";
+            testRecordPreview.onclick = () => window.safePreviewMqcFile(m.test_record, "实验检验记录表");
             testRecordPreview.style.display = "inline";
         } else {
             testRecordLabel.textContent = "未上传";
             testRecordLabel.style.color = "var(--text-secondary)";
             testRecordPreview.style.display = "none";
-            testRecordPreview.href = "#";
+            testRecordPreview.href = "javascript:void(0)";
         }
 
         // 回显测试报告文件
@@ -10958,13 +10960,14 @@ window.openMqcMaterialModal = function(id) {
         if (m.test_report) {
             testReportLabel.textContent = "✅ " + m.test_report;
             testReportLabel.style.color = "var(--color-success)";
-            testReportPreview.href = "/uploads/certificates/" + encodeURIComponent(m.test_report);
+            testReportPreview.href = "javascript:void(0)";
+            testReportPreview.onclick = () => window.safePreviewMqcFile(m.test_report, "CPK / ROHS 评估报告");
             testReportPreview.style.display = "inline";
         } else {
             testReportLabel.textContent = "未上传";
             testReportLabel.style.color = "var(--text-secondary)";
             testReportPreview.style.display = "none";
-            testReportPreview.href = "#";
+            testReportPreview.href = "javascript:void(0)";
         }
 
         // 回显供应商资料文件
@@ -10975,13 +10978,14 @@ window.openMqcMaterialModal = function(id) {
         if (m.supplier_doc) {
             supplierDocLabel.textContent = "✅ " + m.supplier_doc;
             supplierDocLabel.style.color = "var(--color-success)";
-            supplierDocPreview.href = "/uploads/certificates/" + encodeURIComponent(m.supplier_doc);
+            supplierDocPreview.href = "javascript:void(0)";
+            supplierDocPreview.onclick = () => window.safePreviewMqcFile(m.supplier_doc, "供应商资信与出厂报告");
             supplierDocPreview.style.display = "inline";
         } else {
             supplierDocLabel.textContent = "未上传";
             supplierDocLabel.style.color = "var(--text-secondary)";
             supplierDocPreview.style.display = "none";
-            supplierDocPreview.href = "#";
+            supplierDocPreview.href = "javascript:void(0)";
         }
 
         // 回显 TDS 文件
@@ -10992,13 +10996,14 @@ window.openMqcMaterialModal = function(id) {
         if (m.tds_doc) {
             tdsDocLabel.textContent = "✅ " + m.tds_doc;
             tdsDocLabel.style.color = "var(--color-success)";
-            tdsDocPreview.href = "/uploads/certificates/" + encodeURIComponent(m.tds_doc);
+            tdsDocPreview.href = "javascript:void(0)";
+            tdsDocPreview.onclick = () => window.safePreviewMqcFile(m.tds_doc, "TDS 技术规范文件");
             tdsDocPreview.style.display = "inline";
         } else {
             tdsDocLabel.textContent = "未上传";
             tdsDocLabel.style.color = "var(--text-secondary)";
             tdsDocPreview.style.display = "none";
-            tdsDocPreview.href = "#";
+            tdsDocPreview.href = "javascript:void(0)";
         }
 
         document.getElementById("mqc-mat-status").value = m.status || "需求提出";
@@ -11525,7 +11530,7 @@ window.openMqcSupplierDetailModal = function(id) {
     const certEl = document.getElementById("mqc-detail-sup-certificate");
     if (certEl) {
         if (s.apply_by) {
-            certEl.innerHTML = `<a href="/uploads/certificates/${encodeURIComponent(s.apply_by)}" target="_blank" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">📄 点击下载/预览承认书</a>`;
+            certEl.innerHTML = `<a href="javascript:void(0)" onclick="window.safePreviewMqcFile('${s.apply_by}', '物料承认书')" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">📄 点击在线预览承认书</a>`;
         } else {
             certEl.innerHTML = `<span style="color:var(--text-muted);">尚未上传承认书附件</span>`;
         }
@@ -11694,7 +11699,7 @@ function renderMqcSupplierList(matCode) {
                 <div style="margin-top:8px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); font-size:0.78rem; display:flex; flex-direction:column; gap:4px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <span>承认状态：<strong style="color:${s.approval_status === '承认通过' ? '#10b981' : (s.approval_status === '承认拒绝' ? '#ef4444' : '#60a5fa')}">${s.approval_status || '需求提出'}</strong></span>
-                        ${s.apply_by ? `<span>📄 承认书：<a href="/uploads/certificates/${encodeURIComponent(s.apply_by)}" target="_blank" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">${s.apply_by}</a></span>` : '<span style="color:var(--text-muted);">📄 承认书：未上传</span>'}
+                        ${s.apply_by ? `<span>📄 承认书：<a href="javascript:void(0)" onclick="window.safePreviewMqcFile('${s.apply_by}', '物料承认书')" style="color:var(--color-primary); font-weight:600; text-decoration:underline;">${s.apply_by}</a></span>` : '<span style="color:var(--text-muted);">📄 承认书：未上传</span>'}
                     </div>
                     ${(s.test_start || s.test_end) ? `
                     <div style="color:var(--text-secondary); font-size:0.74rem; display:flex; gap:10px;">
@@ -11742,7 +11747,8 @@ window.loadMqcSupplierToForm = function(id) {
     if (s.apply_by) {
         certFileLabel.textContent = "✅ " + s.apply_by;
         certFileLabel.style.color = "var(--color-success)";
-        certPreviewLink.href = "/uploads/certificates/" + encodeURIComponent(s.apply_by);
+        certPreviewLink.href = "javascript:void(0)";
+        certPreviewLink.onclick = () => window.safePreviewMqcFile(s.apply_by, "物料承认书");
         certPreviewLink.style.display = "inline";
     } else {
         certFileLabel.textContent = "未上传";
@@ -16247,6 +16253,30 @@ window.switchAiSubApp = function(appName) {
 
 window.onAiPlatformSettingClick = function() {
     if (typeof showToast === 'function') showToast("⚙️ 正在打开【AI 管理平台 (公开评测)】全局 SSO 与微前端入口配置视窗...", "info");
+};
+
+// ==================== 物料承认 (MQC) 安全在线受控预览函数 ====================
+window.safePreviewMqcFile = function(fileName, title) {
+    if (!fileName) {
+        if (typeof showToast === 'function') showToast("ℹ️ 暂未上传该附件文档", "info");
+        return;
+    }
+    const cleanName = String(fileName).replace(/^[🖼️📄📦]\s*/, '').trim();
+    const isImage = cleanName.toLowerCase().endsWith('.png') || cleanName.toLowerCase().endsWith('.jpg') || cleanName.toLowerCase().endsWith('.jpeg');
+    
+    if (isImage) {
+        if (typeof window.openLightboxImage === 'function') {
+            window.openLightboxImage("/uploads/certificates/" + encodeURIComponent(cleanName), title || cleanName);
+        } else if (typeof showToast === 'function') {
+            showToast(`🖼️ 正在调起大图在线预览视窗: ${cleanName}`, "info");
+        }
+    } else {
+        if (typeof window.openDmsTemplatePreview === 'function') {
+            window.openDmsTemplatePreview(cleanName, title || "物料受控文件预览");
+        } else if (typeof showToast === 'function') {
+            showToast(`📄 正在在线调起受控 PDF 阅读器预览: ${cleanName}`, "success");
+        }
+    }
 };
 
 
