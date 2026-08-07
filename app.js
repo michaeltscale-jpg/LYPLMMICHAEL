@@ -432,6 +432,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             state.activeTab = paramTab;
             saveStateToLocalStorage();
         }
+        if (state.activeTab === 'plm-panel') {
+            state.activePlmSubTab = 'npi';
+            if (typeof switchPlmSubTab === 'function') {
+                switchPlmSubTab('npi');
+            }
+        }
         switchTab(state.activeTab);
         if (state.activeProductId) {
             loadProductDetails(state.activeProductId, state.activeThickness);
@@ -702,6 +708,13 @@ function switchTab(tabId) {
     document.getElementById("header-panel-title").innerText = headerTitleMap[tabId] || 'PLM平台';
 
     if ((tabId === 'plm-panel' || tabId === 'dms-panel') && state.activeProductId) {
+        if (tabId === 'plm-panel') {
+            // 优先并默认选中第一个子 Tab 【1. NPI 新品开发流程】 (G1-G6 门禁流程看板)
+            state.activePlmSubTab = 'npi';
+            if (typeof switchPlmSubTab === 'function') {
+                switchPlmSubTab('npi');
+            }
+        }
         loadProductDetails(state.activeProductId);
     } else if (tabId === 'dashboard-panel') {
         fetchDashboardData();
