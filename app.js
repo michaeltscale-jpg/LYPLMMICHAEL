@@ -2168,9 +2168,7 @@ function renderSidebarProducts() {
 function renderThicknessTabs() {
     const wrap = document.getElementById("thickness-tabs-bar");
     if (!wrap) return;
-    wrap.style.display = "none";
     wrap.innerHTML = "";
-    return;
 
     const activeProdRow = (state.products || []).find(p => state.activeProductId && Number(p.id) === Number(state.activeProductId));
     if (!activeProdRow) {
@@ -2178,50 +2176,80 @@ function renderThicknessTabs() {
         return;
     }
 
-    const thicknesses = activeProdRow.thicknesses || [];
+    const thicknesses = activeProdRow.thicknesses || [4.5, 6.0, 9.0, 12.0];
     if (thicknesses.length === 0) {
         wrap.style.display = "none";
         return;
     }
+    
+    // 只在 PLM 新品开发控制台展示页签栏
     if (state.activeTab === 'plm-panel') {
         wrap.style.display = "flex";
     } else {
         wrap.style.display = "none";
+        return;
     }
 
-    const title = document.createElement("span");
-    title.className = "thick-tab-title";
-    title.innerText = "切换型号/厚度:";
+    const title = document.createElement("div");
+    title.style.display = "flex";
+    title.style.alignItems = "center";
+    title.style.gap = "6px";
+    title.style.fontWeight = "800";
+    title.style.fontSize = "0.85rem";
+    title.style.color = "#1e40af";
+    title.style.marginRight = "8px";
+    title.innerHTML = `<i data-lucide="sliders-horizontal" style="width:15px; height:15px; color:#2563eb;"></i> 切换铜箔厚度规格:`;
     wrap.appendChild(title);
 
     thicknesses.forEach(t => {
         const item = document.createElement("div");
         const isActive = Number(t) === Number(state.activeThickness);
-        item.className = `thick-tab-item ${isActive ? 'active' : ''}`;
+        item.style.padding = "5px 14px";
+        item.style.borderRadius = "6px";
+        item.style.cursor = "pointer";
+        item.style.fontWeight = "700";
+        item.style.fontSize = "0.82rem";
+        item.style.transition = "all 0.2s ease";
+        item.style.display = "inline-flex";
+        item.style.alignItems = "center";
+        item.style.gap = "6px";
+        item.style.boxSizing = "border-box";
+
+        if (isActive) {
+            item.style.background = "#2563eb";
+            item.style.color = "#ffffff";
+            item.style.boxShadow = "0 2px 6px rgba(37,99,235,0.3)";
+            item.style.border = "1.5px solid #2563eb";
+        } else {
+            item.style.background = "#f8fafc";
+            item.style.color = "#475569";
+            item.style.border = "1.5px solid #cbd5e1";
+        }
 
         const tDetail = (activeProdRow.thickness_details || []).find(td => Number(td.spec_thickness) === Number(t));
         const status = tDetail ? tDetail.status : "立项中";
         
-        let dotColor = "#94a3b8"; // gray
-        if (status === "量产中") dotColor = "#10b981"; // green
-        else if (status.includes("审批")) dotColor = "#f59e0b"; // yellow
-        else if (["溅镀金属化中", "溅镀开发中", "生箔电镀中", "PA后处理中", "PB涂布中", "脱膜中", "测试验证中"].includes(status)) dotColor = "#3b82f6"; // blue
+        let dotColor = "#94a3b8";
+        if (status === "量产中") dotColor = "#10b981";
+        else if (status.includes("审批")) dotColor = "#f59e0b";
+        else dotColor = "#3b82f6";
 
         item.innerHTML = `
-            <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background-color:${dotColor}; margin-right:4px;"></span>
-            <strong>${t}μm</strong>
-            <span style="opacity:0.6; font-size:0.65rem; margin-left:3px;">(${status})</span>
+            <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background-color:${isActive ? '#ffffff' : dotColor};"></span>
+            <span>${t} μm</span>
+            <span style="opacity:0.75; font-size:0.7rem; margin-left:2px;">(${status})</span>
         `;
 
         item.addEventListener("click", () => {
-            state.activeThickness = t;
-            saveStateToLocalStorage();
-            renderThicknessTabs();
-            loadProductDetails(state.activeProductId, t);
+            handleThicknessTabClick(t);
         });
 
         wrap.appendChild(item);
     });
+
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
 }
 
 // Load detailed product data from API
@@ -2572,13 +2600,44 @@ function renderTdsSubpanel() {
             { item_no: 6, group: "耐热性能", name_zh: "耐压合高温稳定性", name_en: "Thermal Resistance", unit: "℃/min", spec: "260 ℃ / 60 min", test_standard: "热重分析仪 TGA" }
         ];
     } else {
+        const curThick = Number(state.activeThickness || product.spec_thickness || 12.0);
+        let thickSpec = "12.0 ± 0.5";
+        let tensileSpec = "≥ 420";
+        let elongSpec = "≥ 5.5";
+        let rzSpec = "≤ 1.20";
+        let dfSpec = "≤ 0.0015";
+        let peelSpec = "≥ 1.25";
+
+        if (curThick === 4.5) {
+            thickSpec = "4.5 ± 0.3";
+            tensileSpec = "≥ 460";
+            elongSpec = "≥ 4.0";
+            rzSpec = "≤ 0.75";
+            dfSpec = "≤ 0.0012";
+            peelSpec = "≥ 0.95";
+        } else if (curThick === 6.0) {
+            thickSpec = "6.0 ± 0.4";
+            tensileSpec = "≥ 440";
+            elongSpec = "≥ 4.5";
+            rzSpec = "≤ 0.90";
+            dfSpec = "≤ 0.0013";
+            peelSpec = "≥ 1.05";
+        } else if (curThick === 9.0) {
+            thickSpec = "9.0 ± 0.5";
+            tensileSpec = "≥ 430";
+            elongSpec = "≥ 5.0";
+            rzSpec = "≤ 1.05";
+            dfSpec = "≤ 0.0014";
+            peelSpec = "≥ 1.15";
+        }
+
         defaultTdsItems = [
-            { item_no: 1, group: "物理性能", name_zh: "标称厚度", name_en: "Nominal Thickness", unit: "μm", spec: "12.0 ± 0.5", test_standard: "GB/T 5187-2021 测重法" },
-            { item_no: 2, group: "物理性能", name_zh: "抗拉强度", name_en: "Tensile Strength", unit: "N/mm²", spec: "≥ 420", test_standard: "IPC-TM-650 2.4.18" },
-            { item_no: 3, group: "物理性能", name_zh: "常温延伸率", name_en: "Elongation (RT)", unit: "%", spec: "≥ 5.5", test_standard: "IPC-TM-650 2.4.18" },
-            { item_no: 4, group: "微观形貌", name_zh: "毛面粗糙度 Rz", name_en: "Roughness Rz (M-side)", unit: "μm", spec: "≤ 1.20", test_standard: "ISO 4287 白光干涉仪" },
-            { item_no: 5, group: "高频电性能", name_zh: "10GHz 介质损耗 Df", name_en: "Dissipation Factor @ 10GHz", unit: "-", spec: "≤ 0.0015", test_standard: "IPC-TM-650 2.5.5.5 谐振腔" },
-            { item_no: 6, group: "结合强度", name_zh: "常温剥离强度", name_en: "Peel Strength (RT)", unit: "N/mm", spec: "≥ 1.25", test_standard: "IPC-TM-650 2.4.8" }
+            { item_no: 1, group: "物理性能", name_zh: "标称厚度", name_en: "Nominal Thickness", unit: "μm", spec: thickSpec, test_standard: "GB/T 5187-2021 测重法" },
+            { item_no: 2, group: "物理性能", name_zh: "抗拉强度", name_en: "Tensile Strength", unit: "N/mm²", spec: tensileSpec, test_standard: "IPC-TM-650 2.4.18" },
+            { item_no: 3, group: "物理性能", name_zh: "常温延伸率", name_en: "Elongation (RT)", unit: "%", spec: elongSpec, test_standard: "IPC-TM-650 2.4.18" },
+            { item_no: 4, group: "微观形貌", name_zh: "毛面粗糙度 Rz", name_en: "Roughness Rz (M-side)", unit: "μm", spec: rzSpec, test_standard: "ISO 4287 白光干涉仪" },
+            { item_no: 5, group: "高频电性能", name_zh: "10GHz 介质损耗 Df", name_en: "Dissipation Factor @ 10GHz", unit: "-", spec: dfSpec, test_standard: "IPC-TM-650 2.5.5.5 谐振腔" },
+            { item_no: 6, group: "结合强度", name_zh: "常温剥离强度", name_en: "Peel Strength (RT)", unit: "N/mm", spec: peelSpec, test_standard: "IPC-TM-650 2.4.8" }
         ];
     }
 
@@ -2882,10 +2941,29 @@ function renderBomSubpanel() {
             { item_no: 4, mat_code: "MAT-TRT-002", mat_name: "载体防氧化防锈剂 H-02", category: "保护处理剂", std_qty: 18, unit: "g/m²", loss_rate: "0.5%", supplier: "巴斯夫" }
         ];
     } else {
+        const curThick = Number(state.activeThickness || product.spec_thickness || 12.0);
+        let cuQty = 1.025;
+        let addAQty = 4.5;
+        let addBQty = 2.2;
+
+        if (curThick === 4.5) {
+            cuQty = 0.450;
+            addAQty = 6.5;
+            addBQty = 3.8;
+        } else if (curThick === 6.0) {
+            cuQty = 0.600;
+            addAQty = 5.5;
+            addBQty = 3.0;
+        } else if (curThick === 9.0) {
+            cuQty = 0.900;
+            addAQty = 4.8;
+            addBQty = 2.5;
+        }
+
         defaultBomItems = [
-            { item_no: 1, mat_code: "MAT-RAW-001", mat_name: "高纯电解铜阴极板 (99.99%)", category: "主元原材料", std_qty: 1.025, unit: "kg/kg", loss_rate: "2.5%", supplier: "江西铜业" },
-            { item_no: 2, mat_code: "MAT-ADD-001", mat_name: "高纯生箔添加剂 A剂 (超平滑光亮剂)", category: "化学添加剂", std_qty: 4.5, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
-            { item_no: 3, mat_code: "MAT-ADD-002", mat_name: "晶粒细化剂 B剂 (高抗拉抑制剂)", category: "化学添加剂", std_qty: 2.2, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
+            { item_no: 1, mat_code: "MAT-RAW-001", mat_name: "高纯电解铜阴极板 (99.99%)", category: "主元原材料", std_qty: cuQty, unit: "kg/kg", loss_rate: "2.5%", supplier: "江西铜业" },
+            { item_no: 2, mat_code: "MAT-ADD-001", mat_name: "高纯生箔添加剂 A剂 (超平滑光亮剂)", category: "化学添加剂", std_qty: addAQty, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
+            { item_no: 3, mat_code: "MAT-ADD-002", mat_name: "晶粒细化剂 B剂 (高抗拉抑制剂)", category: "化学添加剂", std_qty: addBQty, unit: "mL/kA·h", loss_rate: "1.0%", supplier: "聚赫新材自研" },
             { item_no: 4, mat_code: "MAT-CHEM-003", mat_name: "电子级浓硫酸 (98%)", category: "辅助化工原料", std_qty: 0.15, unit: "kg/kg", loss_rate: "3.0%", supplier: "巨化股份" },
             { item_no: 5, mat_code: "MAT-TRT-004", mat_name: "偶联剂防氧化硅烷 C-101", category: "表面处理剂", std_qty: 25, unit: "g/m²", loss_rate: "0.5%", supplier: "道康宁" }
         ];
@@ -3203,12 +3281,35 @@ function renderRoutingSubpanel() {
             { stage_name: "G5 极薄分卷检验", status: "未开始", process_code: "PROC-HIS-05", equipment_name: "恒张力分切机 & CCD 针孔仪 (EQ-SLT-HIS05)", station_name: "分切车间-06机", std_cycle_time: 25, key_params: "分切张力: 80 N | 零针孔感应自动报警拦截", operator_role: "检验组长 / 胡生产" }
         ];
     } else {
+        const curThick = Number(state.activeThickness || product.spec_thickness || 12.0);
+        let currentDensity = "65-75 A/dm²";
+        let rollerSpeed = "1.8-2.2 m/min";
+        let addAQtyStr = "4.5 mL/kA·h";
+        let tensionStr = "120 N";
+
+        if (curThick === 4.5) {
+            currentDensity = "35-42 A/dm²";
+            rollerSpeed = "3.0-3.4 m/min";
+            addAQtyStr = "6.5 mL/kA·h";
+            tensionStr = "60 N";
+        } else if (curThick === 6.0) {
+            currentDensity = "45-52 A/dm²";
+            rollerSpeed = "2.4-2.8 m/min";
+            addAQtyStr = "5.5 mL/kA·h";
+            tensionStr = "80 N";
+        } else if (curThick === 9.0) {
+            currentDensity = "55-62 A/dm²";
+            rollerSpeed = "2.0-2.3 m/min";
+            addAQtyStr = "4.8 mL/kA·h";
+            tensionStr = "100 N";
+        }
+
         defaultRoutingSteps = [
             { stage_name: "G1 溶铜造液工段", status: "活动", process_code: "PROC-SOL-01", equipment_name: "主溶铜罐 & 氧气高效浸出系统 (EQ-SOL-001)", station_name: "造液车间-1号线", std_cycle_time: 45, key_params: "铜离子浓度: 85-95 g/L | 游离硫酸: 90-100 g/L | 溶铜温度: 82±2 ℃ | 溶氧量: ≥ 18 mg/L", operator_role: "造液工艺员 / 张工程" },
             { stage_name: "G2 净液精滤工段", status: "未开始", process_code: "PROC-FIL-02", equipment_name: "多级钛芯精密过滤器 & 活性碳吸附塔 (EQ-FIL-003)", station_name: "净液车间-2号线", std_cycle_time: 30, key_params: "过滤精度: ≤ 0.22 μm | 浊度: ≤ 0.5 NTU | 循环流量: 180 m³/h", operator_role: "品质检验员 / 李品保" },
-            { stage_name: "G3 生箔生产工段", status: "未开始", process_code: "PROC-ED-03", equipment_name: "高精度阴极辊电镀机台 & 阳极槽 (EQ-ED-008)", station_name: "生箔车间-生箔05号机", std_cycle_time: 60, key_params: "电流密度: 65-75 A/dm² | 阴极辊转速: 1.8-2.2 m/min | 添加剂A剂: 4.5 mL/kA·h", operator_role: "生箔高级操作工 / 王主管" },
+            { stage_name: "G3 生箔生产工段", status: "未开始", process_code: "PROC-ED-03", equipment_name: `高精度阴极辊电镀机台 & 阳极槽 (${curThick}μm 专用机)`, station_name: "生箔车间-生箔05号机", std_cycle_time: 60, key_params: `电流密度: ${currentDensity} | 阴极辊转速: ${rollerSpeed} | 添加剂A剂: ${addAQtyStr}`, operator_role: "生箔高级操作工 / 王主管" },
             { stage_name: "G4 表面处理工段", status: "未开始", process_code: "PROC-TRT-04", equipment_name: "高频铜箔粗化/固化/锌镍合金镀层联动机 (EQ-TRT-002)", station_name: "表面处理车间-02号线", std_cycle_time: 50, key_params: "粗化电流: 18 A/dm² | 防氧化硅烷浓度: 2.5% | 烘干温度: 145 ℃", operator_role: "表面处理技术员 / 赵资深" },
-            { stage_name: "G5 分切分卷与检验工段", status: "未开始", process_code: "PROC-SLT-05", equipment_name: "高精度自动张力分切机 & 针孔在线CCD检测仪 (EQ-SLT-006)", station_name: "分切车间-3号分切机", std_cycle_time: 25, key_params: "分切刀压: 0.35 MPa | 分切张力: 120 N | CCD在线缺陷扫描率: 100%", operator_role: "包装分切工 / 孙组长" }
+            { stage_name: "G5 分切分卷与检验工段", status: "未开始", process_code: "PROC-SLT-05", equipment_name: "高精度自动张力分切机 & 针孔在线CCD检测仪 (EQ-SLT-006)", station_name: "分切车间-3号分切机", std_cycle_time: 25, key_params: `分切刀压: 0.35 MPa | 分切张力: ${tensionStr} | CCD在线缺陷扫描率: 100%`, operator_role: "包装分切工 / 孙组长" }
         ];
     }
 
