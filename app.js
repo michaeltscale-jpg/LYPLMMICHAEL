@@ -374,6 +374,16 @@ function getStatusActiveIndex(status, category) {
 // App Initialization
 document.addEventListener("DOMContentLoaded", async () => {
     lucide.createIcons();
+
+    // 沙盒及 file:// 协议环境引导
+    if (window.location.protocol === 'file:') {
+        console.info("提示：处于 file:// 本地文件浏览模式。推荐使用 http://127.0.0.1:8080/ 访问解锁 100% 服务！");
+        setTimeout(() => {
+            if (typeof showToast === 'function') {
+                showToast("🌐 提醒：若 Safari 限制本地文件，请在浏览器地址栏输入 http://127.0.0.1:8080/ 访问！", "info");
+            }
+        }, 1200);
+    }
     
     // 1. 加载本地状态
     loadStateFromLocalStorage();
