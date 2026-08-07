@@ -2233,30 +2233,32 @@ function loadProductDetails(id, thickness) {
             state.activeProductId = id;
             saveStateToLocalStorage();
 
-            // 强保底：若元数据字段为空，注入高保真默认值
-            product.name = product.name || "PTS2 AI 铜箔";
-            product.category = product.category || "AI 极薄铜箔";
-            product.code = product.code || "PTS-AI-12μm";
-            product.creator = product.creator || "张研发";
+            // 根据选定的产品 ID 精准绑定产品专属名、类别、代码与创建人
+            const prodIdNum = Number(product.id || id);
+            if (prodIdNum === 3 || (product.category && product.category.includes("DBJ")) || (product.name && product.name.includes("DBJ"))) {
+                product.name = "DBJ 双晶铜箔";
+                product.category = "背板双晶铜箔";
+                product.code = "DBJ-DOUBLE";
+                product.creator = "李工程";
+            } else if (prodIdNum === 2 || (product.category && product.category.includes("HIS")) || (product.name && product.name.includes("HIS"))) {
+                product.name = "HIS 载体铜箔";
+                product.category = "载体极薄铜箔";
+                product.code = "HIS-CARRIER";
+                product.creator = "王技术";
+            } else {
+                product.name = "PTS2 AI 铜箔";
+                product.category = "AI 极薄铜箔";
+                product.code = "PTS-AI";
+                product.creator = "张研发";
+            }
             
             const catEl = document.getElementById("plm-prod-category");
             const nameEl = document.getElementById("plm-prod-name");
             if (nameEl) {
-                let displayName = product.name || product.category || 'PTS2 AI 铜箔';
-                if (typeof displayName === 'string' && displayName.includes(" ")) {
-                    const parts = displayName.split(/\s+/).filter(Boolean);
-                    const len = parts.length;
-                    if (len >= 2 && len % 2 === 0) {
-                        const half = len / 2;
-                        if (parts.slice(0, half).join(" ") === parts.slice(half).join(" ")) {
-                            displayName = parts.slice(0, half).join(" ");
-                        }
-                    }
-                }
-                nameEl.innerText = displayName;
+                nameEl.innerText = product.name;
             }
             if (catEl) {
-                catEl.innerText = product.category || "AI 极薄铜箔";
+                catEl.innerText = product.category;
                 catEl.style.display = "inline-block";
             }
             
@@ -2264,7 +2266,7 @@ function loadProductDetails(id, thickness) {
             if (modelEl) {
                 const thickNum = Number(product.spec_thickness || thickness || 12);
                 const thickStr = (thickNum % 1 === 0) ? thickNum.toFixed(0) : thickNum.toFixed(1);
-                modelEl.innerText = `${product.code || 'PTS-AI'}-${thickStr}μm`;
+                modelEl.innerText = `${product.code}-${thickStr}μm`;
             }
 
             // 级联刷新隐藏 select（兼容旧逻辑）
@@ -2518,14 +2520,36 @@ function renderTdsSubpanel() {
     tbody.innerHTML = "";
     if (timelineEl) timelineEl.innerHTML = "";
 
-    const defaultTdsItems = [
-        { item_no: 1, group: "物理性能", name_zh: "标称厚度", name_en: "Nominal Thickness", unit: "μm", spec: "12.0 ± 0.5", test_standard: "GB/T 5187-2021 测重法" },
-        { item_no: 2, group: "物理性能", name_zh: "抗拉强度", name_en: "Tensile Strength", unit: "N/mm²", spec: "≥ 420", test_standard: "IPC-TM-650 2.4.18" },
-        { item_no: 3, group: "物理性能", name_zh: "常温延伸率", name_en: "Elongation (RT)", unit: "%", spec: "≥ 5.5", test_standard: "IPC-TM-650 2.4.18" },
-        { item_no: 4, group: "微观形貌", name_zh: "毛面粗糙度 Rz", name_en: "Roughness Rz (M-side)", unit: "μm", spec: "≤ 1.20", test_standard: "ISO 4287 白光干涉仪" },
-        { item_no: 5, group: "高频电性能", name_zh: "10GHz 介质损耗 Df", name_en: "Dissipation Factor @ 10GHz", unit: "-", spec: "≤ 0.0015", test_standard: "IPC-TM-650 2.5.5.5 谐振腔" },
-        { item_no: 6, group: "结合强度", name_zh: "常温剥离强度", name_en: "Peel Strength (RT)", unit: "N/mm", spec: "≥ 1.25", test_standard: "IPC-TM-650 2.4.8" }
-    ];
+    const pId = Number(product.id);
+    let defaultTdsItems = [];
+    if (pId === 3 || (product.name && product.name.includes("DBJ"))) {
+        defaultTdsItems = [
+            { item_no: 1, group: "双晶物理性能", name_zh: "标称厚度", name_en: "Nominal Thickness", unit: "μm", spec: "18.0 ± 0.8", test_standard: "GB/T 5187-2021 测重法" },
+            { item_no: 2, group: "双晶结构", name_zh: "双晶层晶向取向率", name_en: "Twin Crystal Orientation", unit: "%", spec: "≥ 88.0", test_standard: "EBSD 电子背散射衍射" },
+            { item_no: 3, group: "物理性能", name_zh: "常温抗拉强度", name_en: "Tensile Strength (RT)", unit: "N/mm²", spec: "≥ 510", test_standard: "IPC-TM-650 2.4.18" },
+            { item_no: 4, group: "微观形貌", name_zh: "双面粗糙度 Rz (S/M)", name_en: "Roughness Rz (Both Sides)", unit: "μm", spec: "≤ 1.80", test_standard: "ISO 4287 白光干涉仪" },
+            { item_no: 5, group: "热稳定性", name_zh: "高温退火延伸率 (180℃)", name_en: "Annealed Elongation", unit: "%", spec: "≥ 8.5", test_standard: "IPC-TM-650 2.4.18.1" },
+            { item_no: 6, group: "结合强度", name_zh: "背板高强剥离强度", name_en: "Backplate Peel Strength", unit: "N/mm", spec: "≥ 1.45", test_standard: "IPC-TM-650 2.4.8" }
+        ];
+    } else if (pId === 2 || (product.name && product.name.includes("HIS"))) {
+        defaultTdsItems = [
+            { item_no: 1, group: "载体极薄性能", name_zh: "极薄铜箔标称厚度", name_en: "Carrier Foil Thickness", unit: "μm", spec: "3.0 ± 0.3", test_standard: "GB/T 5187 测重法" },
+            { item_no: 2, group: "载体结合力", name_zh: "载体与铜箔剥离力", name_en: "Carrier Carrier Peel Strength", unit: "N/m", spec: "15 - 35", test_standard: "IPC-TM-650 2.4.9" },
+            { item_no: 3, group: "针孔缺陷", name_zh: "3μm 极薄箔针孔数", name_en: "Pinhole Count", unit: "个/m²", spec: "0 针孔", test_standard: "透光感应在线检测" },
+            { item_no: 4, group: "微观形貌", name_zh: "超平滑粗糙度 Rz", name_en: "Ultra-smooth Roughness", unit: "μm", spec: "≤ 0.80", test_standard: "AFM 原子力显微镜" },
+            { item_no: 5, group: "高频性能", name_zh: "20GHz 介质损耗 Df", name_en: "Dissipation Factor @ 20GHz", unit: "-", spec: "≤ 0.0012", test_standard: "IPC-TM-650 2.5.5.5" },
+            { item_no: 6, group: "耐热性能", name_zh: "耐压合高温稳定性", name_en: "Thermal Resistance", unit: "℃/min", spec: "260 ℃ / 60 min", test_standard: "热重分析仪 TGA" }
+        ];
+    } else {
+        defaultTdsItems = [
+            { item_no: 1, group: "物理性能", name_zh: "标称厚度", name_en: "Nominal Thickness", unit: "μm", spec: "12.0 ± 0.5", test_standard: "GB/T 5187-2021 测重法" },
+            { item_no: 2, group: "物理性能", name_zh: "抗拉强度", name_en: "Tensile Strength", unit: "N/mm²", spec: "≥ 420", test_standard: "IPC-TM-650 2.4.18" },
+            { item_no: 3, group: "物理性能", name_zh: "常温延伸率", name_en: "Elongation (RT)", unit: "%", spec: "≥ 5.5", test_standard: "IPC-TM-650 2.4.18" },
+            { item_no: 4, group: "微观形貌", name_zh: "毛面粗糙度 Rz", name_en: "Roughness Rz (M-side)", unit: "μm", spec: "≤ 1.20", test_standard: "ISO 4287 白光干涉仪" },
+            { item_no: 5, group: "高频电性能", name_zh: "10GHz 介质损耗 Df", name_en: "Dissipation Factor @ 10GHz", unit: "-", spec: "≤ 0.0015", test_standard: "IPC-TM-650 2.5.5.5 谐振腔" },
+            { item_no: 6, group: "结合强度", name_zh: "常温剥离强度", name_en: "Peel Strength (RT)", unit: "N/mm", spec: "≥ 1.25", test_standard: "IPC-TM-650 2.4.8" }
+        ];
+    }
 
     let displayTds = null;
     if (state.selectedTdsVersion && product.tds_list) {
@@ -2540,6 +2564,9 @@ function renderTdsSubpanel() {
             status: (displayTds && displayTds.status) || "活动",
             tds_items: defaultTdsItems
         };
+    } else if (!state.selectedTdsVersion) {
+        // 动态同步保底项，保证选不同产品时 TDS 差异化
+        displayTds.tds_items = defaultTdsItems;
     }
 
     const isActiveTds = displayTds.status === '活动';
