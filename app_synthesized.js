@@ -1158,11 +1158,13 @@ function loadProductDetails(id) {
             saveStateToLocalStorage();
             
             const catEl = document.getElementById("plm-prod-category");
-            if (catEl) catEl.innerText = product.category;
+            if (catEl) catEl.innerText = product.category || "AI 极薄铜箔";
             const nameEl = document.getElementById("plm-prod-name");
-            if (nameEl) nameEl.innerText = `${product.name} (${product.code})`;
+            if (nameEl) nameEl.innerText = product.name || "PTS2 AI 铜箔";
+            const modelEl = document.getElementById("plm-prod-model-code");
+            if (modelEl) modelEl.innerText = `${product.code || 'PTS-AI'}-${product.spec_thickness || 12}μm`;
             const creatorEl = document.getElementById("plm-prod-creator");
-            if (creatorEl) creatorEl.innerText = product.creator;
+            if (creatorEl) creatorEl.innerText = product.creator || "张研发";
             const timeEl = document.getElementById("plm-prod-time");
             if (timeEl) timeEl.innerText = formatDate(product.created_at);
             

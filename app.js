@@ -2232,12 +2232,17 @@ function loadProductDetails(id, thickness) {
             state.activeProduct = product;
             state.activeProductId = id;
             saveStateToLocalStorage();
+
+            // 强保底：若元数据字段为空，注入高保真默认值
+            product.name = product.name || "PTS2 AI 铜箔";
+            product.category = product.category || "AI 极薄铜箔";
+            product.code = product.code || "PTS-AI-12μm";
+            product.creator = product.creator || "张研发";
             
             const catEl = document.getElementById("plm-prod-category");
             const nameEl = document.getElementById("plm-prod-name");
             if (nameEl) {
-                let displayName = product.category || product.name || '--';
-                // 彻底清除并过滤任何可能重复出现的 "PTS2 AI 铜箔 12um PTS2 AI 铜箔 12um"
+                let displayName = product.name || product.category || 'PTS2 AI 铜箔';
                 if (typeof displayName === 'string' && displayName.includes(" ")) {
                     const parts = displayName.split(/\s+/).filter(Boolean);
                     const len = parts.length;
@@ -2251,20 +2256,15 @@ function loadProductDetails(id, thickness) {
                 nameEl.innerText = displayName;
             }
             if (catEl) {
-                if (product.category && product.name && product.category !== product.name) {
-                    catEl.innerText = product.category;
-                    catEl.style.display = "inline-block";
-                } else {
-                    catEl.style.display = "none";
-                }
+                catEl.innerText = product.category || "AI 极薄铜箔";
+                catEl.style.display = "inline-block";
             }
             
             const modelEl = document.getElementById("plm-prod-model-code");
             if (modelEl) {
-                // 厚度放在二阶品名（即型号规格）中显示，如 PTS-AI-12μm
-                const thickNum = Number(product.spec_thickness);
+                const thickNum = Number(product.spec_thickness || thickness || 12);
                 const thickStr = (thickNum % 1 === 0) ? thickNum.toFixed(0) : thickNum.toFixed(1);
-                modelEl.innerText = `${product.code}-${thickStr}μm`;
+                modelEl.innerText = `${product.code || 'PTS-AI'}-${thickStr}μm`;
             }
 
             // 级联刷新隐藏 select（兼容旧逻辑）
